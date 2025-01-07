@@ -40,7 +40,7 @@ setGeneric(
 
 setClass("BascetInstance", slots=list(
   bin="character"
-  )
+)
 ) 
 
 BascetInstance <- function(bin){
@@ -66,7 +66,7 @@ setClass("SlurmInstance", slots=list(
   time="character",
   prepend="character",
   mem="character"
-  )
+)
 ) 
 
 
@@ -76,7 +76,7 @@ setClass("SlurmJob", slots=list(
   cmd="character", 
   logfile="character",
   arraysize="numeric"
-  )
+)
 ) 
 
 
@@ -100,23 +100,23 @@ SlurmInstance <- function(settings=NULL, ncpu=NULL, partition=NULL, account=NULL
   if(!is.null(ncpu)){
     settings@ncpu <- ncpu
   }
-
+  
   if(!is.null(partition)){
     settings@partition <- partition
   }
-
+  
   if(!is.null(account)){
     settings@account <- account
   }
-
+  
   if(!is.null(time)){
     settings@time <- time
   }
-
+  
   if(!is.null(prepend)){
     settings@prepend <- prepend
   }
-
+  
   if(!is.null(mem)){
     settings@mem <- mem
     #mem can have "g" at end. need to parse to integer  TODO
@@ -153,10 +153,10 @@ setMethod(
       scriptcontent <- c(scriptcontent, paste("#SBATCH --mem",runner@mem))
     }
     scriptcontent <- c(scriptcontent, paste("#SBATCH -J ",jobname))
-
+    
     ## Add the data needed by the command
     scriptcontent <- c(scriptcontent, withdata)
-
+    
     ## Add the command
     this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),"$SLURM_ARRAY_TASK_ID")
     scriptcontent <- c(scriptcontent, this_cmd)
@@ -169,7 +169,7 @@ setMethod(
       scriptcontent)
     )
     print(scriptcontent)
-
+    
     ## Run the script; catch the message from sbatch
     cmd <- paste("sbatch ",slurm_script)
     ret <- system(cmd, intern = TRUE)
@@ -190,7 +190,7 @@ setMethod(
         cmd=cmd, 
         logfile="todo",
         arraysize=arraysize
-        )
+      )
     } else {
       stop("Failed to start job")
       NULL
@@ -296,7 +296,7 @@ library(processx)
 
 setClass("LocalInstance", slots=list(
   maxcpu="character"
-  )
+)
 ) 
 
 
@@ -305,7 +305,7 @@ setClass("LocalJob", slots=list(
   proc="ANY", #processx:process
   logfile="character",
   arraysize="numeric"
-  )
+)
 ) 
 
 ##### 
@@ -323,7 +323,7 @@ setMethod(
   definition = function(runner, jobname, withdata, cmd, arraysize) {
     
     print("Starting local job")
-
+    
     all_cmd <- c()
     for(i in seq_len(arraysize)){
       
@@ -482,15 +482,15 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
   
   allfiles <- allfiles[
     stringr::str_ends(allfiles,".fq.gz") | 
-    stringr::str_ends(allfiles, ".fastq.gz") | 
-    stringr::str_ends(allfiles, ".fq") | 
-    stringr::str_ends(allfiles,".fastq")]
+      stringr::str_ends(allfiles, ".fastq.gz") | 
+      stringr::str_ends(allfiles, ".fq") | 
+      stringr::str_ends(allfiles,".fastq")]
   
   if(verbose){
     print("Found the following raw read-like files")
     print(allfiles)
   }
-
+  
   r1_files <- allfiles[stringr::str_detect(allfiles,stringr::fixed("_R1"))]
   
   if(verbose){
@@ -511,7 +511,7 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
     dir=file.path(rawRoot) #this standarizes the trailing /
   )
   meta$prefix <- ""
-
+  
   #Guess prefixes
   meta$possible_prefix <- stringr::str_split_i(meta$r1, "_S[0123456789]",1)
   unique_prefix <- unique(meta$possible_prefix)
@@ -528,7 +528,7 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
       print("Detected one one possible prefix, so not adding it")
     }
   }
-
+  
   #Sanitize prefixes. Some characters will break BAM tags etc
   meta$prefix <- stringr::str_remove_all(meta$prefix, " ")
   meta$prefix <- stringr::str_remove_all(meta$prefix, "/")
@@ -570,7 +570,7 @@ BascetGetRawAtrandiWGS <- function(bascetRoot, rawmeta, outname="debarcoded", ru
 #' Aligned debarcoded BAMs
 #'  #sort or not here?
 BascetAlign <- function(bascetRoot, genomeReference, inputName="debarcoded", outputName="unsorted_aligned", runner, bascet_instance=bascet_instance.default){ 
-
+  
   #Figure out input and output file names  
   inputFiles <- detect_shards_for_file(bascetRoot, inputName, "bam")
   num_shards <- length(inputFiles)
@@ -604,12 +604,12 @@ BascetAlign <- function(bascetRoot, genomeReference, inputName="debarcoded", out
 #' Generate zip file with fastq from each cell
 # this command should be able to take multiple debarcoded files as input
 BascetPartition <- function(bascetRoot, inputName="debarcoded", outputName="rawreads", runner, bascet_instance=bascet_instance.default){
-
+  
   #Figure out input and output file names  
   inputFiles <- detect_shards_for_file(bascetRoot, inputName, "zip")
   num_shards <- length(inputFiles)
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
-
+  
   #Run the job
   RunJob(
     runner = runner, 
@@ -621,7 +621,7 @@ BascetPartition <- function(bascetRoot, inputName="debarcoded", outputName="rawr
     cmd = paste(bascet_instance@bin, "getraw --in files_in[$TASK_ID] --o files_out[$TASK_ID]"),
     arraysize = num_shards
   )
-
+  
 }
 
 
@@ -678,7 +678,7 @@ BascetCount <- function(bascetRoot, inputName="assembled", outputName="kmers", r
 ###############################################
 #' Select kmers that appear useful for clustering
 BascetFeaturise <- function(bascetRoot, inputName="kmers", outputName="features", runner, bascet_instance=bascet_instance.default){
-
+  
   #Figure out input and output file names  
   inputFiles <- detect_shards_for_file(bascetRoot, inputName, "zip")
   num_shards <- length(inputFiles)
@@ -702,7 +702,7 @@ BascetFeaturise <- function(bascetRoot, inputName="kmers", outputName="features"
 ###############################################
 #' Build count table from kmer table and selected kmers
 BascetQuery <- function(bascetRoot, inputKMER="kmers", inputFeatures="features", outputName="query", runner, bascet_instance=bascet_instance.default){
-
+  
   #Figure out input and output file names  
   inputKMER <- detect_shards_for_file(bascetRoot, inputKMER, "zip")
   num_shards <- length(inputKMER)
@@ -710,7 +710,7 @@ BascetQuery <- function(bascetRoot, inputKMER="kmers", inputFeatures="features",
   
   #Note: Need to give all input files for each job
   inputFeatures_comma <- stringr::str_flatten(inputFeatures, collapse = ",")
-
+  
   #Run the job
   RunJob(
     runner = runner, 
@@ -722,7 +722,7 @@ BascetQuery <- function(bascetRoot, inputKMER="kmers", inputFeatures="features",
     cmd = paste(bascet_instance@bin, "query --features ",inputFiles_comma," --kmers files_kmer[$TASK_ID] --o files_out[$TASK_ID]"), 
     arraysize = num_shards
   )
-
+  
 }
 
 
@@ -782,9 +782,9 @@ BascetMapCell <- function(bascetRoot, withfunction, inputName, outputName, runne
     arraysize = num_shards
   )  
 }
-  
-  
-  
+
+
+
 
 ###############################################
 #' Convenience function; alternative is to somehow implement as.data.frame
@@ -804,13 +804,13 @@ MapListAsDataFrame <- function(mylist){
 #
 #' todo note, this is effectively a pure-R map function. different name?
 BascetAggregateMap <- function(bascetRoot, bascetName, aggrFunction){
-
+  
   #Get file coordinates of all objects in zip file
   cellname_coord <- BascetCellNames(bascetRoot, bascetName)
   
   #Open the file, prep for reading
   bascetFile <- OpenBascet(bascetRoot, bascetName)
-    
+  
   #Loop over all files in the bascet
   output <- list()
   for(cellname in bascet_file@cellmeta$cell){
@@ -845,7 +845,7 @@ setClass("Bascet", slots=list(
   num_shards="numeric",
   files="character",
   cellmeta="ANY"
-  )
+)
 ) 
 
 
@@ -884,7 +884,7 @@ OpenBascet <- function(bascetRoot, bascetName){
   shards <- detect_shards_for_file(bascetRoot,bascetName,"zip")
   num_shards <- length(shards)
   cellname_coord <- BascetCellNames(bascetRoot, bascetName)
-
+  
   new("Bascet", 
       num_shards=num_shards, 
       files=file.path(bascetRoot, shards), 
@@ -900,22 +900,22 @@ OpenBascet <- function(bascetRoot, bascetName){
 #' all objects in the file
 #' 
 BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), bascet_instance=bascet_instance.default, verbose=FALSE){
-
+  
   ## Check if the cell is present at all
   cellmeta <- bascetFile@cellmeta[bascetFile@cellmeta$cell==cellID,,drop=FALSE]
   if(nrow(cellmeta)==0){
     stop("Cell not present in file")
   }
-
+  
   if(as=="pipe"){
     #bascet pipe <<<file  <<<cellname
     stop("not implemented")    
   } else if(as=="tempfile"){
-
+    
     #Need a directory to unzip to
     tname.dir <- tempfile()
     dir.create(tname.dir)
-
+    
     #Extract this zip file and then check that it worked
     name_of_zip <- bascetFile@files[cellmeta$shard+1]
     extract_files <- file.path(cellID,filename)
@@ -925,7 +925,7 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
       print(extract_files)
       print(tname.dir)
     }
-
+    
     
     if(FALSE){
       ########### Pure R version. does not support our zip format
@@ -957,9 +957,9 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
         "-f",filename
       )
       system(cmd)#, show.output.on.console = TRUE)
-#      files_in[$TASK_ID] --o files_out[$TASK_ID] -f ", withfunction),
+      #      files_in[$TASK_ID] --o files_out[$TASK_ID] -f ", withfunction),
     }
-
+    
     
     #Return temp file location
     return(tname.out)
@@ -969,12 +969,72 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
 }
 
 
+################################################################################
+################ Histogram functions ###########################################
+################################################################################
+
+
+ReadHistogram <- function(bascetRoot, inputName, bascet_instance=bascet_instance.default){
+  
+  #Get all the TIRPs, sum up the reads  
+  inputFiles <- detect_shards_for_file(bascetRoot, inputName, "tirp.gz.hist")
+  print(inputFiles)
+  
+  list_hist <- list()
+  for(f in inputFiles) {
+    dat <- read.csv(file.path(bascetRoot, f), sep="\t")
+    list_hist[[f]] <- dat
+  }
+  dat <- do.call(rbind, list_hist)
+  colnames(dat) <- c("cellid","count")
+  
+  dat <- sqldf::sqldf("select cellid, sum(count) as count from dat group by cellid")
+  dat 
+}
+
+
+PlotHistogram <- function(dat){
+  dat <- dat[order(dat$count, decreasing=TRUE),]
+  dat$index <- 1:nrow(dat)
+  
+  ggplot2::ggplot(dat, ggplot2::aes(index,count)) + 
+    ggplot2::geom_line() +
+    ggplot2::scale_x_log10() +
+    ggplot2::scale_y_log10() +
+    ggplot2::theme_bw()
+  
+}
+
+if(FALSE){
+  
+  
+  PlotHistogram(ReadHistogram("/home/mahogny/github/bascet/testdata","out_complete"))
+  
+}
+
+
+################################################################################
+################ yet to classify #####################################
+################################################################################
+
+
+
+
+
+
+library(ggplot2)
+
+keep_cell_min_reads <- 100
+
+
+
+
 
 if(FALSE){
   
   #tmp <- BascetReadFile(bascetFile, cellID, "out.csv", as="tempfile")  from aggr function
   
-
+  
   one_bascet <- OpenBascet("/home/mahogny/jupyter/bascet/zorn/try_unzip","quast")
   thefile <- BascetReadFile(one_bascet, "a", "report.txt")
   thefile
@@ -984,7 +1044,7 @@ if(FALSE){
   aggr.quast
   
   thefile <- BascetReadFile("/home/mahogny/jupyter/zorn/", "0-1-2-3", "out.txt")
- 
+  
   (BascetAggregateMap("/home/mahogny/jupyter/bascet/zorn/try_unzip","quast",aggr.quast))
   
   MapListAsDataFrame(BascetAggregateMap("/home/mahogny/jupyter/bascet/zorn/try_unzip","quast",aggr.quast))
@@ -994,11 +1054,6 @@ if(FALSE){
 
 
 #transposed_report.tsv
-
-
-
-
-
 
 
 
