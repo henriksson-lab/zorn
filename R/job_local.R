@@ -35,10 +35,13 @@ LocalInstance <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
 setMethod(
   f = "RunJob",
   signature ="LocalInstance",
-  definition = function(runner, jobname, withdata, cmd, arraysize) {  ######## todo likely remove witdata
+  definition = function(runner, jobname, cmd, arraysize) {  ######## todo likely remove witdata
     
     print("Starting local job")
-    cmd <- stringr::str_flatten(c(cmd,""),"\n")
+    cmd <- stringr::str_flatten(c(
+      cmd,
+      ""
+    ),"\n")
     
     print("----------- arg")
     if(runner@show_script){

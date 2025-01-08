@@ -74,6 +74,13 @@ shellscript_split_arr_into_list_randomly <- function(arr, num_divide){
 
 
 
+
+shellscript_set_tempdir <- function(bascet_instance){
+  paste0("BASCET_TEMPDIR=",GetBascetTempDir(bascet_instance))
+}
+
+
+
 if(FALSE){
   
   list_content <- list()

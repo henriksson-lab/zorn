@@ -35,8 +35,8 @@ BascetGetRawAtrandiWGS
 if(FALSE){
   
   inst <- LocalInstance(direct = TRUE, show_script=TRUE)
-  bascetRoot = "/home/mahogny/github/bascet/testdata"
-  rawmeta <- DetectRawFileMeta("/home/mahogny/github/bascet/testdata/raw_1m")
+  #bascetRoot = "/home/mahogny/github/bascet/testdata"
+  #rawmeta <- DetectRawFileMeta("/home/mahogny/github/bascet/testdata/raw_1m")
   
   
   if(FALSE){
@@ -54,6 +54,11 @@ if(FALSE){
 #    rawmeta <- DetectRawFileMeta("/husky/fromsequencer/241206_novaseq_wgs3/raw")
   }
   
+  if(FALSE){
+    bascetRoot = "/husky/henriksson/atrandi/wgs_novaseq3/" ### testing for real
+    rawmeta <- DetectRawFileMeta("/husky/fromsequencer/241206_novaseq_wgs3/raw")
+    #    rawmeta <- DetectRawFileMeta("/husky/fromsequencer/241206_novaseq_wgs3/raw")
+  }
   
 
   
@@ -65,16 +70,55 @@ if(FALSE){
     runner=inst
   )
   
-  head(ReadHistogram(bascetRoot,"debarcoded"))
-  #detect_shards_for_file(bascetRoot,"debarcoded")
-  
-  
+  ### Decide cells to include
+  h <- ReadHistogram(bascetRoot,"debarcoded")
+  PlotHistogram(h)
+  includeCells <- h$cellid[h$count>500]
+  length(includeCells)
+    
+  ### Shardify
   BascetShardify(
     bascetRoot,
+    includeCells = includeCells,
     runner = inst
   )
   
+  nrow(BascetCellNames(bascetRoot, "filtered"))  #1001, suspicious??
   
+  ### Assemble all genomes
+  BascetMapCell(
+    bascetRoot,
+    withfunction = "_skesa",
+    inputName = "filtered",
+    outputName = "skesa",
+    runner=inst
+  )
+
+  
+  
+  ### Run QUAST to check assembly quality
+  BascetMapCell(
+    bascetRoot,
+    withfunction = "_quast",
+    inputName = "skesa",
+    outputName = "quast",
+    runner=inst
+  )
+  
+  
+  ############### TODO get contigs.fa  from one of these as a FASTA file in R
+  
+  fskesa <- OpenBascet(bascetRoot, "skesa")
+  
+  ## list files and find a contig that has content
+  allf <- BascetListFilesForCell(fskesa, "D1_B4_F7_B12")               ## todo for all cells, and one cell!
+  allf[allf$file!="cellmap.log" & allf$size>0,]
+  h
+  
+  tfile <- BascetReadFile(fskesa, "E2_B4_E9_E11", "contigs.fa", as="tempfile")
+  readLines(tfile)
+  
+#  E1_B4_E7_B12 contigs.fa  242
   
 }
 
@@ -224,22 +268,6 @@ WaitForJob(p6)
 
 
 
-######### Example callback function for aggregating data
-aggr.quast <- function(bascetFile, cellID){
-  ###### Option #1
-  tmp <- BascetReadMapFile(bascetFile, cellID, "out.csv", as="tempfile")
-  my_df <- read.csv(tmp)
-  file.remove(tmp)
-
-  ###### Option #2
-  my_data <- BascetReadMapFile(bascetFile, cellID, "out.csv", as="text")   #equivalent to readLines() i.e. one big string returned (or get a list, one per line?)
-
-  
-  return(data.frame(
-    quality=666,
-    completeness=50
-  ))
-}
 
 
 

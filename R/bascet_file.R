@@ -131,6 +131,7 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
       cmd = paste(
         bascet_instance@bin, 
         "extract -i",name_of_zip, 
+        "-t", bascet_instance@tempdir,
         "-o",tname.out,
         "-b",cellID,
         "-f",filename
@@ -148,6 +149,38 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
 }
 
 
+
+
+
+
+
+
+
+
+#' Read one file from a Bascet
+#' 
+#' This can be made faster by, e.g., once and for all reading the location of
+#' all objects in the file
+#' 
+BascetListFilesForCell <- function(bascetFile, cellID, bascet_instance=bascet_instance.default){
+  
+  ## Check if the cell is present at all
+  cellmeta <- bascetFile@cellmeta[bascetFile@cellmeta$cell==cellID,,drop=FALSE]
+  if(nrow(cellmeta)==0){
+    stop("Cell not present in file")
+  }
+
+  #Extract this zip file and then check that it worked
+  name_of_zip <- bascetFile@files[cellmeta$shard+1]
+
+  res <- unzip(name_of_zip, list=TRUE)
+  div <- stringr::str_split_fixed(res$Name,stringr::fixed("/"),2)
+  data.frame(
+    cell=div[,1],
+    file=div[,2],
+    size=res$Length
+  )
+}
 
 
 

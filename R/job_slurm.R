@@ -77,7 +77,7 @@ SlurmInstance <- function(settings=NULL, ncpu=NULL, partition=NULL, account=NULL
 setMethod(
   f = "RunJob",
   signature ="SlurmInstance",
-  definition = function(runner, jobname, withdata, cmd, arraysize) {
+  definition = function(runner, jobname, cmd, arraysize) {
     
     print("Running job with slurm")
     
@@ -99,10 +99,7 @@ setMethod(
       scriptcontent <- c(scriptcontent, paste("#SBATCH --mem",runner@mem))
     }
     scriptcontent <- c(scriptcontent, paste("#SBATCH -J ",jobname))
-    
-    ## Add the data needed by the command
-    scriptcontent <- c(scriptcontent, withdata)
-    
+
     ## Add the command
     this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),"$SLURM_ARRAY_TASK_ID")
     scriptcontent <- c(scriptcontent, this_cmd)
