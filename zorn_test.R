@@ -1,4 +1,88 @@
-source("somezorn.R")
+source("R/job_general.R")
+source("R/job_local.R")
+source("R/job_slurm.R")
+source("R/bascet_file.R")
+source("R/zorn.R")
+source("R/shell.R")
+source("R/zorn_aggr.R")
+#source("R/somezorn.R")
+
+
+
+#################
+#################
+#################
+
+inst <- LocalInstance(direct = TRUE)
+
+thejob <- RunJob(inst,"ls",c(),"ls",1)
+
+CancelJob(thejob)
+
+
+JobStatus(thejob)
+
+
+
+BascetGetRawAtrandiWGS
+
+################################################################################
+################ mini test, works so far #########################
+################################################################################
+
+
+
+if(FALSE){
+  
+  inst <- LocalInstance(direct = TRUE, show_script=TRUE)
+  bascetRoot = "/home/mahogny/github/bascet/testdata"
+  rawmeta <- DetectRawFileMeta("/home/mahogny/github/bascet/testdata/raw_1m")
+  
+  
+  if(FALSE){
+    inputName="debarcoded"
+    includeCells = NULL
+    num_output_shards=1
+    outputName="filtered"
+    
+  }
+
+    
+  if(FALSE){
+    bascetRoot = "/husky/henriksson/test" ### testing for real
+    rawmeta <- DetectRawFileMeta("/husky/fromsequencer/240903_wgs_atcc2_miseq/raw")
+#    rawmeta <- DetectRawFileMeta("/husky/fromsequencer/241206_novaseq_wgs3/raw")
+  }
+  
+  
+
+  
+  
+  
+  BascetGetRawAtrandiWGS(
+    bascetRoot, 
+    rawmeta, 
+    runner=inst
+  )
+  
+  head(ReadHistogram(bascetRoot,"debarcoded"))
+  #detect_shards_for_file(bascetRoot,"debarcoded")
+  
+  
+  BascetShardify(
+    bascetRoot,
+    runner = inst
+  )
+  
+  
+  
+}
+
+
+
+
+
+
 
 ################################################################################
 ################ Zorn API for running Bascet via SLURM #########################
