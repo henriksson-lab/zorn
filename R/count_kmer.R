@@ -12,6 +12,7 @@ BascetFeaturise <- function( ########### need a better name; KMC something?
     bascetRoot, 
     inputName="kmc", 
     outputName="sumkmers", 
+    includeCells=NULL,
     runner,
     bascet_instance=bascet_instance.default){
   
@@ -26,17 +27,29 @@ BascetFeaturise <- function( ########### need a better name; KMC something?
 
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "kmcdb", num_shards)
   
+  #If cell list is provided, produce a file for input (not all transform calls can handle this, so optional)
+  produce_cell_list <- !is.null(includeCells)
+  if(produce_cell_list) {
+    #Currently using the same cell list for all shards  (good idea?)
+    list_cell_for_shard <- list()
+    for(i in 1:length(inputFiles)){
+      list_cell_for_shard[[i]] <- includeCells
+    }
+  }
+  
   #Run the job
   RunJob(
     runner = runner, 
     jobname = "bascet_query",
     cmd = c(
       shellscript_set_tempdir(bascet_instance),
+      if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       paste(
         bascet_instance@bin, 
         "featurise",
+        if(produce_cell_list) "--cells $CELLFILE",
         "-t $BASCET_TEMPDIR",
         "-i ${files_in[$TASK_ID]}",
         "-o ${files_out[$TASK_ID]}"
@@ -52,23 +65,13 @@ BascetFeaturise <- function( ########### need a better name; KMC something?
 
 
 
-
-
-
-
-
-
-
-
-
 ###############################################
 #' Build count table from kmer table and selected kmers
 BascetQuery <- function(
     bascetRoot, 
-    inputKMER="kmers", 
-    inputFeatures="features",
-    outputName="query", 
-    listKMERs,
+    inputName="kmc",
+    outputName="kmer", 
+    useKMERs,
     runner,
     bascet_instance=bascet_instance.default){
   
@@ -81,11 +84,11 @@ BascetQuery <- function(
     stop("No input files")
   }
 
-  if(length(listKMERs)==0){
+  if(length(useKMERs)==0){
     stop("No KMERs")
   }
 
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, ".counts.hdf5", num_shards)
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "counts.hdf5", num_shards)
   
   #Run the job
   RunJob(
@@ -95,10 +98,10 @@ BascetQuery <- function(
       shellscript_set_tempdir(bascet_instance),
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
-      shellscript_make_one_file_expander("KMERFILE", listKMERs), 
+      shellscript_make_one_file_expander("KMERFILE", useKMERs), 
       paste(
         bascet_instance@bin, 
-        "mapcell",
+        "query",
         "-t $BASCET_TEMPDIR",
         "-f $KMERFILE",
         "-i ${files_in[$TASK_ID]}",
@@ -124,16 +127,18 @@ BascetQuery <- function(
 ###############################################
 #' Read a count matrix as produced by Bascet (hdf5 format)
 ReadBascetCountMatrix <- function(fname){
-  h5f = rhdf5::H5Fopen(fname)
-  
+  print("Loading HDF5 file")
+  h5f <- rhdf5::H5Fopen(fname)
   indices <- h5f$X$indices+1
-  indptr <-  h5f$X$indptr+1
+  indptr <-  h5f$X$indptr
   dat <- h5f$X$data
-  
-  mat <- Matrix::sparseMatrix(
-    j=h5f$X$indices+1, 
-    p=c(h5f$X$indptr,2),
-    x=h5f$X$data,
+  shape <- h5f$X$shape
+
+  print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
+  mat <- Matrix::sparseMatrix(  
+    j=indices, 
+    p=indptr,
+    x=dat,
     dims=h5f$X$shape
   )
   
@@ -142,7 +147,7 @@ ReadBascetCountMatrix <- function(fname){
   
   rhdf5::H5close()
   
-  mat
+  t(mat)
 }
 
 

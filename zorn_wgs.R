@@ -8,8 +8,9 @@ source("R/zorn_aggr.R")
 source("R/count_kmer.R")
 
 
-
-
+################################################################################
+################## Preprocessing with Bascet/Zorn ##############################
+################################################################################
 
 inst <- LocalInstance(direct = TRUE, show_script=TRUE)
 bascetRoot = "/husky/henriksson/atrandi/wgs_miseq2/"
@@ -22,7 +23,6 @@ BascetGetRawAtrandiWGS(
   rawmeta,
   runner=inst
 )
-
 
 ### Decide cells to include
 h <- ReadHistogram(bascetRoot,"debarcoded")
@@ -44,12 +44,7 @@ if(FALSE){
   #  rm -Rf temp; cargo +nightly run mapcell -i testdata/out_complete.0.tirp.gz -o testdata/skesa.0.zip -s _skesa --show-script-output
   #test_kmc_reads:
 }
-#  rm -Rf temp; cargo +nightly run mapcell -i testdata/filtered.0.tirp.gz -o testdata/kmc.0.zip -s _kmc_process_reads --show-script-output
-#rm -Rf temp; cargo +nightly run mapcell -i testdata/out_complete.0.tirp.gz -o testdata/kmc.0.zip -s _kmc_process_contigs --show-script-output
 
-
-
-#"/husky/henriksson/atrandi/wgs_miseq2/"
 
 ### Generate KMER databases for each cell
 BascetMapCell(
@@ -61,18 +56,85 @@ BascetMapCell(
 )
 
 
-### Sum up KMC KMER databases
+### Sum up per-cell KMER databases. This will be used to produce a global histogram.
+### A histogram like this can be used as /one/ way of picking KMERs of relevance
 BascetFeaturise(
     bascetRoot, 
+    includeCells = sample(BascetCellNames(bascetRoot, "filtered")$cell, 100),  ### avoid crash by running a subset
     runner=inst
 )
-getwd()
+
+### Look at the KMER histogram
+KmcGetHistogram(file.path("/husky/henriksson/atrandi/wgs_miseq2","sumkmers.1.kmcdb"))  ######### todo sum up histograms
+
+### Pick KMERs for use as features .................... some strains are very common. maybe pick across all freqs?
+useKMERs <- KmcChooseKmerFeatures(
+  file.path("/husky/henriksson/atrandi/wgs_miseq2","sumkmers.1.kmcdb"), 
+  num_pick=10000, minfreq=0.02, maxfreq=0.30)
+  
 
 
+### Build count table by looking up selected KMERs in per-cell KMER databases
+BascetQuery(
+    bascetRoot, 
+    useKMERs = useKMERs,
+    runner=inst)
+
+
+################################################################################
+################## Postprocessing with Signac ##################################
+################################################################################
+
+### Read count matrix
+cnt <- ReadBascetCountMatrix(file.path("/husky/henriksson/atrandi/wgs_miseq2","kmer.1.counts.hdf5"))  #### TODO: should read and concatenate multiple matrices; different name?
 
 bascet_instance.default  #temp dir here
 
 
+library(Signac)
+library(Seurat)
+library(ggplot2)
 
+
+rownames(cnt) <- paste0(rownames(cnt),":1-1")
+
+chrom_assay <- CreateChromatinAssay(
+  counts = cnt, 
+  sep = c(":", "-"),
+#  min.cells = 10,
+#  min.features = 200
+)
+
+adata <- CreateSeuratObject(
+  counts = chrom_assay,
+  assay = "peaks"
+)
+
+
+adata <- RunTFIDF(adata)
+adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+adata <- RunSVD(adata)
+
+DepthCor(adata)
+
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 3:30)  ## even 2nd factor is correlated
+#adata <- FindNeighbors(object = adata, reduction = 'lsi', dims = 2:30)
+#adata <- FindClusters(object = adata, verbose = FALSE, algorithm = 3)
+DimPlot(object = adata, label = TRUE) + NoLegend()
+
+FeaturePlot(adata, "nCount_peaks")
+
+
+#TODO: add metadata, depth!!!
+#TODO QUAST information on top
+
+
+
+
+
+
+################################################################################
+################## Reference-based mapping to get "ground truth" ###############
+################################################################################
 
 

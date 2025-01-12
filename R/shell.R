@@ -91,7 +91,7 @@ shellscript_make_one_file_expander <- function(tmpname, list_lines) {
     paste0(
       "echo -e ",
       "\"",stringr::str_flatten(list_lines, collapse = "\\n"), "\"",  
-      " > ${",tmpname,"}"),
+      " > ${",tmpname,"}")
   )
   tot <- stringr::str_flatten(script_lines, "\n")
   tot
