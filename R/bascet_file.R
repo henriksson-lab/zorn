@@ -240,6 +240,28 @@ if(FALSE){
 
 
 
+################################################################################
+################ Atrandi-specific #######################################
+################################################################################
+
+
+AtrandiBarcodeStats <- function(
+    bascetRoot, 
+    inputName="debarcoded", 
+    bascet_instance=bascet_instance.default){
+
+  #Get frequency of each barcode  
+  cb <- as.data.frame(stringr::str_split_fixed(BascetCellNames(bascetRoot, inputName)$cell,"_",4))
+  df <- as.data.frame(table(unlist(cb)))
+  colnames(df) <- c("well","cnt")
+  
+  #Split up into row and columns. Present as a matrix
+  df$col <- stringr::str_sub(df$well,1,1)
+  df$row <- stringr::str_sub(df$well,2)
+  mat <- reshape2::acast(df, col ~ row, value.var = "cnt")
+  mat[order(rownames(mat)), order(as.integer(colnames(mat)))]
+}
+
 
 
 ################################################################################

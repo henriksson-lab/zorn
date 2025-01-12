@@ -81,6 +81,28 @@ shellscript_set_tempdir <- function(bascet_instance){
 
 
 
+
+
+
+
+shellscript_make_one_file_expander <- function(tmpname, list_lines) {
+  script_lines <- c(
+    paste0(tmpname,"=$(mktemp)"),
+    paste0(
+      "echo -e ",
+      "\"",stringr::str_flatten(list_lines, collapse = "\\n"), "\"",  
+      " > ${",tmpname,"}"),
+  )
+  tot <- stringr::str_flatten(script_lines, "\n")
+  tot
+}
+
+
+
+
+
+
+
 if(FALSE){
   
   list_content <- list()

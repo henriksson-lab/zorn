@@ -5,6 +5,7 @@ source("R/bascet_file.R")
 source("R/zorn.R")
 source("R/shell.R")
 source("R/zorn_aggr.R")
+source("R/count_kmer.R")
 #source("R/somezorn.R")
 
 
@@ -63,7 +64,7 @@ if(FALSE){
 
   
   
-  
+  ### Debarcode the reads, then sort them.
   BascetGetRawAtrandiWGS(
     bascetRoot, 
     rawmeta, 
@@ -76,7 +77,7 @@ if(FALSE){
   includeCells <- h$cellid[h$count>500]
   length(includeCells)
     
-  ### Shardify
+  ### Shardify i.e. divide into multiple sets of files for parallel processing
   BascetShardify(
     bascetRoot,
     includeCells = includeCells,
@@ -123,6 +124,69 @@ if(FALSE){
 }
 
 
+
+################################################################################
+################ RNA-seq analysis ##############################################       todo async local instance of bascet
+################################################################################
+
+inst <- LocalInstance(direct = TRUE, show_script=FALSE)
+
+bascetRoot <- "/husky/henriksson/atrandi/rnaseq3/1"
+
+rawmeta <- DetectRawFileMeta("/husky/fromsequencer/250108_joram_rnaseq3/raw/miseq_demul/1")
+
+### Debarcode the reads, then sort them.
+BascetGetRawAtrandiWGS(
+  bascetRoot,
+  rawmeta,
+  chemistry="atrandi_rnaseq",
+  runner=inst
+)
+
+
+cbstat <- AtrandiBarcodeStats(bascetRoot)
+cbstat
+colSums(cbstat)[1:3]/sum(colSums(cbstat)[1:3])
+
+
+## split by round A
+BascetCellNames(bascetRoot, "debarcoded")
+h <- ReadHistogram(bascetRoot,"debarcoded")
+PlotHistogram(h)
+sum(h$count) ##total number of barcoded reads
+
+readnum_cutoff <- 50
+for(curlib in 1:3){
+  print("=============================")
+  print(curlib)
+  includeCells <- h$cellid[h$count>readnum_cutoff & stringr::str_detect(h$cellid, paste0("^.",curlib,"_"))]
+  BascetMapTransform(
+    "/husky/henriksson/atrandi/rnaseq3/2", 
+    inputName = "debarcoded", 
+    outputName = paste0("debarcoded_lib2_", curlib),
+    out_format="fq.gz",
+    includeCells=includeCells,
+    runner=inst
+  )
+}
+includeCellsA <- h$cellid[h$count>readnum_cutoff & stringr::str_detect(h$cellid, "^.1_")]
+includeCellsB <- h$cellid[h$count>readnum_cutoff & stringr::str_detect(h$cellid, "^.2_")]
+includeCellsC <- h$cellid[h$count>readnum_cutoff & stringr::str_detect(h$cellid, "^.3_")]
+
+
+
+################################################################################
+################ Read count table and do UMAP ##################################
+################################################################################
+
+
+
+#kmc_tools testdata/kmc_db transform dump dump.txt
+
+#kmc_tools testdata/kmc_db transform histogram histo.txt  ######### write function to select features from here!
+
+
+cnt <- ReadBascetCountMatrix("/home/mahogny/github/bascet/testdata/counts.h5ad")
 
 
 

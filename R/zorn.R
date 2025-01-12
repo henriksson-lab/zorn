@@ -142,6 +142,7 @@ BascetGetRawAtrandiWGS <- function(
     rawmeta, 
     outputName="debarcoded", 
     outputNameIncomplete="incomplete_reads", 
+    chemistry="atrandi_wgs",  #or atrandi_rnaseq
     runner, 
     bascet_instance=bascet_instance.default){
 
@@ -167,6 +168,7 @@ BascetGetRawAtrandiWGS <- function(
         bascet_instance@bin, 
         "getraw",
         "-t $BASCET_TEMPDIR",
+        "--chemistry",chemistry,  
         "--r1 ${files_r1[$TASK_ID]}",  
         "--r2 ${files_r2[$TASK_ID]}",
         "--out-complete   ${files_out[$TASK_ID]}",                 #Each job produces a single output
@@ -176,8 +178,6 @@ BascetGetRawAtrandiWGS <- function(
     arraysize = nrow(rawmeta)
   )
 }
-
-
 
 
 
@@ -261,9 +261,9 @@ BascetShardify <- function(
       shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
       shellscript_make_bash_array("files_out", outputFiles),
       paste(
-        "-t $BASCET_TEMPDIR",
         bascet_instance@bin,
         "shardify", 
+        "-t $BASCET_TEMPDIR",
         "-i",shellscript_make_commalist(inputFiles), #Need to give all input files for each job
         "-o ${files_out[$TASK_ID]}",                 #Each job produces a single output
         "--cells $CELLFILE"                          #Each job takes its own list of cells
@@ -278,141 +278,90 @@ BascetShardify <- function(
 
 
 
-
 ###############################################
-#' Generate zip file with fastq from each cell
-# this command should be able to take multiple debarcoded files as input
-BascetPartition <- function(bascetRoot, inputName="debarcoded", outputName="rawreads", runner, bascet_instance=bascet_instance.default){
-  
-  #Figure out input and output file names  
-  inputFiles <- detect_shards_for_file(bascetRoot, inputName)
-  num_shards <- length(inputFiles)
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
-  
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_partition",
-    withdata = c(
-      "-t $BASCET_TEMPDIR",
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles) ####### drop!
-    ),
-    cmd = paste(bascet_instance@bin, "partitionTODO -i $files_in[$TASK_ID] -o $files_out[$TASK_ID]"),
-    arraysize = num_shards
-  )
-  
-}
-
-
-###############################################
-#' Run Spades to assemble the genomes
+#' Assemble the genomes
 BascetAssemble <- function(bascetRoot, inputName="rawreads", outputName="assembled", runner, bascet_instance=bascet_instance.default){
+  stop("this is done using MapCell; but we could produce a wrapper for it")
+}
+
+
+
+
+###############################################
+#' Transform: subset, convert, merge, divide
+BascetMapTransform <- function(
+    bascetRoot, 
+    inputName, 
+    outputName,
+    num_divide=1,
+    num_merge=1,
+    out_format="tirp.gz", ### not really!
+    includeCells=NULL,
+    runner, 
+    bascet_instance=bascet_instance.default){
   
+  
+  is.integer.overequal1 <- function(x){
+    return(x>=1 & x==as.integer(x))
+  }
+  
+  #Verify input
+  if(!(num_divide==1 || num_merge==1)){
+    stop("Either divide or merge must be set to 1")
+  }
+  if(!is.integer.overequal1(num_divide) || !is.integer.overequal1(num_merge)){
+    stop("Number of divisions and merges must be an integer >= 1")
+  }
+  
+  #TODO check outformat
+
   #Figure out input and output file names  
-  inputFiles <- detect_shards_for_file(bascetRoot, inputName)
+  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
   num_shards <- length(inputFiles)
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
   
+  if(num_shards==0){
+    stop("No input files")
+  }
+  
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, out_format, num_shards)
+
+  #If cell list is provided, produce a file for input (not all transform calls can handle this, so optional)
+  produce_cell_list <- !is.null(includeCells)
+  if(produce_cell_list) {
+    #Figure out which cell goes into which shard   TODO, using the same cell list for all shards
+    list_cell_for_shard <- list()
+    for(i in 1:length(inputFiles)){
+      list_cell_for_shard[[i]] <- includeCells
+    }
+  }
+
   #Run the job
   RunJob(
     runner = runner, 
-    jobname = "bascet_asm",
-    withdata = c(
-      "-t $BASCET_TEMPDIR",
+    jobname = paste0("bascet_transform"),
+    cmd = c(
       shellscript_set_tempdir(bascet_instance),
+      if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
       shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles)
+      shellscript_make_bash_array("files_out",outputFiles),
+      paste(
+        bascet_instance@bin, 
+        "transform",
+        if(produce_cell_list) "--cells $CELLFILE",
+        #"-t $BASCET_TEMPDIR",  ##not supported
+        "-i ${files_in[$TASK_ID]}",
+        "-o ${files_out[$TASK_ID]}"
+      )
     ),
-    cmd = paste("bascet assemble TODO --in files_in[$TASK_ID] --o files_out[$TASK_ID]"),
     arraysize = num_shards
-  )
-  
-}
-
-
-###############################################
-#' Build kmer database
-BascetCount <- function(bascetRoot, inputName="assembled", outputName="kmers", runner, bascet_instance=bascet_instance.default){
-  
-  
-  #Figure out input and output file names  
-  inputFiles <- detect_shards_for_file(bascetRoot, inputName)
-  num_shards <- length(inputFiles)
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
-  
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_kmc",
-    withdata = c(
-      "-t $BASCET_TEMPDIR",
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles)
-    ),
-    cmd = paste("bascet count TODO --in files_in[$TASK_ID] --o files_out[$TASK_ID]"),
-    arraysize = num_shards
-  )
-  
+  )  
 }
 
 
 
-###############################################
-#' Select kmers that appear useful for clustering
-BascetFeaturise <- function(bascetRoot, inputName="kmers", outputName="features", runner, bascet_instance=bascet_instance.default){
-  
-  #Figure out input and output file names  
-  inputFiles <- detect_shards_for_file(bascetRoot, inputName)
-  num_shards <- length(inputFiles)
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
-  
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_featurise",
-    withdata = c(
-      "-t $BASCET_TEMPDIR",
-      shellscript_set_tempdir(bascet_instance),
-      make_bash_array("files_in",inputFiles),
-      make_bash_array("files_out",outputFiles)
-    ),
-    cmd = paste("bascet featurise TODO --in files_in[$TASK_ID] --o files_out[$TASK_ID]"),
-    arraysize = num_shards
-  )
-  
-}
 
 
-###############################################
-#' Build count table from kmer table and selected kmers
-BascetQuery <- function(bascetRoot, inputKMER="kmers", inputFeatures="features", outputName="query", runner, bascet_instance=bascet_instance.default){
-  
-  #Figure out input and output file names  
-  inputKMER <- detect_shards_for_file(bascetRoot, inputKMER)
-  num_shards <- length(inputKMER)
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
-  
-  #Note: Need to give all input files for each job
-  inputFeatures_comma <- stringr::str_flatten(inputFeatures, collapse = ",")
-  
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_query",
-    withdata = c(
-      "-t $BASCET_TEMPDIR",
-      shellscript_set_tempdir(bascet_instance),
-      make_bash_array("files_kmer",inputKMER),
-      make_bash_array("files_out",outputFiles)
-    ),
-    cmd = paste(bascet_instance@bin, "query --features ",inputFiles_comma," --kmers files_kmer[$TASK_ID] --o files_out[$TASK_ID]"), 
-    arraysize = num_shards
-  )
-  
-}
+
 
 
 ################################################################################
@@ -475,13 +424,13 @@ BascetMapCell <- function(
     runner = runner, 
     jobname = paste0("bascet_map_",withfunction),
     cmd = c(
-      "-t $BASCET_TEMPDIR",
       shellscript_set_tempdir(bascet_instance),
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       paste(
         bascet_instance@bin, 
         "mapcell",
+        "-t $BASCET_TEMPDIR",
         "-i ${files_in[$TASK_ID]}",
         "-o ${files_out[$TASK_ID]}",
         "-s", withfunction)
@@ -544,24 +493,13 @@ if(FALSE){
 
 
 ################################################################################
-################ yet to classify #####################################
+################ yet to classify ###############################################
 ################################################################################
 
 
 
 
 
-
-library(ggplot2)
-
-
-
-  MapListAsDataFrame(BascetAggregateMap("/home/mahogny/jupyter/bascet/zorn/try_unzip","quast",aggr.quast))
-  #both are from a!
- 
-
-
-#transposed_report.tsv
 
 
 

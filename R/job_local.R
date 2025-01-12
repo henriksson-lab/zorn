@@ -132,7 +132,7 @@ setMethod(
 setMethod(
   f = "JobLog",
   signature ="LocalJob",
-  definition = function(object) {
+  definition = function(job) {
     #read this file
     
     #job@logfile
