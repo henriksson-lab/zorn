@@ -7,6 +7,7 @@
 
 
 #' A bascet, along with all the shards
+#' @export
 setClass("Bascet", slots=list(
   num_shards="numeric",
   files="character",
@@ -17,6 +18,8 @@ setClass("Bascet", slots=list(
 
 ###############################################
 #' Get list of cells in a bascet
+#' @return TODO
+#' @export
 BascetCellNames <- function(bascetRoot, bascetName){
   
   #Can support BAM later as well
@@ -58,6 +61,8 @@ if(FALSE){
 #' The current code is based on pure R, but more efficient calls can be made
 #' in the future. We thus advise against direct zip-file manipulation and
 #' do not guarantee future support for this
+#' @return TODO
+#' @export
 OpenBascet <- function(bascetRoot, bascetName){
   
   shards <- detect_shards_for_file(bascetRoot,bascetName)
@@ -78,6 +83,8 @@ OpenBascet <- function(bascetRoot, bascetName){
 #' This can be made faster by, e.g., once and for all reading the location of
 #' all objects in the file
 #' 
+#' @return TODO
+#' @export
 BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), bascet_instance=bascet_instance.default, verbose=FALSE){
   
   ## Check if the cell is present at all
@@ -131,7 +138,7 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
       cmd = paste(
         bascet_instance@bin, 
         "extract -i",name_of_zip, 
-        "-t", bascet_instance@tempdir,
+        #"-t", bascet_instance@tempdir,
         "-o",tname.out,
         "-b",cellID,
         "-f",filename
@@ -162,6 +169,8 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
 #' This can be made faster by, e.g., once and for all reading the location of
 #' all objects in the file
 #' 
+#' @return TODO
+#' @export
 BascetListFilesForCell <- function(bascetFile, cellID, bascet_instance=bascet_instance.default){
   
   ## Check if the cell is present at all
@@ -192,6 +201,8 @@ BascetListFilesForCell <- function(bascetFile, cellID, bascet_instance=bascet_in
 ################################################################################
 
 
+#' @return TODO
+#' @export
 ReadHistogram <- function(bascetRoot, inputName, bascet_instance=bascet_instance.default){
   
   #Get all the TIRPs, sum up the reads  
@@ -214,6 +225,8 @@ ReadHistogram <- function(bascetRoot, inputName, bascet_instance=bascet_instance
 }
 
 
+#' @return TODO
+#' @export
 PlotHistogram <- function(dat){
   dat <- dat[order(dat$count, decreasing=TRUE),]
   dat$index <- 1:nrow(dat)
@@ -245,6 +258,8 @@ if(FALSE){
 ################################################################################
 
 
+#' @return TODO
+#' @export
 AtrandiBarcodeStats <- function(
     bascetRoot, 
     inputName="debarcoded", 

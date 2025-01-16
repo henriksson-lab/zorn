@@ -22,10 +22,15 @@ aggr.example <- function(bascetFile, cellID){
 
 
 
+################################################################################
+################## Aggregate-functions #########################################
+################################################################################
 
 
 
 ######### Callback function for aggregating QUAST data
+#' @return TODO
+#' @export
 aggr.quast <- function(bascetFile, cellID){
   ###### Option #1
   tmp <- BascetReadFile(bascetFile, cellID, "transposed_report.tsv", as="tempfile")
@@ -33,11 +38,70 @@ aggr.quast <- function(bascetFile, cellID){
   file.remove(tmp)
   
   
+  #TODO got lost, need to implemented again
+  
   return(data.frame(
     quality=666,
     completeness=50
   ))
 }
+
+
+
+
+
+
+
+
+
+######### Callback function for aggregating minhash
+#' @return TODO
+#' @export
+aggr.minhash <- function(bascetFile, cellID){
+  tmp <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="tempfile")
+  dat <- readLines(tmp)
+  file.remove(tmp)
+  
+  set_kmer <- stringr::str_split_i(dat,"\t",1)
+  set_kmer
+}
+
+
+
+################################################################################
+################## Simplified calls to aggregate ###############################
+################################################################################
+
+
+
+#' Aggregate frequency of minhashes across cells
+#' @return TODO
+#' @export
+AggregateMinhashes <- function(
+    bascetRoot,
+    inputName="minhash"
+) {
+  minhash_aggr <- BascetAggregateMap(
+    bascetRoot,
+    inputName,
+    aggr.minhash
+  )
+  
+  #Put KMERs into a data frame
+  all_kmer <- do.call(c, minhash_aggr)
+  all_kmer <- as.data.frame(table(all_kmer))
+  colnames(all_kmer) <- c("kmer","freq")
+  
+  #Order KMERs
+  all_kmer <- all_kmer[order(all_kmer$freq, decreasing = TRUE),]
+  all_kmer$index <- 1:nrow(all_kmer)
+  
+  all_kmer
+}
+
+
+
+
 
 
 

@@ -5,8 +5,10 @@
 ################################################################################
 
 
-library(processx)
+library(processx) ##### 
 
+
+#' @export
 setClass("LocalInstance", slots=list(
   maxcpu="character",
   direct="logical",
@@ -15,6 +17,7 @@ setClass("LocalInstance", slots=list(
 ) 
 
 
+#' @export
 setClass("LocalJob", slots=list(
   cmd="character",
   proc="ANY", #processx:process
@@ -25,6 +28,8 @@ setClass("LocalJob", slots=list(
 
 ##### 
 # Create new local runner instance
+#' @return TODO
+#' @export
 LocalInstance <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
   new("LocalInstance", maxcpu=maxcpu, direct=direct, show_script=show_script)
 }
@@ -32,6 +37,7 @@ LocalInstance <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
 
 
 
+#' @export
 setMethod(
   f = "RunJob",
   signature ="LocalInstance",
@@ -103,6 +109,7 @@ setMethod(
 
 
 
+#' @export
 setMethod(
   f = "CancelJob",
   signature ="LocalJob",
@@ -116,6 +123,7 @@ setMethod(
 
 
 
+#' @export
 setMethod(
   f = "JobStatus",
   signature ="LocalJob",
@@ -129,6 +137,7 @@ setMethod(
 )
 
 
+#' @export
 setMethod(
   f = "JobLog",
   signature ="LocalJob",

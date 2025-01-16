@@ -1,0 +1,27 @@
+Package: Zorn
+Version: 0.1.0
+Type: Package
+Title: An all-purpose solution for processing of single-cell microbial data
+Maintainer: Johan Henriksson <johan.henriksson@umu.se>
+Description: Zorn wraps the Bascet system, enabling preprocessing of single-cell microbial data
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+VignetteBuilder: knitr
+biocViews:
+Depends:
+    R (>= 4.0.0)
+Imports: 
+    Seurat (>= 4.0.0),
+    Signac,
+    Matrix (>= 1.5-0),
+    MatrixGenerics (>= 1.10.0),
+    ggplot2,
+    processx,
+    sparseMatrixStats (>= 1.10.0)
+Suggests: 
+    rmarkdown
+Remotes: github::henriksson-lab/zorn
+URL: https://github.com/henriksson-lab/zorn

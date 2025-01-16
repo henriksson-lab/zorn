@@ -8,6 +8,8 @@
 #' 
 #' CHANGED: it just sums up kmers
 #' 
+#' @return TODO
+#' @export
 BascetFeaturise <- function( ########### need a better name; KMC something?
     bascetRoot, 
     inputName="kmc", 
@@ -67,6 +69,8 @@ BascetFeaturise <- function( ########### need a better name; KMC something?
 
 ###############################################
 #' Build count table from kmer table and selected kmers
+#' @return TODO
+#' @export
 BascetQuery <- function(
     bascetRoot, 
     inputName="kmc",
@@ -126,6 +130,8 @@ BascetQuery <- function(
 
 ###############################################
 #' Read a count matrix as produced by Bascet (hdf5 format)
+#' @return TODO
+#' @export
 ReadBascetCountMatrix <- function(fname){
   print("Loading HDF5 file")
   h5f <- rhdf5::H5Fopen(fname)
@@ -158,6 +164,8 @@ ReadBascetCountMatrix <- function(fname){
 
 ###############################################
 #' Generate a histogram from a KMC3 database
+#' @return TODO
+#' @export
 KmcGetHistogram <- function(fname, plot=TRUE){
   library(ggplot2)
   tfile <- tempfile()
@@ -177,6 +185,8 @@ KmcGetHistogram <- function(fname, plot=TRUE){
 
 ###############################################
 #' Get KMERs from a KMC3 database
+#' @return TODO
+#' @export
 KmcGetKmers <- function(fname, mincount=NULL, maxcount=NULL) {
   
   #-ci<value> - minimum value of counter to be stored in the otput file
@@ -202,6 +212,8 @@ KmcGetKmers <- function(fname, mincount=NULL, maxcount=NULL) {
 
 ###############################################
 #' Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range
+#' @return TODO
+#' @export
 KmcChooseKmerFeatures <- function(fname, num_pick=1000, minfreq=0.01, maxfreq=0.10) {
   
   ## Possibly expensive to get them all... is the total count stored somewhere? can we sample?

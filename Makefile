@@ -1,5 +1,2 @@
 all:
-
-
-loc:
-	wc -l */*.R
+	R CMD build zorn

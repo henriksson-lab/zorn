@@ -1,9 +1,14 @@
 
+if(FALSE){
+  #to run roxygen --- run in clean workspace!
+  devtools::document()
+}
 
 ################################################################################
 ################ Settings for the underlying Bascet installation ###############
 ################################################################################
 
+#' @export
 setClass("BascetInstance", slots=list(
   bin="character",
   tempdir="character"
@@ -13,6 +18,8 @@ setClass("BascetInstance", slots=list(
 
 ###############################################
 #' Create a new bascet instance
+#' @return TODO
+#' @export
 BascetInstance <- function(bin, tempdir){
   if(!is.null(tempdir) & !file.exists(tempdir)){
     stop(sprintf("temp directory %s does not exist", tempdir))
@@ -28,6 +35,8 @@ BascetInstance <- function(bin, tempdir){
 
 ###############################################
 #' The default Bascet installation settings
+#' @return TODO
+#' @export
 bascet_instance.default <- BascetInstance(
   bin="/home/mahogny/jupyter/bascet/target/debug/robert",
   tempdir="/data/henlab/bascet_temp"
@@ -40,6 +49,8 @@ bascet_instance.default <- BascetInstance(
 
 ###############################################
 #' Get a temp directory to use; need to be created
+#' @return TODO
+#' @export
 GetBascetTempDir <- function(bascet_instance){
   if(is.null(bascet_instance@tempdir)){
     tempfile()
@@ -62,7 +73,7 @@ GetBascetTempDir <- function(bascet_instance){
 #' Detect metadata for raw input FASTQ files
 #' 
 #' @param rawRoot Path to folder with FASTQ files
-#' @returns A data frame with metadata for the raw input files
+#' @return A data frame with metadata for the raw input files
 #' @examples
 #' DetectRawFileMeta("/path/to/raw_fastq", verbose = TRUE)
 DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
@@ -137,6 +148,8 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
 
 ###############################################
 #' Generate BAM with barcodes from input raw FASTQ
+#' @return TODO
+#' @export
 BascetGetRawAtrandiWGS <- function(
     bascetRoot, 
     rawmeta, 
@@ -190,6 +203,8 @@ BascetGetRawAtrandiWGS <- function(
 ###############################################
 #' Aligned debarcoded BAMs
 #'  #sort or not here?
+#' @return TODO
+#' @export
 BascetAlign <- function(bascetRoot, genomeReference, inputName="debarcoded", outputName="unsorted_aligned", runner, bascet_instance=bascet_instance.default){ 
   
   #Figure out input and output file names  
@@ -224,6 +239,8 @@ BascetAlign <- function(bascetRoot, genomeReference, inputName="debarcoded", out
 
 ###############################################
 #' Take debarcoded reads and split them into suitable numbers of shards
+#' @return TODO
+#' @export
 BascetShardify <- function(
     bascetRoot, 
     inputName="debarcoded", 
@@ -280,6 +297,8 @@ BascetShardify <- function(
 
 ###############################################
 #' Assemble the genomes
+#' @return TODO
+#' @export
 BascetAssemble <- function(bascetRoot, inputName="rawreads", outputName="assembled", runner, bascet_instance=bascet_instance.default){
   stop("this is done using MapCell; but we could produce a wrapper for it")
 }
@@ -289,6 +308,8 @@ BascetAssemble <- function(bascetRoot, inputName="rawreads", outputName="assembl
 
 ###############################################
 #' Transform: subset, convert, merge, divide
+#' @return TODO
+#' @export
 BascetMapTransform <- function(
     bascetRoot, 
     inputName, 
@@ -401,6 +422,8 @@ BascetAddAssembledIsolate <- function(bascetRoot, listFasta, names, runner, basc
 
 ###############################################
 #' Call a function for all cells
+#' @return TODO
+#' @export
 BascetMapCell <- function(
     bascetRoot, 
     withfunction, 
@@ -444,6 +467,8 @@ BascetMapCell <- function(
 
 ###############################################
 #' Convenience function; alternative is to somehow implement as.data.frame
+#' @return TODO
+#' @export
 MapListAsDataFrame <- function(mylist){
   out <- do.call(rbind, mylist)
   rownames(out) <- names(mylist)
@@ -459,10 +484,14 @@ MapListAsDataFrame <- function(mylist){
 #' todo: allow multi-cpu support? parallel library
 #
 #' todo note, this is effectively a pure-R map function. different name?
+#' @return TODO
+#' @export
 BascetAggregateMap <- function(
     bascetRoot, 
     bascetName, 
-    aggrFunction){
+    aggrFunction,
+    showProgress=TRUE
+){
   
   #Get file coordinates of all objects in zip file
   cellname_coord <- BascetCellNames(bascetRoot, bascetName)
@@ -470,10 +499,18 @@ BascetAggregateMap <- function(
   #Open the file, prep for reading
   bascetFile <- OpenBascet(bascetRoot, bascetName)
   
+  pbar <- progress::progress_bar$new(total = length(bascetFile@cellmeta$cell))
+  if(showProgress){
+    pbar$tick(0)
+  }
+
   #Loop over all files in the bascet
   output <- list()
-  for(cellname in bascet_file@cellmeta$cell){
+  for(cellname in bascetFile@cellmeta$cell){
     output[[cellname]] <- aggrFunction(bascetFile, cellname)
+    if(showProgress){
+      pbar$tick()
+    }
   }
   output
 }

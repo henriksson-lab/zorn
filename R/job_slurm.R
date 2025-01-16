@@ -4,6 +4,7 @@
 ################################################################################
 
 
+#' @export
 setClass("SlurmInstance", slots=list(
   settings="character", 
   ncpu="character", 
@@ -17,6 +18,7 @@ setClass("SlurmInstance", slots=list(
 
 
 
+#' @export
 setClass("SlurmJob", slots=list(
   pid="character", 
   cmd="character", 
@@ -27,6 +29,8 @@ setClass("SlurmJob", slots=list(
 
 
 
+#' @return TODO
+#' @export
 SlurmInstance <- function(settings=NULL, ncpu=NULL, partition=NULL, account=NULL, time=NULL, prepend=NULL, mem=NULL){
   
   ## Create a new default
@@ -74,6 +78,7 @@ SlurmInstance <- function(settings=NULL, ncpu=NULL, partition=NULL, account=NULL
 
 
 
+#' @export
 setMethod(
   f = "RunJob",
   signature ="SlurmInstance",
@@ -146,6 +151,7 @@ setMethod(
 
 
 #Has possibility of ctrl+c; just keeps polling, possibly with a status indicator from log. or keep plotting log file
+#' @export
 setMethod(
   f = "WaitForJob",
   signature ="SlurmJob",
@@ -166,6 +172,7 @@ setMethod(
 
 
 
+#' @export
 setMethod(
   f = "CancelJob",
   signature ="SlurmJob",
@@ -179,6 +186,7 @@ setMethod(
 
 
 
+#' @export
 setMethod(
   f = "JobStatus",
   signature ="SlurmJob",
@@ -197,6 +205,7 @@ setMethod(
 )
 
 
+#' @export
 setMethod(
   f = "JobLog",
   signature ="SlurmJob",
