@@ -20,6 +20,7 @@ Imports:
     MatrixGenerics (>= 1.10.0),
     ggplot2,
     processx,
+    progress,
     sparseMatrixStats (>= 1.10.0)
 Suggests: 
     rmarkdown

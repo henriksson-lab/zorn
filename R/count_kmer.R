@@ -250,6 +250,23 @@ KmcChooseKmerFeatures <- function(fname, num_pick=1000, minfreq=0.01, maxfreq=0.
 
 
 
+
+
+
+
+CreateKmerAssay <- function(counts) {
+  chrom_assay <- CreateAssayObject(  ##################### in the future, can add other metadata in here too for visualization?
+    counts = counts
+  )
+  chrom_assay
+}
+
+
+
+
+
+
+
 if(FALSE){
   
   KmcGetHistogram("/home/mahogny/github/bascet/testdata/all_kmc")

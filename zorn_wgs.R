@@ -8,6 +8,7 @@ source("R/zorn.R")
 source("R/shell.R")
 source("R/zorn_aggr.R")
 source("R/count_kmer.R")
+source("R/refgenome.R")
 
 
 ################################################################################
@@ -67,6 +68,7 @@ BascetMapCell(
   outputName = "minhash",
   runner=inst
 )
+
 
 
 
@@ -138,12 +140,7 @@ cnt <- ReadBascetCountMatrix(file.path(bascetRoot,"kmer.1.counts.hdf5"))  #### T
 
 #bascet_instance.default  #temp dir here
 
-CreateKmerAssay <- function(counts) {
-  chrom_assay <- CreateAssayObject(  ##################### in the future, can add other metadata in here too for visualization?
-    counts = counts
-  )
-  chrom_assay
-}
+colnames(cnt) <- paste0("BASCET_",colnames(cnt)) ### compatibilíty with fragments
 
 
 adata <- CreateSeuratObject(
@@ -158,9 +155,7 @@ adata <- RunSVD(adata)
 
 DepthCor(adata)
 
-adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 3:30)  ## even 2nd factor is correlated
-#adata <- FindNeighbors(object = adata, reduction = 'lsi', dims = 2:30)
-#adata <- FindClusters(object = adata, verbose = FALSE, algorithm = 3)
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 2:30)  ## even 2nd factor is correlated
 DimPlot(object = adata, label = TRUE) + NoLegend()
 
 FeaturePlot(adata, "nCount_peaks")
@@ -179,124 +174,75 @@ FeaturePlot(adata, "nCount_peaks")
 ################################################################################
 
 
-
-
-
-
-
-
-
-### Get reads in fastq format
+### Get reads in fastq format  --- will not be needed later
 BascetMapTransform(
   bascetRoot, 
   "filtered", 
-  "for_bwa",
+  "asfq",
   out_format="fq.gz",   ## but we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
   runner=inst)
 
 
+### Perform alignment via mapshard
+### not yet implemented. should be done in bascet, not zorn, to support piping
+if(FALSE){
+  BascetMapShard(
+    bascetRoot,
+    withfunction = "_bwa",
+    inputName = "for_bwa",
+    outputName = "aligned",
+    runner=inst
+  )
+}
 
-### Perform alignment  
-#.... where to keep scripts? this is a pure-zorn feature? unless we support piping formats in and out on the fly (i.e. transform to fastq included)
-#.... putting this in bascet only makes sense if bascet can pipe input directly to the receiving software. and out of it! 
-BascetMapShard(
+### Perform alignment -- this is a wrapper for mapshard
+BascetAlignToReference(
   bascetRoot,
-  withfunction = "_bwa",
-  inputName = "for_bwa",
-  outputName = "aligned",
+  useReference="/husky/fromsequencer/241016_novaseq_wgs2/trimmed/ref10/all.fa",
+  numLocalThreads=10
+)
+
+### Generate BED file suited for quantifying features using Signac later -- this is a wrapper for mapshard
+BascetBam2Fragments(
+  bascetRoot,
   runner=inst
 )
 
 
-
-
-
-
-
-cmd <- paste("bwa mem",
-             "/husky/fromsequencer/241016_novaseq_wgs2/trimmed/ref10/all.fa",
-             file.path(bascetRoot,"for_bwa.1.fq.gz"),
-             "-t 10",
-             "> ",
-             file.path(bascetRoot,"aligned.1.bam")
-)
-system(cmd)
-
-
-## Check output
-system(
-  paste("samtools view", file.path(bascetRoot,"aligned.1.bam"))
-)
-
-## Produce bed-file
-system(
-  paste("samtools view", file.path(bascetRoot,"aligned.1.bam"))
-)
-
-
-system(
-  paste(
-    "bedtools bamtobed -i ",
-    file.path(bascetRoot,"aligned.1.bam"),
-    " > ",
-    file.path(bascetRoot,"aligned_bed.1.bam")
-  )
-)
-# NZ_CP009792.1	1245738	1245889	BASCET_F3_H5_B8_D11::71	60	-
-
-bedtable <- read.table(file.path(bascetRoot,"aligned_bed.1.bam"),sep="\t")
-colnames(bedtable) <- c("chr","from","to","cell_id","score","strand")
-bedtable$cell_id <- stringr::str_remove(bedtable$cell_id,"BASCET_")
-bedtable$cell_id <- stringr::str_split_i(bedtable$cell_id,":",1)
-bedtable <- bedtable[order(bedtable$chr, bedtable$from, bedtable$to),]
-
-
-
-j### Format as 10x BED file
-#chr1	10067	10333	CGATCCTTCGCTCCAT-1	1
-as_fragments <- data.frame(
-  chr=bedtable$chr,
-  from=bedtable$from,
-  to=bedtable$to,
-  cell_id=bedtable$cell_id,
-  stupid=1
-)
-fname_fragments <- file.path(bascetRoot,"fragments.tsv")
-write.table(as_fragments, fname_fragments, sep="\t", col.names = FALSE, quote = FALSE, row.names = FALSE)
-
-system(paste("bgzip -f",fname_fragments))
-system(paste0("tabix -p bed ",fname_fragments,".gz"))
-
+if(FALSE){
+  BascetMapTransform(
+    bascetRoot, 
+    "filtered", 
+    "for_bwa",
+    out_format="fragments.gz",
+    runner=inst)
+  ### bascet bam2fragments 
+}
+  
+  
+### Now possible to get read count, per cell, for each chromosome!!
+  
+  
 
 ################################################################################
-################## Get alignment stats per cell ################################
-################################################################################
-
-#Table of cell_id vs chromosome count
-chr_cnt <- sqldf::sqldf("select chr, cell_id, count(*) as cnt from bedtable group by chr, cell_id")
-chr_cnt <- reshape2::acast(chr_cnt, cell_id~chr, value.var = "cnt", fill = 0)
-
-chr_cnt
-
-#Align to adata order
-chr_cnt <- chr_cnt[colnames(adata),]
-which.max(chr_cnt)
-
-adata$max_chr <- colnames(chr_cnt)[apply(chr_cnt, 1, which.max)]
-
-DimPlot(adata, group.by = "max_chr")
-
-#NC_017316.1   Enterococcus faecalis OG1RF, complete sequence
-#CP086328.1    Bacillus pacificus strain anQ-h4 chromosome, complete genome
-
-
-
-################################################################################
-################## Use Signac as feature counter ###############################
+################## Get alignment stats per cell ################################   
 ################################################################################
 
 
+## Add the counts to our Seurat object
+adata[["chrom_cnt"]] <- FragmentCountsPerChromAssay(bascetRoot)
 
+DefaultAssay(adata) <- "chrom_cnt"
+
+cnt <- adata@assays$chrom_cnt$counts
+adata$dominant_chr <- rownames(cnt)[apply(cnt, 2, which.max)]
+
+
+DimPlot(adata, group.by = "dominant_chr")
+
+
+# #NC_017316.1   Enterococcus faecalis OG1RF, complete sequence
+# #CP086328.1    Bacillus pacificus strain anQ-h4 chromosome, complete genome
 
 
 

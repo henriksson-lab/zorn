@@ -290,7 +290,10 @@ detect_shards_for_file <- function(bascetRoot, inputName){
   allfiles <- list.files(bascetRoot)
   allzip <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","zip")))
   alltirp <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","tirp.gz")))
-  unique(c(allzip,alltirp)) #tirp.gz can sneak in
+  allbam <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","bam")))
+  allcram <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","cram")))
+  allfq <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","fq.gz")))  #### TODO: omit all R2 files
+  unique(c(allzip,alltirp, allbam, allcram, allfq)) #tirp.gz can sneak in
 }
 
 #detect_shards_for_file("~/jupyter/zorn/test","fakein","zip")

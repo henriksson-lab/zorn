@@ -4,6 +4,10 @@ if(FALSE){
   devtools::document()
 }
 
+if(FALSE){
+  install.packages("Zorn_0.1.0.tar.gz", repos = NULL, type = 'source')
+}
+
 ################################################################################
 ################ Settings for the underlying Bascet installation ###############
 ################################################################################
@@ -73,6 +77,7 @@ GetBascetTempDir <- function(bascet_instance){
 #' Detect metadata for raw input FASTQ files
 #' 
 #' @param rawRoot Path to folder with FASTQ files
+#' @export
 #' @return A data frame with metadata for the raw input files
 #' @examples
 #' DetectRawFileMeta("/path/to/raw_fastq", verbose = TRUE)
@@ -194,40 +199,6 @@ BascetGetRawAtrandiWGS <- function(
 
 
 
-
-################################################################################
-################ Bascet command line tools: RNA-seq ############################
-################################################################################
-
-
-###############################################
-#' Aligned debarcoded BAMs
-#'  #sort or not here?
-#' @return TODO
-#' @export
-BascetAlign <- function(bascetRoot, genomeReference, inputName="debarcoded", outputName="unsorted_aligned", runner, bascet_instance=bascet_instance.default){ 
-  
-  #Figure out input and output file names  
-  inputFiles <- detect_shards_for_file(bascetRoot, inputName, "bam")
-  num_shards <- length(inputFiles)
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "bam", num_shards)
-  
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_align",
-    withdata = c(
-      "-t $BASCET_TEMPDIR",
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles)
-    ),
-    cmd = paste(bascet_instance@bin, "align --in $files_in[$TASK_ID] --o $files_out[$TASK_ID] --reference ", genomeReference),
-    arraysize = num_shards
-  )
-  
-  
-}
 
 
 ################################################################################
