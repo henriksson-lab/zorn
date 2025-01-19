@@ -252,4 +252,24 @@ FragmentCountsPerChromAssay <- function(
 
 
 
+###############################################
+#' Produce a count matrix on strain level. too specific?
+#' @return TODO
+#' @export
+ChromToSpeciesCount <- function(adata, map_seq2strain){
+  mat_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  
+  unique_strains <- unique(map_seq2strain$strain)
+  strain_cnt <- matrix(NA, ncol=ncol(mat_cnt), nrow=length(unique_strains))
+  rownames(strain_cnt) <- unique_strains
+  colnames(strain_cnt) <- colnames(mat_cnt)
+  for(i in 1:nrow(strain_cnt)){
+    cur_cols <- map_seq2strain$id[map_seq2strain$strain %in% rownames(strain_cnt)[i]]
+    print(cur_cols)
+    strain_cnt[i,] <- colSums(mat_cnt[rownames(mat_cnt) %in% cur_cols,,drop=FALSE])
+  }
+  
+  CreateAssay5Object(counts = strain_cnt)
+}
+
 

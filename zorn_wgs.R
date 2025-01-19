@@ -205,6 +205,8 @@ kraken_taxid <- kraken_taxid[colnames(adata),c("taxid","phylum","class","order",
 adata@meta.data <- cbind(adata@meta.data,kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]) #AddMetaData behaves weirdly!!
 
 
+#### How many species?
+KrakenSpeciesDistribution(adata)
 
 
 ## Dimensional reduction using kraken
@@ -217,12 +219,10 @@ DepthCor(adata)
 adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "kraken_umap")  ## depth may be less of a problem here; hard to tell. could normalize counts without issue. RNAseq analysis instead?
 #DimPlot(object = adata, label = TRUE) + NoLegend()
 
-DimPlot(object = adata, label = TRUE, group.by = "species", reduction = "kraken_umap") + NoLegend()
-#FeaturePlot(object = adata, features = "nCount_peaks") + NoLegend()
+
+DimPlot(object = adata, label = TRUE, group.by = "species", reduction = "kraken_umap")
 
 
-#### How many species?
-KrakenSpeciesDistribution(adata)
 
 
 ################################################################################
@@ -302,8 +302,6 @@ DimPlot(adata, group.by = "dominant_chr")
 
 
 
-
-
 ################################################################################ 
 ################## Which sequences belong to the same strain? ##################
 ################################################################################ 
@@ -349,23 +347,6 @@ get_map_seq2strain <- function(){
 }
 
 
-########## Produce a count matrix on strain level
-ChromToSpeciesCount <- function(adata, map_seq2strain){
-  mat_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
-  
-  unique_strains <- unique(map_seq2strain$strain)
-  strain_cnt <- matrix(NA, ncol=ncol(mat_cnt), nrow=length(unique_strains))
-  rownames(strain_cnt) <- unique_strains
-  colnames(strain_cnt) <- colnames(mat_cnt)
-  for(i in 1:nrow(strain_cnt)){
-    cur_cols <- map_seq2strain$id[map_seq2strain$strain %in% rownames(strain_cnt)[i]]
-    print(cur_cols)
-    strain_cnt[i,] <- colSums(mat_cnt[rownames(mat_cnt) %in% cur_cols,,drop=FALSE])
-  }
-  
-  CreateAssay5Object(counts = strain_cnt)
-}
-
 
 
 map_seq2strain <- get_map_seq2strain()[,c("id","len","strain")]
@@ -376,12 +357,11 @@ strain_genomesize <- sqldf::sqldf("select sum(len) as len, strain from map_seq2s
 DefaultAssay(adata) <- "chrom_cnt"
 adata[["species_cnt"]] <- ChromToSpeciesCount(adata, map_seq2strain)
 
-
 #Figure out which species has most reads in which cell
 cnt <- adata@assays$species_cnt$counts
 adata$dominant_species <- rownames(cnt)[apply(cnt, 2, which.max)]
 
-DimPlot(adata, group.by = "dominant_species")
+DimPlot(adata, group.by = "species_aln")
 
 
 
@@ -392,15 +372,13 @@ DimPlot(adata, group.by = "dominant_species")
 ################################################################################ 
 
 
-
-
 DefaultAssay(adata) <- "species_cnt"
 KneeplotPerSpecies(adata)
 
 DefaultAssay(adata) <- "kraken"
 KneeplotPerSpecies(adata, max_species = 10)
 
-## TODO: special call for kraken matrix, to convert to proper name?
+## TODO: special call for kraken matrix, to convert to proper name?  ; map taxid during compression!
 
 
 
@@ -416,7 +394,7 @@ DefaultAssay(adata) <- "species_cnt"
 BarnyardPlotMatrix(adata)
 
 
-## TODO: after detecting doublets, we should color by this in the plot
+## TODO: after detecting doublets, we should color by this in the plot   ; color by any metadata!!
 
 
 
