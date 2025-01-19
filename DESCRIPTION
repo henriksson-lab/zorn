@@ -21,6 +21,7 @@ Imports:
     ggplot2,
     processx,
     progress,
+    taxonomizr,
     sparseMatrixStats (>= 1.10.0)
 Suggests: 
     rmarkdown

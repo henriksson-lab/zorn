@@ -9,6 +9,7 @@ source("R/shell.R")
 source("R/zorn_aggr.R")
 source("R/count_kmer.R")
 source("R/refgenome.R")
+source("R/kraken.R")
 
 
 ################################################################################
@@ -125,6 +126,19 @@ BascetQuery(
 
 
 
+### Run Kraken on each cell  ---- these two commands should be merged
+BascetRunKraken(
+  bascetRoot, 
+  useKrakenDB="/data/henlab/kraken/standard-8",
+  numLocalThreads=10,
+  runner=inst
+)
+BascetRunKrakenMakeMatrix(
+  bascetRoot, 
+  useKrakenDB="/data/henlab/kraken/standard-8",
+  numLocalThreads=10,
+  runner=inst
+)
 
 ################################################################################
 ################## Postprocessing with Signac ##################################
@@ -148,39 +162,72 @@ adata <- CreateSeuratObject(
   assay = "peaks"
 )
 
-
+DefaultAssay(adata) <- "peaks"
 adata <- RunTFIDF(adata)
 adata <- FindTopFeatures(adata, min.cutoff = 'q0')
 adata <- RunSVD(adata)
-
 DepthCor(adata)
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 2:30, reduction.name = "kmers_umap")  ## even 2nd factor is correlated
 
-adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 2:30)  ## even 2nd factor is correlated
-DimPlot(object = adata, label = TRUE) + NoLegend()
+DimPlot(object = adata, label = TRUE, reduction = "kmers_umap") + NoLegend()
+DimPlot(object = adata, label = TRUE, group.by = "species", reduction = "kmers_umap") + NoLegend()
 
-FeaturePlot(adata, "nCount_peaks")
+FeaturePlot(adata, "nCount_peaks", reduction = "kmers_umap")
 
 
 #TODO: add metadata, depth!!!
 #TODO QUAST information on top
 
 
-
-
-
-
 ################################################################################
-################## Reference-based mapping to get "ground truth" ###############
+################## Kraken-based analysis #######################################  
 ################################################################################
 
 
-### Get reads in fastq format  --- will not be needed later
-BascetMapTransform(
-  bascetRoot, 
-  "filtered", 
-  "asfq",
-  out_format="fq.gz",   ## but we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
-  runner=inst)
+
+mat <- ReadBascetKrakenMatrix("/husky/henriksson/atrandi/wgs_miseq2/kraken_count.hdf5")
+
+
+### Compress the representation to avoid trouble with some tools
+use_row <- rowSums(mat)>0
+compressed_mat <- mat[use_row, ]
+rownames(compressed_mat) <- paste0("taxid-", which(use_row))
+
+
+taxid_ob <- CreateAssayObject(compressed_mat)
+adata[["kraken"]] <- taxid_ob
+
+
+## Add max taxid to metadata
+kraken_taxid <- KrakenFindMaxTaxid(mat)
+rownames(kraken_taxid) <- kraken_taxid$cell_id
+kraken_taxid <- kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]
+adata@meta.data <- cbind(adata@meta.data,kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]) #AddMetaData behaves weirdly!!
+
+
+
+
+## Dimensional reduction using kraken
+DefaultAssay(adata) <- "kraken"
+
+adata <- RunTFIDF(adata)
+adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+adata <- RunSVD(adata)
+DepthCor(adata)
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "kraken_umap")  ## depth may be less of a problem here; hard to tell. could normalize counts without issue. RNAseq analysis instead?
+#DimPlot(object = adata, label = TRUE) + NoLegend()
+
+DimPlot(object = adata, label = TRUE, group.by = "species", reduction = "kraken_umap") + NoLegend()
+#FeaturePlot(object = adata, features = "nCount_peaks") + NoLegend()
+
+
+#### How many species?
+KrakenSpeciesDistribution(adata)
+
+
+################################################################################
+################## Reference-based mapping to get "ground truth" ###############  TODO, wrap these
+################################################################################
 
 
 ### Perform alignment via mapshard
@@ -195,19 +242,6 @@ if(FALSE){
   )
 }
 
-### Perform alignment -- this is a wrapper for mapshard
-BascetAlignToReference(
-  bascetRoot,
-  useReference="/husky/fromsequencer/241016_novaseq_wgs2/trimmed/ref10/all.fa",
-  numLocalThreads=10
-)
-
-### Generate BED file suited for quantifying features using Signac later -- this is a wrapper for mapshard
-BascetBam2Fragments(
-  bascetRoot,
-  runner=inst
-)
-
 
 if(FALSE){
   BascetMapTransform(
@@ -218,12 +252,35 @@ if(FALSE){
     runner=inst)
   ### bascet bam2fragments 
 }
-  
-  
-### Now possible to get read count, per cell, for each chromosome!!
-  
-  
 
+################################################################################
+################## Reference-based mapping to get "ground truth" ###############
+################################################################################
+
+
+### Get reads in fastq format  --- will not be needed later
+BascetMapTransform(
+  bascetRoot, 
+  "filtered", 
+  "asfq",
+  out_format="fq.gz",   ## but we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
+  runner=inst
+)
+
+### Perform alignment -- this is a wrapper for mapshard
+BascetAlignToReference(
+  bascetRoot,
+  useReference="/husky/fromsequencer/241016_novaseq_wgs2/trimmed/ref10/all.fa",
+  numLocalThreads=10
+)
+
+### Generate fragments BED file suited for quantifying reads/chromosome using Signac later -- this is a wrapper for mapshard
+BascetBam2Fragments(
+  bascetRoot,
+  runner=inst
+)
+
+  
 ################################################################################
 ################## Get alignment stats per cell ################################   
 ################################################################################
@@ -231,18 +288,258 @@ if(FALSE){
 
 ## Add the counts to our Seurat object
 adata[["chrom_cnt"]] <- FragmentCountsPerChromAssay(bascetRoot)
-
 DefaultAssay(adata) <- "chrom_cnt"
 
+#Figure out which chromosome has most reads in which cell
 cnt <- adata@assays$chrom_cnt$counts
 adata$dominant_chr <- rownames(cnt)[apply(cnt, 2, which.max)]
-
 
 DimPlot(adata, group.by = "dominant_chr")
 
 
 # #NC_017316.1   Enterococcus faecalis OG1RF, complete sequence
 # #CP086328.1    Bacillus pacificus strain anQ-h4 chromosome, complete genome
+
+
+
+
+
+################################################################################ 
+################## Which sequences belong to the same strain? ##################
+################################################################################ 
+
+map_strain2gram <- read.csv("/husky/fromsequencer/240701_wgs_atcc1/straintype.csv")
+
+library(stringr)
+
+get_map_seq2strain <- function(){
+  map_seq2strain <- NULL
+  refdir <- "/husky/fromsequencer/240809_novaseq_wgs1/trimmed/ref10/separate"
+  for(f in list.files(refdir, pattern = "*.fasta")){
+    print(f)
+    thel <- readLines(file.path(refdir,f))
+    thel <- thel[str_starts(thel,">")]
+    onedf <- data.frame(line=thel)
+    onedf$strain <- f
+    map_seq2strain <- rbind(map_seq2strain, onedf)
+  }
+  map_seq2strain$id <- str_split_fixed(str_sub(map_seq2strain$line,2)," ",2)[,1]
+  map_seq2strain$name <- str_split_fixed(str_sub(map_seq2strain$line,2)," ",2)[,2]
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain,".fasta")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," chr1")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," chr2")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," pRSPH01")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," pMP1")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," pCP1")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," NC_003909.8")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," NC_005707.1")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," NC_005707.1")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," plasmid")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," CP086328.1")
+  map_seq2strain$strain <- str_remove_all(map_seq2strain$strain," CP086329.1")
+
+  map_seq2strain <- merge(map_seq2strain,map_strain2gram)
+  map_seq2strain <- map_seq2strain[,colnames(map_seq2strain)!="line"]
+  
+  idx <- read.table(pipe("samtools idxstats /husky/fromsequencer/241206_novaseq_wgs3/trimmed/sorted.bam"),sep="\t")
+  colnames(idx) <- c("id","len","mapped","unmapped")
+  map_seq2strain <- merge(idx[,c("id","len")], map_seq2strain)  #note, only using id and len
+  
+  map_seq2strain
+}
+
+
+########## Produce a count matrix on strain level
+ChromToSpeciesCount <- function(adata, map_seq2strain){
+  mat_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  
+  unique_strains <- unique(map_seq2strain$strain)
+  strain_cnt <- matrix(NA, ncol=ncol(mat_cnt), nrow=length(unique_strains))
+  rownames(strain_cnt) <- unique_strains
+  colnames(strain_cnt) <- colnames(mat_cnt)
+  for(i in 1:nrow(strain_cnt)){
+    cur_cols <- map_seq2strain$id[map_seq2strain$strain %in% rownames(strain_cnt)[i]]
+    print(cur_cols)
+    strain_cnt[i,] <- colSums(mat_cnt[rownames(mat_cnt) %in% cur_cols,,drop=FALSE])
+  }
+  
+  CreateAssay5Object(counts = strain_cnt)
+}
+
+
+
+map_seq2strain <- get_map_seq2strain()[,c("id","len","strain")]
+strain_genomesize <- sqldf::sqldf("select sum(len) as len, strain from map_seq2strain group by strain")
+
+
+########## Produce a count matrix on strain level
+DefaultAssay(adata) <- "chrom_cnt"
+adata[["species_cnt"]] <- ChromToSpeciesCount(adata, map_seq2strain)
+
+
+#Figure out which species has most reads in which cell
+cnt <- adata@assays$species_cnt$counts
+adata$dominant_species <- rownames(cnt)[apply(cnt, 2, which.max)]
+
+DimPlot(adata, group.by = "dominant_species")
+
+
+
+
+
+################################################################################ 
+################## Knee-plot per species ####################################### --- note that this is only for cells we picked!!
+################################################################################ 
+
+
+KneeplotPerSpecies <- function(adata, max_species=NULL) {
+  strain_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  
+  if(!is.null(max_species)){
+    strain_cnt <- strain_cnt[order(rowSums(strain_cnt), decreasing = TRUE),]
+    strain_cnt <- strain_cnt[1:min(nrow(strain_cnt), max_species),]
+  }
+  
+  allknee <- list()
+  for(i in 1:nrow(strain_cnt)){
+    onedf <- data.frame(
+      strain = rownames(strain_cnt)[i],
+      cnt = strain_cnt[i,]
+    )
+    onedf <- onedf[order(onedf$cnt, decreasing = TRUE),]
+    onedf$index <- 1:nrow(onedf)
+    allknee[[paste("s",i)]] <- onedf
+  }
+  allknee <- do.call(rbind, allknee)
+  
+  ggplot(allknee, aes(index, cnt, color=strain)) + geom_line() +
+    scale_x_log10() +
+    scale_y_log10() +
+    xlab("Log10 Cell index") +
+    ylab("Log10 Total read count") +
+    theme_bw()
+  # +
+  #  theme(legend.position = "none")
+  
+}
+
+
+DefaultAssay(adata) <- "species_cnt"
+KneeplotPerSpecies(adata)
+
+DefaultAssay(adata) <- "kraken"
+KneeplotPerSpecies(adata, max_species = 10)
+
+## TODO: special call for kraken matrix, to convert to proper name?
+
+
+
+
+
+################################################################################
+################## Barnyard plot ###############################################
+################################################################################
+
+
+
+
+BarnyardPlotMatrix <- function(adata){
+  cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  cnt <- cnt[rowSums(cnt)>0,]  ##Only consider species we have
+  list_species <- rownames(cnt)[1:4] ######## Just do a few!
+
+  all_plots <- list()
+  for(i in seq_along(list_species)){
+    for(j in seq_along(list_species)){
+      #print(paste(i,j))
+      if(i>=j) {
+        all_plots[[paste(i,j)]] <- ggplot()
+      } else {
+        df <- data.frame(
+          x=cnt[i,],
+          y=cnt[j,]
+        )
+        p <- ggplot(df, aes(x+1,y+1)) +
+          geom_point() + 
+          scale_x_log10() + 
+          scale_y_log10() + 
+          theme_bw()+
+          xlab(paste("Pseudocount", list_species[i]))+
+          ylab(paste("Pseudocount", list_species[j]))
+        
+        all_plots[[paste(i,j)]] <- p        
+      }
+    }
+  }
+  egg::ggarrange(plots = all_plots, nrow = length(list_species))  
+}
+
+DefaultAssay(adata) <- "species_cnt"
+BarnyardPlotMatrix(adata)
+
+
+## TODO: after detecting doublets, we should color by this in the plot
+
+
+
+
+
+################################################################################
+################## Correlation of genomes ######################################
+################################################################################
+
+DefaultAssay(adata) <- "species_cnt"
+
+
+SpeciesCorrMatrix <- function(adata){
+  cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  cnt <- cnt[rowSums(cnt)>0,]
+  
+  list_species <- rownames(cnt)
+  print(list_species)
+  
+  all_comp <- NULL
+  for(i in seq_along(list_species)){
+    for(j in seq_along(list_species)){
+      #print(paste(i,j))
+      if(i==j) {
+        
+      } else {
+        
+        df <- data.frame(
+          x=factor(cnt[i,]>0, levels=c("TRUE","FALSE")),
+          y=factor(cnt[j,]>0, levels=c("TRUE","FALSE"))
+        )
+
+        df <- data.frame(
+          x=factor(cnt[i,]>median(cnt[i,]), levels=c("TRUE","FALSE")),
+          y=factor(cnt[j,]>median(cnt[j,]), levels=c("TRUE","FALSE"))
+        )
+        
+        ft <- fisher.test(table(df))
+        
+        all_comp <- rbind(all_comp,
+                          data.frame(
+                            i=list_species[i], 
+                            j=list_species[j], 
+                            p=ft$p.value
+                          ))
+      }
+    }
+  }
+  ggplot(all_comp, aes(i,j,fill = -log(p))) + geom_tile() + theme_bw()
+  #all_comp
+  #egg::ggarrange(plots = all_plots, nrow = nrow(cnt))  
+}
+
+SpeciesCorrMatrix(adata)
+
+
+# other code in /home/mahogny/jupyter/scWGS
+
+
+
+
 
 
 
