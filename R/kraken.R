@@ -42,6 +42,47 @@ BascetRunKraken <- function(
 
 
 
+SpeciesCorrMatrix <- function(adata){
+  cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  cnt <- cnt[rowSums(cnt)>0,]
+  
+  list_species <- rownames(cnt)
+  print(list_species)
+  
+  all_comp <- NULL
+  for(i in seq_along(list_species)){
+    for(j in seq_along(list_species)){
+      #print(paste(i,j))
+      if(i==j) {
+        
+      } else {
+        
+        df <- data.frame(
+          x=factor(cnt[i,]>0, levels=c("TRUE","FALSE")),
+          y=factor(cnt[j,]>0, levels=c("TRUE","FALSE"))
+        )
+        
+        df <- data.frame(
+          x=factor(cnt[i,]>median(cnt[i,]), levels=c("TRUE","FALSE")),
+          y=factor(cnt[j,]>median(cnt[j,]), levels=c("TRUE","FALSE"))
+        )
+        
+        ft <- fisher.test(table(df))
+        
+        all_comp <- rbind(all_comp,
+                          data.frame(
+                            i=list_species[i], 
+                            j=list_species[j], 
+                            p=ft$p.value
+                          ))
+      }
+    }
+  }
+  ggplot(all_comp, aes(i,j,fill = -log(p))) + geom_tile() + theme_bw()
+  #all_comp
+  #egg::ggarrange(plots = all_plots, nrow = nrow(cnt))  
+}
+
 
 
 

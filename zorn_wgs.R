@@ -392,36 +392,6 @@ DimPlot(adata, group.by = "dominant_species")
 ################################################################################ 
 
 
-KneeplotPerSpecies <- function(adata, max_species=NULL) {
-  strain_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
-  
-  if(!is.null(max_species)){
-    strain_cnt <- strain_cnt[order(rowSums(strain_cnt), decreasing = TRUE),]
-    strain_cnt <- strain_cnt[1:min(nrow(strain_cnt), max_species),]
-  }
-  
-  allknee <- list()
-  for(i in 1:nrow(strain_cnt)){
-    onedf <- data.frame(
-      strain = rownames(strain_cnt)[i],
-      cnt = strain_cnt[i,]
-    )
-    onedf <- onedf[order(onedf$cnt, decreasing = TRUE),]
-    onedf$index <- 1:nrow(onedf)
-    allknee[[paste("s",i)]] <- onedf
-  }
-  allknee <- do.call(rbind, allknee)
-  
-  ggplot(allknee, aes(index, cnt, color=strain)) + geom_line() +
-    scale_x_log10() +
-    scale_y_log10() +
-    xlab("Log10 Cell index") +
-    ylab("Log10 Total read count") +
-    theme_bw()
-  # +
-  #  theme(legend.position = "none")
-  
-}
 
 
 DefaultAssay(adata) <- "species_cnt"
@@ -442,38 +412,6 @@ KneeplotPerSpecies(adata, max_species = 10)
 
 
 
-
-BarnyardPlotMatrix <- function(adata){
-  cnt <- adata@assays[[DefaultAssay(adata)]]$counts
-  cnt <- cnt[rowSums(cnt)>0,]  ##Only consider species we have
-  list_species <- rownames(cnt)[1:4] ######## Just do a few!
-
-  all_plots <- list()
-  for(i in seq_along(list_species)){
-    for(j in seq_along(list_species)){
-      #print(paste(i,j))
-      if(i>=j) {
-        all_plots[[paste(i,j)]] <- ggplot()
-      } else {
-        df <- data.frame(
-          x=cnt[i,],
-          y=cnt[j,]
-        )
-        p <- ggplot(df, aes(x+1,y+1)) +
-          geom_point() + 
-          scale_x_log10() + 
-          scale_y_log10() + 
-          theme_bw()+
-          xlab(paste("Pseudocount", list_species[i]))+
-          ylab(paste("Pseudocount", list_species[j]))
-        
-        all_plots[[paste(i,j)]] <- p        
-      }
-    }
-  }
-  egg::ggarrange(plots = all_plots, nrow = length(list_species))  
-}
-
 DefaultAssay(adata) <- "species_cnt"
 BarnyardPlotMatrix(adata)
 
@@ -490,47 +428,6 @@ BarnyardPlotMatrix(adata)
 
 DefaultAssay(adata) <- "species_cnt"
 
-
-SpeciesCorrMatrix <- function(adata){
-  cnt <- adata@assays[[DefaultAssay(adata)]]$counts
-  cnt <- cnt[rowSums(cnt)>0,]
-  
-  list_species <- rownames(cnt)
-  print(list_species)
-  
-  all_comp <- NULL
-  for(i in seq_along(list_species)){
-    for(j in seq_along(list_species)){
-      #print(paste(i,j))
-      if(i==j) {
-        
-      } else {
-        
-        df <- data.frame(
-          x=factor(cnt[i,]>0, levels=c("TRUE","FALSE")),
-          y=factor(cnt[j,]>0, levels=c("TRUE","FALSE"))
-        )
-
-        df <- data.frame(
-          x=factor(cnt[i,]>median(cnt[i,]), levels=c("TRUE","FALSE")),
-          y=factor(cnt[j,]>median(cnt[j,]), levels=c("TRUE","FALSE"))
-        )
-        
-        ft <- fisher.test(table(df))
-        
-        all_comp <- rbind(all_comp,
-                          data.frame(
-                            i=list_species[i], 
-                            j=list_species[j], 
-                            p=ft$p.value
-                          ))
-      }
-    }
-  }
-  ggplot(all_comp, aes(i,j,fill = -log(p))) + geom_tile() + theme_bw()
-  #all_comp
-  #egg::ggarrange(plots = all_plots, nrow = nrow(cnt))  
-}
 
 SpeciesCorrMatrix(adata)
 

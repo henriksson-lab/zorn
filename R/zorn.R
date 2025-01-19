@@ -486,6 +486,8 @@ BascetAggregateMap <- function(
   output
 }
 
+
+
 if(FALSE){
   bascetRoot <- "/home/mahogny/jupyter/bascet/zorn/try_unzip"
   bascetName <- "quast"
@@ -501,13 +503,83 @@ if(FALSE){
 
 
 ################################################################################
-################ yet to classify ###############################################
+################ Quality control ###############################################
 ################################################################################
 
 
 
+###############################################
+#' 
+#' @return TODO
+#' @export
+KneeplotPerSpecies <- function(adata, max_species=NULL) {
+  strain_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  
+  if(!is.null(max_species)){
+    strain_cnt <- strain_cnt[order(rowSums(strain_cnt), decreasing = TRUE),]
+    strain_cnt <- strain_cnt[1:min(nrow(strain_cnt), max_species),]
+  }
+  
+  allknee <- list()
+  for(i in 1:nrow(strain_cnt)){
+    onedf <- data.frame(
+      strain = rownames(strain_cnt)[i],
+      cnt = strain_cnt[i,]
+    )
+    onedf <- onedf[order(onedf$cnt, decreasing = TRUE),]
+    onedf$index <- 1:nrow(onedf)
+    allknee[[paste("s",i)]] <- onedf
+  }
+  allknee <- do.call(rbind, allknee)
+  
+  ggplot(allknee, aes(index, cnt, color=strain)) + geom_line() +
+    scale_x_log10() +
+    scale_y_log10() +
+    xlab("Log10 Cell index") +
+    ylab("Log10 Total read count") +
+    theme_bw()
+  # +
+  #  theme(legend.position = "none")
+  
+}
 
 
+
+
+###############################################
+#' 
+#' @return TODO
+#' @export
+BarnyardPlotMatrix <- function(adata){
+  cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  cnt <- cnt[rowSums(cnt)>0,]  ##Only consider species we have
+  list_species <- rownames(cnt)[1:4] ######## Just do a few!
+  
+  all_plots <- list()
+  for(i in seq_along(list_species)){
+    for(j in seq_along(list_species)){
+      #print(paste(i,j))
+      if(i>=j) {
+        all_plots[[paste(i,j)]] <- ggplot()
+      } else {
+        df <- data.frame(
+          x=cnt[i,],
+          y=cnt[j,]
+        )
+        p <- ggplot(df, aes(x+1,y+1)) +
+          geom_point() + 
+          scale_x_log10() + 
+          scale_y_log10() + 
+          theme_bw()+
+          xlab(paste("Pseudocount", list_species[i]))+
+          ylab(paste("Pseudocount", list_species[j]))
+        
+        all_plots[[paste(i,j)]] <- p        
+      }
+    }
+  }
+  egg::ggarrange(plots = all_plots, nrow = length(list_species))  
+}
 
 
 

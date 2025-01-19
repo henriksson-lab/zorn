@@ -242,32 +242,30 @@ KmcChooseKmerFeatures <- function(fname, num_pick=1000, minfreq=0.01, maxfreq=0.
   
 
 
-### TODO command to run KMC for query
-
-### TODO command to make count matrix
-
-### TODO command to make histogram and select kmers
-
-
-
-
-
-
-
-CreateKmerAssay <- function(counts) {
-  chrom_assay <- CreateAssayObject(  ##################### in the future, can add other metadata in here too for visualization?
-    counts = counts
-  )
-  chrom_assay
-}
-
-
-
 
 
 
 
 if(FALSE){
+  
+  
+  
+  ### TODO command to run KMC for query
+  ### TODO command to make count matrix
+  ### TODO command to make histogram and select kmers
+  
+
+
+  ## used ??  
+  CreateKmerAssay <- function(counts) {
+    chrom_assay <- CreateAssayObject(  ##################### in the future, can add other metadata in here too for visualization?
+      counts = counts
+    )
+    chrom_assay
+  }
+  
+  
+  
   
   KmcGetHistogram("/home/mahogny/github/bascet/testdata/all_kmc")
   
