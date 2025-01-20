@@ -273,3 +273,67 @@ ChromToSpeciesCount <- function(adata, map_seq2strain){
 }
 
 
+
+
+
+
+################################################################################
+############ RNA-seq style feature counting from fragments.tsv #################
+################################################################################
+
+
+###############################################
+#' @return TODO
+#' @export
+LoadFragmentsAsObject <- function(fragpath){
+  
+  #### Index fragment file if needed. Only needed if you got the file externally and it has no index
+  fragpath_index <- paste(fragpath,".tbi",sep="")
+  if(!file.exists(fragpath_index)){
+    print("Indexing fragment file")
+    system(paste("tabix -p vcf ",fragpath))
+  }
+  
+  #### Create a dummy assay
+  stupidmat <- matrix(0, nrow = 2, ncol=length(keep_cells))
+  rownames(stupidmat) <- c("chr1:1-100", "chr1:200-300")
+  colnames(stupidmat) <- keep_cells
+  
+  chrom_assay <- CreateChromatinAssay(
+    counts = as.sparse(stupidmat),
+    sep = c(":", "-"),
+    fragments = fragpath,
+    min.cells = 0,
+    min.features = 0
+  )
+  
+  adata <- CreateSeuratObject(
+    counts = chrom_assay,
+    assay = "aligned"
+  )  
+  
+  adata
+}
+
+
+
+###############################################
+#' @return TODO
+#' @export
+CountGrangeFeatures <- function(grange_gene){
+  gene_counts <- FeatureMatrix(
+    fragments = Fragments(adata),
+    features = grange_gene,
+    cells = colnames(adata)
+  )
+  rownames(gene_counts) <- grange_gene$Name ## paste(grange_gene$gene_biotype,grange_gene$Name) #Name in an easy manner
+  
+  # create a new assay using the MACS2 peak set 
+  CreateAssayObject(
+    counts = gene_counts[!duplicated(rownames(gene_counts)),],
+    min.cells = 0,  #filter later!!!
+    min.features = 0
+  )
+}
+
+

@@ -8,4 +8,4 @@ install:
 
 
 loc:
-	wc -l R/*.R
+	wc -l R/*.R tutorial/*.R tutorial/*.sh

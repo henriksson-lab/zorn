@@ -224,35 +224,6 @@ DimPlot(object = adata, label = TRUE, group.by = "species", reduction = "kraken_
 
 
 
-
-################################################################################
-################## Reference-based mapping to get "ground truth" ###############  TODO, wrap these
-################################################################################
-
-
-### Perform alignment via mapshard
-### not yet implemented. should be done in bascet, not zorn, to support piping
-if(FALSE){
-  BascetMapShard(
-    bascetRoot,
-    withfunction = "_bwa",
-    inputName = "for_bwa",
-    outputName = "aligned",
-    runner=inst
-  )
-}
-
-
-if(FALSE){
-  BascetMapTransform(
-    bascetRoot, 
-    "filtered", 
-    "for_bwa",
-    out_format="fragments.gz",
-    runner=inst)
-  ### bascet bam2fragments 
-}
-
 ################################################################################
 ################## Reference-based mapping to get "ground truth" ###############
 ################################################################################
@@ -411,6 +382,10 @@ SpeciesCorrMatrix(adata)
 
 
 # other code in /home/mahogny/jupyter/scWGS
+
+
+
+
 
 
 
