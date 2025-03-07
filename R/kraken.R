@@ -10,9 +10,7 @@ BascetRunKraken <- function(
     useKrakenDB="/data/henlab/kraken/standard-8",
     numLocalThreads=1,
     inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
-    #outputNameClassified="kraken_classified",   ##not needed
     outputName="kraken_out", 
-    #    outputNameBAMsorted="aligned", 
     runner, 
     bascet_instance=bascet_instance.default){
   
@@ -32,7 +30,7 @@ BascetRunKraken <- function(
     "kraken2",
     "--db", useKrakenDB,
     "--threads", numLocalThreads, 
-    "--output", outputFilesStd[1],
+    "--output", outputFiles[1],
     ##   "--paired",#               TODO  The filenames provided have paired-end reads
     inputFiles[1]
   )
@@ -95,8 +93,8 @@ BascetRunKrakenMakeMatrix <- function(
     bascetRoot, 
     useKrakenDB="/data/henlab/kraken/standard-8",
     numLocalThreads=1,
-    inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
-    outputName="kraken_out", 
+    inputName="kraken_out", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
+    outputName="kraken", 
     runner, 
     bascet_instance=bascet_instance.default){
   
@@ -108,17 +106,18 @@ BascetRunKrakenMakeMatrix <- function(
   }
   inputFiles <- file.path(bascetRoot, input_shards) #### TODO 666 should really need to add this?
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "kraken_out", num_shards) 
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "counts.hdf5", num_shards) 
   
   #Run the job
   RunJob(
     runner = runner, 
-    jobname = paste0("bascet_kraken_",withfunction),
+    jobname = paste0("bascet_kraken"),
     cmd = c(
       shellscript_set_tempdir(bascet_instance),
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "kraken",
         "-t $BASCET_TEMPDIR",
@@ -182,7 +181,7 @@ ReadBascetKrakenMatrix <- function(fname){
 #' For a Kraken count matrix, return consesus taxid for each cell as metadata
 #' @return TODO
 #' @export
-KrakenFindMaxTaxid <- function(mat){
+KrakenFindConsensusTaxonomy <- function(mat){
   #turn into triplet representation
   library(Matrix)
   #M <- Matrix::Matrix(mat, sparse = TRUE)
@@ -195,32 +194,30 @@ KrakenFindMaxTaxid <- function(mat){
     cnt = M@x
   )
   
-  #Get taxid with most counts per cell. Note that more than one taxid can be reported!
+  #Not all taxid's will map. so we need to look them up first, then discard some of them
+  taxonomizr::prepareDatabase(getAccessions=FALSE)
+  
+  for_taxid <- unique(df$taxid)
+  df_taxid <- data.frame(taxonomizr::getTaxonomy(
+    for_taxid,
+    desiredTaxa = c(
+      "phylum", "class", "order", "family", "genus","species")
+  ))
+  df_taxid$taxid <- for_taxid
+  df_taxid <- df_taxid[!is.na(df_taxid$species),] #keep entries with known species
+  
+  #Get taxid with most counts per cell. Only keep those that are for species. Note that more than one taxid can be reported!
+  df <- df[df$taxid %in% df_taxid$taxid,]
   max_taxid_per_cell <- merge(df,sqldf::sqldf("select max(cnt) as cnt, cell_index from df group by cell_index"))
   
   #Keep first taxid per cell
   max_taxid_per_cell <- max_taxid_per_cell[!duplicated(max_taxid_per_cell$cell_index),]
-  dim(max_taxid_per_cell)
+  #dim(max_taxid_per_cell)
   
-  #table(max_taxid_per_cell$taxid)
-  
-  
-  #install.packages("taxonomizr")
-  #library(taxonomizr)
-  taxonomizr::prepareDatabase(getAccessions=FALSE)
-  
-  taxid_class_per_cell <- cbind(
-    max_taxid_per_cell,
-    taxonomizr::getTaxonomy(
-      max_taxid_per_cell$taxid,
-      desiredTaxa = c(
-        #"superkingdom", 
-        "phylum", "class", "order", "family", "genus","species")
-    )
-  )
-  
+  #Add info to each cell
+  taxid_class_per_cell <- merge(max_taxid_per_cell, df_taxid, all.x=TRUE)
+
   taxid_class_per_cell$cell_id <- colnames(mat)[taxid_class_per_cell$cell_index]
-  #table(taxid_class_per_cell$species)  
   taxid_class_per_cell
 }
 
@@ -251,8 +248,60 @@ KrakenSpeciesDistribution <- function(adata, use_assay="kraken"){
 
 
 
-if(FALSE){
+###############################################
+#' 
+#' 
+#' @return TODO
+#' @export
+SetTaxonomyNamesFeatures <- function(mat, keep_species_only=TRUE){
+  
+  #use_row <- rowSums(mat)>0
+  #compressed_mat <- mat[use_row, ]
+  #rownames(compressed_mat) <- paste0("taxid-", which(use_row))
+  
+  use_row <- which(rowSums(mat)>0)
+  
+  taxonomizr::prepareDatabase(getAccessions=FALSE)
+  taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(
+    use_row,
+    desiredTaxa = c("phylum", "class", "order", "family", "genus","species")
+  ))
 
+  if(keep_species_only) {
+    taxid_class_per_cell$use_row <- use_row
+    taxid_class_per_cell <- taxid_class_per_cell[!is.na(taxid_class_per_cell$species),]
+    
+    compressed_mat <- mat[taxid_class_per_cell$use_row, ]
+    rownames(compressed_mat) <- taxid_class_per_cell$species
+    #compressed_mat    
+
+  } else {
+    #Find the best name to use
+    taxid_class_per_cell$name <- taxid_class_per_cell$species
+    torep <- is.na(taxid_class_per_cell$name)
+    taxid_class_per_cell$name[torep] <- taxid_class_per_cell$genus[torep]  
+    torep <- is.na(taxid_class_per_cell$name)
+    taxid_class_per_cell$name[torep] <- "NA"
+    
+    use_name <- paste0(use_row,"-",taxid_class_per_cell$name)
+    
+    compressed_mat <- mat[use_row, ]
+    rownames(compressed_mat) <- use_name
+    compressed_mat    
+  }
+    
+  compressed_mat
+}
+
+
+
+
+if(FALSE){
+  taxonomizr::getTaxonomy(
+    0,
+    desiredTaxa = c(
+      "phylum", "class", "order", "family", "genus","species")
+  )
   
     
 }

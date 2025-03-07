@@ -8,63 +8,6 @@ if(FALSE){
   install.packages("Zorn_0.1.0.tar.gz", repos = NULL, type = 'source')
 }
 
-################################################################################
-################ Settings for the underlying Bascet installation ###############
-################################################################################
-
-#' @export
-setClass("BascetInstance", slots=list(
-  bin="character",
-  tempdir="character"
-)
-) 
-
-
-###############################################
-#' Create a new bascet instance
-#' @return TODO
-#' @export
-BascetInstance <- function(bin, tempdir){
-  if(!is.null(tempdir) & !file.exists(tempdir)){
-    stop(sprintf("temp directory %s does not exist", tempdir))
-  }
-  new(
-    "BascetInstance",
-    bin=bin,
-    tempdir=tempdir
-  )
-}
-
-
-
-###############################################
-#' The default Bascet installation settings
-#' @return TODO
-#' @export
-bascet_instance.default <- BascetInstance(
-  bin="/home/mahogny/jupyter/bascet/target/debug/robert",
-  tempdir="/data/henlab/bascet_temp"
-)
-
-#bascet_instance.default <- BascetInstance(bin="bascet")
-
-
-
-
-###############################################
-#' Get a temp directory to use; need to be created
-#' @return TODO
-#' @export
-GetBascetTempDir <- function(bascet_instance){
-  if(is.null(bascet_instance@tempdir)){
-    tempfile()
-  } else {
-    tempfile(tmpdir=file.path(bascet_instance@tempdir))
-  }
-}
-
-
-
 
 
 ################################################################################
@@ -76,11 +19,20 @@ GetBascetTempDir <- function(bascet_instance){
 ###############################################
 #' Detect metadata for raw input FASTQ files
 #' 
+#' _R1 -- common from illumina sequencer
+#' SRR****_1.fastq.gz -- typical from SRA
+#' 
+#' TODO Would be convenient to handle multiple samples, as sample1/xxx; in this case, 
+#' should prepend the sample name to the barcodes.
+#' 
+#' issue: when shardifying, good to keep info about what to merge. this reduces the work plenty!
+#' could keep a list of which shards belong for the next step
+#' 
+#' 
 #' @param rawRoot Path to folder with FASTQ files
 #' @export
 #' @return A data frame with metadata for the raw input files
 #' @examples
-#' DetectRawFileMeta("/path/to/raw_fastq", verbose = TRUE)
 DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
   #rawRoot <- "/husky/fromsequencer/241206_novaseq_wgs3/raw"
   allfiles <- list.files(rawRoot)
@@ -108,6 +60,7 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
     print(r1_files)
   }
   
+  ## TODO for SRA, replace with _1.fastq.gz
   r2_corresponding <- stringr::str_replace(r1_files,stringr::fixed("R1"),"R2")
   
   if(!all(r2_corresponding %in% allfiles)){
@@ -153,14 +106,15 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
 
 ###############################################
 #' Generate BAM with barcodes from input raw FASTQ
+#' 
 #' @return TODO
 #' @export
-BascetGetRawAtrandiWGS <- function(
+BascetGetRaw <- function(
     bascetRoot, 
     rawmeta, 
     outputName="debarcoded", 
     outputNameIncomplete="incomplete_reads", 
-    chemistry="atrandi_wgs",  #or atrandi_rnaseq
+    chemistry="atrandi_wgs",  #or atrandi_rnaseq; any way to get list from software?
     runner, 
     bascet_instance=bascet_instance.default){
 
@@ -183,6 +137,7 @@ BascetGetRawAtrandiWGS <- function(
       shellscript_make_bash_array("files_out",outputFilesComplete),
       shellscript_make_bash_array("files_out_incomplete",outputFilesIncomplete),
       paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "getraw",
         "-t $BASCET_TEMPDIR",
@@ -210,12 +165,27 @@ BascetGetRawAtrandiWGS <- function(
 
 ###############################################
 #' Take debarcoded reads and split them into suitable numbers of shards
+#' 
+#' 
+#' TODO if we have multiple input samples, is there a way to group them?
+#' otherwise we will be reading more input files than needed. that said,
+#' if we got an index, so if list of cells specified, it is possible to quickly figure out
+#' out if a file is needed at all for a merge
+#' 
+#' Figuring out if a file is needed can be done at "planning" (Zorn) stage
+#' 
+#' TODO seems faster to have a single merger that writes multiple output files if
+#' cell list is not provided. if the overhead is accepted then read all input files and
+#' discard cells on the fly
+#' 
+#' 
+#' 
 #' @return TODO
 #' @export
 BascetShardify <- function(
     bascetRoot, 
     inputName="debarcoded", 
-    includeCells=NULL,
+    includeCells=NULL, ############# TODO: get rid of this parameter; only support direct merging
     num_output_shards=1,
     outputName="filtered", 
     runner, 
@@ -230,7 +200,7 @@ BascetShardify <- function(
   if(is.null(includeCells)){
     includeCells <- BascetCellNames(bascetRoot, inputName)
     includeCells <- unique(includeCells$cell) #when shardifying, we expect cells to appear more than once  -- could warn for other commands!
-    print(paste("Including all the",length(includeCells)), "cells")
+    print(paste("Including all the",length(includeCells), "cells"))
   }
 
   #Figure out which cell goes into which shard
@@ -249,6 +219,7 @@ BascetShardify <- function(
       shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
       shellscript_make_bash_array("files_out", outputFiles),
       paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin,
         "shardify", 
         "-t $BASCET_TEMPDIR",
@@ -337,6 +308,7 @@ BascetMapTransform <- function(
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "transform",
         if(produce_cell_list) "--cells $CELLFILE",
@@ -422,6 +394,7 @@ BascetMapCell <- function(
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "mapcell",
         "-t $BASCET_TEMPDIR",
@@ -553,7 +526,7 @@ KneeplotPerSpecies <- function(adata, max_species=NULL) {
 BarnyardPlotMatrix <- function(adata){
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   cnt <- cnt[rowSums(cnt)>0,]  ##Only consider species we have
-  list_species <- rownames(cnt)[1:4] ######## Just do a few!
+  list_species <- rownames(cnt)#[1:5] ######## Just do a few!
   
   all_plots <- list()
   for(i in seq_along(list_species)){

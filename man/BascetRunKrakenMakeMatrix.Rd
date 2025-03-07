@@ -8,8 +8,8 @@ BascetRunKrakenMakeMatrix(
   bascetRoot,
   useKrakenDB = "/data/henlab/kraken/standard-8",
   numLocalThreads = 1,
-  inputName = "asfq",
-  outputName = "kraken_out",
+  inputName = "kraken_out",
+  outputName = "kraken",
   runner,
   bascet_instance = bascet_instance.default
 )

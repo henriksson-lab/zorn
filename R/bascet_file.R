@@ -31,9 +31,9 @@ BascetCellNames <- function(bascetRoot, bascetName){
   cellnames <- list()
   for(i in seq_along(shards)){
     cur_file <- file.path(bascetRoot,shards[i])
-    if(stringr::str_ends(cur_file, fixed(".zip"))) {
+    if(stringr::str_ends(cur_file, stringr::fixed(".zip"))) {
       allfiles <- unzip(cur_file,list = TRUE)$Name
-    } else if(stringr::str_ends(cur_file, fixed(".tirp.gz"))) {
+    } else if(stringr::str_ends(cur_file, stringr::fixed(".tirp.gz"))) {
       allfiles <- system(paste("tabix","--list-chroms", cur_file),intern=TRUE)
     } else {
       stop(paste("Cannot list cells for"),cur_file)
@@ -136,6 +136,7 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
       tname.out <- tempfile()
       
       cmd = paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "extract -i",name_of_zip, 
         #"-t", bascet_instance@tempdir,
@@ -293,7 +294,8 @@ detect_shards_for_file <- function(bascetRoot, inputName){
   allbam <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","bam")))
   allcram <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","cram")))
   allfq <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","fq.gz")))  #### TODO: omit all R2 files
-  unique(c(allzip,alltirp, allbam, allcram, allfq)) #tirp.gz can sneak in
+  all_kraken <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","kraken_out")))  
+  unique(c(allzip,alltirp, allbam, allcram, allfq,all_kraken)) #tirp.gz can sneak in
 }
 
 #detect_shards_for_file("~/jupyter/zorn/test","fakein","zip")

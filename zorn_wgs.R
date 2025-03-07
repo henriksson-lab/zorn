@@ -1,15 +1,19 @@
-library(zorn)
+library(Zorn)
 
-source("R/job_general.R")
-source("R/job_local.R")
-source("R/job_slurm.R")
-source("R/bascet_file.R")
-source("R/zorn.R")
-source("R/shell.R")
-source("R/zorn_aggr.R")
-source("R/count_kmer.R")
-source("R/refgenome.R")
-source("R/kraken.R")
+if(FALSE){
+  source("R/job_general.R")
+  source("R/job_local.R")
+  source("R/job_slurm.R")
+  source("R/bascet_file.R")
+  source("R/zorn.R")
+  source("R/shell.R")
+  source("R/zorn_aggr.R")
+  source("R/count_kmer.R")
+  source("R/refgenome.R")
+  source("R/kraken.R")
+  source("R/container.R")
+  
+}
 
 
 ################################################################################
@@ -18,11 +22,12 @@ source("R/kraken.R")
 
 inst <- LocalInstance(direct = TRUE, show_script=TRUE)
 bascetRoot = "/husky/henriksson/atrandi/wgs_miseq2/"
+#bascetRoot = "/husky/henriksson/atrandi/wgs_novaseq3/"
 rawmeta <- DetectRawFileMeta("/husky/fromsequencer/240903_wgs_atcc2_miseq/raw")
 
 
 ### Debarcode the reads, then sort them.
-BascetGetRawAtrandiWGS(
+BascetGetRaw(
   bascetRoot,
   rawmeta,
   runner=inst
@@ -37,9 +42,176 @@ length(includeCells)
 ### Shardify i.e. divide into multiple sets of files for parallel processing
 BascetShardify(
   bascetRoot,
-  includeCells = includeCells,
+#  includeCells = includeCells,  #TODO: best to NOT filter anything at this stage. use includeCells in later stage for quality genomes
   runner = inst
 )
+
+################################################################################
+################## Preprocessing with KRAKEN ###################################
+################################################################################
+
+## By design, running KRAKEN on the full list of reads is pretty cheap. Doing so enables
+## automatic empty droplet calling using DropletUtils later
+
+
+### Get reads in fastq format  --- will not be needed later
+BascetMapTransform(
+  bascetRoot, 
+  "filtered", 
+  "asfq",
+  out_format="fq.gz",   ## but we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
+  runner=inst
+)
+
+
+### Run Kraken on each cell  ---- these two commands should be merged
+BascetRunKraken(
+  bascetRoot, 
+  useKrakenDB="/data/henlab/kraken/standard-8",
+  numLocalThreads=10,
+  runner=inst
+)
+BascetRunKrakenMakeMatrix(
+  bascetRoot, 
+  useKrakenDB="/data/henlab/kraken/standard-8",
+  numLocalThreads=10,
+  runner=inst
+)
+
+
+
+
+################################################################################
+################## Kraken-based analysis #######################################  
+################################################################################
+
+#bascetRoot <- "/husky/henriksson/atrandi/wgs_novaseq3/"
+
+mat <- ReadBascetKrakenMatrix(file.path(bascetRoot,"kraken.1.counts.hdf5")) ## any reason this need to be separate from the usual count table reading? best if not!
+
+
+### Compress the representation to avoid trouble with some tools
+compressed_mat <- SetTaxonomyNamesFeatures(mat)
+
+taxid_ob <- CreateAssayObject(compressed_mat)
+adata <- CreateSeuratObject(counts = taxid_ob, project = "proj", min.cells = 0, min.features = 0) ### do we need this? can overload also on assayobject!
+
+#adata[["kraken"]] <- taxid_ob
+
+
+## Add KRAKEN consensus taxonomy to metadata
+kraken_taxid <- KrakenFindConsensusTaxonomy(mat)
+rownames(kraken_taxid) <- kraken_taxid$cell_id
+kraken_taxid <- kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]
+adata@meta.data <- cbind(adata@meta.data,kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]) #AddMetaData behaves weirdly!!
+
+#Note, some species NA. example is taxid=1386. listed as Bacillus (Bacillus rRNA group 1), genus, firmicutes
+
+#### How many species?
+KrakenSpeciesDistribution(adata)  ### Could use metadata column! TODO   rewrite
+
+
+
+
+################################################################################
+################## Empty drop calling using KRAKEN data ########################
+################################################################################
+
+
+if(FALSE){
+  #https://bioconductor.org/packages/release/bioc/vignettes/DropletUtils/inst/doc/DropletUtils.html#detecting-empty-droplets
+  BiocManager::install("DropletUtils")
+}
+
+# DropletUtils uses test each cell vs a multinomial distribution based on empty droplets.
+# It however needs features, so it is a chicken-and-egg problem. We can use KRAKEN on the
+# /full/ list of barcodes get some type of features. If the sample is a mix of species then
+# this is a relevant droplet calling approach. However, if the sample only have very closely
+# related species then care must taken and the called knee should be manually investigated
+
+### Figure out which droplets have cells
+e.out <- DropletUtils::emptyDrops(compressed_mat, lower=1)  #### kills R after compression!  note: set lower to 1. default is 100. crashing?
+adata$is_cell <- e.out$FDR <= 0.01
+adata$is_cell_logprob <- e.out$LogProb
+adata$is_cell_cnt <- e.out$Total
+ggplot(adata@meta.data, aes(is_cell_cnt, -is_cell_logprob, color=is_cell)) + geom_point()
+ggplot(adata@meta.data, aes(is_cell_cnt, -is_cell_logprob, color=species)) + geom_point()
+ggplot(adata@meta.data, aes(is_cell_cnt, -is_cell_logprob, color=order)) + geom_point() + theme_bw()
+
+
+
+
+################################################################################
+################## The rest of KRAKEN analysis #################################
+################################################################################
+
+
+## Dimensional reduction using kraken
+DefaultAssay(adata) <- "kraken"
+
+adata <- adata[,adata$nCount_RNA>1000] ## Reduce to sensible number
+adata
+
+adata <- adata[,adata$species!="Homo sapiens"]  #clearly background!
+
+if(TRUE){
+  #ATAC-seq style. think not the best way here
+  adata <- RunTFIDF(adata)
+  adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+  adata <- RunSVD(adata)
+  DepthCor(adata)
+  adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "kraken_umap")  ## depth seems to be less of a problem here
+} else {
+  
+  adata <- NormalizeData(adata)
+  adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
+  adata <- ScaleData(adata, features = rownames(adata))
+  adata <- RunPCA(adata, features = VariableFeatures(object = adata))
+  adata <- RunUMAP(adata, dims = 1:20, reduction.name = "kraken_umap")
+}
+#DimPlot(object = adata, label = TRUE) + NoLegend()
+
+
+DimPlot(object = adata, label = TRUE, group.by = "species", reduction = "kraken_umap")
+DimPlot(object = adata, group.by = "species", reduction = "kraken_umap")
+
+saveRDS(adata, "/data/henlab/temp/kraken.RDS")
+
+#Compare with depth. "human" cells got few counts and end up in the middle
+adata$log_cnt <- log10(1+adata$nCount_RNA)
+FeaturePlot(adata, features = "log_cnt")
+
+ggplot(adata@meta.data, aes(species)) + geom_histogram(stat="count") + coord_flip()
+
+
+
+
+### Compare species kneeplots
+KneeplotPerSpecies(adata, max_species = 30)
+
+
+################################################################################
+################## QUAST todo #############################
+################################################################################
+
+###
+BascetMapCell(
+  bascetRoot,
+  withfunction = "_quast",
+  inputName = "filtered",
+  outputName = "quast",
+  runner=inst
+)
+
+#quast is in /home/mahogny/.local/bin/quast.py
+
+################################################################################
+################## Preprocessing for de novo KMERs #############################
+################################################################################
+
+
+### TODO note: now we likely wish to reduce the number of droplets to only cover relevant cells!
+
 
 ### Assemble ; 
 if(FALSE){
@@ -85,7 +257,7 @@ if(TRUE){
       scale_y_log10() + theme_bw()
   } 
   PlotMinhashDistribution(all_kmer)
-
+  
   
   useKMERs <- all_kmer$kmer[all_kmer$freq>3]
   length(useKMERs)
@@ -115,30 +287,14 @@ if(FALSE){
     num_pick=10000, minfreq=0.02, maxfreq=0.30)  
 }
 
-  
+
 
 
 ### Build count table by looking up selected KMERs in per-cell KMER databases
 BascetQuery(
-    bascetRoot, 
-    useKMERs = useKMERs,
-    runner=inst)
-
-
-
-### Run Kraken on each cell  ---- these two commands should be merged
-BascetRunKraken(
   bascetRoot, 
-  useKrakenDB="/data/henlab/kraken/standard-8",
-  numLocalThreads=10,
-  runner=inst
-)
-BascetRunKrakenMakeMatrix(
-  bascetRoot, 
-  useKrakenDB="/data/henlab/kraken/standard-8",
-  numLocalThreads=10,
-  runner=inst
-)
+  useKMERs = useKMERs,
+  runner=inst)
 
 ################################################################################
 ################## Postprocessing with Signac ##################################
@@ -158,7 +314,7 @@ colnames(cnt) <- paste0("BASCET_",colnames(cnt)) ### compatibilíty with fragmen
 
 
 adata <- CreateSeuratObject(
-  counts = CreateKmerAssay(cnt),
+  counts = CreateAssayObject(cnt),
   assay = "peaks"
 )
 
@@ -179,64 +335,12 @@ FeaturePlot(adata, "nCount_peaks", reduction = "kmers_umap")
 #TODO QUAST information on top
 
 
-################################################################################
-################## Kraken-based analysis #######################################  
-################################################################################
-
-
-
-mat <- ReadBascetKrakenMatrix("/husky/henriksson/atrandi/wgs_miseq2/kraken_count.hdf5")
-
-
-### Compress the representation to avoid trouble with some tools
-use_row <- rowSums(mat)>0
-compressed_mat <- mat[use_row, ]
-rownames(compressed_mat) <- paste0("taxid-", which(use_row))
-
-
-taxid_ob <- CreateAssayObject(compressed_mat)
-adata[["kraken"]] <- taxid_ob
-
-
-## Add max taxid to metadata
-kraken_taxid <- KrakenFindMaxTaxid(mat)
-rownames(kraken_taxid) <- kraken_taxid$cell_id
-kraken_taxid <- kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]
-adata@meta.data <- cbind(adata@meta.data,kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]) #AddMetaData behaves weirdly!!
-
-
-#### How many species?
-KrakenSpeciesDistribution(adata)
-
-
-## Dimensional reduction using kraken
-DefaultAssay(adata) <- "kraken"
-
-adata <- RunTFIDF(adata)
-adata <- FindTopFeatures(adata, min.cutoff = 'q0')
-adata <- RunSVD(adata)
-DepthCor(adata)
-adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "kraken_umap")  ## depth may be less of a problem here; hard to tell. could normalize counts without issue. RNAseq analysis instead?
-#DimPlot(object = adata, label = TRUE) + NoLegend()
-
-
-DimPlot(object = adata, label = TRUE, group.by = "species", reduction = "kraken_umap")
-
 
 
 ################################################################################
 ################## Reference-based mapping to get "ground truth" ###############
 ################################################################################
 
-
-### Get reads in fastq format  --- will not be needed later
-BascetMapTransform(
-  bascetRoot, 
-  "filtered", 
-  "asfq",
-  out_format="fq.gz",   ## but we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
-  runner=inst
-)
 
 ### Perform alignment -- this is a wrapper for mapshard
 BascetAlignToReference(
@@ -257,20 +361,62 @@ BascetBam2Fragments(
 ################################################################################
 
 
+#200% cpu. to get more speed, we need to divide up parsing between threads.
+#then we need to support addition of matrices
+BascetCountChrom(
+  bascetRoot, 
+  runner=inst
+)
+
+
+##################### TODO fucked up fragments file!!
+
+### TODO call bascet countchrom
+
+
+cnt <- ReadBascetCountMatrix("/husky/henriksson/atrandi/wgs_novaseq3/chromcount.1.hd5")  #cnt_al todo delete
+#colnames(cnt)
+#rownames(cnt)
+
+## TODO: we clearly need 
+
+#adata[["chrom_cnt"]] <- CreateAssayObject(t(cnt)) #TODO swap
+adata <- CreateSeuratObject(CreateAssayObject(t(cnt)), assay="chrom_cnt")  #### TODO swap order!!
+
+
 ## Add the counts to our Seurat object
-adata[["chrom_cnt"]] <- FragmentCountsPerChromAssay(bascetRoot)
+#adata[["chrom_cnt"]] <- FragmentCountsPerChromAssay(bascetRoot)   #### ... first time it crashed on line 300. now fine???
+#adata[["chrom_cnt"]] <- FragmentCountsPerChromAssay(bascetRoot, inputName = "new_fragments.1.tsv.gz")   #### ... ignore
 DefaultAssay(adata) <- "chrom_cnt"
+
 
 #Figure out which chromosome has most reads in which cell
 cnt <- adata@assays$chrom_cnt$counts
-adata$dominant_chr <- rownames(cnt)[apply(cnt, 2, which.max)]
+adata$chr_aln <- rownames(cnt)[apply(cnt, 2, which.max)]
 
-DimPlot(adata, group.by = "dominant_chr")
+
+adata <- RunTFIDF(adata)
+adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+adata <- RunSVD(adata,n = nrow(adata@assays$chrom_cnt$counts)-1) ## need to do this when few chroms
+DepthCor(adata)
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:(nrow(adata@assays$chrom_cnt$counts)-1), reduction.name = "aln_chrom_umap")  ## even 2nd factor is correlated
+
+DimPlot(adata, group.by = "chr_aln", reduction = "aln_chrom_umap", label = TRUE)
 
 
 # #NC_017316.1   Enterococcus faecalis OG1RF, complete sequence
 # #CP086328.1    Bacillus pacificus strain anQ-h4 chromosome, complete genome
 
+#3     CP086328.1 5252926           Bacillus pacificus (ATCC 10987)   big one
+#4     CP086329.1  341714           Bacillus pacificus (ATCC 10987)
+
+### why do other species die out if we sum up???
+
+#Log depth is easier to see
+adata$log_aln_cnt <- log10(1+colSums(adata@assays$species_cnt$counts))
+
+#Compute purity of genomes
+adata$purity_aln <- colMaxs(adata@assays$species_cnt$counts)/colSums(adata@assays$species_cnt$counts)
 
 
 ################################################################################ 
@@ -313,6 +459,8 @@ get_map_seq2strain <- function(){
   idx <- read.table(pipe("samtools idxstats /husky/fromsequencer/241206_novaseq_wgs3/trimmed/sorted.bam"),sep="\t")
   colnames(idx) <- c("id","len","mapped","unmapped")
   map_seq2strain <- merge(idx[,c("id","len")], map_seq2strain)  #note, only using id and len
+
+  map_seq2strain$id <- stringr::str_replace_all(map_seq2strain$id,stringr::fixed("_"), "-") #### for compatibility with signac
   
   map_seq2strain
 }
@@ -326,14 +474,50 @@ strain_genomesize <- sqldf::sqldf("select sum(len) as len, strain from map_seq2s
 
 ########## Produce a count matrix on strain level
 DefaultAssay(adata) <- "chrom_cnt"
-adata[["species_cnt"]] <- ChromToSpeciesCount(adata, map_seq2strain)
+adata[["species_cnt"]] <- ChromToSpeciesCount(adata, map_seq2strain)  #gives warning. coerce ourselves to dgCMatrix
 
 #Figure out which species has most reads in which cell
 cnt <- adata@assays$species_cnt$counts
-adata$dominant_species <- rownames(cnt)[apply(cnt, 2, which.max)]
+adata$species_aln <- rownames(cnt)[apply(cnt, 2, which.max)]
 
-DimPlot(adata, group.by = "species_aln")
 
+#####
+adata <- RunTFIDF(adata)
+adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+adata <- RunSVD(adata,n = nrow(adata@assays$species_cnt$counts)-1) ## need to do this when few chroms
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:(nrow(adata@assays$species_cnt$counts)-1), reduction.name = "aln_species_umap")  
+
+DimPlot(adata, group.by = "species_aln", reduction = "aln_species_umap", label = TRUE)
+
+saveRDS(adata, "/data/henlab/temp/aln.RDS")
+
+egg::ggarrange(
+  DimPlot(adata, group.by = "species_aln", reduction = "aln_species_umap", label = TRUE),
+  DimPlot(adata[,adata$log_aln_cnt>4 & adata$purity_aln>0.9], group.by = "species_aln", reduction = "aln_species_umap"),
+  FeaturePlot(adata, features = "log_aln_cnt", reduction = "aln_species_umap"),
+  FeaturePlot(adata, features = "purity_aln", reduction = "aln_species_umap")
+)
+#New species distribution
+ggplot(
+  adata@meta.data[adata$log_aln_cnt>1 & adata$purity_aln>0.95,],
+  aes(species_aln)) + geom_bar() + coord_flip()
+
+
+KrakenSpeciesDistribution(adata, use_assay = "species_cnt")
+### TODO: 
+DefaultAssay(adata) <- "species_cnt"
+KneeplotPerSpecies(adata)
+
+
+adata_clean <- adata[,adata$log_aln_cnt>4 & adata$purity_aln>0.9]
+adata_clean <- RunTFIDF(adata_clean)
+adata_clean <- FindTopFeatures(adata_clean, min.cutoff = 'q0')
+adata_clean <- RunSVD(adata_clean,n = nrow(adata_clean@assays$species_cnt$counts)-1) ## need to do this when few chroms
+adata_clean <- RunUMAP(object = adata_clean, reduction = 'lsi', dims = 1:(nrow(adata_clean@assays$species_cnt$counts)-1), reduction.name = "aln_species_umap")  
+
+
+DimPlot(adata_clean, group.by = "species_aln", reduction = "aln_species_umap")
+ggsave("/home/mahogny/species_aln.pdf", width = 10, height = 6) #### for february presentation
 
 
 
@@ -362,8 +546,26 @@ KneeplotPerSpecies(adata, max_species = 10)
 
 
 DefaultAssay(adata) <- "species_cnt"
-BarnyardPlotMatrix(adata)
+BarnyardPlotMatrix(adata[
+  1:2,
+  adata$log_aln_cnt>4])
 
+
+subdata <- adata[
+  c("Streptococcus mutans (ATCC 700610)","Clostridium beijerinckii (ATCC 35702)"),
+  adata$log_aln_cnt>4]
+
+df <- data.frame(
+  x=adata@assays$species_cnt$counts[1,],
+  y=adata@assays$species_cnt$counts[2,]
+)
+ggplot(df, aes(x,y)) + geom_point() + scale_x_log10() + scale_y_log10() 
+
+#
+BarnyardPlotMatrix()
+
+
+rownames(adata)
 
 ## TODO: after detecting doublets, we should color by this in the plot   ; color by any metadata!!
 
@@ -382,7 +584,6 @@ SpeciesCorrMatrix(adata)
 
 
 # other code in /home/mahogny/jupyter/scWGS
-
 
 
 

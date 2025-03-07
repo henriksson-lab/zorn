@@ -110,6 +110,7 @@ BascetBam2Fragments <- function(
       shellscript_make_bash_array("files_in", inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "bam2fragments",
         "-t $BASCET_TEMPDIR",
@@ -117,13 +118,56 @@ BascetBam2Fragments <- function(
         "-o ${files_out[$TASK_ID]}"
       )
     ),
-    arraysize = nrow(rawmeta)
+    arraysize = length(inputFiles)
   )
 }
 
 
 
 
+
+###############################################
+#' From aligned BAM file, compute counts per chromosome
+#' 
+#' @return TODO
+#' @export
+BascetCountChrom <- function(
+    bascetRoot, 
+    inputName="aligned",
+    outputName="chromcount", 
+    runner, 
+    bascet_instance=bascet_instance.default){
+  
+  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  if(length(input_shards)==0){
+    stop("Found no input files")
+  }
+  num_shards <- length(input_shards)
+  inputFiles <- file.path(bascetRoot, input_shards)
+  
+  #One output per input alignment
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "hd5", num_shards)  
+  
+  
+  RunJob(
+    runner = runner, 
+    jobname = "bascet_countchrom",
+    cmd = c(
+      shellscript_set_tempdir(bascet_instance),
+      shellscript_make_bash_array("files_in", inputFiles),
+      shellscript_make_bash_array("files_out",outputFiles),
+      paste(
+        bascet_instance@prepend_cmd,
+        bascet_instance@bin, 
+        "countchrom",
+        "-t $BASCET_TEMPDIR",
+        "-i ${files_in[$TASK_ID]}",  
+        "-o ${files_out[$TASK_ID]}"
+      )
+    ),
+    arraysize = length(inputFiles)
+  )
+}
 
 
 
@@ -140,7 +184,10 @@ TabixGetFragmentsSeqs <- function(fragpath) {
 
 
 ###############################################
-#' From a fragments file, get a chromatin assay for Signac
+#' From a fragments file, get a chromatin assay for Signac  .......................... signac is dirt slow at counting! only 1 cpu used. take over the whole process
+#' 
+#' Case: tabix from command line uses 100% cpu only. likely not designed for large queries
+#' 
 #' 
 #' @return TODO
 #' @export
@@ -193,9 +240,11 @@ FragmentsToSignac <- function(fragpath) {
 #' @export
 FragmentCountsPerChrom <- function(chrom_assay){
   
+  #Figure out where the fragment file is
   fr <- Fragments(chrom_assay)[[1]]
   #fr@cells ## also possible!
   
+  #Get the name of chromosomes
   all_seqid <- TabixGetFragmentsSeqs(fr@path)
   
   grange <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
@@ -205,7 +254,7 @@ FragmentCountsPerChrom <- function(chrom_assay){
     end=536870912  #for grange this must be <2**31. for scanTabix, this must be <=536870912
   ))
   
-  # quantify counts over all chrom
+  # Quantify counts over each chromosome
   reg_counts <- FeatureMatrix(
     fragments = Fragments(chrom_assay),
     features = grange,
@@ -228,7 +277,7 @@ FragmentCountsPerChromAssay <- function(
     bascetRoot,
     inputName="fragments.1.tsv.gz" ### TODO, detect, merge all of them
 ) {
-  fragpath <- file.path(bascetRoot,"fragments.1.tsv.gz")
+  fragpath <- file.path(bascetRoot,inputName)
   chrom_assay <- FragmentsToSignac(fragpath)
   chrom_assay <- FragmentCountsPerChrom(chrom_assay)
   
@@ -280,47 +329,50 @@ ChromToSpeciesCount <- function(adata, map_seq2strain){
 ################################################################################
 ############ RNA-seq style feature counting from fragments.tsv #################
 ################################################################################
+#' 
+#' 
+#' ###############################################
+#' #' @return TODO
+#' #' @export
+#' LoadFragmentsAsObject <- function(fragpath){
+#'   
+#'   #### Index fragment file if needed. Only needed if you got the file externally and it has no index
+#'   fragpath_index <- paste(fragpath,".tbi",sep="")
+#'   if(!file.exists(fragpath_index)){
+#'     print("Indexing fragment file")
+#'     system(paste("tabix -p vcf ",fragpath))
+#'   }
+#'   
+#'   #### Figure out names of cells
+#'   
+#'   
+#'   #### Create a dummy assay
+#'   stupidmat <- matrix(0, nrow = 2, ncol=length(keep_cells))
+#'   rownames(stupidmat) <- c("chr1:1-100", "chr1:200-300")
+#'   colnames(stupidmat) <- keep_cells
+#'   
+#'   chrom_assay <- CreateChromatinAssay(
+#'     counts = as.sparse(stupidmat),
+#'     sep = c(":", "-"),
+#'     fragments = fragpath,
+#'     min.cells = 0,
+#'     min.features = 0
+#'   )
+#'   
+#'   adata <- CreateSeuratObject(
+#'     counts = chrom_assay,
+#'     assay = "aligned"
+#'   )  
+#'   
+#'   adata
+#' }
+#' 
 
 
 ###############################################
 #' @return TODO
 #' @export
-LoadFragmentsAsObject <- function(fragpath){
-  
-  #### Index fragment file if needed. Only needed if you got the file externally and it has no index
-  fragpath_index <- paste(fragpath,".tbi",sep="")
-  if(!file.exists(fragpath_index)){
-    print("Indexing fragment file")
-    system(paste("tabix -p vcf ",fragpath))
-  }
-  
-  #### Create a dummy assay
-  stupidmat <- matrix(0, nrow = 2, ncol=length(keep_cells))
-  rownames(stupidmat) <- c("chr1:1-100", "chr1:200-300")
-  colnames(stupidmat) <- keep_cells
-  
-  chrom_assay <- CreateChromatinAssay(
-    counts = as.sparse(stupidmat),
-    sep = c(":", "-"),
-    fragments = fragpath,
-    min.cells = 0,
-    min.features = 0
-  )
-  
-  adata <- CreateSeuratObject(
-    counts = chrom_assay,
-    assay = "aligned"
-  )  
-  
-  adata
-}
-
-
-
-###############################################
-#' @return TODO
-#' @export
-CountGrangeFeatures <- function(grange_gene){
+CountGrangeFeatures <- function(adata, grange_gene){
   gene_counts <- FeatureMatrix(
     fragments = Fragments(adata),
     features = grange_gene,

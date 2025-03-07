@@ -49,6 +49,7 @@ BascetFeaturise <- function( ########### need a better name; KMC something?
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "featurise",
         if(produce_cell_list) "--cells $CELLFILE",
@@ -104,6 +105,7 @@ BascetQuery <- function(
       shellscript_make_bash_array("files_out",outputFiles),
       shellscript_make_one_file_expander("KMERFILE", useKMERs), 
       paste(
+        bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "query",
         "-t $BASCET_TEMPDIR",
