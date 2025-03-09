@@ -47,10 +47,10 @@ BascetCellNames <- function(bascetRoot, bascetName){
 
 
 
-system(paste("tabix","--list-chroms", "/home/mahogny/github/bascet/testdata/filtered.0.tirp.gz"),intern=TRUE)
 
 
 if(FALSE){
+  system(paste("tabix","--list-chroms", "/home/mahogny/github/bascet/testdata/filtered.0.tirp.gz"),intern=TRUE)
   BascetCellNames("/home/mahogny/jupyter/zorn/test/data", "shard")
 }
 

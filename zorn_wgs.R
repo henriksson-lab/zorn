@@ -20,7 +20,7 @@ if(FALSE){
 ################## Preprocessing with Bascet/Zorn ##############################
 ################################################################################
 
-inst <- LocalInstance(direct = TRUE, show_script=TRUE)
+bascet_runner <- LocalInstance(direct = TRUE, show_script=TRUE)
 bascetRoot = "/husky/henriksson/atrandi/wgs_miseq2/"
 #bascetRoot = "/husky/henriksson/atrandi/wgs_novaseq3/"
 rawmeta <- DetectRawFileMeta("/husky/fromsequencer/240903_wgs_atcc2_miseq/raw")
@@ -30,7 +30,7 @@ rawmeta <- DetectRawFileMeta("/husky/fromsequencer/240903_wgs_atcc2_miseq/raw")
 BascetGetRaw(
   bascetRoot,
   rawmeta,
-  runner=inst
+  runner=bascet_runner
 )
 
 ### Decide cells to include
@@ -43,7 +43,7 @@ length(includeCells)
 BascetShardify(
   bascetRoot,
 #  includeCells = includeCells,  #TODO: best to NOT filter anything at this stage. use includeCells in later stage for quality genomes
-  runner = inst
+  runner = bascet_runner
 )
 
 ################################################################################
@@ -60,7 +60,7 @@ BascetMapTransform(
   "filtered", 
   "asfq",
   out_format="fq.gz",   ## but we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
-  runner=inst
+  runner=bascet_runner
 )
 
 
@@ -69,13 +69,13 @@ BascetRunKraken(
   bascetRoot, 
   useKrakenDB="/data/henlab/kraken/standard-8",
   numLocalThreads=10,
-  runner=inst
+  runner=bascet_runner
 )
 BascetRunKrakenMakeMatrix(
   bascetRoot, 
   useKrakenDB="/data/henlab/kraken/standard-8",
   numLocalThreads=10,
-  runner=inst
+  runner=bascet_runner
 )
 
 
@@ -119,7 +119,7 @@ KrakenSpeciesDistribution(adata)  ### Could use metadata column! TODO   rewrite
 
 
 if(FALSE){
-  #https://bioconductor.org/packages/release/bioc/vignettes/DropletUtils/inst/doc/DropletUtils.html#detecting-empty-droplets
+  #https://bioconductor.org/packages/release/bioc/vignettes/DropletUtils/bascet_runner/doc/DropletUtils.html#detecting-empty-droplets
   BiocManager::install("DropletUtils")
 }
 
@@ -200,7 +200,7 @@ BascetMapCell(
   withfunction = "_quast",
   inputName = "filtered",
   outputName = "quast",
-  runner=inst
+  runner=bascet_runner
 )
 
 #quast is in /home/mahogny/.local/bin/quast.py
@@ -228,7 +228,7 @@ BascetMapCell(
   withfunction = "_kmc_process_reads",
   inputName = "filtered",
   outputName = "kmc",
-  runner=inst
+  runner=bascet_runner
 )
 
 
@@ -239,7 +239,7 @@ BascetMapCell(
   withfunction = "_minhash",
   inputName = "kmc",
   outputName = "minhash",
-  runner=inst
+  runner=bascet_runner
 )
 
 
@@ -275,7 +275,7 @@ if(FALSE){
   BascetFeaturise(
     bascetRoot, 
     includeCells = sample(BascetCellNames(bascetRoot, "filtered")$cell, 100),  ### avoid crash by running a subset
-    runner=inst
+    runner=bascet_runner
   )
   
   ### Look at the KMER histogram
@@ -294,7 +294,7 @@ if(FALSE){
 BascetQuery(
   bascetRoot, 
   useKMERs = useKMERs,
-  runner=inst)
+  runner=bascet_runner)
 
 ################################################################################
 ################## Postprocessing with Signac ##################################
@@ -352,7 +352,7 @@ BascetAlignToReference(
 ### Generate fragments BED file suited for quantifying reads/chromosome using Signac later -- this is a wrapper for mapshard
 BascetBam2Fragments(
   bascetRoot,
-  runner=inst
+  runner=bascet_runner
 )
 
   
@@ -365,7 +365,7 @@ BascetBam2Fragments(
 #then we need to support addition of matrices
 BascetCountChrom(
   bascetRoot, 
-  runner=inst
+  runner=bascet_runner
 )
 
 

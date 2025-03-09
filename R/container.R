@@ -32,13 +32,13 @@ BascetInstance <- function(bin, tempdir, prepend_cmd=""){
 
 
 
-###############################################
+############################################### ----------------------------------- likely need to replace
 #' The default Bascet installation settings
 #' @return TODO
 #' @export
 bascet_instance.default <- BascetInstance(
   bin="/home/mahogny/jupyter/bascet/target/debug/robert",
-  tempdir="/data/henlab/bascet_temp"
+  tempdir="./"
 )
 
 #bascet_instance.default <- BascetInstance(bin="bascet")
@@ -74,7 +74,7 @@ GetBascetTempDir <- function(bascet_instance){
 getBascetImageInstance <- function(store_at="./", tempdir=NULL) {
   
   
-  file_bascet_sif <- file.path(store_at, "bascet_0.01.sif")
+  file_bascet_sif <- file.path(store_at, "bascet.sif")
 
   if(!file.exists(file_bascet_sif)) {
     print("No singularity image present; downloading")
@@ -118,6 +118,23 @@ if(FALSE){
 
 
 
+###############################################
+#' Check if a Bascet instance works
+#' 
+#' @return TODO
+#' @export
+TestBascetInstance <- function(bascet_instance) {
+  
+  cmd <- paste(
+    bascet_instance@prepend_cmd,
+    bascet_instance@bin
+  )
+  print(cmd)
+
+  system(cmd)  
+  
+}
+  
 
 
 

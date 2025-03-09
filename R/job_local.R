@@ -9,7 +9,7 @@ library(processx) #####
 
 
 #' @export
-setClass("LocalInstance", slots=list(
+setClass("LocalRunner", slots=list(
   maxcpu="character",
   direct="logical",
   show_script="logical"
@@ -30,8 +30,8 @@ setClass("LocalJob", slots=list(
 # Create new local runner instance
 #' @return TODO
 #' @export
-LocalInstance <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
-  new("LocalInstance", maxcpu=maxcpu, direct=direct, show_script=show_script)
+LocalRunner <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
+  new("LocalRunner", maxcpu=maxcpu, direct=direct, show_script=show_script)
 }
 
 
@@ -40,7 +40,7 @@ LocalInstance <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
 #' @export
 setMethod(
   f = "RunJob",
-  signature ="LocalInstance",
+  signature ="LocalRunner",
   definition = function(runner, jobname, cmd, arraysize) {  ######## todo likely remove witdata
     
     print("Starting local job")
@@ -156,10 +156,10 @@ setMethod(
 ############ Testing
 if(FALSE){
   
-  inst <- LocalInstance(direct=TRUE)
+  inst <- LocalRunner(direct=TRUE)
   
-#  thejob <- RunJob(LocalInstance(),"ls",1)
-  thejob <- RunJob(LocalInstance(),"ls",c(),"ls",1)
+#  thejob <- RunJob(LocalRunner(),"ls",1)
+  thejob <- RunJob(LocalRunner(),"ls",c(),"ls",1)
   
   CancelJob(thejob)
   

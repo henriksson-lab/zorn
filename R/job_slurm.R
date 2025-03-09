@@ -5,7 +5,7 @@
 
 
 #' @export
-setClass("SlurmInstance", slots=list(
+setClass("SlurmRunner", slots=list(
   settings="character", 
   ncpu="character", 
   partition="character", 
@@ -31,12 +31,12 @@ setClass("SlurmJob", slots=list(
 
 #' @return TODO
 #' @export
-SlurmInstance <- function(settings=NULL, ncpu=NULL, partition=NULL, account=NULL, time=NULL, prepend=NULL, mem=NULL){
+SlurmRunner <- function(settings=NULL, ncpu=NULL, partition=NULL, account=NULL, time=NULL, prepend=NULL, mem=NULL){
   
   ## Create a new default
   if(is.null(settings)){
     settings <- new(
-      "SlurmInstance", 
+      "SlurmRunner", 
       ncpu="1", 
       partition="",  #or NULL?? 
       account="",  #or NULL??
@@ -81,7 +81,7 @@ SlurmInstance <- function(settings=NULL, ncpu=NULL, partition=NULL, account=NULL
 #' @export
 setMethod(
   f = "RunJob",
-  signature ="SlurmInstance",
+  signature ="SlurmRunner",
   definition = function(runner, jobname, cmd, arraysize) {
     
     print("Running job with slurm")
@@ -221,7 +221,7 @@ setMethod(
 ####### testing
 if(FALSE){
   
-  inst <- SlurmInstance(partition="shared", account = "naiss2024-22-1647", ncpu = "10")
+  inst <- SlurmRunner(partition="shared", account = "naiss2024-22-1647", ncpu = "10")
   job <- RunJob(inst,"ls $JOBID",1)
   
   JobStatus(job)
