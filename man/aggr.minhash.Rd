@@ -5,7 +5,7 @@
 \title{Callback function for aggregating min-hashes for each cell
 To be called from BascetAggregateMap}
 \usage{
-aggr.minhash(bascetFile, cellID)
+aggr.minhash(bascetFile, cellID, bascet_instance)
 }
 \value{
 Minhash data (minhash.txt) for each cell

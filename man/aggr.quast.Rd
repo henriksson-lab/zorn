@@ -5,7 +5,7 @@
 \title{Callback function for aggregating QUAST data.
 To be called from BascetAggregateMap}
 \usage{
-aggr.quast(bascetFile, cellID)
+aggr.quast(bascetFile, cellID, bascet_instance)
 }
 \value{
 QUAST data for each cell
