@@ -1,0 +1,30 @@
+url: https://henriksson-lab.github.io/zorn/
+template:
+  bootstrap: 5
+
+
+navbar:
+  title: "Seurat"
+  left:
+    - text: "Install"
+      href: articles/install.html
+    - text: "Get started"
+      href: articles/get_started.html
+    - text: "Vignettes"
+      menu:
+        - text: Introductory Vignettes
+        - text: "Debarcoding"
+          href: articles/debarcoding.html
+        - text: -------
+        - text: Other stuff
+    - text: FAQ
+      href: reference/faq.html
+    - text: "Reference"
+      href: reference/index.html
+  right:
+    - icon: fa-home
+      href: "https://henlab.org/"
+    - icon: fa-github
+      href: https://github.com/henriksson-lab/zorn
+      
+  

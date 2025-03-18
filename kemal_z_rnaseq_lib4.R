@@ -83,7 +83,7 @@ for(curlib in c(1:3)){
   )
   
   ### Perform alignment -- internally wraps mapshard
-  BascetAlignToReference(
+  BascetAlignToReference(  #### does not run in parallel?? TODO bug. use runjob
     bascetRoot,
     useReference="/husky/fromsequencer/241210_joram_rnaseq/ref/all.fa",
     numLocalThreads=10

@@ -1,0 +1,15 @@
+citHeader("To cite Zorn and Bascet in publications, please use:")
+
+bibentry(bibtype = "article",
+  author = c(
+    as.person("todo"),
+    as.person("Laura Carroll"),
+    as.person("Johan Henriksson")
+  ),
+  title = "Scalable single-cell metagenomic analysis with Bascet and Zorn",
+  journal = "Biorxiv",
+  year = "2025",
+  doi = "todo",
+  url = "https://todo",
+  textVersion = "xxx et al. Scalable single-cell metagenomic analysis with Bascet and Zorn. Biorxiv (2025)"
+)

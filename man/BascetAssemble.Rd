@@ -12,9 +12,6 @@ BascetAssemble(
   bascet_instance = bascet_instance.default
 )
 }
-\value{
-TODO
-}
 \description{
-Assemble the genomes
+TODO not yet implemented
 }

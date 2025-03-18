@@ -13,8 +13,13 @@ DetectRawFileMeta(rawRoot, verbose = FALSE)
 A data frame with metadata for the raw input files
 }
 \description{
-Detect metadata for raw input FASTQ files
+_R1 -- common from illumina sequencer
+SRR****_1.fastq.gz -- typical from SRA
 }
-\examples{
-DetectRawFileMeta("/path/to/raw_fastq", verbose = TRUE)
+\details{
+TODO Would be convenient to handle multiple samples, as sample1/xxx; in this case,
+should prepend the sample name to the barcodes.
+
+issue: when shardifying, good to keep info about what to merge. this reduces the work plenty!
+could keep a list of which shards belong for the next step
 }

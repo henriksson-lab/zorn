@@ -6,8 +6,13 @@
 \usage{
 KmcGetHistogram(fname, plot = TRUE)
 }
+\arguments{
+\item{fname}{Full name of KMC3 database}
+
+\item{toplot}{Decide if to plot or return raw data}
+}
 \value{
-TODO
+A ggplot object if toplot=TRUE, otherwise a data.frame
 }
 \description{
 Generate a histogram from a KMC3 database

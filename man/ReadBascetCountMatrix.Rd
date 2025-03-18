@@ -6,8 +6,11 @@
 \usage{
 ReadBascetCountMatrix(fname)
 }
+\arguments{
+\item{fname}{Full name of the hdf5 count matrix}
+}
 \value{
-TODO
+Count matrix as sparseMatrix
 }
 \description{
 Read a count matrix as produced by Bascet (hdf5 format)

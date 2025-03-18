@@ -6,6 +6,11 @@
 \usage{
 AggregateMinhashes(bascetRoot, inputName = "minhash")
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{description}
+}
 \value{
 TODO
 }

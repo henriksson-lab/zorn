@@ -2,15 +2,18 @@
 % Please edit documentation in R/bascet_file.R
 \name{OpenBascet}
 \alias{OpenBascet}
-\title{Open a Bascet, prepare it for reading.}
+\title{Open a Bascet, prepare it for reading individual files}
 \usage{
 OpenBascet(bascetRoot, bascetName)
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+}
 \value{
-TODO
+A handle to a Bascet
 }
 \description{
-The current code is based on pure R, but more efficient calls can be made
+TODO The current code is based on pure R, but more efficient calls can be made
 in the future. We thus advise against direct zip-file manipulation and
 do not guarantee future support for this
 }

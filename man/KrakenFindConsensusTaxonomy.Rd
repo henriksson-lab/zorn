@@ -2,13 +2,16 @@
 % Please edit documentation in R/kraken.R
 \name{KrakenFindConsensusTaxonomy}
 \alias{KrakenFindConsensusTaxonomy}
-\title{For a Kraken count matrix, return consesus taxid for each cell as metadata}
+\title{For a KRAKEN2 count matrix, return consensus taxID for each cell as metadata}
 \usage{
 KrakenFindConsensusTaxonomy(mat)
 }
+\arguments{
+\item{mat}{A count matrix, typically in sparse format}
+}
 \value{
-TODO
+A data.frame holding cellID and consensus taxID
 }
 \description{
-For a Kraken count matrix, return consesus taxid for each cell as metadata
+For a KRAKEN2 count matrix, return consensus taxID for each cell as metadata
 }

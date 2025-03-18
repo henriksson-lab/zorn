@@ -9,6 +9,26 @@ if(FALSE){
 }
 
 
+###############################################
+#' Function template, where basic parameter documentation can be obtained from
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascet_instance Configuration for how to run the Bascet Rust API
+#' @param num_output_shards Number of output shards, i.e., how many output files to split the data into? (>=1)
+#' @param includeCells List of cells to process
+#' @param bascetFile Handle for an opened Bascet file
+#' @param cellID ID of the cell (string)
+#' @param verbose description
+#' 
+#' @return A job to be executed
+template_BascetFunction <- function(
+    bascetRoot, 
+    runner, 
+    bascet_instance=bascet_instance.default){}
+
+  
+
 
 ################################################################################
 ################ Bascet command line tool: debarcoding raw fastq ###############
@@ -32,7 +52,6 @@ if(FALSE){
 #' @param rawRoot Path to folder with FASTQ files
 #' @export
 #' @return A data frame with metadata for the raw input files
-#' @examples
 DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
   #rawRoot <- "/husky/fromsequencer/241206_novaseq_wgs3/raw"
   allfiles <- list.files(rawRoot)
@@ -107,7 +126,11 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
 ###############################################
 #' Generate BAM with barcodes from input raw FASTQ
 #' 
-#' @return TODO
+#' @inheritParams template_BascetFunction
+#' @param rawmeta Metadata for the raw FASTQ input files. See DetectRawFileMeta
+#' @param outputName Name output files: Debarcoded reads
+#' @param outputNameIncomplete Name of output files: Reads that could not be parsed
+#' @param chemistry The type of data to be parsed
 #' @export
 BascetGetRaw <- function(
     bascetRoot, 
@@ -164,7 +187,16 @@ BascetGetRaw <- function(
 
 
 ###############################################
-#' Take debarcoded reads and split them into suitable numbers of shards
+#' Take debarcoded reads and split them into suitable numbers of shards.
+#' 
+#' The reads from one cell is guaranteed to only be present in a single shard.
+#' This makes parallel processing simple as each shard can be processed on
+#' a separate computer. Using more shards means that more computers can be used.
+#' 
+#' If you perform all the calculations on a single computer, having more
+#' than one shard will not result in a speedup. This option is only relevant
+#' when using a cluster of compute nodes.
+#' 
 #' 
 #' 
 #' TODO if we have multiple input samples, is there a way to group them?
@@ -172,15 +204,15 @@ BascetGetRaw <- function(
 #' if we got an index, so if list of cells specified, it is possible to quickly figure out
 #' out if a file is needed at all for a merge
 #' 
-#' Figuring out if a file is needed can be done at "planning" (Zorn) stage
+#' TODO Figuring out if a file is needed can be done at "planning" (Zorn) stage
 #' 
 #' TODO seems faster to have a single merger that writes multiple output files if
 #' cell list is not provided. if the overhead is accepted then read all input files and
 #' discard cells on the fly
 #' 
+#' @param inputName Name of input file: Debarcoded reads
+#' @param outputName Name of the output file: Properly sharded debarcoded reads
 #' 
-#' 
-#' @return TODO
 #' @export
 BascetShardify <- function(
     bascetRoot, 
@@ -239,7 +271,9 @@ BascetShardify <- function(
 
 ###############################################
 #' Assemble the genomes
-#' @return TODO
+#' 
+#' TODO not yet implemented
+#' 
 #' @export
 BascetAssemble <- function(bascetRoot, inputName="rawreads", outputName="assembled", runner, bascet_instance=bascet_instance.default){
   stop("this is done using MapCell; but we could produce a wrapper for it")
@@ -249,8 +283,18 @@ BascetAssemble <- function(bascetRoot, inputName="rawreads", outputName="assembl
 
 
 ###############################################
-#' Transform: subset, convert, merge, divide
-#' @return TODO
+#' Transform data
+#' 
+#' This command enables
+#' * subsetting to a list of cells
+#' * converting between file formats
+#' * merging shards
+#' * dividing shards
+#' 
+#' @param num_divide description
+#' @param num_merge description
+#' @param out_format description
+#' 
 #' @export
 BascetMapTransform <- function(
     bascetRoot, 
@@ -357,6 +401,125 @@ BascetAddAssembledIsolate <- function(bascetRoot, listFasta, names, runner, basc
 
 
 
+################################################################################
+################ The map system ################################################
+################################################################################
+
+
+
+###############################################
+#' Call a function for all cells
+#' 
+#' @export
+BascetMapCell <- function(
+    bascetRoot, 
+    withfunction, 
+    inputName, 
+    outputName, 
+    runner, 
+    bascet_instance=bascet_instance.default){
+  
+  #Figure out input and output file names  
+  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+  
+  if(num_shards==0){
+    stop("No input files")
+  }
+  
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
+  
+  #Run the job
+  RunJob(
+    runner = runner, 
+    jobname = paste0("bascet_map_",withfunction),
+    cmd = c(
+      shellscript_set_tempdir(bascet_instance),
+      shellscript_make_bash_array("files_in",inputFiles),
+      shellscript_make_bash_array("files_out",outputFiles),
+      paste(
+        bascet_instance@prepend_cmd,
+        bascet_instance@bin, 
+        "mapcell",
+        "-t $BASCET_TEMPDIR",
+        "-i ${files_in[$TASK_ID]}",
+        "-o ${files_out[$TASK_ID]}",
+        "-s", withfunction)
+    ),
+    arraysize = num_shards
+  )  
+}
+
+
+
+
+###############################################
+#' Convenience function for concatenating a list of data.frames into a single data.frame.
+#' To be used to simplify the output of BascetAggregateMap
+#' 
+#' @return A data.frame
+#' @export
+MapListAsDataFrame <- function(mylist){
+  out <- do.call(rbind, mylist)
+  rownames(out) <- names(mylist)
+  out
+}
+
+
+
+
+###############################################
+#' Aggregate data from previous Map call
+#' 
+#' todo: allow multi-cpu support? parallel library
+#
+#' todo note, this is effectively a pure-R map function. different name?
+#' @return TODO
+#' @export
+BascetAggregateMap <- function(
+    bascetRoot, 
+    bascetName, 
+    aggrFunction,
+    showProgress=TRUE
+){
+  
+  #Get file coordinates of all objects in zip file
+  cellname_coord <- BascetCellNames(bascetRoot, bascetName)
+  
+  #Open the file, prep for reading
+  bascetFile <- OpenBascet(bascetRoot, bascetName)
+  
+  pbar <- progress::progress_bar$new(total = length(bascetFile@cellmeta$cell))
+  if(showProgress){
+    pbar$tick(0)
+  }
+
+  #Loop over all files in the bascet
+  output <- list()
+  for(cellname in bascetFile@cellmeta$cell){
+    output[[cellname]] <- aggrFunction(bascetFile, cellname)
+    if(showProgress){
+      pbar$tick()
+    }
+  }
+  output
+}
+
+
+
+if(FALSE){
+  bascetRoot <- "/home/mahogny/jupyter/bascet/zorn/try_unzip"
+  bascetName <- "quast"
+  aggrFunction <- aggr.quast
+  BascetAggregateMap("/home/mahogny/jupyter/bascet/zorn/try_unzip","quast",aggr.quast) 
+  
+  #tmp <- BascetReadMapFile(bascetFile, cellID, "out.csv", as="tempfile")
+  
+}
+
+
+
+>>>>>>> db9b204 (prepared for site + more docs)
 
 
 ################################################################################
@@ -367,9 +530,17 @@ BascetAddAssembledIsolate <- function(bascetRoot, listFasta, names, runner, basc
 
 ###############################################
 #' 
-#' @return TODO
+#' Produce a kneeplot
+#' 
+#' @param adata description
+#' @param max_species description
+#' 
+#' @return A ggplot object
 #' @export
-KneeplotPerSpecies <- function(adata, max_species=NULL) {
+KneeplotPerSpecies <- function(
+    adata, 
+    max_species=NULL
+) {
   strain_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   
   if(!is.null(max_species)){
@@ -405,7 +576,14 @@ KneeplotPerSpecies <- function(adata, max_species=NULL) {
 
 ###############################################
 #' 
-#' @return TODO
+#' Produce a matrix of Barnyard plots, i.e., counts for one species vs another, 
+#' for all combinations of species.
+#' 
+#' 
+#' 
+#' 
+#' @param adata A Seurat object with the DefaultAssay set to species count
+#' @return a ggarranged set of ggplots
 #' @export
 BarnyardPlotMatrix <- function(adata){
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts

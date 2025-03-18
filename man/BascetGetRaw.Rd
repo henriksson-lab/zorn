@@ -14,8 +14,20 @@ BascetGetRaw(
   bascet_instance = bascet_instance.default
 )
 }
-\value{
-TODO
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{rawmeta}{Metadata for the raw FASTQ input files. See DetectRawFileMeta}
+
+\item{outputName}{Name output files: Debarcoded reads}
+
+\item{outputNameIncomplete}{Name of output files: Reads that could not be parsed}
+
+\item{chemistry}{The type of data to be parsed}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
 }
 \description{
 Generate BAM with barcodes from input raw FASTQ

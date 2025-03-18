@@ -2,13 +2,15 @@
 % Please edit documentation in R/zorn.R
 \name{MapListAsDataFrame}
 \alias{MapListAsDataFrame}
-\title{Convenience function; alternative is to somehow implement as.data.frame}
+\title{Convenience function for concatenating a list of data.frames into a single data.frame.
+To be used to simplify the output of BascetAggregateMap}
 \usage{
 MapListAsDataFrame(mylist)
 }
 \value{
-TODO
+A data.frame
 }
 \description{
-Convenience function; alternative is to somehow implement as.data.frame
+Convenience function for concatenating a list of data.frames into a single data.frame.
+To be used to simplify the output of BascetAggregateMap
 }

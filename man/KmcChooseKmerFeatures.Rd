@@ -6,8 +6,17 @@
 \usage{
 KmcChooseKmerFeatures(fname, num_pick = 1000, minfreq = 0.01, maxfreq = 0.1)
 }
+\arguments{
+\item{fname}{description}
+
+\item{num_pick}{description}
+
+\item{minfreq}{description}
+
+\item{maxfreq}{description}
+}
 \value{
-TODO
+List of KMERs
 }
 \description{
 Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range

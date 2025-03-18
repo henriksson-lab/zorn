@@ -10,5 +10,5 @@ KmcGetKmers(fname, mincount = NULL, maxcount = NULL)
 TODO
 }
 \description{
-Get KMERs from a KMC3 database
+TODO finish properly
 }

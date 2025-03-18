@@ -11,6 +11,7 @@ BascetAlignToReference(
   inputName = "asfq",
   outputNameBAMunsorted = "unsorted_aligned",
   outputNameBAMsorted = "aligned",
+  do_sort = TRUE,
   runner,
   bascet_instance = bascet_instance.default
 )

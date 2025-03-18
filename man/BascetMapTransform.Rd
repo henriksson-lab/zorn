@@ -2,7 +2,7 @@
 % Please edit documentation in R/zorn.R
 \name{BascetMapTransform}
 \alias{BascetMapTransform}
-\title{Transform: subset, convert, merge, divide}
+\title{Transform data}
 \usage{
 BascetMapTransform(
   bascetRoot,
@@ -16,9 +16,19 @@ BascetMapTransform(
   bascet_instance = bascet_instance.default
 )
 }
-\value{
-TODO
+\arguments{
+\item{num_divide}{description}
+
+\item{num_merge}{description}
+
+\item{out_format}{description}
 }
 \description{
-Transform: subset, convert, merge, divide
+This command enables
+\itemize{
+\item subsetting to a list of cells
+\item converting between file formats
+\item merging shards
+\item dividing shards
+}
 }

@@ -152,9 +152,11 @@ aggr.example <- function(bascetFile, cellID, bascet_instance){
 
 
 
-
-######### Callback function for aggregating QUAST data
-#' @return TODO
+###############################################
+#' Callback function for aggregating QUAST data.
+#' To be called from BascetAggregateMap
+#' 
+#' @return QUAST data for each cell
 #' @export
 aggr.quast <- function(bascetFile, cellID, bascet_instance){
   
@@ -214,8 +216,11 @@ aggr.quast <- function(bascetFile, cellID, bascet_instance){
 
 
 
-######### Callback function for aggregating minhash
-#' @return TODO
+###############################################
+#' Callback function for aggregating min-hashes for each cell
+#' To be called from BascetAggregateMap
+#' 
+#' @return Minhash data (minhash.txt) for each cell
 #' @export
 aggr.minhash <- function(bascetFile, cellID, bascet_instance){
   tmp <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="tempfile", bascet_instance=bascet_instance)
@@ -233,8 +238,11 @@ aggr.minhash <- function(bascetFile, cellID, bascet_instance){
 ################################################################################
 
 
-
+###############################################
 #' Aggregate frequency of minhashes across cells
+#' 
+#' @inheritParams template_BascetFunction
+#' @param inputName description
 #' @return TODO
 #' @export
 AggregateMinhashes <- function(

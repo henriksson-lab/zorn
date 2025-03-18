@@ -5,7 +5,7 @@
 ################################################################################
 
 
-library(processx) ##### 
+#library(processx) ##### 
 
 
 #' @export
@@ -26,8 +26,9 @@ setClass("LocalJob", slots=list(
 )
 ) 
 
-##### 
-# Create new local runner instance
+###############################################
+#' Create new local runner instance
+#' 
 #' @return TODO
 #' @export
 LocalRunner <- function(maxcpu="10", direct=FALSE, show_script=FALSE){

@@ -8,6 +8,7 @@
 #' 
 #' CHANGED: it just sums up kmers
 #' 
+#' @inheritParams template_BascetFunction
 #' @return TODO
 #' @export
 BascetFeaturise <- function( ########### need a better name; KMC something?
@@ -16,7 +17,8 @@ BascetFeaturise <- function( ########### need a better name; KMC something?
     outputName="sumkmers", 
     includeCells=NULL,
     runner,
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   
   #Figure out input and output file names  
@@ -69,7 +71,10 @@ BascetFeaturise <- function( ########### need a better name; KMC something?
 
 
 ###############################################
-#' Build count table from kmer table and selected kmers
+#' Build count table from kmer table and a list of selected kmers
+#' 
+#' @inheritParams template_BascetFunction
+#' @param useKMERs description
 #' @return TODO
 #' @export
 BascetQuery <- function(
@@ -132,9 +137,13 @@ BascetQuery <- function(
 
 ###############################################
 #' Read a count matrix as produced by Bascet (hdf5 format)
-#' @return TODO
+#' 
+#' @param fname Full name of the hdf5 count matrix 
+#' @return Count matrix as sparseMatrix
 #' @export
-ReadBascetCountMatrix <- function(fname){
+ReadBascetCountMatrix <- function(
+    fname
+){
   print("Loading HDF5 file")
   h5f <- rhdf5::H5Fopen(fname)
   indices <- h5f$X$indices+1
@@ -166,9 +175,15 @@ ReadBascetCountMatrix <- function(fname){
 
 ###############################################
 #' Generate a histogram from a KMC3 database
-#' @return TODO
+#' 
+#' @param fname Full name of KMC3 database
+#' @param toplot Decide if to plot or return raw data
+#' @return A ggplot object if toplot=TRUE, otherwise a data.frame
 #' @export
-KmcGetHistogram <- function(fname, plot=TRUE){
+KmcGetHistogram <- function(
+    fname, 
+    plot=TRUE
+){
   library(ggplot2)
   tfile <- tempfile()
   system(paste("kmc_tools transform ",fname," histogram", tfile))
@@ -187,9 +202,16 @@ KmcGetHistogram <- function(fname, plot=TRUE){
 
 ###############################################
 #' Get KMERs from a KMC3 database
+#' 
+#' TODO finish properly
+#' 
 #' @return TODO
 #' @export
-KmcGetKmers <- function(fname, mincount=NULL, maxcount=NULL) {
+KmcGetKmers <- function(
+    fname, 
+    mincount=NULL, 
+    maxcount=NULL
+) {
   
   #-ci<value> - minimum value of counter to be stored in the otput file
   #-cx<value> - maximum value of counter to be stored in the otput file
@@ -214,9 +236,19 @@ KmcGetKmers <- function(fname, mincount=NULL, maxcount=NULL) {
 
 ###############################################
 #' Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range
-#' @return TODO
+#' 
+#' @param fname description
+#' @param num_pick description
+#' @param minfreq description
+#' @param maxfreq description
+#' @return List of KMERs
 #' @export
-KmcChooseKmerFeatures <- function(fname, num_pick=1000, minfreq=0.01, maxfreq=0.10) {
+KmcChooseKmerFeatures <- function(
+    fname, 
+    num_pick=1000, 
+    minfreq=0.01, 
+    maxfreq=0.10
+) {
   
   ## Possibly expensive to get them all... is the total count stored somewhere? can we sample?
   dat <- KmcGetKmers(fname)
@@ -247,16 +279,14 @@ KmcChooseKmerFeatures <- function(fname, num_pick=1000, minfreq=0.01, maxfreq=0.
 
 
 
-
+###############################################
+###############################################
+###############################################
 if(FALSE){
-  
-  
   
   ### TODO command to run KMC for query
   ### TODO command to make count matrix
   ### TODO command to make histogram and select kmers
-  
-
 
   ## used ??  
   CreateKmerAssay <- function(counts) {
@@ -265,20 +295,14 @@ if(FALSE){
     )
     chrom_assay
   }
-  
-  
-  
-  
+
   KmcGetHistogram("/home/mahogny/github/bascet/testdata/all_kmc")
   
   KmcGetKmers("/home/mahogny/github/bascet/testdata/all_kmc")
   KmcGetKmers("/home/mahogny/github/bascet/testdata/all_kmc", mincount = 5, maxcount = 10)
-  
-  
+
   set.seed(0)
   use_kmers <- sample(KmcGetKmers("/home/mahogny/github/bascet/testdata/all_kmc", mincount = 5, maxcount = 10)$kmer, 1000)
   
   KmcChooseKmerFeatures("/home/mahogny/github/bascet/testdata/all_kmc")
-  
-  
 }

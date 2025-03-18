@@ -16,6 +16,7 @@ setClass("BascetInstance", slots=list(
 
 ###############################################
 #' Create a new bascet instance
+#' 
 #' @return TODO
 #' @export
 BascetInstance <- function(bin, tempdir, prepend_cmd=""){

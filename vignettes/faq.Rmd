@@ -1,0 +1,21 @@
+---
+title: "Debarcoding and sharding"
+output:
+  html_document:
+    theme: united
+    df_print: kable
+  pdf_document: default
+---
+
+
+The first step in data processing is take the raw FASTQ files and identify which
+read belongs to which cell.
+
+
+
+```{r}
+
+
+666
+
+```

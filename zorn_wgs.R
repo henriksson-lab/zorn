@@ -26,7 +26,7 @@ bascetRoot = "/husky/henriksson/atrandi/wgs_miseq2/"
 rawmeta <- DetectRawFileMeta("/husky/fromsequencer/240903_wgs_atcc2_miseq/raw")
 
 
-### Debarcode the reads, then sort them.
+### Debarcode the reads, then sort them.  BUG, BGZIP IS ONLY USING ONE CPU
 BascetGetRaw(
   bascetRoot,
   rawmeta,
@@ -39,7 +39,7 @@ PlotHistogram(h)
 includeCells <- h$cellid[h$count>500]   ### for miseq #2
 length(includeCells)
 
-### Shardify i.e. divide into multiple sets of files for parallel processing
+### Shardify i.e. divide into multiple sets of files for parallel processing  BUG ONLY USING ONE CPU
 BascetShardify(
   bascetRoot,
 #  includeCells = includeCells,  #TODO: best to NOT filter anything at this stage. use includeCells in later stage for quality genomes
@@ -65,7 +65,7 @@ BascetMapTransform(
 
 
 ### Run Kraken on each cell  ---- these two commands should be merged
-BascetRunKraken(
+BascetRunKraken(  ### BUG!!! detected 4 input files, but only processed the first
   bascetRoot, 
   useKrakenDB="/data/henlab/kraken/standard-8",
   numLocalThreads=10,

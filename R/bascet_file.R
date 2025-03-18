@@ -17,10 +17,16 @@ setClass("Bascet", slots=list(
 
 
 ###############################################
-#' Get list of cells in a bascet
-#' @return TODO
+#' Get list of cells in a Bascet 
+#' 
+#' @inheritParams template_BascetFunction
+#' @param bascetName Name of the bascet
+#' @return Vector of cell names as strings
 #' @export
-BascetCellNames <- function(bascetRoot, bascetName){
+BascetCellNames <- function(
+    bascetRoot, 
+    bascetName
+){
   
   #Can support BAM later as well
   shards <- detect_shards_for_file(bascetRoot,bascetName)
@@ -56,14 +62,21 @@ if(FALSE){
 
 
 
-#' Open a Bascet, prepare it for reading.
+###############################################
+#' Open a Bascet, prepare it for reading individual files
 #' 
-#' The current code is based on pure R, but more efficient calls can be made
+#' 
+#' TODO The current code is based on pure R, but more efficient calls can be made
 #' in the future. We thus advise against direct zip-file manipulation and
 #' do not guarantee future support for this
-#' @return TODO
+#' 
+#' @inheritParams template_BascetFunction
+#' @return A handle to a Bascet
 #' @export
-OpenBascet <- function(bascetRoot, bascetName){
+OpenBascet <- function(
+    bascetRoot, 
+    bascetName
+){
   
   shards <- detect_shards_for_file(bascetRoot,bascetName)
   num_shards <- length(shards)
@@ -78,14 +91,25 @@ OpenBascet <- function(bascetRoot, bascetName){
 
 
 
+###############################################
 #' Read one file from a Bascet
 #' 
-#' This can be made faster by, e.g., once and for all reading the location of
+#' TODO This can be made faster by, e.g., once and for all reading the location of
 #' all objects in the file
 #' 
-#' @return TODO
+#' @inheritParams template_BascetFunction
+#' @param filename description
+#' @param as description
+#' @return Name of a temporary file where the read content is stored
 #' @export
-BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), bascet_instance=bascet_instance.default, verbose=FALSE){
+BascetReadFile <- function(
+    bascetFile, 
+    cellID, 
+    filename, 
+    as=c("tempfile"), 
+    bascet_instance=bascet_instance.default, 
+    verbose=FALSE
+){
   
   ## Check if the cell is present at all
   cellmeta <- bascetFile@cellmeta[bascetFile@cellmeta$cell==cellID,,drop=FALSE]
@@ -165,6 +189,7 @@ BascetReadFile <- function(bascetFile, cellID, filename, as=c("tempfile"), basce
 
 
 
+###############################################
 #' Read one file from a Bascet
 #' 
 #' This can be made faster by, e.g., once and for all reading the location of
@@ -202,9 +227,18 @@ BascetListFilesForCell <- function(bascetFile, cellID, bascet_instance=bascet_in
 ################################################################################
 
 
-#' @return TODO
+###############################################
+#' 
+#' Read the count histogram associated with a Bascet.
+#' Not all Bascets have one, but it is typically produced after debarcoding
+#' 
+#' @return Histogram as a data.frame
 #' @export
-ReadHistogram <- function(bascetRoot, inputName, bascet_instance=bascet_instance.default){
+ReadHistogram <- function(
+    bascetRoot, 
+    inputName, 
+    bascet_instance=bascet_instance.default
+){
   
   #Get all the TIRPs, sum up the reads  
   inputFiles <- detect_shards_for_file(bascetRoot, inputName)
@@ -226,7 +260,10 @@ ReadHistogram <- function(bascetRoot, inputName, bascet_instance=bascet_instance
 }
 
 
-#' @return TODO
+###############################################
+#' Plot a histogram, loaded by ReadHistogram
+#' 
+#' @return A ggplot object
 #' @export
 PlotHistogram <- function(dat){
   dat <- dat[order(dat$count, decreasing=TRUE),]
@@ -255,16 +292,24 @@ if(FALSE){
 
 
 ################################################################################
-################ Atrandi-specific #######################################
+################ Atrandi-specific ##############################################
 ################################################################################
 
 
+###############################################
+#' Given a Bascet, produce a matrix showing for each combinatorial barcode,
+#' how many times it occurs across the cells. Presented as a 96-well plate matrix
+#' 
+#' This command assumes that cells are named as follows: well1_well2_well3_well4,
+#' where e.g. well1 is in format G12
+#' 
 #' @return TODO
 #' @export
 AtrandiBarcodeStats <- function(
     bascetRoot, 
     inputName="debarcoded", 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
 
   #Get frequency of each barcode  
   cb <- as.data.frame(stringr::str_split_fixed(BascetCellNames(bascetRoot, inputName)$cell,"_",4))
@@ -285,6 +330,7 @@ AtrandiBarcodeStats <- function(
 ################################################################################
 
 
+###############################################
 #' Helper function: Figure out which shards belong together given root input name and extension
 #' i.e. root/name.##.ext
 detect_shards_for_file <- function(bascetRoot, inputName){
@@ -298,13 +344,18 @@ detect_shards_for_file <- function(bascetRoot, inputName){
   unique(c(allzip,alltirp, allbam, allcram, allfq,all_kraken)) #tirp.gz can sneak in
 }
 
-#detect_shards_for_file("~/jupyter/zorn/test","fakein","zip")
 
+###############################################
 #' Helper function: Generate suitable output filenames according to shard system
 #' i.e. root/name.##.ext
 make_output_shard_names <- function(bascetRoot, outputName, ext, num_shards){
   file.path(bascetRoot, paste0(outputName,".",seq_len(num_shards),".",ext))
 }
 
-#make_output_shard_names("/","bar","zip", 5)
+
+if(FALSE){
+  #detect_shards_for_file("~/jupyter/zorn/test","fakein","zip")
+  #make_output_shard_names("/","bar","zip", 5)
+}
+
 

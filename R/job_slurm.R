@@ -29,9 +29,28 @@ setClass("SlurmJob", slots=list(
 
 
 
-#' @return TODO
+###############################################
+#' Create a runner that submits jobs to SLURM
+#' 
+#' @param settings Default settings to override; can be NULL
+#' @param ncpu description
+#' @param partition description
+#' @param account description
+#' @param time The time the job is allowed to run, e.g. "0-72:00:00"
+#' @param prepend description
+#' @param mem description
+#' 
+#' @return A SLURM runner
 #' @export
-SlurmRunner <- function(settings=NULL, ncpu=NULL, partition=NULL, account=NULL, time=NULL, prepend=NULL, mem=NULL){
+SlurmRunner <- function(
+    settings=NULL, 
+    ncpu=NULL, 
+    partition=NULL, 
+    account=NULL, 
+    time=NULL, 
+    prepend=NULL, 
+    mem=NULL
+){
   
   ## Create a new default
   if(is.null(settings)){

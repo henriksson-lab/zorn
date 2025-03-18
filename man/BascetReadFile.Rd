@@ -13,10 +13,23 @@ BascetReadFile(
   verbose = FALSE
 )
 }
+\arguments{
+\item{bascetFile}{Handle for an opened Bascet file}
+
+\item{cellID}{ID of the cell (string)}
+
+\item{filename}{description}
+
+\item{as}{description}
+
+\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+
+\item{verbose}{description}
+}
 \value{
-TODO
+Name of a temporary file where the read content is stored
 }
 \description{
-This can be made faster by, e.g., once and for all reading the location of
+TODO This can be made faster by, e.g., once and for all reading the location of
 all objects in the file
 }

@@ -13,6 +13,15 @@ BascetFeaturise(
   bascet_instance = bascet_instance.default
 )
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{includeCells}{List of cells to process}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+}
 \value{
 TODO
 }

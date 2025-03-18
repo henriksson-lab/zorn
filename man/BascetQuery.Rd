@@ -2,7 +2,7 @@
 % Please edit documentation in R/count_kmer.R
 \name{BascetQuery}
 \alias{BascetQuery}
-\title{Build count table from kmer table and selected kmers}
+\title{Build count table from kmer table and a list of selected kmers}
 \usage{
 BascetQuery(
   bascetRoot,
@@ -13,9 +13,18 @@ BascetQuery(
   bascet_instance = bascet_instance.default
 )
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{useKMERs}{description}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+}
 \value{
 TODO
 }
 \description{
-Build count table from kmer table and selected kmers
+Build count table from kmer table and a list of selected kmers
 }

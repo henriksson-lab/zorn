@@ -2,7 +2,7 @@
 % Please edit documentation in R/kraken.R
 \name{BascetRunKrakenMakeMatrix}
 \alias{BascetRunKrakenMakeMatrix}
-\title{TODO: should run kraken in the same run}
+\title{Run KRAKEN2 and produce a count matrix of taxonomy IDs}
 \usage{
 BascetRunKrakenMakeMatrix(
   bascetRoot,
@@ -14,8 +14,20 @@ BascetRunKrakenMakeMatrix(
   bascet_instance = bascet_instance.default
 )
 }
-\value{
-TODO
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{useKrakenDB}{description}
+
+\item{numLocalThreads}{description}
+
+\item{inputName}{description}
+
+\item{outputName}{description}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
 }
 \description{
 TODO: should run kraken in the same run

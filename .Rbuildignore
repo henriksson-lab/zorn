@@ -4,3 +4,10 @@
 ^testdata$
 ^playground$
 ^other_code$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+\.sif$
+^docs
+^vignettes

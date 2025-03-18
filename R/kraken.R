@@ -1,45 +1,49 @@
 
 
 ###############################################
-#' Run Kraken on each cell. TODO: should produce a count matrix right away!
-#' 
-#' @return TODO
-#' @export
-BascetRunKraken <- function(
-    bascetRoot, 
-    useKrakenDB="/data/henlab/kraken/standard-8",
-    numLocalThreads=1,
-    inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
-    outputName="kraken_out", 
-    runner, 
-    bascet_instance=bascet_instance.default){
-  
-  #Figure out input and output file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
-  num_shards <- length(input_shards)
-  if(num_shards==0){
-    stop("No input files")
-  }
-  inputFiles <- file.path(bascetRoot, input_shards) #### TODO 666 should really need to add this?
-  
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "kraken_out", num_shards)
-  
-  print(inputFiles)
-  #### Align with BWA
-  cmd <- paste(
-    "kraken2",
-    "--db", useKrakenDB,
-    "--threads", numLocalThreads, 
-    "--output", outputFiles[1],
-    ##   "--paired",#               TODO  The filenames provided have paired-end reads
-    inputFiles[1]
-  )
-  print(cmd)
-  system(cmd)
-}
+# Run KRAKEN2 for each cell.  -- to keep?
+#
+# BascetRunKraken <- function(
+#     bascetRoot, 
+#     useKrakenDB="/data/henlab/kraken/standard-8",
+#     numLocalThreads=1,
+#     inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
+#     outputName="kraken_out", 
+#     runner, 
+#     bascet_instance=bascet_instance.default){
+#   
+#   #Figure out input and output file names  
+#   input_shards <- detect_shards_for_file(bascetRoot, inputName)
+#   num_shards <- length(input_shards)
+#   if(num_shards==0){
+#     stop("No input files")
+#   }
+#   inputFiles <- file.path(bascetRoot, input_shards) #### TODO 666 should really need to add this?
+#   
+#   outputFiles <- make_output_shard_names(bascetRoot, outputName, "kraken_out", num_shards)
+#   
+#   
+#   ############################# TODO write a script to process all the files. ie call RunJob
+#   ############################# TODO write a script to process all the files. ie call RunJob
+#   ############################# TODO write a script to process all the files. ie call RunJob
+#   
+#   print(inputFiles)
+#   #### Align with BWA
+#   cmd <- paste(
+#     "kraken2",
+#     "--db", useKrakenDB,
+#     "--threads", numLocalThreads, 
+#     "--output", outputFiles[1],
+#     ##   "--paired",#               TODO  The filenames provided have paired-end reads
+#     inputFiles[1]
+#   )
+#   print(cmd)
+#   system(cmd)
+# }
 
 
-
+###############################################
+# TODO finish properly
 SpeciesCorrMatrix <- function(adata){
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   cnt <- cnt[rowSums(cnt)>0,]
@@ -85,9 +89,15 @@ SpeciesCorrMatrix <- function(adata){
 
 
 ###############################################
+#' Run KRAKEN2 and produce a count matrix of taxonomy IDs
+#' 
 #' TODO: should run kraken in the same run
 #' 
-#' @return TODO
+#' @inheritParams template_BascetFunction
+#' @param useKrakenDB description
+#' @param numLocalThreads description
+#' @param inputName description
+#' @param outputName description
 #' @export
 BascetRunKrakenMakeMatrix <- function(
     bascetRoot, 
@@ -96,7 +106,8 @@ BascetRunKrakenMakeMatrix <- function(
     inputName="kraken_out", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputName="kraken", 
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   #Figure out input and output file names  
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
@@ -138,11 +149,14 @@ BascetRunKrakenMakeMatrix <- function(
 
 
 ###############################################
-#' Read a kraken count matrix as produced by Bascet (hdf5 format)
+#' Read a KRAKEN2 count matrix as produced by Bascet (hdf5 format)
 #' 
-#' @return TODO
+#' @return Counts as a sparseMatrix
+#' @param fname Full name of the HDF5 count matrix file
 #' @export
-ReadBascetKrakenMatrix <- function(fname){
+ReadBascetKrakenMatrix <- function(
+    fname
+){
   
   #fname <- "/husky/henriksson/atrandi/wgs_miseq2/kraken_count.hdf5"
   #print(fname)
@@ -178,10 +192,14 @@ ReadBascetKrakenMatrix <- function(fname){
 
 
 ###############################################
-#' For a Kraken count matrix, return consesus taxid for each cell as metadata
-#' @return TODO
+#' For a KRAKEN2 count matrix, return consensus taxID for each cell as metadata
+#' 
+#' @param mat A count matrix, typically in sparse format
+#' @return A data.frame holding cellID and consensus taxID
 #' @export
-KrakenFindConsensusTaxonomy <- function(mat){
+KrakenFindConsensusTaxonomy <- function(
+    mat
+){
   #turn into triplet representation
   library(Matrix)
   #M <- Matrix::Matrix(mat, sparse = TRUE)
@@ -225,11 +243,15 @@ KrakenFindConsensusTaxonomy <- function(mat){
 
 
 ###############################################
-#' Using Kraken count matrix, give a "kneeplot" of species
+#' Using a KRAKEN2 count matrix, produce a "kneeplot" of species
 #' 
-#' @return TODO
+#' @param adata A Seurat object
+#' @return A ggplot object
 #' @export
-KrakenSpeciesDistribution <- function(adata, use_assay="kraken"){
+KrakenSpeciesDistribution <- function(
+    adata, 
+    use_assay="kraken"
+){
   strain_cnt <- adata@assays[[use_assay]]$counts
   df <- data.frame(
     taxid=rownames(strain_cnt),
@@ -249,11 +271,18 @@ KrakenSpeciesDistribution <- function(adata, use_assay="kraken"){
 
 
 ###############################################
+#' Take a KRAKEN2 count matrix where the column is the taxonomyID.
+#' Convert to a matrix where the columns instead are the names of each taxonomy.
+#' Unused taxonomyID columns will not be kept
 #' 
-#' 
-#' @return TODO
+#' @param mat description
+#' @param keep_species_only description
+#' @return A named count matrix
 #' @export
-SetTaxonomyNamesFeatures <- function(mat, keep_species_only=TRUE){
+SetTaxonomyNamesFeatures <- function(
+    mat, 
+    keep_species_only=TRUE
+){
   
   #use_row <- rowSums(mat)>0
   #compressed_mat <- mat[use_row, ]

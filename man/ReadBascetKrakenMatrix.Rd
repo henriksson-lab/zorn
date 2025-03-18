@@ -2,13 +2,16 @@
 % Please edit documentation in R/kraken.R
 \name{ReadBascetKrakenMatrix}
 \alias{ReadBascetKrakenMatrix}
-\title{Read a kraken count matrix as produced by Bascet (hdf5 format)}
+\title{Read a KRAKEN2 count matrix as produced by Bascet (hdf5 format)}
 \usage{
 ReadBascetKrakenMatrix(fname)
 }
+\arguments{
+\item{fname}{Full name of the HDF5 count matrix file}
+}
 \value{
-TODO
+Counts as a sparseMatrix
 }
 \description{
-Read a kraken count matrix as produced by Bascet (hdf5 format)
+Read a KRAKEN2 count matrix as produced by Bascet (hdf5 format)
 }

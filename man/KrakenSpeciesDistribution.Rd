@@ -2,13 +2,16 @@
 % Please edit documentation in R/kraken.R
 \name{KrakenSpeciesDistribution}
 \alias{KrakenSpeciesDistribution}
-\title{Using Kraken count matrix, give a "kneeplot" of species}
+\title{Using a KRAKEN2 count matrix, produce a "kneeplot" of species}
 \usage{
 KrakenSpeciesDistribution(adata, use_assay = "kraken")
 }
+\arguments{
+\item{adata}{A Seurat object}
+}
 \value{
-TODO
+A ggplot object
 }
 \description{
-Using Kraken count matrix, give a "kneeplot" of species
+Using a KRAKEN2 count matrix, produce a "kneeplot" of species
 }

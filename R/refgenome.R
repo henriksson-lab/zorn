@@ -16,13 +16,14 @@
 #' 
 #' @return TODO
 #' @export
-BascetAlignToReference <- function(
+BascetAlignToReference <- function(  ######### TODO should use RunJob -- bug!   TODO #2 -- should not always sort
     bascetRoot, 
     useReference,
     numLocalThreads=1,
     inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputNameBAMunsorted="unsorted_aligned", 
     outputNameBAMsorted="aligned", 
+    do_sort=TRUE,
     runner, 
     bascet_instance=bascet_instance.default){
   
@@ -37,6 +38,8 @@ BascetAlignToReference <- function(
   outputFilesBAMunsorted <- make_output_shard_names(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
   outputFilesBAMsorted   <- make_output_shard_names(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
+  ## TODO can we pipe two commands into RunJob?
+  
   #### Align with BWA
   cmd <- paste(
     "bwa mem",
@@ -50,22 +53,24 @@ BascetAlignToReference <- function(
   )
   system(cmd)
   
-  #### Sort the aligned reads
-  cmd <- paste("samtools sort",
-               outputFilesBAMunsorted[1],
-               "-@ ",numLocalThreads,
-               "-o ",
-               outputFilesBAMsorted[1]
-  )
-  system(cmd)
-  
-  #### Index the file
-  cmd <- paste("samtools index",
-               outputFilesBAMsorted[1],
-               "-@ ",numLocalThreads
-  )
-  system(cmd)
-  
+  if(do_sort){
+    #### Sort the aligned reads
+    cmd <- paste("samtools sort",
+                 outputFilesBAMunsorted[1],
+                 "-@ ",numLocalThreads,
+                 "-o ",
+                 outputFilesBAMsorted[1]
+    )
+    system(cmd)
+    
+    #### Index the file
+    cmd <- paste("samtools index",
+                 outputFilesBAMsorted[1],
+                 "-@ ",numLocalThreads
+    )
+    system(cmd)    
+  }
+
   ### TODO this should be a proper job!
   
   666

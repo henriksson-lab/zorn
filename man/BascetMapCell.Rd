@@ -13,9 +13,6 @@ BascetMapCell(
   bascet_instance = bascet_instance.default
 )
 }
-\value{
-TODO
-}
 \description{
 Call a function for all cells
 }
