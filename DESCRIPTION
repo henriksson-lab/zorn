@@ -6,9 +6,9 @@ Maintainer: Johan Henriksson <johan.henriksson@umu.se>
 Description: Zorn wraps the Bascet system, enabling processing of single-cell microbial data
 Authors@R: c(
   person(given = "Johan", family = "Henriksson", email = "johan.henriksson@umu.se", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7745-2844")),
-  person(given = "Laura", family = "Carroll", email = "laura.carroll@umu.se", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3677-0192")),
-  person(given = "Hadrien", family = "Gourlé", email = "hadrien.gourle@umu.se", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3677-0192")),
-  person(given = "Julian", family = "Dicken", email = "julian@dicken.de", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3677-0192")),
+  person(given = "Laura", family = "Carroll", email = "laura.carroll@umu.se", role = c("aut"), comment = c(ORCID = "0000-0002-3677-0192")),
+  person(given = "Hadrien", family = "Gourlé", email = "hadrien.gourle@umu.se", role = c("aut"), comment = c(ORCID = "0000-0002-3677-0192")),
+  person(given = "Julian", family = "Dicken", email = "julian@dicken.de", role = c("aut"), comment = c(ORCID = "0000-0002-3677-0192")),
   person("Henriksson Lab, Carroll Lab and Collaborators", role = "fnd")
   )
 License: MIT

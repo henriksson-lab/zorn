@@ -9,3 +9,7 @@ install:
 
 loc:
 	wc -l R/*.R tutorial/*.R tutorial/*.sh
+
+
+upload_site:
+	scp 
