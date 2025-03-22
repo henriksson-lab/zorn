@@ -4,11 +4,11 @@
 \alias{TabixGetFragmentsSeqs}
 \title{Using Tabix, get list of sequences in a fragment file}
 \usage{
-TabixGetFragmentsSeqs(fragpath)
+TabixGetFragmentsSeqs(fragpath, bascet_instance = bascet_instance.default)
 }
 \value{
-TODO
+The raw result of tabix
 }
 \description{
-Using Tabix, get list of sequences in a fragment file
+TODO too raw? wrap in bascet?
 }

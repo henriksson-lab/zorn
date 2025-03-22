@@ -68,7 +68,7 @@ BascetAlignToReference <- function(  ######### TODO should use RunJob -- bug!   
         "samtools sort", 
         "-@ ",numLocalThreads,                 #Number of threads to use
         #        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
-        "${files_out_unsorted[$TASK_ID]}"      #Each job produces a single output
+        "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
         "-o ${files_out_sorted[$TASK_ID]}"     #Each job produces a single output
       ),
       
@@ -109,7 +109,7 @@ BascetAlignToReference <- function(  ######### TODO should use RunJob -- bug!   
         "samtools sort", 
         "-@ ",numLocalThreads,                 #Number of threads to use
 #        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
-        "${files_out_unsorted[$TASK_ID]}"      #Each job takes an unsorted BAM
+        "${files_out_unsorted[$TASK_ID]}",     #Each job takes an unsorted BAM
         "-o ${files_out_sorted[$TASK_ID]}"     #Each job produces a single sorted output
       ),
       

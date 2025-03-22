@@ -2,7 +2,7 @@
 % Please edit documentation in R/refgenome.R
 \name{ChromToSpeciesCount}
 \alias{ChromToSpeciesCount}
-\title{Produce a count matrix on strain level. too specific?}
+\title{Produce a count matrix on strain level}
 \usage{
 ChromToSpeciesCount(adata, map_seq2strain)
 }
@@ -10,5 +10,5 @@ ChromToSpeciesCount(adata, map_seq2strain)
 TODO
 }
 \description{
-Produce a count matrix on strain level. too specific?
+TODO too specific?
 }

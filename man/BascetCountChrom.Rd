@@ -13,7 +13,7 @@ BascetCountChrom(
 )
 }
 \value{
-TODO
+A job, executing the counting
 }
 \description{
 From aligned BAM file, compute counts per chromosome

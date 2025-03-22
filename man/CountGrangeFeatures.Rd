@@ -2,87 +2,18 @@
 % Please edit documentation in R/refgenome.R
 \name{CountGrangeFeatures}
 \alias{CountGrangeFeatures}
-\title{###############################################
-#' @return TODO
-#' @export
-LoadFragmentsAsObject <- function(fragpath){
-\subsection{Index fragment file if needed. Only needed if you got the file externally and it has no index}{
-
-fragpath_index <- paste(fragpath,".tbi",sep="")
-if(!file.exists(fragpath_index)){
-print("Indexing fragment file")
-system(paste("tabix -p vcf ",fragpath))
-}
-}
-
-\subsection{Figure out names of cells}{
-}
-
-\subsection{Create a dummy assay}{
-
-stupidmat <- matrix(0, nrow = 2, ncol=length(keep_cells))
-rownames(stupidmat) <- c("chr1:1-100", "chr1:200-300")
-colnames(stupidmat) <- keep_cells
-
-chrom_assay <- CreateChromatinAssay(
-counts = as.sparse(stupidmat),
-sep = c(":", "-"),
-fragments = fragpath,
-min.cells = 0,
-min.features = 0
-)
-
-adata <- CreateSeuratObject(
-counts = chrom_assay,
-assay = "aligned"
-)
-
-adata
-}
-}}
+\title{Obtain a feature matrix (as seurat object) given an seurat object having Fragments associated}
 \usage{
 CountGrangeFeatures(adata, grange_gene)
 }
+\arguments{
+\item{adata}{Seurat object, with FeatureMatrix}
+
+\item{grange_gene}{A grange object telling where to count}
+}
 \value{
-TODO
+A Seurat AssayObject
 }
 \description{
-###############################################
-#' @return TODO
-#' @export
-LoadFragmentsAsObject <- function(fragpath){
-\subsection{Index fragment file if needed. Only needed if you got the file externally and it has no index}{
-
-fragpath_index <- paste(fragpath,".tbi",sep="")
-if(!file.exists(fragpath_index)){
-print("Indexing fragment file")
-system(paste("tabix -p vcf ",fragpath))
-}
-}
-
-\subsection{Figure out names of cells}{
-}
-
-\subsection{Create a dummy assay}{
-
-stupidmat <- matrix(0, nrow = 2, ncol=length(keep_cells))
-rownames(stupidmat) <- c("chr1:1-100", "chr1:200-300")
-colnames(stupidmat) <- keep_cells
-
-chrom_assay <- CreateChromatinAssay(
-counts = as.sparse(stupidmat),
-sep = c(":", "-"),
-fragments = fragpath,
-min.cells = 0,
-min.features = 0
-)
-
-adata <- CreateSeuratObject(
-counts = chrom_assay,
-assay = "aligned"
-)
-
-adata
-}
-}
+Obtain a feature matrix (as seurat object) given an seurat object having Fragments associated
 }

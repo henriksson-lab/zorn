@@ -28,17 +28,20 @@ setClass("SlurmJob", slots=list(
 ) 
 
 
+###################################################### TODO this causes errors in devtools::document() ; why?
+#Caused by error in `current@target`:
+#  ! no applicable method for `@` applied to an object of class "environment"
 
-setMethod("show", "SlurmJob", function(object) {
-  cat(
-    paste0(
-      "PID:",object@pid, "  ",
-      "array_size:",object@arraysize, "  ",
-      "cmd:",object@cmd, "  ",
-      "logfile:",object@logfile
-    )
-  )
-})
+#setMethod("show", "SlurmJob", function(object) {
+  # cat(
+  #   paste0(
+  #     "PID:",object@pid, "  ",
+  #     "array_size:",object@arraysize, "  ",
+  #     "cmd:",object@cmd, "  ",
+  #     "logfile:",object@logfile
+  #   )
+  # )
+#})
 
 
 ###############################################

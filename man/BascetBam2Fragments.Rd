@@ -13,7 +13,7 @@ BascetBam2Fragments(
 )
 }
 \value{
-TODO
+A job, producing a type of Fragments.tsv.gz
 }
 \description{
 Take aligned BAM file and produce Fragments.tsv.gz, compatible with Signac ATAC-seq style analysis
