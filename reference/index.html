@@ -175,13 +175,13 @@
           <code><a href="ChromToSpeciesCount.html">ChromToSpeciesCount()</a></code>
 
         </dt>
-        <dd>Produce a count matrix on strain level. too specific?</dd>
+        <dd>Produce a count matrix on strain level</dd>
       </dl><dl><dt>
 
           <code><a href="CountGrangeFeatures.html">CountGrangeFeatures()</a></code>
 
         </dt>
-        <dd>############################################### #' @return TODO #' @export LoadFragmentsAsObject &lt;- function(fragpath) <div class="section"> <h3 id="index-fragment-file-if-needed-only-needed-if-you-got-the-file-externally-and-it-has-no-index">Index fragment file if needed. Only needed if you got the file externally and it has no index<a class="anchor" aria-label="anchor" href="#index-fragment-file-if-needed-only-needed-if-you-got-the-file-externally-and-it-has-no-index"></a></h3> <p>fragpath_index &lt;- paste(fragpath,".tbi",sep="") if(!file.exists(fragpath_index)) print("Indexing fragment file") system(paste("tabix -p vcf ",fragpath))</p> </div> <div class="section"> <h3 id="figure-out-names-of-cells">Figure out names of cells<a class="anchor" aria-label="anchor" href="#figure-out-names-of-cells"></a></h3> </div> <div class="section"> <h3 id="create-a-dummy-assay">Create a dummy assay<a class="anchor" aria-label="anchor" href="#create-a-dummy-assay"></a></h3> <p>stupidmat &lt;- matrix(0, nrow = 2, ncol=length(keep_cells)) rownames(stupidmat) &lt;- c("chr1:1-100", "chr1:200-300") colnames(stupidmat) &lt;- keep_cells</p> <p>chrom_assay &lt;- CreateChromatinAssay( counts = as.sparse(stupidmat), sep = c(":", "-"), fragments = fragpath, min.cells = 0, min.features = 0 )</p> <p>adata &lt;- CreateSeuratObject( counts = chrom_assay, assay = "aligned" )</p> <p>adata</p> </div></dd>
+        <dd>Obtain a feature matrix (as seurat object) given an seurat object having Fragments associated</dd>
       </dl><dl><dt>
 
           <code><a href="DetectRawFileMeta.html">DetectRawFileMeta()</a></code>
@@ -363,8 +363,7 @@
         </dt>
         <dd>Function template, where basic parameter documentation can be obtained from</dd>
       </dl></div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside></div>
+  </main></div>
 
 
     <footer><div class="pkgdown-footer-left">
