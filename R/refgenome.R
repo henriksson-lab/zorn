@@ -38,42 +38,92 @@ BascetAlignToReference <- function(  ######### TODO should use RunJob -- bug!   
   outputFilesBAMunsorted <- make_output_shard_names(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
   outputFilesBAMsorted   <- make_output_shard_names(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
-  ## TODO can we pipe two commands into RunJob?
-  
-  #### Align with BWA
-  cmd <- paste(
-    "bwa mem",
-    useReference,
-    inputFiles[1],
+  ### Build command: basic alignment
+  cmd <- c(
+    shellscript_set_tempdir(bascet_instance),
+    shellscript_make_bash_array("files_in", inputFiles),
+    shellscript_make_bash_array("files_out_unsorted", outputFilesBAMunsorted),
+    shellscript_make_bash_array("files_out_sorted", outputFilesBAMsorted),
     
-#    file.path(bascetRoot,"for_bwa.1.fq.gz"),
-    "-t ",numLocalThreads,
-    "> ",
-    outputFilesBAMunsorted[1]
+    ### For alignment
+    paste(
+      bascet_instance@prepend_cmd,
+      "bwa mem", 
+      useReference,
+      "${files_in[$TASK_ID]}",                #Align one input
+      "> ",
+      "${files_out_unsorted[$TASK_ID]}"       #Each input means one output
+    )
   )
-  system(cmd)
   
+  
+  ### Build command: sorting and indexing
   if(do_sort){
-    #### Sort the aligned reads
-    cmd <- paste("samtools sort",
-                 outputFilesBAMunsorted[1],
-                 "-@ ",numLocalThreads,
-                 "-o ",
-                 outputFilesBAMsorted[1]
+    cmd <- c(
+      cmd,
+      
+      ### For sorting
+      paste(
+        bascet_instance@prepend_cmd,
+        "samtools sort", 
+        "-@ ",numLocalThreads,                 #Number of threads to use
+        #        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
+        "${files_out_unsorted[$TASK_ID]}"      #Each job produces a single output
+        "-o ${files_out_sorted[$TASK_ID]}"     #Each job produces a single output
+      ),
+      
+      ### For indexing
+      paste(
+        bascet_instance@prepend_cmd,
+        "samtools index", 
+        "-@ ",numLocalThreads,                 #Number of threads to use
+        "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
+      )      
     )
-    system(cmd)
-    
-    #### Index the file
-    cmd <- paste("samtools index",
-                 outputFilesBAMsorted[1],
-                 "-@ ",numLocalThreads
-    )
-    system(cmd)    
   }
-
-  ### TODO this should be a proper job!
   
-  666
+  
+  #Produce the script and run the job
+  RunJob(
+    runner = runner, 
+    jobname = "bascet_aln",
+    cmd = c(
+      shellscript_set_tempdir(bascet_instance),
+      shellscript_make_bash_array("files_in", inputFiles),
+      shellscript_make_bash_array("files_out_unsorted", outputFilesBAMunsorted),
+      shellscript_make_bash_array("files_out_sorted", outputFilesBAMsorted),
+      
+      ### For alignment
+      paste(
+        bascet_instance@prepend_cmd,
+        "bwa mem", 
+        useReference,
+        "${files_in[$TASK_ID]}",                #Align one input
+        "> ",
+        "${files_out_unsorted[$TASK_ID]}"       #Each input results in one unsorted output
+      ),  
+      
+      ### For sorting
+      paste(
+        bascet_instance@prepend_cmd,
+        "samtools sort", 
+        "-@ ",numLocalThreads,                 #Number of threads to use
+#        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
+        "${files_out_unsorted[$TASK_ID]}"      #Each job takes an unsorted BAM
+        "-o ${files_out_sorted[$TASK_ID]}"     #Each job produces a single sorted output
+      ),
+      
+      ### For indexing
+      paste(
+        bascet_instance@prepend_cmd,
+        "samtools index", 
+        "-@ ",numLocalThreads,                 #Number of threads to use
+        "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
+      )
+      
+    ), 
+    arraysize = num_output_shards
+  )
 }
 
 
@@ -87,7 +137,7 @@ BascetAlignToReference <- function(  ######### TODO should use RunJob -- bug!   
 ###############################################
 #' Take aligned BAM file and produce Fragments.tsv.gz, compatible with Signac ATAC-seq style analysis
 #' 
-#' @return TODO
+#' @return A job, producing a type of Fragments.tsv.gz
 #' @export
 BascetBam2Fragments <- function(
     bascetRoot, 
@@ -134,7 +184,7 @@ BascetBam2Fragments <- function(
 ###############################################
 #' From aligned BAM file, compute counts per chromosome
 #' 
-#' @return TODO
+#' @return A job, executing the counting 
 #' @export
 BascetCountChrom <- function(
     bascetRoot, 
@@ -181,10 +231,15 @@ BascetCountChrom <- function(
 ###############################################
 #' Using Tabix, get list of sequences in a fragment file
 #' 
-#' @return TODO
+#' TODO too raw? wrap in bascet?
+#' 
+#' @return The raw result of tabix
 #' @export
-TabixGetFragmentsSeqs <- function(fragpath) {
-  system(paste("tabix -l ", fragpath), intern = TRUE)
+TabixGetFragmentsSeqs <- function(
+    fragpath,
+    bascet_instance=bascet_instance.default
+) {
+  system(paste(bascet_instance@prepend_cmd,"tabix -l ", fragpath), intern = TRUE)
 }
 
 
@@ -194,7 +249,7 @@ TabixGetFragmentsSeqs <- function(fragpath) {
 #' Case: tabix from command line uses 100% cpu only. likely not designed for large queries
 #' 
 #' 
-#' @return TODO
+#' @return a ChromatinAssay
 #' @export
 FragmentsToSignac <- function(fragpath) {
   #### Index if needed; this should already have been done but added here just in case
@@ -241,17 +296,19 @@ FragmentsToSignac <- function(fragpath) {
 ###############################################
 #' From a Signac chromatin assay with fragments, for each cell, count how many reads per chromosome
 #' 
-#' @return TODO
+#' @return a FeatureMatrix 
 #' @export
-FragmentCountsPerChrom <- function(chrom_assay){
+FragmentCountsPerChrom <- function(
+    chrom_assay,
+    bascet_instance=bascet_instance.default
+){
   
   #Figure out where the fragment file is
   fr <- Fragments(chrom_assay)[[1]]
   #fr@cells ## also possible!
   
   #Get the name of chromosomes
-  all_seqid <- TabixGetFragmentsSeqs(fr@path)
-  
+  all_seqid <- TabixGetFragmentsSeqs(fr@path, bascet_instance)
   grange <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
     seqid=all_seqid,
     name=all_seqid,
@@ -276,7 +333,7 @@ FragmentCountsPerChrom <- function(chrom_assay){
 #' From a Signac chromatin assay with fragments, for each cell, count how many reads per chromosome.
 #' This function directly returns an assay that can be added to a Seurat multimodal object
 #' 
-#' @return TODO
+#' @return A seurat object holding the counts
 #' @export
 FragmentCountsPerChromAssay <- function(
     bascetRoot,
@@ -307,7 +364,10 @@ FragmentCountsPerChromAssay <- function(
 
 
 ###############################################
-#' Produce a count matrix on strain level. too specific?
+#' Produce a count matrix on strain level
+#' 
+#' TODO too specific?
+#' 
 #' @return TODO
 #' @export
 ChromToSpeciesCount <- function(adata, map_seq2strain){
@@ -334,48 +394,14 @@ ChromToSpeciesCount <- function(adata, map_seq2strain){
 ################################################################################
 ############ RNA-seq style feature counting from fragments.tsv #################
 ################################################################################
-#' 
-#' 
-#' ###############################################
-#' #' @return TODO
-#' #' @export
-#' LoadFragmentsAsObject <- function(fragpath){
-#'   
-#'   #### Index fragment file if needed. Only needed if you got the file externally and it has no index
-#'   fragpath_index <- paste(fragpath,".tbi",sep="")
-#'   if(!file.exists(fragpath_index)){
-#'     print("Indexing fragment file")
-#'     system(paste("tabix -p vcf ",fragpath))
-#'   }
-#'   
-#'   #### Figure out names of cells
-#'   
-#'   
-#'   #### Create a dummy assay
-#'   stupidmat <- matrix(0, nrow = 2, ncol=length(keep_cells))
-#'   rownames(stupidmat) <- c("chr1:1-100", "chr1:200-300")
-#'   colnames(stupidmat) <- keep_cells
-#'   
-#'   chrom_assay <- CreateChromatinAssay(
-#'     counts = as.sparse(stupidmat),
-#'     sep = c(":", "-"),
-#'     fragments = fragpath,
-#'     min.cells = 0,
-#'     min.features = 0
-#'   )
-#'   
-#'   adata <- CreateSeuratObject(
-#'     counts = chrom_assay,
-#'     assay = "aligned"
-#'   )  
-#'   
-#'   adata
-#' }
-#' 
 
 
 ###############################################
-#' @return TODO
+#' Obtain a feature matrix (as seurat object) given an seurat object having Fragments associated
+#' 
+#' @param adata Seurat object, with FeatureMatrix
+#' @param grange_gene A grange object telling where to count
+#' @return A Seurat AssayObject
 #' @export
 CountGrangeFeatures <- function(adata, grange_gene){
   gene_counts <- FeatureMatrix(

@@ -1,48 +1,6 @@
 
 
 ###############################################
-# Run KRAKEN2 for each cell.  -- to keep?
-#
-# BascetRunKraken <- function(
-#     bascetRoot, 
-#     useKrakenDB="/data/henlab/kraken/standard-8",
-#     numLocalThreads=1,
-#     inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
-#     outputName="kraken_out", 
-#     runner, 
-#     bascet_instance=bascet_instance.default){
-#   
-#   #Figure out input and output file names  
-#   input_shards <- detect_shards_for_file(bascetRoot, inputName)
-#   num_shards <- length(input_shards)
-#   if(num_shards==0){
-#     stop("No input files")
-#   }
-#   inputFiles <- file.path(bascetRoot, input_shards) #### TODO 666 should really need to add this?
-#   
-#   outputFiles <- make_output_shard_names(bascetRoot, outputName, "kraken_out", num_shards)
-#   
-#   
-#   ############################# TODO write a script to process all the files. ie call RunJob
-#   ############################# TODO write a script to process all the files. ie call RunJob
-#   ############################# TODO write a script to process all the files. ie call RunJob
-#   
-#   print(inputFiles)
-#   #### Align with BWA
-#   cmd <- paste(
-#     "kraken2",
-#     "--db", useKrakenDB,
-#     "--threads", numLocalThreads, 
-#     "--output", outputFiles[1],
-#     ##   "--paired",#               TODO  The filenames provided have paired-end reads
-#     inputFiles[1]
-#   )
-#   print(cmd)
-#   system(cmd)
-# }
-
-
-###############################################
 # TODO finish properly
 SpeciesCorrMatrix <- function(adata){
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts
@@ -151,8 +109,8 @@ BascetRunKrakenMakeMatrix <- function(
 ###############################################
 #' Read a KRAKEN2 count matrix as produced by Bascet (hdf5 format)
 #' 
-#' @return Counts as a sparseMatrix
 #' @param fname Full name of the HDF5 count matrix file
+#' @return Counts as a sparseMatrix
 #' @export
 ReadBascetKrakenMatrix <- function(
     fname
@@ -178,8 +136,7 @@ ReadBascetKrakenMatrix <- function(
   rownames(mat) <- h5f$obs$`_index`
   
   rhdf5::H5close()
-  
-  
+
   mat <- t(mat)
   ##Note that taxid 0 is added, but with index 1 in R. Thus need to remove the first column
   unident <- mat[-1,]
