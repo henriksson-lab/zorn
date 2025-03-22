@@ -13,3 +13,6 @@ loc:
 
 upload_site:
 	scp 
+
+clean:
+	rm *.out

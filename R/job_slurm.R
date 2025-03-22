@@ -29,6 +29,18 @@ setClass("SlurmJob", slots=list(
 
 
 
+setMethod("show", "SlurmJob", function(object) {
+  cat(
+    paste0(
+      "PID:",object@pid, "  ",
+      "array_size:",object@arraysize, "  ",
+      "cmd:",object@cmd, "  ",
+      "logfile:",object@logfile
+    )
+  )
+})
+
+
 ###############################################
 #' Create a runner that submits jobs to SLURM
 #' 
@@ -131,23 +143,26 @@ setMethod(
     ## Write the script to a temporary file
     slurm_script <- tempfile(fileext = ".sh")
     print(slurm_script)    
-    writeLines(con=slurm_script, c(
-      "#!/bin/bash",
-      scriptcontent)
-    )
+    writeLines(con=slurm_script, scriptcontent)
     print(scriptcontent)
-    
+        
     ## Run the script; catch the message from sbatch
     cmd <- paste0("sbatch --array=0-",arraysize-1,"  ",slurm_script)
     ret <- system(cmd, intern = TRUE)
     print(ret)
-    
-    ## Remove the temporary file. Worst case, done at the end of the R session, but better done earlier
-    file.remove(slurm_script)
-    
+
+    if(length(ret)==0){
+      print("Failed to start job")
+      print(slurm_script)
+      return(NULL)
+    }
     
     ## Check if it worked, or if there was an error
     if(stringr::str_starts(ret, "Submitted batch job ")){
+      
+      ## Remove the temporary file. Worst case, done at the end of the R session, but better done earlier
+      file.remove(slurm_script)
+      
       pid <- stringr::str_remove(ret, stringr::fixed("Submitted batch job "))
       
       #Return the job with PID set  
@@ -159,8 +174,9 @@ setMethod(
         arraysize=arraysize
       )
     } else {
-      stop("Failed to start job")
-      NULL
+      stop("Failed to start job (err2)")
+      #print(slurm_script)
+      #NULL
     }
   }
 )
@@ -178,14 +194,30 @@ setMethod(
     # sacct -j JOBID -o jobid,submit,start,end,state
     while(TRUE) {
       info <- JobStatus(job)
-      if(info$status=="RUNNING" || info$status=="PENDING"){
-        print(info$status)
+      
+      if(nrow(info)==0){
+        print("Waiting to start")  
         Sys.sleep(5)
       } else {
-        break;
+        if(all(info$status=="COMPLETED")){
+          break;
+        } else {
+          #print(info$status)
+          
+          num_total <- job@arraysize
+          num_running <- floor(sum(info$status=="RUNNING")/2)
+          num_completed <- floor(sum(info$status=="COMPLETED")/2)  ### for some reason, these are reported twice.. ish
+          
+          print(paste0(
+            "Total to run: ",num_total,"   ",
+            "Total completed: ",num_completed,"   ",
+            "Total running: ",num_running
+            ))
+#          print(table(info$status))
+          Sys.sleep(5)
+        }
       }
     }
-    print(info$status)    
   }
 )
 
@@ -212,14 +244,14 @@ setMethod(
   definition = function(job) {
     # sacct -j JOBID -o jobid,submit,start,end,state
     
-    #ret <- system(paste("sacct -j",job@pid, "-o jobid,submit,start,end,state"), intern = TRUE)
-    #print(ret)
-    ret <- system(paste("sacct -j",job@pid, "-o state"), intern = TRUE)[3]
+#    ret <- system(paste("sacct -j",job@pid), intern = TRUE)
+#    print(ret)
+        
+    
+    ret <- system(paste("sacct -j",job@pid, "-o state"), intern = TRUE)
+    ret <- ret[-c(1:2)]  #This is " state " and "-----"
     status <- stringr::str_remove_all(ret, " ")  
-    data.frame(status=status, chard=1)
-    
-    
-    ## not enough! jobarray
+    data.frame(status=status) #, chard=1
   }
 )
 

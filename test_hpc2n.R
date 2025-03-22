@@ -18,15 +18,9 @@ if(FALSE){
 
 
 bascet_inst <- getBascetImageInstance()
-
 TestBascetInstance(bascet_inst)
-
-
-
-
-#######
-
 bascetRoot <- "/home/m/mahogny/mystore/atrandi/wgs_miseq2/"
+bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
 
 
 
@@ -36,7 +30,6 @@ bascetRoot <- "/home/m/mahogny/mystore/atrandi/wgs_miseq2/"
 
 rawmeta <- DetectRawFileMeta("/home/m/mahogny/mystore/dataset/atrandi/240903_wgs_atcc2_miseq")
 
-bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
 
 
 ### Debarcode the reads, then sort them.
@@ -85,7 +78,49 @@ if(FALSE){
   
   tfile <- BascetReadFile(fskesa, "E2_B4_E9_E11", "transposed_report.tsv", as="tempfile")
   readLines(tfile)
-  
-  
 }
+
+
+
+
+
+
+
+
+
+
+#################################################################################
+#################################################################################
+#################### slurm jobs ################################################
+#################################################################################
+#################################################################################
+
+
+bascet_inst <- getBascetImageInstance()
+TestBascetInstance(bascet_inst)
+bascetRoot <- "/home/m/mahogny/mystore/atrandi/wgs_miseq2/"
+bascet_runner <- SlurmRunner(
+  account="hpc2n2025-074",
+  ncpu="2"
+)
+
+
+TestSlurmRunner <- function(runner, num_job=1){
+  RunJob(
+    runner = runner, 
+    jobname = "slurmtest",
+    cmd = c(
+      paste(
+        "ls"
+      )
+    ),
+    arraysize = num_job
+  )
+}
+
+job <- TestSlurmRunner(bascet_runner, num_job = 20)
+job
+WaitForJob(job)
+
+
 
