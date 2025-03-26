@@ -16,7 +16,7 @@
 #' 
 #' @return TODO
 #' @export
-BascetAlignToReference <- function(  ######### TODO should use RunJob -- bug!   TODO #2 -- should not always sort
+BascetAlignToReference <- function(  
     bascetRoot, 
     useReference,
     numLocalThreads=1,
@@ -35,6 +35,8 @@ BascetAlignToReference <- function(  ######### TODO should use RunJob -- bug!   
   }
   inputFiles <- file.path(bascetRoot, input_shards) #### TODO 666 should really need to add this?
   
+  num_output_shards <- length(inputFiles)
+
   outputFilesBAMunsorted <- make_output_shard_names(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
   outputFilesBAMsorted   <- make_output_shard_names(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
