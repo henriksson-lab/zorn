@@ -14,7 +14,11 @@
 #' 
 #' TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed
 #' 
-#' @return TODO
+#' @param useReference Name of the BWA reference to use
+#' @param outputNameBAMunsorted Name of unsorted BAMs
+#' @param outputNameBAMsorted Name of sorted BAMs (if generated)
+#' @param numLocalThreads Number of threads to use for each runner
+#' @param do_sort Whether to sort the output or not
 #' @export
 BascetAlignToReference <- function(  
     bascetRoot, 
@@ -33,10 +37,8 @@ BascetAlignToReference <- function(
   if(num_shards==0){
     stop("No input files")
   }
-  inputFiles <- file.path(bascetRoot, input_shards) #### TODO 666 should really need to add this?
+  inputFiles <- file.path(bascetRoot, input_shards) 
   
-  num_output_shards <- length(inputFiles)
-
   outputFilesBAMunsorted <- make_output_shard_names(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
   outputFilesBAMsorted   <- make_output_shard_names(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
@@ -53,7 +55,8 @@ BascetAlignToReference <- function(
       "bwa mem", 
       useReference,
       "${files_in[$TASK_ID]}",                #Align one input
-      "> ",
+      "-t", numLocalThreads,
+      ">",
       "${files_out_unsorted[$TASK_ID]}"       #Each input means one output
     )
   )
@@ -89,42 +92,9 @@ BascetAlignToReference <- function(
   RunJob(
     runner = runner, 
     jobname = "bascet_aln",
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in", inputFiles),
-      shellscript_make_bash_array("files_out_unsorted", outputFilesBAMunsorted),
-      shellscript_make_bash_array("files_out_sorted", outputFilesBAMsorted),
-      
-      ### For alignment
-      paste(
-        bascet_instance@prepend_cmd,
-        "bwa mem", 
-        useReference,
-        "${files_in[$TASK_ID]}",                #Align one input
-        "> ",
-        "${files_out_unsorted[$TASK_ID]}"       #Each input results in one unsorted output
-      ),  
-      
-      ### For sorting
-      paste(
-        bascet_instance@prepend_cmd,
-        "samtools sort", 
-        "-@ ",numLocalThreads,                 #Number of threads to use
-#        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
-        "${files_out_unsorted[$TASK_ID]}",     #Each job takes an unsorted BAM
-        "-o ${files_out_sorted[$TASK_ID]}"     #Each job produces a single sorted output
-      ),
-      
-      ### For indexing
-      paste(
-        bascet_instance@prepend_cmd,
-        "samtools index", 
-        "-@ ",numLocalThreads,                 #Number of threads to use
-        "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
-      )
-      
+    cmd = cmd
     ), 
-    arraysize = num_output_shards
+    arraysize = num_shards
   )
 }
 
