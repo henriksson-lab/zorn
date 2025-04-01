@@ -8,6 +8,139 @@
 
 
 
+###############################################
+#' Generate a bigwig out of all reads in a sorted BAM. Note that the caller
+#' is responsible for sorting the BAM first
+#' 
+#' This function is mainly for QC purposes. It uses bamCoverage from deepTools
+#' apt install python3-deeptools
+#' 
+#' @param outputName Name of output file (BIGWIG-file)
+#' 
+BascetAlignmentToBigwig <- function(  
+    bascetRoot, 
+    inputName="aligned", 
+    outputName="pileup",
+    runner, 
+    bascet_instance=bascet_instance.default){
+  
+  #Figure out input and output file names
+  input_shards <- detect_shards_for_file(bascetRoot, inputName) 
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles <- file.path(bascetRoot, input_shards) 
+  
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "bigwig", num_shards)
+  
+  
+  ### Build command
+  cmd <- c(
+    shellscript_set_tempdir(bascet_instance),
+    shellscript_make_bash_array("files_in", inputFiles),
+    shellscript_make_bash_array("files_out", outputFiles),
+    
+    ### For sorting
+    paste(
+      bascet_instance@prepend_cmd,
+      "bamCoverage",
+      "-b ${files_in[$TASK_ID]}",     #Each job takes a single output
+      "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
+    )
+  )
+  
+  
+  
+  #Produce the script and run the job
+  RunJob(
+    runner = runner, 
+    jobname = "bascet_tobw",
+    cmd = cmd,
+    arraysize = num_shards
+  )
+}
+
+
+
+
+
+
+
+
+
+
+###############################################
+#' Filter an alignment (BAM-file).
+#' 
+#' This is typically used to either remove host DNA, or keep reads mapping to a known reference
+#' 
+#' @param outputName Name of output file (BAM-file)
+#' @param numLocalThreads Number of threads to use for each runner
+#' @param keep_mapped Keep the mapped reads (TRUE) or unmapped (FALSE)
+#' 
+BascetFilterAlignment <- function(  
+    bascetRoot, 
+    numLocalThreads=1,
+    inputName, 
+    outputName,
+    keep_mapped=FALSE,
+    runner, 
+    bascet_instance=bascet_instance.default){
+  
+  #Figure out input and output file names
+  input_shards <- detect_shards_for_file(bascetRoot, inputName) 
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles <- file.path(bascetRoot, input_shards) 
+  
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "bam", num_shards)
+
+  ### Set flags for samtools
+  samtools_flags <- ""
+  if(keep_mapped){
+    samtools_flags <- paste(samtools_flags, "-F4")
+  } else {
+    samtools_flags <- paste(samtools_flags, "-f4")
+  }
+  
+  ### Build command
+  cmd <- c(
+    shellscript_set_tempdir(bascet_instance),
+    shellscript_make_bash_array("files_in", inputFiles),
+    shellscript_make_bash_array("files_out", outputFiles),
+    
+    ### For sorting
+    paste(
+      bascet_instance@prepend_cmd,
+      "samtools view",
+      samtools_flags, 
+      "-@ ",numLocalThreads,          #Number of threads to use
+      "${files_in[$TASK_ID]}",        #Each job takes a single output
+      "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
+    )
+  )
+    
+  
+  
+  #Produce the script and run the job
+  RunJob(
+    runner = runner, 
+    jobname = "bascet_filteraln",
+    cmd = cmd,
+    arraysize = num_shards
+  )
+}
+
+
+
+
+
+
+## override template for docs
+
 
 ###############################################
 #' Align from FASTQ, generate sorted and indexed BAM file
@@ -19,6 +152,7 @@
 #' @param outputNameBAMsorted Name of sorted BAMs (if generated)
 #' @param numLocalThreads Number of threads to use for each runner
 #' @param do_sort Whether to sort the output or not
+#' 
 #' @export
 BascetAlignToReference <- function(  
     bascetRoot, 
@@ -92,8 +226,7 @@ BascetAlignToReference <- function(
   RunJob(
     runner = runner, 
     jobname = "bascet_aln",
-    cmd = cmd
-    ), 
+    cmd = cmd,
     arraysize = num_shards
   )
 }

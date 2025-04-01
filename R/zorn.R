@@ -101,21 +101,20 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
     print("Detected possible prefixes")
     print(unique_prefix)
   }
-  
+
   #If there is more than one prefix, then we have to add them. otherwise just keep it simple
   if(length(unique_prefix)>1){
-    meta$prefix <- paste0(meta$possible_prefix,"_")
+    #Sanitize prefixes. Some characters will break BAM tags etc
+    meta$prefix <- stringr::str_remove_all(meta$prefix, " ")
+    meta$prefix <- stringr::str_remove_all(meta$prefix, "/")
+    meta$prefix <- stringr::str_remove_all(meta$prefix, "\"")
+    
   } else {
     if(verbose){
       print("Detected one one possible prefix, so not adding it")
     }
   }
-  
-  #Sanitize prefixes. Some characters will break BAM tags etc
-  meta$prefix <- stringr::str_remove_all(meta$prefix, " ")
-  meta$prefix <- stringr::str_remove_all(meta$prefix, "/")
-  meta$prefix <- stringr::str_remove_all(meta$prefix, "\"")
-  
+
   #Return metadata
   meta[,c("prefix","r1","r2","dir")]
 }
@@ -149,6 +148,8 @@ BascetGetRaw <- function(
   outputFilesComplete <- make_output_shard_names(bascetRoot, outputName, "tirp.gz", num_shards)
   outputFilesIncomplete <- make_output_shard_names(bascetRoot, outputNameIncomplete, "tirp.gz", num_shards)
   
+  #Check if libnames should be added
+  add_libnames <- any(rawmeta$prefix!="")
 
   RunJob(
     runner = runner, 
@@ -157,6 +158,7 @@ BascetGetRaw <- function(
       shellscript_set_tempdir(bascet_instance),
       shellscript_make_bash_array("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
       shellscript_make_bash_array("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
+      shellscript_make_bash_array("libnames",rawmeta$prefix),
       shellscript_make_bash_array("files_out",outputFilesComplete),
       shellscript_make_bash_array("files_out_incomplete",outputFilesIncomplete),
       paste(
@@ -167,6 +169,7 @@ BascetGetRaw <- function(
         "--chemistry",chemistry,  
         "--r1 ${files_r1[$TASK_ID]}",  
         "--r2 ${files_r2[$TASK_ID]}",
+        if(add_libnames) "--libname ${libnames[$TASK_ID]}",
         "--out-complete   ${files_out[$TASK_ID]}",                 #Each job produces a single output
         "--out-incomplete ${files_out_incomplete[$TASK_ID]}"                 #Each job produces a single output
       )
