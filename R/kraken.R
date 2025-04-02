@@ -46,8 +46,80 @@ SpeciesCorrMatrix <- function(adata){
 
 
 
+
+
+
+
+
+
+
+
+
 ###############################################
-#' Run KRAKEN2 and produce a count matrix of taxonomy IDs
+#' Run KRAKEN2 for each cell
+#'
+#' @param useKrakenDB Path to KRAKEN2 database
+#' @export
+#' 
+BascetRunKraken <- function(
+    bascetRoot,
+    useKrakenDB="/data/henlab/kraken/standard-8",
+    numLocalThreads=1,
+    inputName="asfq", ######### should be able to take filtered and pipe to kraken if needed  "filtered"
+    outputName="kraken_out",
+    runner,
+    bascet_instance=bascet_instance.default
+){
+
+  #Figure out input and output file names  
+  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles_R1 <- file.path(bascetRoot, input_shards)
+  
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "kraken_out", num_shards) 
+  
+  ### Check if paired or not
+  is_paired <- is_paired_fastq(inputFiles_R1[1])
+  print(paste("Detect paired FASTQ:",is_paired))
+  
+  ### Figure out R2 names
+  if(is_paired){
+    inputFiles_R2 <- get_fastq_R2_from_R1(inputFiles_R1)
+  }
+  
+  
+  #Run the job
+  RunJob(
+    runner = runner, 
+    jobname = paste0("bascet_kraken"),
+    cmd = c(
+      shellscript_set_tempdir(bascet_instance),
+      shellscript_make_bash_array("files_in_R1",inputFiles_R1),
+      if(is_paired) shellscript_make_bash_array("files_in_R2",inputFiles_R2),
+      shellscript_make_bash_array("files_out",outputFiles),
+      paste(
+        bascet_instance@prepend_cmd,
+        "kraken2",
+        "--db", useKrakenDB,
+        "--threads", numLocalThreads,
+        "--output ${files_out[$TASK_ID]}",
+        if(is_paired) "--paired",
+        "${files_in_R1[$TASK_ID]}",
+        if(is_paired) "${files_in_R2[$TASK_ID]}"
+      )
+    ),
+    arraysize = 1
+  )  
+}
+
+
+
+
+###############################################
+#' Produce a count matrix of taxonomy IDs from KRAKEN output
 #' 
 #' TODO: should run kraken in the same run
 #' 
@@ -57,9 +129,8 @@ SpeciesCorrMatrix <- function(adata){
 #' @param inputName description
 #' @param outputName description
 #' @export
-BascetRunKrakenMakeMatrix <- function(
-    bascetRoot, 
-    useKrakenDB="/data/henlab/kraken/standard-8",
+BascetMakeKrakenCountMatrix <- function(
+    bascetRoot,
     numLocalThreads=1,
     inputName="kraken_out", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputName="kraken", 
@@ -73,10 +144,10 @@ BascetRunKrakenMakeMatrix <- function(
   if(num_shards==0){
     stop("No input files")
   }
-  inputFiles <- file.path(bascetRoot, input_shards) #### TODO 666 should really need to add this?
+  inputFiles <- file.path(bascetRoot, input_shards)
   
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "counts.hdf5", num_shards) 
-  
+
   #Run the job
   RunJob(
     runner = runner, 
@@ -92,9 +163,6 @@ BascetRunKrakenMakeMatrix <- function(
         "-t $BASCET_TEMPDIR",
         "-i ${files_in[$TASK_ID]}",
         "-o ${files_out[$TASK_ID]}"
-        
-        #### TODO need to be able to provide arguments to KRAKEN ###########################
-        
         )
     ),
     arraysize = num_shards

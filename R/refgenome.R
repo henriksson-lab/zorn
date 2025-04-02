@@ -79,8 +79,6 @@ BascetIndexGenomeBWA <- function(
 #' 
 #' @param fname Path to file
 #' @return TRUE if the file is some type of FASTQ
-#' 
-#' @export
 is_fastq <- function(fname) {
   stringr::str_ends(fname, stringr::fixed("fq.gz")) ||  
     stringr::str_ends(fname, stringr::fixed("fastq.gz"))
@@ -93,8 +91,6 @@ is_fastq <- function(fname) {
 #' 
 #' @param fname Path to file
 #' @return TRUE if the file is a paired FASTQ
-#' 
-#' @export
 is_paired_fastq <- function(fname) {
   if(is_fastq(fname)){
     stringr::str_ends(fname, stringr::fixed("R1.fq.gz")) ||  
@@ -113,8 +109,6 @@ is_paired_fastq <- function(fname) {
 #' 
 #' @param fname Path to file
 #' @return Path to R2 file
-#' 
-#' @export
 get_fastq_R2_from_R1 <- function(fname) {
 
   dir <- dirname(fname)
