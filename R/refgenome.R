@@ -7,6 +7,95 @@
 
 
 
+###############################################
+#' Index a genome using BWA such that it can be used for alignment
+#' 
+#' @param genomeFile Name of FASTA file
+#' 
+#' @export
+BascetIndexGenomeBWA <- function(  
+    bascetRoot, 
+    genomeFile, 
+    runner, 
+    bascet_instance=bascet_instance.default){
+  
+  if(!file.exists(genomeFile)){
+    stop("Could not find genome FASTA file")
+  }
+  
+  #Produce the script and run the job
+  RunJob(
+    runner = runner, 
+    jobname = "bascet_bwa_index",
+    cmd = c(
+      ### For sorting
+      paste(
+        bascet_instance@prepend_cmd,
+        "bwa index",
+        genomeFile
+      )
+    ),
+    arraysize = 1
+  )
+}
+
+
+
+###############################################
+#' Check if a file is a FASTQ file
+#' 
+#' @param fname Path to file
+#' @return TRUE if the file is some type of FASTQ
+#' 
+#' @export
+is_fastq <- function(fname) {
+  stringr::str_ends(fname, stringr::fixed("fq.gz")) ||  
+    stringr::str_ends(fname, stringr::fixed("fastq.gz"))
+}
+
+###############################################
+#' Check if a file is a paired FASTQ file
+#' 
+#' Panics if the file is not a FASTQ at all
+#' 
+#' @param fname Path to file
+#' @return TRUE if the file is a paired FASTQ
+#' 
+#' @export
+is_paired_fastq <- function(fname) {
+  if(is_fastq(fname)){
+    stringr::str_ends(fname, stringr::fixed("R1.fq.gz")) ||  
+      stringr::str_ends(fname, stringr::fixed("R1.fastq.gz")) ||
+      stringr::str_ends(fname, stringr::fixed("R2.fq.gz")) ||  
+      stringr::str_ends(fname, stringr::fixed("R2.fastq.gz"))
+  } else {
+    stop("The file is not any type of FASTQ")
+  }
+}
+
+
+
+###############################################
+#' Get corresponding R2 file. Assumes that the input file is R1
+#' 
+#' @param fname Path to file
+#' @return Path to R2 file
+#' 
+#' @export
+get_fastq_R2_from_R1 <- function(fname) {
+
+  dir <- dirname(fname)
+  bname <- basename(fname)
+
+  bname <- stringr::str_replace(bname, stringr::fixed("R1.fq.gz"), "R2.fq.gz")  
+  bname <- stringr::str_replace(bname, stringr::fixed("R1.fastq.gz"), "R2.fastq.gz")  
+
+  file.path(dir, bname)
+}
+
+
+
+
 
 ###############################################
 #' Generate a bigwig out of all reads in a sorted BAM. Note that the caller
@@ -17,6 +106,7 @@
 #' 
 #' @param outputName Name of output file (BIGWIG-file)
 #' 
+#' @export
 BascetAlignmentToBigwig <- function(  
     bascetRoot, 
     inputName="aligned", 
@@ -31,9 +121,7 @@ BascetAlignmentToBigwig <- function(
     stop("No input files")
   }
   inputFiles <- file.path(bascetRoot, input_shards) 
-  
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "bigwig", num_shards)
-  
   
   ### Build command
   cmd <- c(
@@ -79,6 +167,7 @@ BascetAlignmentToBigwig <- function(
 #' @param numLocalThreads Number of threads to use for each runner
 #' @param keep_mapped Keep the mapped reads (TRUE) or unmapped (FALSE)
 #' 
+#' @export
 BascetFilterAlignment <- function(  
     bascetRoot, 
     numLocalThreads=1,
@@ -171,15 +260,34 @@ BascetAlignToReference <- function(
   if(num_shards==0){
     stop("No input files")
   }
-  inputFiles <- file.path(bascetRoot, input_shards) 
+  inputFiles_R1 <- file.path(bascetRoot, input_shards) 
   
   outputFilesBAMunsorted <- make_output_shard_names(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
   outputFilesBAMsorted   <- make_output_shard_names(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
+  
+  ### Verify that the input is FASTQ. check what type
+  if(!is_fastq(inputFiles_R1[1])) {
+    stop("Input files are not FASTQ")
+  }
+  
+  ### Check if paired or not
+  is_paired <- is_paired_fastq(inputFiles_R1[1])
+  print(paste("Detect paired FASTQ:",is_paired))
+  
+  ### Figure out R2 names
+  if(is_paired){
+    inputFiles_R2 <- get_fastq_R2_from_R1(inputFiles_R1)
+  } else {
+    ### No R2
+    inputFiles_R2 <- rep("",length(inputFiles_R1))
+  }
+
   ### Build command: basic alignment
   cmd <- c(
     shellscript_set_tempdir(bascet_instance),
-    shellscript_make_bash_array("files_in", inputFiles),
+    shellscript_make_bash_array("files_in_r1", inputFiles_R1),
+    shellscript_make_bash_array("files_in_r2", inputFiles_R2),
     shellscript_make_bash_array("files_out_unsorted", outputFilesBAMunsorted),
     shellscript_make_bash_array("files_out_sorted", outputFilesBAMsorted),
     
@@ -188,7 +296,8 @@ BascetAlignToReference <- function(
       bascet_instance@prepend_cmd,
       "bwa mem", 
       useReference,
-      "${files_in[$TASK_ID]}",                #Align one input
+      "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
+      "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
       "-t", numLocalThreads,
       ">",
       "${files_out_unsorted[$TASK_ID]}"       #Each input means one output
@@ -243,6 +352,7 @@ BascetAlignToReference <- function(
 #' Take aligned BAM file and produce Fragments.tsv.gz, compatible with Signac ATAC-seq style analysis
 #' 
 #' @return A job, producing a type of Fragments.tsv.gz
+#' 
 #' @export
 BascetBam2Fragments <- function(
     bascetRoot, 
@@ -290,6 +400,7 @@ BascetBam2Fragments <- function(
 #' From aligned BAM file, compute counts per chromosome
 #' 
 #' @return A job, executing the counting 
+#' 
 #' @export
 BascetCountChrom <- function(
     bascetRoot, 
@@ -339,6 +450,7 @@ BascetCountChrom <- function(
 #' TODO too raw? wrap in bascet?
 #' 
 #' @return The raw result of tabix
+#' 
 #' @export
 TabixGetFragmentsSeqs <- function(
     fragpath,
@@ -354,7 +466,8 @@ TabixGetFragmentsSeqs <- function(
 #' Case: tabix from command line uses 100% cpu only. likely not designed for large queries
 #' 
 #' 
-#' @return a ChromatinAssay
+#' @return A ChromatinAssay
+#' 
 #' @export
 FragmentsToSignac <- function(fragpath) {
   #### Index if needed; this should already have been done but added here just in case
@@ -402,6 +515,7 @@ FragmentsToSignac <- function(fragpath) {
 #' From a Signac chromatin assay with fragments, for each cell, count how many reads per chromosome
 #' 
 #' @return a FeatureMatrix 
+#' 
 #' @export
 FragmentCountsPerChrom <- function(
     chrom_assay,
@@ -439,6 +553,7 @@ FragmentCountsPerChrom <- function(
 #' This function directly returns an assay that can be added to a Seurat multimodal object
 #' 
 #' @return A seurat object holding the counts
+#' 
 #' @export
 FragmentCountsPerChromAssay <- function(
     bascetRoot,
@@ -474,6 +589,7 @@ FragmentCountsPerChromAssay <- function(
 #' TODO too specific?
 #' 
 #' @return TODO
+#' 
 #' @export
 ChromToSpeciesCount <- function(adata, map_seq2strain){
   mat_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
@@ -507,6 +623,7 @@ ChromToSpeciesCount <- function(adata, map_seq2strain){
 #' @param adata Seurat object, with FeatureMatrix
 #' @param grange_gene A grange object telling where to count
 #' @return A Seurat AssayObject
+#' 
 #' @export
 CountGrangeFeatures <- function(adata, grange_gene){
   gene_counts <- FeatureMatrix(

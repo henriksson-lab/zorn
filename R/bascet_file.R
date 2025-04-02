@@ -335,13 +335,25 @@ AtrandiBarcodeStats <- function(
 #' i.e. root/name.##.ext
 detect_shards_for_file <- function(bascetRoot, inputName){
   allfiles <- list.files(bascetRoot)
-  allzip <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","zip")))
-  alltirp <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","tirp.gz")))
-  allbam <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","bam")))
-  allcram <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","cram")))
-  allfq <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","fq.gz")))  #### TODO: omit all R2 files
-  all_kraken <- na.omit(stringr::str_match(allfiles, paste0(inputName,"\\.[0123456789]+\\.","kraken_out")))  
-  unique(c(allzip,alltirp, allbam, allcram, allfq,all_kraken)) #tirp.gz can sneak in
+
+  allzip <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","zip", "$"))
+  alltirp <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","tirp\\.gz", "$"))
+  allbam <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","bam", "$"))
+  allcram <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","cram", "$"))
+  all_kraken <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","kraken_out", "$"))
+  
+  allfq <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","fq\\.gz", "$"))
+  allfq_r1 <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","R1\\.fq.gz", "$"))
+
+  allfiles[
+    allzip |
+    alltirp |
+    allbam |
+    allcram |
+    allfq |
+    allfq_r1 |
+    all_kraken
+  ]
 }
 
 
