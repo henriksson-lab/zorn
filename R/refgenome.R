@@ -6,6 +6,38 @@
 ################################################################################
 
 
+###############################################
+#' Figure out if a BAM-file is a paired alignment or not
+#' 
+#' @param fname Name of BAM-file
+#' 
+#' @export
+is_bam_paired_alignment <- function(
+    fname,
+    bascet_instance=bascet_instance.default
+){
+
+  #Note: can also see this from the BAM header, but a real mess to parse out!
+  # samtools view unsorted_aligned.1.bam  -H
+  # @PG	ID:bwa	PN:bwa	VN:0.7.17-r1198-dirty	CL:bwa mem /husky/fromsequencer/241210_joram_rnaseq/ref/all.fa /husky/henriksson/atrandi/v2_rnaseq5//asfq.1.R1.fq.gz /husky/henriksson/atrandi/v2_rnaseq5/asfq.1.R2.fq.gz -t 20
+  
+  ret <- system(
+    paste(
+      bascet_instance@prepend_cmd, 
+      "samtools view",
+      fname,
+      "-h | head -n 100 | samtools view -c -f 1"
+    ), 
+    intern = TRUE, 
+    ignore.stderr=TRUE,
+  )
+  
+  print("Ignore samtools view errors here; this should be rewritten to be handled by bascet instead")
+  as.integer(ret)>0
+}
+
+
+
 
 ###############################################
 #' Index a genome using BWA such that it can be used for alignment
@@ -17,7 +49,8 @@ BascetIndexGenomeBWA <- function(
     bascetRoot, 
     genomeFile, 
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+  ){
   
   if(!file.exists(genomeFile)){
     stop("Could not find genome FASTA file")
@@ -163,6 +196,9 @@ BascetAlignmentToBigwig <- function(
 #' 
 #' This is typically used to either remove host DNA, or keep reads mapping to a known reference
 #' 
+#' If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); otherwise (flag 0x4)
+#' 
+#' 
 #' @param outputName Name of output file (BAM-file)
 #' @param numLocalThreads Number of threads to use for each runner
 #' @param keep_mapped Keep the mapped reads (TRUE) or unmapped (FALSE)
@@ -177,6 +213,7 @@ BascetFilterAlignment <- function(
     runner, 
     bascet_instance=bascet_instance.default){
   
+  
   #Figure out input and output file names
   input_shards <- detect_shards_for_file(bascetRoot, inputName) 
   num_shards <- length(input_shards)
@@ -187,12 +224,25 @@ BascetFilterAlignment <- function(
   
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "bam", num_shards)
 
-  ### Set flags for samtools
+  
+  
+  ### Set flags for samtools. Depends on if paired alignment or not
   samtools_flags <- ""
-  if(keep_mapped){
-    samtools_flags <- paste(samtools_flags, "-F4")
+  is_paired_al <- is_bam_paired_alignment(inputFiles[1])
+  print(paste("Detect paired alignment: ",is_paired_al))
+  
+  if(is_paired_al) {
+    if(keep_mapped){
+      samtools_flags <- paste(samtools_flags, "-F2")
+    } else {
+      samtools_flags <- paste(samtools_flags, "-f2")
+    }
   } else {
-    samtools_flags <- paste(samtools_flags, "-f4")
+    if(keep_mapped){
+      samtools_flags <- paste(samtools_flags, "-F4")
+    } else {
+      samtools_flags <- paste(samtools_flags, "-f4")
+    }
   }
   
   ### Build command
