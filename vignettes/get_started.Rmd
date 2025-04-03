@@ -19,20 +19,20 @@ analysis of the data, after the preprocessing.
 Depending on your use case, you will need different tutorials. However,
 these are in common for all workflows:
 
-* [a link](install.html "Installing Zorn and Bascet")
-* [a link](slurm.html "Using SLURM") - If you want to run this in a high-performance environment
-* [a link](debarcoding.html "Debarcoding tutorial") - Ingesting raw FASTQ and preparing for later steps
+* [Installing Zorn and Bascet](install.html)
+* [Using SLURM](slurm.html) - If you want to run this in a high-performance environment
+* [Debarcoding tutorial](debarcoding.html) - Ingesting raw FASTQ and preparing for later steps
 
 
 Then there are several options on how to continue:
 
-* [a link](kraken.html "KRAKEN-based workflow") - if you don't know what your sample contains
-* [a link](alignment.html "Alignment-based workflow") - if you have some clue what your sample contains
+* [KRAKEN-based workflow](kraken.html) - if you don't know what your sample contains
+* [Alignment-based workflow](alignment.html) - if you have some clue what your sample contains
 
 
 These may help you understand Zorn and Bascet better
 
-* [a link](fileformats.html "Overview of file formats") 
+* [Overview of file formats](fileformats.html) 
 
 
 

@@ -25,7 +25,7 @@ KRAKEN2 wants the data in FASTQ format. Here we assume that you use a single-cel
 WGS chemistry that produces paired reads, and direct Zorn to produce R1/R2 FASTQ files (only R1 specified).
 We name the output Bascets "asfq", taking as input the typical sharded reads:
 
-(SLURM-compatible)
+[(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
 ### Get reads in fastq format
@@ -46,7 +46,7 @@ https://benlangmead.github.io/aws-indexes/k2
 If you want a small one then consider standard-8. Unzip it in a directory. You
 can then run KRAKEN2 like this:
 
-(SLURM-compatible)
+[(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
 ### Run Kraken on each cell
@@ -56,7 +56,6 @@ BascetRunKraken(
   numLocalThreads=20,
   runner=bascet_runner
 )
-
 
 ### Produce a count matrix of taxonomy features
 BascetMakeKrakenCountMatrix(
@@ -74,7 +73,7 @@ This ends up being a rather small matrix that you can process using Seurat.
 
 
 
-TODO the rest
+============ TODO the rest ==============
 
 
 

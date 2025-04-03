@@ -33,6 +33,7 @@ You can now parse the reads the figure out which cell they belong to, and any UM
 information. The only thing you additionally need to specify is what type of data
 you have, where "atrandi_wgs" is for the Atrandi SPC-based MDA protocol for WGS.
 
+[(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
 BascetGetRaw(
@@ -82,6 +83,8 @@ then we advise only creating one shard, as there is no benefit to having multipl
 and it is more likely to cause mistakes.
 
 In this step we also filter out barcodes with too low read counts (optional).
+
+[(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
 BascetShardify(
