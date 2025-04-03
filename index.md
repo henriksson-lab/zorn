@@ -1,9 +1,9 @@
-![](articles/assets/zorn_banner.jpg)
+![](articles/assets/bascet_logo_300.jpg )
 
 
 ## **Zorn**
 
-We are proud to announce Zorn! To install the package, see the [install page](install.html). 
+We are proud to announce Zorn! To install the package, see the [install page](articles/install.html). 
 
 ## **About Zorn**
 
