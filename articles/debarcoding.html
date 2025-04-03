@@ -88,6 +88,7 @@ out which files to use for what:</p>
 and any UMI information. The only thing you additionally need to specify
 is what type of data you have, where “atrandi_wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetGetRaw.html">BascetGetRaw</a></span><span class="op">(</span></span>
 <span>    <span class="va">bascetRoot</span>, </span>
@@ -126,6 +127,7 @@ shard, as there is no benefit to having multiple and it is more likely
 to cause mistakes.</p>
 <p>In this step we also filter out barcodes with too low read counts
 (optional).</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>

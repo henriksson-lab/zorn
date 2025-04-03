@@ -82,7 +82,7 @@ adapt accordingly.</p>
 single-cell WGS chemistry that produces paired reads, and direct Zorn to
 produce R1/R2 FASTQ files (only R1 specified). We name the output
 Bascets “asfq”, taking as input the typical sharded reads:</p>
-<p>(SLURM-compatible)</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
 <span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
@@ -95,7 +95,7 @@ Bascets “asfq”, taking as input the typical sharded reads:</p>
 <p>To run KRAKEN2, you need a database. You can get them here: <a href="https://benlangmead.github.io/aws-indexes/k2" class="external-link uri">https://benlangmead.github.io/aws-indexes/k2</a></p>
 <p>If you want a small one then consider standard-8. Unzip it in a
 directory. You can then run KRAKEN2 like this:</p>
-<p>(SLURM-compatible)</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Run Kraken on each cell</span></span>
 <span><span class="fu"><a href="../reference/BascetRunKraken.html">BascetRunKraken</a></span><span class="op">(</span></span>
@@ -104,7 +104,6 @@ directory. You can then run KRAKEN2 like this:</p>
 <span>  numLocalThreads<span class="op">=</span><span class="fl">20</span>,</span>
 <span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
 <span><span class="op">)</span></span>
-<span></span>
 <span></span>
 <span><span class="co">### Produce a count matrix of taxonomy features</span></span>
 <span><span class="fu"><a href="../reference/BascetMakeKrakenCountMatrix.html">BascetMakeKrakenCountMatrix</a></span><span class="op">(</span></span>
@@ -116,7 +115,7 @@ directory. You can then run KRAKEN2 like this:</p>
 read to a taxonomy. In the second step, we count the taxonomic reads for
 each cell. This ends up being a rather small matrix that you can process
 using Seurat.</p>
-<p>TODO the rest</p>
+<p>============ TODO the rest ==============</p>
   </main>
 </div>
 

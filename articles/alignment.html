@@ -83,7 +83,7 @@ Here we assume that you use a single-cell WGS chemistry that produces
 paired reads, and direct Zorn to produce R1/R2 FASTQ files (only R1
 specified). We name the output Bascets “asfq”, taking as input the
 typical sharded reads:</p>
-<p>(SLURM-compatible)</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
 <span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
@@ -97,7 +97,7 @@ typical sharded reads:</p>
 You can do this using “bwa index” in the terminal; but you can also do
 it via Zorn. This assumes that you have a FASTA-file named all.fa (can
 also be gzipped):</p>
-<p>(SLURM-compatible)</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Build a reference</span></span>
 <span><span class="fu"><a href="../reference/BascetIndexGenomeBWA.html">BascetIndexGenomeBWA</a></span><span class="op">(</span></span>
@@ -112,7 +112,7 @@ command outputs both unsorted and sorted BAM-files.</p>
 regions, i.e., WGS species counting and RNA-seq</li>
 <li>The unsorted BAM-files are required for filtering of host reads</li>
 </ul>
-<p>(SLURM-compatible)</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Perform alignment</span></span>
 <span><span class="fu"><a href="../reference/BascetAlignToReference.html">BascetAlignToReference</a></span><span class="op">(</span></span>
@@ -140,7 +140,7 @@ generate this file.</p>
 <p>Note one caveat: depending on chemistry, this workflow may not handle
 UMIs, and just report raw read counts. However, for quick and dirty
 operations this is typically enough.</p>
-<p>(SLURM-compatible)</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Generate fragments BED file suited for quantifying reads/chromosome using Signac later </span></span>
 <span><span class="fu"><a href="../reference/BascetBam2Fragments.html">BascetBam2Fragments</a></span><span class="op">(</span></span>
@@ -151,7 +151,7 @@ operations this is typically enough.</p>
 compare a metagenomic sample to a number of defined strains), then we
 provide a simpler counter. The output is a small matrix that you can
 load with Seurat:</p>
-<p>(SLURM-compatible)</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Count reads per chromosome</span></span>
 <span><span class="fu"><a href="../reference/BascetCountChrom.html">BascetCountChrom</a></span><span class="op">(</span></span>
