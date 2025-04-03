@@ -25,14 +25,16 @@
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/kraken.html">KRAKEN-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
+    <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../articles/faq.html">FAQ</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://henlab.org/"><span class="fa fa-home"></span></a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/henriksson-lab/zorn"><span class="fa fa-github"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://henlab.org/" aria-label="Lab website"><span class="fa fa-home"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/henriksson-lab/zorn" aria-label="GitHub repository"><span class="fa fa-github"></span></a></li>
       </ul></div>
 
 
@@ -42,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Call a MAP function for all cells</h1>
-      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/R/zorn.R" class="external-link"><code>R/zorn.R</code></a>, <a href="https://github.com/henriksson-lab/zorn/blob/main/R/zorn_aggr.R" class="external-link"><code>R/zorn_aggr.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/R/zorn_aggr.R" class="external-link"><code>R/zorn_aggr.R</code></a></small>
       <div class="d-none name"><code>BascetMapCell.Rd</code></div>
     </div>
 
@@ -58,15 +60,7 @@
 <span>  <span class="va">inputName</span>,</span>
 <span>  <span class="va">outputName</span>,</span>
 <span>  <span class="va">runner</span>,</span>
-<span>  bascet_instance <span class="op">=</span> <span class="va">bascet_instance.default</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">BascetMapCell</span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="va">withfunction</span>,</span>
-<span>  <span class="va">inputName</span>,</span>
-<span>  <span class="va">outputName</span>,</span>
-<span>  <span class="va">runner</span>,</span>
+<span>  args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascet_instance <span class="op">=</span> <span class="va">bascet_instance.default</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -79,10 +73,6 @@
 <dd><p>List of arguments (key,value) to provide to the script</p></dd>
 
 </dl></div>
-    <div class="section level2">
-    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>TODO</p>
-    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

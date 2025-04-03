@@ -5,10 +5,12 @@
 <url><loc>https://henriksson-lab.github.io/zorn/articles/debarcoding.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/faq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/fileformats.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/for_developers.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/get_started.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/index.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/install.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/kraken.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/map_scripts.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/slurm.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/authors.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/index.html</loc></url>
@@ -62,9 +64,10 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/TestBascetInstance.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.minhash.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.quast.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.rawtext.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/bascet_instance.default.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/detect_shards_for_file.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetImageInstance.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/get_fastq_R2_from_R1.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/index.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is_bam_paired_alignment.html</loc></url>
