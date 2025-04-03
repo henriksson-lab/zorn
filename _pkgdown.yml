@@ -22,8 +22,10 @@ navbar:
         - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html
+        - text: "Using SLURM"
+          href: articles/slurm.html
     - text: FAQ
-      href: reference/faq.html
+      href: articles/faq.html
     - text: "Reference"
       href: reference/index.html
   right:

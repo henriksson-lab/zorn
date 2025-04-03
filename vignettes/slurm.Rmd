@@ -1,5 +1,5 @@
 ---
-title: "Debarcoding and sharding"
+title: "Using SLURM"
 output:
   html_document:
     theme: united
@@ -8,9 +8,6 @@ output:
 ---
 
 
+
+
 TODO
-
-```{r, eval=F, echo=T}
-
-
-```
