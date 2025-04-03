@@ -1,5 +1,5 @@
 ---
-title: "Debarcoding and sharding"
+title: "Frequently Asked Questions"
 output:
   html_document:
     theme: united
@@ -7,10 +7,7 @@ output:
   pdf_document: default
 ---
 
+Please email us your questions and we'll do our best to help. Either
+email [Johan Henriksson](mailto:johan.henriksson@umu.se)
+or [Laura Carroll](mailto:laura.carroll@umu.se)
 
-TODO
-
-```{r, eval=F, echo=T}
-
-
-```
