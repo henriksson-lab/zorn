@@ -1,4 +1,4 @@
-![](articles/assets/bascet_logo_300.jpg )
+![](man/figures/bascet_logo_300.jpg)
 
 
 ## **Zorn**
