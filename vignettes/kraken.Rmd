@@ -14,7 +14,7 @@ output:
 First set up your Zorn/Bascet working directory as before. If you wish to run
 these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
-```{r}
+```{r, eval=F, echo=T}
 library(Zorn)
 bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
 bascetRoot = "/home/yours/an_empty_workdirectory"
@@ -27,7 +27,7 @@ We name the output Bascets "asfq", taking as input the typical sharded reads:
 
 (SLURM-compatible)
 
-```{r}
+```{r, eval=F, echo=T}
 ### Get reads in fastq format
 BascetMapTransform(
   bascetRoot,
@@ -48,7 +48,7 @@ can then run KRAKEN2 like this:
 
 (SLURM-compatible)
 
-```{r}
+```{r, eval=F, echo=T}
 ### Run Kraken on each cell
 BascetRunKraken(
   bascetRoot,

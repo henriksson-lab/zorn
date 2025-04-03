@@ -12,7 +12,7 @@ output:
 First set up your Zorn/Bascet workdirectory as before. If you wish to run
 these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
-```{r}
+```{r, eval=F, echo=T}
 library(Zorn)
 bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
 bascetRoot = "/home/yours/an_empty_workdirectory"
@@ -24,7 +24,7 @@ We name the output Bascets "asfq", taking as input the typical sharded reads:
 
 (SLURM-compatible)
 
-```{r}
+```{r, eval=F, echo=T}
 ### Get reads in fastq format
 BascetMapTransform(
   bascetRoot,
@@ -44,7 +44,7 @@ it via Zorn. This assumes that you have a FASTA-file named all.fa
 
 (SLURM-compatible)
 
-```{r}
+```{r, eval=F, echo=T}
 #Build a reference
 BascetIndexGenomeBWA(
   bascetRoot, 
@@ -65,7 +65,7 @@ outputs both unsorted and sorted BAM-files.
 
 (SLURM-compatible)
 
-```{r}
+```{r, eval=F, echo=T}
 ### Perform alignment
 BascetAlignToReference(
   bascetRoot,
@@ -82,7 +82,7 @@ TODO: Filtering
 
 
 
-```{r}
+```{r, eval=F, echo=T}
 BascetFilterAlignment(
   bascetRoot,
   outputName="filter_paired",
@@ -114,7 +114,7 @@ this is typically enough.
 
 (SLURM-compatible)
 
-```{r}
+```{r, eval=F, echo=T}
 ### Generate fragments BED file suited for quantifying reads/chromosome using Signac later 
 BascetBam2Fragments(
   bascetRoot,
@@ -129,7 +129,7 @@ then we provide a simpler counter. The output is a small matrix that you can loa
 
 (SLURM-compatible)
 
-```{r}
+```{r, eval=F, echo=T}
 ### Count reads per chromosome
 BascetCountChrom(
   bascetRoot, 

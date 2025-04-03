@@ -11,7 +11,7 @@ output:
 First set up your Zorn/Bascet working directory as before. If you wish to run
 these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
-```{r}
+```{r, eval=F, echo=T}
 library(Zorn)
 bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
 bascetRoot = "/home/yours/an_empty_workdirectory"
@@ -22,7 +22,7 @@ The first step in data processing is take the raw FASTQ files and identify which
 read belongs to which cell. Zorn can automatically figure out which files to use
 for what:
 
-```{r}
+```{r, eval=F, echo=T}
 rawmeta <- DetectRawFileMeta("/home/yours/directory_with_raw_fastq")
 ```
 
@@ -34,7 +34,7 @@ information. The only thing you additionally need to specify is what type of dat
 you have, where "atrandi_wgs" is for the Atrandi SPC-based MDA protocol for WGS.
 
 
-```{r}
+```{r, eval=F, echo=T}
 BascetGetRaw(
     bascetRoot, 
     rawmeta,
@@ -47,7 +47,7 @@ BascetGetRaw(
 Once barcodes have been processed, you can perform knee plot analysis, which
 is the first important quality control.
 
-```{r}
+```{r, eval=F, echo=T}
 ### Decide cells to include
 h <- ReadHistogram(bascetRoot,"debarcoded")
 PlotHistogram(h)
@@ -63,7 +63,7 @@ exclude them also at a later stage, but removing the worst offenders already
 will speed up computation. Here is one example for getting the names and number
 of cells having at least 100 reads:
 
-```{r}
+```{r, eval=F, echo=T}
 includeCells <- h$cellid[h$count>100]   
 length(includeCells)
 ```
@@ -83,7 +83,7 @@ and it is more likely to cause mistakes.
 
 In this step we also filter out barcodes with too low read counts (optional).
 
-```{r}
+```{r, eval=F, echo=T}
 BascetShardify(
   bascetRoot,
   includeCells = includeCells,
