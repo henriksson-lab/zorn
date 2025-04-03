@@ -47,6 +47,14 @@ multiple workspaces can share the same image
 bascet_inst <- getBascetDockerImage(store_at="/somewhere/on/your/disk/")
 ```
 
+# Testing the installation
+
+Run the following and see if you get "ok" before proceeding:
+```{r, eval=F, echo=T}
+TestBascetInstance(bascet_inst)
+```
+
+
 
 # Using the Bascet instance
 

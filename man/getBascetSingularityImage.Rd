@@ -8,8 +8,9 @@ It will be cached in the provided directory to avoid downloading it all the time
 getBascetSingularityImage(store_at = "./", tempdir = NULL)
 }
 \value{
-TODO
+A Bascet runner
 }
 \description{
-TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed
+Get a Bascet image (singularity or docker).
+It will be cached in the provided directory to avoid downloading it all the time
 }

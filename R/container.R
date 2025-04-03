@@ -63,14 +63,11 @@ GetBascetTempDir <- function(bascet_instance){
 
 
 
-
 ###############################################
 #' Get a Bascet image (singularity or docker). 
 #' It will be cached in the provided directory to avoid downloading it all the time
 #' 
-#' TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed
-#' 
-#' @return TODO
+#' @return A Bascet runner
 #' @export
 getBascetSingularityImage <- function(store_at="./", tempdir=NULL) {
   
@@ -78,23 +75,25 @@ getBascetSingularityImage <- function(store_at="./", tempdir=NULL) {
   
   if(!file.exists(file_bascet_sif)) {
     print("No singularity image present; downloading")
-    ret <- system("singularity pull --arch amd64 library://lmc297/bascet/bascet:0.01")
-    
-    if(ret==127){
-      #TODO: check for errors
-      
+ 
+    if(download.file("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif)!=0){
       stop("Failed to download singularity")      
     }
+    
+#    ret <- system("singularity pull --arch amd64 library://lmc297/bascet/bascet:0.01")
+#    if(ret==127){
+#      #TODO: check for errors
+#      stop("Failed to download singularity")      
+#    }
     
   } else {
     print(paste("Found existing Bascet singularity image:", file_bascet_sif))
   }
   
-  prepend_cmd <- paste("singularity run ", file_bascet_sif," ")
+  prepend_cmd <- paste("singularity run", file_bascet_sif," ")
   
   if(is.null(tempdir)){
     tempdir <- tempdir()
-    #    tempdir <- "/data/henlab/bascet_temp" ##TODO better place?
   }
   
   BascetInstance(
@@ -103,26 +102,6 @@ getBascetSingularityImage <- function(store_at="./", tempdir=NULL) {
     prepend_cmd=prepend_cmd
   ) 
 }
-
-
-
-
-
-
-
-
-if(FALSE){
-  inst <- getBascetImageInstance()
-  
-  inst
-
-  #singularity run bascet_0.01.sif skesa
-  #singularity exec lolcow_latest.sif cowsay moo
-
-  #might exec be faster? is miniconda the issue?
-    
-}
-
 
 
 ###############################################
@@ -134,14 +113,29 @@ TestBascetInstance <- function(bascet_instance) {
   
   cmd <- paste(
     bascet_instance@prepend_cmd,
-    bascet_instance@bin
+    bascet_instance@bin,
+    "-h"
   )
-  print(cmd)
 
-  system(cmd)  
-  
+  ret <- system(cmd, intern = TRUE)
+
+  if(stringr::str_detect(ret[1], "Usage")){
+    "ok"
+  } else {
+    #  print(cmd)
+    stop("Could not invoke Bascet")
+  }
 }
   
 
+
+
+if(FALSE){
+  bascet_inst <- getBascetSingularityImage("/data/henlab/temp/")
+  TestBascetInstance(bascet_inst)
+  
+  #singularity run bascet_0.01.sif skesa
+  #singularity exec lolcow_latest.sif cowsay moo
+}
 
 

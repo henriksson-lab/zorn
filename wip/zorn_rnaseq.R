@@ -1,16 +1,3 @@
-library(Zorn)
-
-if(FALSE){
-  source("R/job_general.R")
-  source("R/job_local.R")
-  source("R/job_slurm.R")
-  source("R/bascet_file.R")
-  source("R/zorn.R")
-  source("R/shell.R") 
-  source("R/zorn_aggr.R")
-  source("R/count_kmer.R")
-  source("R/refgenome.R")
-}
 
 
 ################################################################################

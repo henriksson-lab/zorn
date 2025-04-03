@@ -11,3 +11,8 @@
 \.sif$
 ^docs
 ^vignettes
+^file
+^Zorn_
+^wip
+^other_code
+^tutorial

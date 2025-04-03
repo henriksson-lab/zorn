@@ -1,3 +1,24 @@
+
+if(FALSE){
+  source("R/job_general.R")
+  source("R/job_local.R")
+  source("R/job_slurm.R")
+  source("R/bascet_file.R")
+  source("R/zorn.R")
+  source("R/shell.R")
+  source("R/zorn_aggr.R")
+  source("R/aggr_functions.R")
+  source("R/count_kmer.R")
+  source("R/refgenome.R")
+  source("R/kraken.R")
+  source("R/container.R")
+} 
+
+if(FALSE) {
+  library(Zorn)
+}
+
+
 ################################################################################
 ################ Building documentation website ################################
 ################################################################################
