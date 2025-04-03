@@ -10,7 +10,7 @@ articles:
   install: install.html
   kraken: kraken.html
   slurm: slurm.html
-last_built: 2025-04-03T10:00Z
+last_built: 2025-04-03T10:14Z
 urls:
   reference: https://henriksson-lab.github.io/zorn/reference
   article: https://henriksson-lab.github.io/zorn/articles
