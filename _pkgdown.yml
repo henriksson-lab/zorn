@@ -19,11 +19,16 @@ navbar:
           href: articles/kraken.html
         - text: "Alignment-based workflow"
           href: articles/alignment.html
+        - text: "Map scripts"
+          href: articles/map_scripts.html
         - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html
         - text: "Using SLURM"
           href: articles/slurm.html
+        - text: "For developers"
+          href: articles/for_developers.html
+          
     - text: FAQ
       href: articles/faq.html
     - text: "Reference"
