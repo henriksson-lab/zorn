@@ -53,7 +53,7 @@ my_job <- BascetGetRawAtrandiWGS(
 )
 ```
 
-The major difference here is that this function will now return immediately,
+The major difference here is that this function will now return immediately (asynchronous execution),
 compared to the usual local runner. This means that you can keep working in R
 until the task is done, or set up parallel jobs (which then should be named differently).
 
@@ -69,6 +69,7 @@ on a login node of your cluster.
 ```{r, eval=F, echo=T}
 WaitForJob(my_job) 
 ```
+You can press ctrl+c to end the waiting loop early.
 
 
 # Job status
