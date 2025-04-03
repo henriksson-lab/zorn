@@ -21,8 +21,10 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><h6 class="dropdown-header" data-toc-skip>Introductory Vignettes</h6></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
+    <li><a class="dropdown-item" href="../articles/kraken.html">KRAKEN-based workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Other stuff</h6></li>
+    <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../reference/faq.html">FAQ</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -88,6 +90,12 @@
         <dd>Align from FASTQ, generate sorted and indexed BAM file</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetAlignmentToBigwig.html">BascetAlignmentToBigwig()</a></code>
+
+        </dt>
+        <dd>Generate a bigwig out of all reads in a sorted BAM. Note that the caller is responsible for sorting the BAM first</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetAssemble.html">BascetAssemble()</a></code>
 
         </dt>
@@ -118,10 +126,22 @@
         <dd>Select kmers that appear useful for clustering</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetFilterAlignment.html">BascetFilterAlignment()</a></code>
+
+        </dt>
+        <dd>Filter an alignment (BAM-file).</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetGetRaw.html">BascetGetRaw()</a></code>
 
         </dt>
         <dd>Generate BAM with barcodes from input raw FASTQ</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetIndexGenomeBWA.html">BascetIndexGenomeBWA()</a></code>
+
+        </dt>
+        <dd>Index a genome using BWA such that it can be used for alignment</dd>
       </dl><dl><dt>
 
           <code><a href="BascetInstance.html">BascetInstance()</a></code>
@@ -136,10 +156,16 @@
         <dd>Read one file from a Bascet</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetMakeKrakenCountMatrix.html">BascetMakeKrakenCountMatrix()</a></code>
+
+        </dt>
+        <dd>Produce a count matrix of taxonomy IDs from KRAKEN output</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetMapCell.html">BascetMapCell()</a></code>
 
         </dt>
-        <dd>Call a function for all cells</dd>
+        <dd>Call a MAP function for all cells</dd>
       </dl><dl><dt>
 
           <code><a href="BascetMapTransform.html">BascetMapTransform()</a></code>
@@ -160,10 +186,10 @@
         <dd>Read one file from a Bascet</dd>
       </dl><dl><dt>
 
-          <code><a href="BascetRunKrakenMakeMatrix.html">BascetRunKrakenMakeMatrix()</a></code>
+          <code><a href="BascetRunKraken.html">BascetRunKraken()</a></code>
 
         </dt>
-        <dd>Run KRAKEN2 and produce a count matrix of taxonomy IDs</dd>
+        <dd>Run KRAKEN2 for each cell</dd>
       </dl><dl><dt>
 
           <code><a href="BascetShardify.html">BascetShardify()</a></code>
@@ -344,6 +370,30 @@
 
         </dt>
         <dd>Get a Bascet image (singularity or docker). It will be cached in the provided directory to avoid downloading it all the time</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_fastq_R2_from_R1.html">get_fastq_R2_from_R1()</a></code>
+
+        </dt>
+        <dd>Get corresponding R2 file. Assumes that the input file is R1</dd>
+      </dl><dl><dt>
+
+          <code><a href="is_bam_paired_alignment.html">is_bam_paired_alignment()</a></code>
+
+        </dt>
+        <dd>Figure out if a BAM-file is a paired alignment or not</dd>
+      </dl><dl><dt>
+
+          <code><a href="is_fastq.html">is_fastq()</a></code>
+
+        </dt>
+        <dd>Check if a file is a FASTQ file</dd>
+      </dl><dl><dt>
+
+          <code><a href="is_paired_fastq.html">is_paired_fastq()</a></code>
+
+        </dt>
+        <dd>Check if a file is a paired FASTQ file</dd>
       </dl><dl><dt>
 
           <code><a href="make_output_shard_names.html">make_output_shard_names()</a></code>
