@@ -36,6 +36,8 @@ navbar:
   right:
     - icon: fa-home
       href: "https://henlab.org/"
+      aria-label: Lab website
     - icon: fa-github
       href: https://github.com/henriksson-lab/zorn
+      aria-label: GitHub repository
 

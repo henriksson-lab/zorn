@@ -2,7 +2,7 @@
 % Please edit documentation in R/zorn.R
 \name{KneeplotPerSpecies}
 \alias{KneeplotPerSpecies}
-\title{Produce a kneeplot}
+\title{Call a MAP function for all cells}
 \usage{
 KneeplotPerSpecies(adata, max_species = NULL)
 }
@@ -10,10 +10,17 @@ KneeplotPerSpecies(adata, max_species = NULL)
 \item{adata}{description}
 
 \item{max_species}{description}
+
+\item{args}{List of arguments (key,value) to provide to the script}
 }
 \value{
+A data.frame
+
+TODO
+
 A ggplot object
 }
 \description{
-Produce a kneeplot
+\if{html}{\out{<div class="sourceCode">}}\preformatted{TODO override args docs
+}\if{html}{\out{</div>}}
 }

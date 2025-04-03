@@ -42,6 +42,7 @@ Collate:
   'bascet_file.R'
   'shell.R'
   'zorn_aggr.R'
+  'aggr_functions.R'
   'count_kmer.R'
   'refgenome.R'
   'kraken.R'
