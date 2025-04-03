@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Debarcoding and sharding • Zorn</title>
+<title>Installation • Zorn</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Debarcoding and sharding">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Installation">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -62,7 +62,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Debarcoding and sharding</h1>
+      <h1>Installation</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/install.Rmd" class="external-link"><code>vignettes/install.Rmd</code></a></small>
@@ -71,11 +71,24 @@
 
     
     
-<p>The first step in data processing is take the raw FASTQ files and
-identify which read belongs to which cell.</p>
+<p>First install Zorn. It is under active development, so just get it
+straight from GitHub and install from source:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fl">666</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 666</span></span></code></pre>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"devtools"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"henriksson-lab/zorn"</span><span class="op">)</span></span></code></pre></div>
+<p>You also need Bascet. Unless you are a Bascet developer, you will
+find it easiest to run it through Singularity. Thus, unless you already
+have it, first <a href="https://docs.sylabs.io/guides/3.0/user-guide/installation.html" class="external-link">install
+Singularity</a></p>
+<p>Once installed, Zorn can then pull down the latest Singularity image
+for you:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bascet_inst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetImageInstance.html">getBascetImageInstance</a></span><span class="op">(</span>store_at<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
+<p>You need to pass the bascet_inst variable to each Zorn command that
+requires it. The singularity image will be cached, so if you run this
+again, it will instead use the previous image. You will need to delete
+it manually if you wish to replace it.</p>
   </main>
 </div>
 
