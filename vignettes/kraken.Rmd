@@ -1,0 +1,81 @@
+---
+title: "KRAKEN2 "
+output:
+  html_document:
+    theme: united
+    df_print: kable
+  pdf_document: default
+---
+
+
+
+
+
+First set up your Zorn/Bascet working directory as before. If you wish to run
+these steps on a SLURM cluster, see separate vignette and adapt accordingly.
+
+```{r}
+library(Zorn)
+bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascetRoot = "/home/yours/an_empty_workdirectory"
+```
+
+
+KRAKEN2 wants the data in FASTQ format. Here we assume that you use a single-cell
+WGS chemistry that produces paired reads, and direct Zorn to produce R1/R2 FASTQ files (only R1 specified).
+We name the output Bascets "asfq", taking as input the typical sharded reads:
+
+(SLURM-compatible)
+
+```{r}
+### Get reads in fastq format
+BascetMapTransform(
+  bascetRoot,
+  "filtered",   #default; can omit
+  "asfq",  ###name parameter
+  out_format="R1.fq.gz",
+  runner=bascet_runner
+)
+```
+
+
+
+To run KRAKEN2, you need a database. You can get them here:
+https://benlangmead.github.io/aws-indexes/k2
+
+If you want a small one then consider standard-8. Unzip it in a directory. You
+can then run KRAKEN2 like this:
+
+(SLURM-compatible)
+
+```{r}
+### Run Kraken on each cell
+BascetRunKraken(
+  bascetRoot,
+  useKrakenDB="/your_disk/kraken/standard-8",
+  numLocalThreads=20,
+  runner=bascet_runner
+)
+
+
+### Produce a count matrix of taxonomy features
+BascetMakeKrakenCountMatrix(
+  bascetRoot,
+  numLocalThreads=20,
+  runner=bascet_runner
+)
+```
+
+Note that there are two steps here. First KRAKEN2 classifies each read to a
+taxonomy. In the second step, we count the taxonomic reads for each cell.
+This ends up being a rather small matrix that you can process using Seurat.
+
+
+
+
+
+TODO the rest
+
+
+
+

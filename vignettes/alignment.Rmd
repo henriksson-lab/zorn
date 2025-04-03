@@ -1,0 +1,140 @@
+---
+title: "Alignment-based workflow"
+output:
+  html_document:
+    theme: united
+    df_print: kable
+  pdf_document: default
+---
+
+
+
+First set up your Zorn/Bascet workdirectory as before. If you wish to run
+these steps on a SLURM cluster, see separate vignette and adapt accordingly.
+
+```{r}
+library(Zorn)
+bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascetRoot = "/home/yours/an_empty_workdirectory"
+```
+
+We will use BWA for alignment, which wants the data in FASTQ format. Here we assume that you use a single-cell
+WGS chemistry that produces paired reads, and direct Zorn to produce R1/R2 FASTQ files (only R1 specified).
+We name the output Bascets "asfq", taking as input the typical sharded reads:
+
+(SLURM-compatible)
+
+```{r}
+### Get reads in fastq format
+BascetMapTransform(
+  bascetRoot,
+  "filtered",   #default; can omit
+  "asfq",  ###name parameter
+  out_format="R1.fq.gz",
+  runner=bascet_runner
+)
+```
+
+
+
+Before alignment, you need to prepare your reference by indexing it.
+You can do this using "bwa index" in the terminal; but you can also do
+it via Zorn. This assumes that you have a FASTA-file named all.fa
+(can also be gzipped):
+
+(SLURM-compatible)
+
+```{r}
+#Build a reference
+BascetIndexGenomeBWA(
+  bascetRoot, 
+  "/your_reference/all.fa", 
+  runner=bascet_runner
+)
+```
+
+
+
+
+
+You can now proceed with alignment using BWA. By default, this command
+outputs both unsorted and sorted BAM-files.
+
+* The sorted BAM-files are required for counting of reads in genomic regions, i.e., WGS species counting and RNA-seq
+* The unsorted BAM-files are required for filtering of host reads
+
+(SLURM-compatible)
+
+```{r}
+### Perform alignment
+BascetAlignToReference(
+  bascetRoot,
+  useReference="/your_reference/all.fa",
+  numLocalThreads=10,
+  runner=bascet_runner
+)
+```
+
+
+TODO: Filtering
+
+==================== Host filtering workflow ==============
+
+
+
+```{r}
+BascetFilterAlignment(
+  bascetRoot,
+  outputName="filter_paired",
+  keep_mapped=TRUE,
+  runner=bascet_runner
+)
+```
+
+
+
+
+
+
+
+
+
+==================== Counting workflow ==============
+
+
+If you want to analyze where reads mapped, either for RNA-seq counting for genes,
+or more generally, what the count is within a genomic region, you can use Signac
+for great flexibility in this task. Signac is designed to analyze
+single-cell ATAC-seq data, where the reads are stored in a specialized BED-file.
+You can use the command below to generate this file.
+
+Note one caveat: depending on chemistry, this workflow may not handle UMIs,
+and just report raw read counts. However, for quick and dirty operations
+this is typically enough.
+
+(SLURM-compatible)
+
+```{r}
+### Generate fragments BED file suited for quantifying reads/chromosome using Signac later 
+BascetBam2Fragments(
+  bascetRoot,
+  runner=bascet_runner
+)
+```
+
+
+
+If you just want to get the number of reads per chromosome (i.e. to compare a metagenomic sample to a number of defined strains),
+then we provide a simpler counter. The output is a small matrix that you can load with Seurat:
+
+(SLURM-compatible)
+
+```{r}
+### Count reads per chromosome
+BascetCountChrom(
+  bascetRoot, 
+  runner=bascet_runner
+)
+```
+
+

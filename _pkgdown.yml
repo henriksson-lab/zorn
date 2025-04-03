@@ -15,8 +15,13 @@ navbar:
         - text: Introductory Vignettes
         - text: "Debarcoding"
           href: articles/debarcoding.html
+        - text: "KRAKEN-based workflow"
+          href: articles/kraken.html
+        - text: "Alignment-based workflow"
+          href: articles/alignment.html
         - text: -------
-        - text: Other stuff
+        - text: "Overview of file formats"
+          href: articles/fileformats.html
     - text: FAQ
       href: reference/faq.html
     - text: "Reference"
@@ -26,5 +31,4 @@ navbar:
       href: "https://henlab.org/"
     - icon: fa-github
       href: https://github.com/henriksson-lab/zorn
-      
-  
+

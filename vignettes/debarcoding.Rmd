@@ -8,14 +8,95 @@ output:
 ---
 
 
-The first step in data processing is take the raw FASTQ files and identify which
-read belongs to which cell.
+First set up your Zorn/Bascet working directory as before. If you wish to run
+these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
+```{r}
+library(Zorn)
+bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascetRoot = "/home/yours/an_empty_workdirectory"
+```
+
+
+The first step in data processing is take the raw FASTQ files and identify which
+read belongs to which cell. Zorn can automatically figure out which files to use
+for what:
+
+```{r}
+rawmeta <- DetectRawFileMeta("/home/yours/directory_with_raw_fastq")
+```
+
+
+TODO explain this data frame
+
+You can now parse the reads the figure out which cell they belong to, and any UMI
+information. The only thing you additionally need to specify is what type of data
+you have, where "atrandi_wgs" is for the Atrandi SPC-based MDA protocol for WGS.
 
 
 ```{r}
-
-
-666
-
+BascetGetRaw(
+    bascetRoot, 
+    rawmeta,
+    chemistry="atrandi_wgs",
+    runner=bascet_runner
+)
 ```
+
+
+Once barcodes have been processed, you can perform knee plot analysis, which
+is the first important quality control.
+
+```{r}
+### Decide cells to include
+h <- ReadHistogram(bascetRoot,"debarcoded")
+PlotHistogram(h)
+```
+
+This is just a histogram of reads per barcode. It however tells you
+* how many cells you have
+* how much free-floating RNA/DNA you have in your background (empty droplets/SPCs)
+* how distinct cells are from background
+
+It makes sense to exclude barcodes if the number of counts are too low. You can
+exclude them also at a later stage, but removing the worst offenders already
+will speed up computation. Here is one example for getting the names and number
+of cells having at least 100 reads:
+
+```{r}
+includeCells <- h$cellid[h$count>100]   
+length(includeCells)
+```
+
+
+Finally, before you are ready to run all other commands, you need to make
+sure that cells are sharded. This is primarily relevant if you have multiple
+FASTQ-files for your library (i.e. you sequenced your library on multiple lanes).
+Sharding sorts cells such that the reads for one cell are in one single shard.
+This is essential for parallel processing.
+
+At this step you can also choose to create multiple shards. This is only relevant
+if you wish to parallelize the workflow using SLURM, as the number of shards decides
+how many nodes you can use in parallel. If you run everything on your own computer
+then we advise only creating one shard, as there is no benefit to having multiple
+and it is more likely to cause mistakes.
+
+In this step we also filter out barcodes with too low read counts (optional).
+
+```{r}
+BascetShardify(
+  bascetRoot,
+  includeCells = includeCells,
+  num_output_shards = 1,
+  runner=bascet_runner
+)
+```
+
+
+If you make it here then you have passed one of the heaviest and most critical
+steps in the workflow!
+
+How you proceed depends on your usecase. If you are doing single-cell metagenomics
+of a sample of unknown composition then we recommend the KRAKEN2 workflow next.
+
+
