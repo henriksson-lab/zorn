@@ -7,7 +7,7 @@
 FragmentsToSignac(fragpath)
 }
 \value{
-a ChromatinAssay
+A ChromatinAssay
 }
 \description{
 Case: tabix from command line uses 100\% cpu only. likely not designed for large queries

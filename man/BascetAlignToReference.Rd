@@ -16,8 +16,16 @@ BascetAlignToReference(
   bascet_instance = bascet_instance.default
 )
 }
-\value{
-TODO
+\arguments{
+\item{useReference}{Name of the BWA reference to use}
+
+\item{numLocalThreads}{Number of threads to use for each runner}
+
+\item{outputNameBAMunsorted}{Name of unsorted BAMs}
+
+\item{outputNameBAMsorted}{Name of sorted BAMs (if generated)}
+
+\item{do_sort}{Whether to sort the output or not}
 }
 \description{
 TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed

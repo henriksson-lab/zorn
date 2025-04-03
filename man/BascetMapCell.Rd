@@ -2,7 +2,7 @@
 % Please edit documentation in R/zorn.R, R/zorn_aggr.R
 \name{BascetMapCell}
 \alias{BascetMapCell}
-\title{Call a function for all cells}
+\title{Call a MAP function for all cells}
 \usage{
 BascetMapCell(
   bascetRoot,
@@ -22,11 +22,13 @@ BascetMapCell(
   bascet_instance = bascet_instance.default
 )
 }
+\arguments{
+\item{args}{List of arguments (key,value) to provide to the script}
+}
 \value{
 TODO
 }
 \description{
-Call a function for all cells
-
-Call a function for all cells
+\if{html}{\out{<div class="sourceCode">}}\preformatted{TODO override args docs
+}\if{html}{\out{</div>}}
 }
