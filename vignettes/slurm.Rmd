@@ -7,7 +7,85 @@ output:
   pdf_document: default
 ---
 
+# Introduction
+
+Zorn is designed to be a full replacement for the NextFlow job manager,
+for the processing of single-cell genomics and microbial isolates. This design
+is motivated by the Bascet file format: While NextFlow operates on a file-by-file
+basis, Bascet keeps cells together in sharded objects. These are natural minibatches
+of otherwise rather small tasks, reducing the overhead of scheduling work for
+the (possibly many!) cells.
+
+[SLURM](https://slurm.schedmd.com) is one of the most common job managers out there,
+and Zorn thus works on top of SLURM by writing out the appropriate Bascet commands.
+If you do not have SLURM on your cluster, we are interested to hear what else
+people are using!
+
+# Usage
+
+To use SLURM, you have to get used to slightly different semantics than if you
+run locally. First you need to set up a runner. The way we recommend you to do
+it, these are only default values, such as which partition to submit to, and
+the name of your account. You can also set a permissible default timeout time:
+
+```{r, eval=F, echo=T}
+slurm_runner <- SlurmRunner(
+  partition="shared", 
+  account="name_of_your_project", 
+  time="0-24:00:00"
+)
+```
 
 
+You then make calls to Bascet as in all other tutorials. The difference is
+that you pass a reference to SLURM. You also pass job-specific settings related
+to the number of CPUs and memory per node. The way it is done here, the default
+settings are used but then overridden:
 
-TODO
+```{r, eval=F, echo=T}
+my_job <- BascetGetRawAtrandiWGS(
+  bascetRoot,
+  rawmeta,
+  runner=SlurmRunner(
+    slurm_runner, 
+    ncpu=5, 
+    mem="5g")
+)
+```
+
+The major difference here is that this function will now return immediately,
+compared to the usual local runner. This means that you can keep working in R
+until the task is done, or set up parallel jobs (which then should be named differently).
+
+todo -- runner can be made to block by default
+
+If you want to schedule a series of tasks, as is common, then you can use the WaitForJob
+command to pause R until done. Putting this in-between commands will let you batch
+all the tasks. The main script, in charge of the control flow, should be run in
+[tmux](https://github.com/tmux/tmux/wiki)
+or [screen](https://linuxize.com/post/how-to-use-linux-screen/),
+on a login node of your cluster.
+
+```{r, eval=F, echo=T}
+WaitForJob(my_job) 
+```
+
+
+# Job status
+
+todo
+
+# SLURM settings
+
+We are unable to give specific suggestions on cpu and memory as it depends on
+how your SLURM instance is configured. As an example, Swedish clusters are
+set up to give memory in proportion to the number of CPUs.
+
+Bascet is written to avoid using large amounts of RAM when possible.
+Exceptions are the use of downstream software such as KRAKEN (in particular).
+
+All operations are multithreaded and benefit from having more CPUs per node.
+Speed is however limited by disk access speed. It it thus worth investigating
+your log files after execution to see how much CPU/memory you actually needed,
+to improve long-term running of Bascet.
+

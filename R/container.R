@@ -72,38 +72,44 @@ GetBascetTempDir <- function(bascet_instance){
 #' 
 #' @return TODO
 #' @export
-getBascetImageInstance <- function(store_at="./", tempdir=NULL) {
-  
+getBascetSingularityImage <- function(store_at="./", tempdir=NULL) {
   
   file_bascet_sif <- file.path(store_at, "bascet.sif")
-
+  
   if(!file.exists(file_bascet_sif)) {
     print("No singularity image present; downloading")
     ret <- system("singularity pull --arch amd64 library://lmc297/bascet/bascet:0.01")
-
+    
     if(ret==127){
       #TODO: check for errors
-
+      
       stop("Failed to download singularity")      
     }
-        
+    
   } else {
     print(paste("Found existing Bascet singularity image:", file_bascet_sif))
   }
- 
+  
   prepend_cmd <- paste("singularity run ", file_bascet_sif," ")
   
   if(is.null(tempdir)){
     tempdir <- tempdir()
-#    tempdir <- "/data/henlab/bascet_temp" ##TODO better place?
+    #    tempdir <- "/data/henlab/bascet_temp" ##TODO better place?
   }
   
   BascetInstance(
     bin="bascet",
     tempdir=tempdir,
     prepend_cmd=prepend_cmd
-  )
+  ) 
 }
+
+
+
+
+
+
+
 
 if(FALSE){
   inst <- getBascetImageInstance()

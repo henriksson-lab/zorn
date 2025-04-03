@@ -26,10 +26,12 @@ up, go with that option)
 
 First [install Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)
 
-Once installed, Zorn can then pull down the latest Singularity image for you:
+Once installed, Zorn can then pull down the latest Singularity image for you.
+We recommend keeping it in a separate directory from your workspace, as
+multiple workspaces can share the same image
 
 ```{r, eval=F, echo=T}
-bascet_inst <- getBascetImageInstance(store_at="/somewhere/on/your/disk/")  ## todo docker
+bascet_inst <- getBascetSingularityImage(store_at="/somewhere/on/your/disk/")
 ```
 
 
@@ -37,10 +39,12 @@ bascet_inst <- getBascetImageInstance(store_at="/somewhere/on/your/disk/")  ## t
 
 First [install Docker](https://docs.docker.com/get-started/)
 
-Once installed, Zorn can then pull down the latest Docker image for you:
+Once installed, Zorn can then pull down the latest Docker image for you.
+We recommend keeping it in a separate directory from your workspace, as
+multiple workspaces can share the same image
 
 ```{r, eval=F, echo=T}
-bascet_inst <- getBascetImageInstance(store_at="/somewhere/on/your/disk/")  ## todo docker
+bascet_inst <- getBascetDockerImage(store_at="/somewhere/on/your/disk/")
 ```
 
 
