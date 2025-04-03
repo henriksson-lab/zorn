@@ -40,9 +40,10 @@
     <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
+    <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
   </ul>
 </li>
-<li class="nav-item"><a class="nav-link" href="../reference/faq.html">FAQ</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/faq.html">FAQ</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -70,12 +71,38 @@
 
     
     
-<p>List of vignettes here!</p>
-<p><a href="debarcoding.html" title="Debarcoding tutorial">a
-link</a></p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#can use layout from Seurat</span></span></code></pre></div>
-  </main>
+<p>Zorn and Bascet can do many things: * Preprocess reads for
+single-cell metagenomics, WGS and RNA-seq * Perform de novo assembly and
+other tasks relevant for whole-genome sequencing * Perform custom
+per-cell detailed analysis operations</p>
+<p>The interface is designed to interoperate with Signac and Seurat for
+high-level analysis of the data, after the preprocessing.</p>
+<p>Depending on your use case, you will need different tutorials.
+However, these are in common for all workflows:</p>
+<ul>
+<li><a href="install.html" title="Installing Zorn and Bascet">a
+link</a></li>
+<li>
+<a href="slurm.html" title="Using SLURM">a link</a> - If you want to
+run this in a high-performance environment</li>
+<li>
+<a href="debarcoding.html" title="Debarcoding tutorial">a link</a> -
+Ingesting raw FASTQ and preparing for later steps</li>
+</ul>
+<p>Then there are several options on how to continue:</p>
+<ul>
+<li>
+<a href="kraken.html" title="KRAKEN-based workflow">a link</a> - if
+you don’t know what your sample contains</li>
+<li>
+<a href="alignment.html" title="Alignment-based workflow">a link</a>
+- if you have some clue what your sample contains</li>
+</ul>
+<p>These may help you understand Zorn and Bascet better</p>
+<ul>
+<li><a href="fileformats.html" title="Overview of file formats">a
+link</a></li>
+</ul></main>
 </div>
 
 
