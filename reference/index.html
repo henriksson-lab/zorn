@@ -117,13 +117,19 @@
         <dd>Get list of cells in a Bascet</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetComputeMinhash.html">BascetComputeMinhash()</a></code>
+
+        </dt>
+        <dd>Compute minhashes for each cell. This is a thin wrapper around BascetMapCell</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetCountChrom.html">BascetCountChrom()</a></code>
 
         </dt>
         <dd>From aligned BAM file, compute counts per chromosome</dd>
       </dl><dl><dt>
 
-          <code><a href="BascetFeaturise.html">BascetFeaturise()</a></code>
+          <code><a href="BascetFeaturiseKMC.html">BascetFeaturiseKMC()</a></code>
 
         </dt>
         <dd>Select kmers that appear useful for clustering</dd>
@@ -150,19 +156,25 @@
           <code><a href="BascetInstance.html">BascetInstance()</a></code>
 
         </dt>
-        <dd>Create a new bascet instance</dd>
+        <dd>Create a new bascet instance. For advanced users only</dd>
       </dl><dl><dt>
 
           <code><a href="BascetListFilesForCell.html">BascetListFilesForCell()</a></code>
 
         </dt>
-        <dd>Read one file from a Bascet</dd>
+        <dd>List files for a cell in a Bascet</dd>
       </dl><dl><dt>
 
           <code><a href="BascetMakeKrakenCountMatrix.html">BascetMakeKrakenCountMatrix()</a></code>
 
         </dt>
         <dd>Produce a count matrix of taxonomy IDs from KRAKEN output</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetMakeMinhashHistogram.html">BascetMakeMinhashHistogram()</a></code>
+
+        </dt>
+        <dd>Gather all minhashes into a single histogram file</dd>
       </dl><dl><dt>
 
           <code><a href="BascetMapCell.html">BascetMapCell()</a></code>
@@ -177,7 +189,13 @@
         <dd>Transform data</dd>
       </dl><dl><dt>
 
-          <code><a href="BascetQuery.html">BascetQuery()</a></code>
+          <code><a href="BascetQueryFq.html">BascetQueryFq()</a></code>
+
+        </dt>
+        <dd>Build count table from FASTQ reads and a list of selected kmers</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetQueryKMC.html">BascetQueryKMC()</a></code>
 
         </dt>
         <dd>Build count table from kmer table and a list of selected kmers</dd>
