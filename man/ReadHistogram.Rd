@@ -7,6 +7,9 @@ Not all Bascets have one, but it is typically produced after debarcoding}
 \usage{
 ReadHistogram(bascetRoot, inputName, bascet_instance = bascet_instance.default)
 }
+\arguments{
+\item{bascet_instance}{A Bascet instance}
+}
 \value{
 Histogram as a data.frame
 }

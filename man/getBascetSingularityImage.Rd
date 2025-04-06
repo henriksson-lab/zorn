@@ -8,7 +8,7 @@ It will be cached in the provided directory to avoid downloading it all the time
 getBascetSingularityImage(store_at = "./", tempdir = NULL)
 }
 \value{
-A Bascet runner
+A Bascet instance
 }
 \description{
 Get a Bascet image (singularity or docker).

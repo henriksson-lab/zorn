@@ -11,7 +11,7 @@ An object of class \code{BascetInstance} of length 1.
 bascet_instance.default
 }
 \value{
-TODO
+A Bascet instance
 }
 \description{
 The default Bascet installation settings

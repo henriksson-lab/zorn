@@ -2,7 +2,7 @@
 % Please edit documentation in R/bascet_file.R
 \name{BascetListFilesForCell}
 \alias{BascetListFilesForCell}
-\title{Read one file from a Bascet}
+\title{List files for a cell in a Bascet}
 \usage{
 BascetListFilesForCell(
   bascetFile,
@@ -10,8 +10,15 @@ BascetListFilesForCell(
   bascet_instance = bascet_instance.default
 )
 }
+\arguments{
+\item{bascetFile}{Bascet file object}
+
+\item{cellID}{Name of the cell}
+
+\item{bascet_instance}{A Bascet instance}
+}
 \value{
-TODO
+A data.frame with list of all the files
 }
 \description{
 This can be made faster by, e.g., once and for all reading the location of

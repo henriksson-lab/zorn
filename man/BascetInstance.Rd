@@ -2,13 +2,22 @@
 % Please edit documentation in R/container.R
 \name{BascetInstance}
 \alias{BascetInstance}
-\title{Create a new bascet instance}
+\title{Create a new bascet instance.
+For advanced users only}
 \usage{
 BascetInstance(bin, tempdir, prepend_cmd = "")
 }
+\arguments{
+\item{bin}{Name of the binary}
+
+\item{tempdir}{Directory where to store temporary files}
+
+\item{prepend_cmd}{Something to prepend to the command, to e.g. support container systems}
+}
 \value{
-TODO
+A Bascet instance
 }
 \description{
-Create a new bascet instance
+Create a new bascet instance.
+For advanced users only
 }

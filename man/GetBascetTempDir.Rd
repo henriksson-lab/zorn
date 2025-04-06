@@ -6,8 +6,11 @@
 \usage{
 GetBascetTempDir(bascet_instance)
 }
+\arguments{
+\item{bascet_instance}{A Bascet instance}
+}
 \value{
-TODO
+A path to a temp directory that can be created. Must be removed when done
 }
 \description{
 Get a temp directory to use; need to be created

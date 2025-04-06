@@ -6,8 +6,11 @@
 \usage{
 TestBascetInstance(bascet_instance)
 }
+\arguments{
+\item{bascet_instance}{Bascet instance}
+}
 \value{
-TODO
+"ok" if the instance works; panic otherwise
 }
 \description{
 Check if a Bascet instance works
