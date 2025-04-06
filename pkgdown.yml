@@ -3,16 +3,20 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   alignment: alignment.html
+  assembly: assembly.html
+  clustering: clustering.html
   debarcoding: debarcoding.html
   faq: faq.html
   fileformats: fileformats.html
   for_developers: for_developers.html
   get_started: get_started.html
   install: install.html
+  isolates: isolates.html
+  kmer: kmer.html
   kraken: kraken.html
   map_scripts: map_scripts.html
   slurm: slurm.html
-last_built: 2025-04-06T10:56Z
+last_built: 2025-04-06T16:10Z
 urls:
   reference: https://henriksson-lab.github.io/zorn/reference
   article: https://henriksson-lab.github.io/zorn/articles

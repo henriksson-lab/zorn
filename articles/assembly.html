@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Getting Started with Zorn • Zorn</title>
+<title>De novo assembly • Zorn</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting Started with Zorn">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="De novo assembly">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -30,8 +30,8 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/install.html">Install</a></li>
-<li class="active nav-item"><a class="nav-link" href="../articles/get_started.html">Get started</a></li>
-<li class="nav-item dropdown">
+<li class="nav-item"><a class="nav-link" href="../articles/get_started.html">Get started</a></li>
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><h6 class="dropdown-header" data-toc-skip>Introductory Vignettes</h6></li>
@@ -67,63 +67,36 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Getting Started with Zorn</h1>
+      <h1>De novo assembly</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/get_started.Rmd" class="external-link"><code>vignettes/get_started.Rmd</code></a></small>
-      <div class="d-none name"><code>get_started.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/assembly.Rmd" class="external-link"><code>vignettes/assembly.Rmd</code></a></small>
+      <div class="d-none name"><code>assembly.Rmd</code></div>
     </div>
 
     
     
-<p>Zorn and Bascet can do many things: * Preprocess reads for
-single-cell metagenomics, WGS and RNA-seq * Perform de novo assembly and
-other tasks relevant for whole-genome sequencing * Perform custom
-per-cell detailed analysis operations</p>
-<p>The interface is designed to interoperate with Signac and Seurat for
-high-level analysis of the data, after the preprocessing.</p>
-<p>Depending on your use case, you will need different tutorials.
-However, these are in common for all workflows:</p>
-<ul>
-<li><a href="install.html">Installing Zorn and Bascet</a></li>
-<li>
-<a href="slurm.html">Using SLURM</a> - If you want to run this in a
-high-performance environment</li>
-<li>
-<a href="debarcoding.html">Debarcoding tutorial</a> - Ingesting raw
-FASTQ and preparing for later steps</li>
-</ul>
-<p>The next step to get an overview is likely:</p>
-<ul>
-<li>
-<a href="kraken.html">KRAKEN-based workflow</a> - if you don’t know
-what your sample contains, and want to compare to known species</li>
-<li>
-<a href="kmer.html">De novo KMER-based workflow</a> - if you don’t
-know what your sample contains, and want to find novel genome
-compositions</li>
-<li>
-<a href="alignment.html">Alignment-based workflow</a> - if you have
-some clue what your sample contains</li>
-</ul>
-<p>Then there are several options on how to continue with deeper
-analysis:</p>
-<ul>
-<li>
-<a href="clustering.html">Clustering</a> - to visualize your
-samples</li>
-<li><a href="assembly.html">De novo assembly</a></li>
-<li>
-<a href="map_scripts.html">Running software for each cell using
-MAP</a> - Such as QC analysis etc</li>
-</ul>
-<p>These may help you understand Zorn and Bascet better</p>
-<ul>
-<li><a href="fileformats.html">Overview of file formats</a></li>
-<li>
-<a href="for_developers.html">For developers</a> - if you wish to
-modify Bascet</li>
-</ul></main>
+<p>First set up your Zorn/Bascet work directory as before.</p>
+<p>Assembly can then performed using SKESA, via the MapCell system:</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Assemble all genomes</span></span>
+<span><span class="fu"><a href="../reference/BascetMapCell.html">BascetMapCell</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  withfunction <span class="op">=</span> <span class="st">"_skesa"</span>,</span>
+<span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
+<span>  outputName <span class="op">=</span> <span class="st">"skesa"</span>,</span>
+<span>  runner<span class="op">=</span><span class="va">bascet_runner</span>,</span>
+<span>  bascet_instance<span class="op">=</span><span class="va">bascet_instance</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>This produce contigs for each cell, all grouped together in “skesa”.
+Note that both skesa and spades only assembles cells for which there are
+sufficient number of reads.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#TODO extract an individual genome</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#TODO QUAST for QC etc</span></span></code></pre></div>
+  </main>
 </div>
 
 
