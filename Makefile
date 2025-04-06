@@ -15,7 +15,7 @@ addgit:
 	git add vignettes
 
 loc:
-	wc -l R/*.R tutorial/*.R tutorial/*.sh
+	wc -l R/*.R tutorial/*.R tutorial/*.sh vignettes/*.Rmd
 
 
 upload_site:

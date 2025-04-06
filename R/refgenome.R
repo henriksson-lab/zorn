@@ -50,7 +50,7 @@ BascetIndexGenomeBWA <- function(
     genomeFile, 
     runner, 
     bascet_instance=bascet_instance.default
-  ){
+){
   
   if(!file.exists(genomeFile)){
     stop("Could not find genome FASTA file")
@@ -139,7 +139,8 @@ BascetAlignmentToBigwig <- function(
     inputName="aligned", 
     outputName="pileup",
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   #Figure out input and output file names
   input_shards <- detect_shards_for_file(bascetRoot, inputName) 
@@ -205,7 +206,8 @@ BascetFilterAlignment <- function(
     outputName,
     keep_mapped=FALSE,
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   
   #Figure out input and output file names
@@ -296,7 +298,8 @@ BascetAlignToReference <- function(
     outputNameBAMsorted="aligned", 
     do_sort=TRUE,
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   #Figure out input and output file names  
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
@@ -403,7 +406,8 @@ BascetBam2Fragments <- function(
     inputName="aligned",
     outputName="fragments", 
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
   if(length(input_shards)==0){
@@ -451,7 +455,8 @@ BascetCountChrom <- function(
     inputName="aligned",
     outputName="chromcount", 
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
   if(length(input_shards)==0){
@@ -514,6 +519,7 @@ TabixGetFragmentsSeqs <- function(
 #' 
 #' @export
 FragmentsToSignac <- function(fragpath) {
+  
   #### Index if needed; this should already have been done but added here just in case
   fragpath_index <- paste(fragpath,".tbi",sep="")
   if(!file.exists(fragpath_index)){
@@ -635,7 +641,11 @@ FragmentCountsPerChromAssay <- function(
 #' @return TODO
 #' 
 #' @export
-ChromToSpeciesCount <- function(adata, map_seq2strain){
+ChromToSpeciesCount <- function(
+    adata, 
+    map_seq2strain
+){
+  
   mat_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   
   unique_strains <- unique(map_seq2strain$strain)
@@ -669,7 +679,11 @@ ChromToSpeciesCount <- function(adata, map_seq2strain){
 #' @return A Seurat AssayObject
 #' 
 #' @export
-CountGrangeFeatures <- function(adata, grange_gene){
+CountGrangeFeatures <- function(
+    adata, 
+    grange_gene
+){
+  
   gene_counts <- FeatureMatrix(
     fragments = Fragments(adata),
     features = grange_gene,

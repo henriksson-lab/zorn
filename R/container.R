@@ -5,6 +5,7 @@
 ################ Settings for the underlying Bascet installation ###############
 ################################################################################
 
+###############################################
 #' @export
 setClass("BascetInstance", slots=list(
   bin="character",
@@ -13,11 +14,18 @@ setClass("BascetInstance", slots=list(
 )
 ) 
 
+################################################################################
+################ Functions #####################################################
+################################################################################
 
 ###############################################
-#' Create a new bascet instance
+#' Create a new bascet instance.
+#' For advanced users only
 #' 
-#' @return TODO
+#' @param bin Name of the binary
+#' @param tempdir Directory where to store temporary files
+#' @param prepend_cmd Something to prepend to the command, to e.g. support container systems
+#' @return A Bascet instance
 #' @export
 BascetInstance <- function(bin, tempdir, prepend_cmd=""){
   if(!is.null(tempdir) & !file.exists(tempdir)){
@@ -33,23 +41,24 @@ BascetInstance <- function(bin, tempdir, prepend_cmd=""){
 
 
 
-############################################### ----------------------------------- likely need to replace
+###############################################
 #' The default Bascet installation settings
-#' @return TODO
+#' 
+#' @return A Bascet instance
 #' @export
 bascet_instance.default <- BascetInstance(
   bin="/home/mahogny/jupyter/bascet/target/debug/robert",
   tempdir="./"
 )
 
-#bascet_instance.default <- BascetInstance(bin="bascet")
-
 
 
 
 ###############################################
 #' Get a temp directory to use; need to be created
-#' @return TODO
+#' 
+#' @param bascet_instance A Bascet instance
+#' @return A path to a temp directory that can be created. Must be removed when done
 #' @export
 GetBascetTempDir <- function(bascet_instance){
   if(is.null(bascet_instance@tempdir)){
@@ -67,7 +76,7 @@ GetBascetTempDir <- function(bascet_instance){
 #' Get a Bascet image (singularity or docker). 
 #' It will be cached in the provided directory to avoid downloading it all the time
 #' 
-#' @return A Bascet runner
+#' @return A Bascet instance
 #' @export
 getBascetSingularityImage <- function(store_at="./", tempdir=NULL) {
   
@@ -107,7 +116,8 @@ getBascetSingularityImage <- function(store_at="./", tempdir=NULL) {
 ###############################################
 #' Check if a Bascet instance works
 #' 
-#' @return TODO
+#' @param bascet_instance Bascet instance
+#' @return "ok" if the instance works; panic otherwise
 #' @export
 TestBascetInstance <- function(bascet_instance) {
   

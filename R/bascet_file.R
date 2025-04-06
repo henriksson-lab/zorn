@@ -6,6 +6,7 @@
 ################################################################################
 
 
+###############################################
 #' A bascet, along with all the shards
 #' @export
 setClass("Bascet", slots=list(
@@ -190,14 +191,21 @@ BascetReadFile <- function(
 
 
 ###############################################
-#' Read one file from a Bascet
+#' List files for a cell in a Bascet
 #' 
 #' This can be made faster by, e.g., once and for all reading the location of
 #' all objects in the file
 #' 
-#' @return TODO
+#' @param bascetFile Bascet file object
+#' @param cellID Name of the cell
+#' @param bascet_instance A Bascet instance
+#' @return A data.frame with list of all the files
 #' @export
-BascetListFilesForCell <- function(bascetFile, cellID, bascet_instance=bascet_instance.default){
+BascetListFilesForCell <- function(
+    bascetFile, 
+    cellID, 
+    bascet_instance=bascet_instance.default
+){
   
   ## Check if the cell is present at all
   cellmeta <- bascetFile@cellmeta[bascetFile@cellmeta$cell==cellID,,drop=FALSE]
@@ -232,6 +240,7 @@ BascetListFilesForCell <- function(bascetFile, cellID, bascet_instance=bascet_in
 #' Read the count histogram associated with a Bascet.
 #' Not all Bascets have one, but it is typically produced after debarcoding
 #' 
+#' @param bascet_instance A Bascet instance
 #' @return Histogram as a data.frame
 #' @export
 ReadHistogram <- function(
@@ -333,7 +342,10 @@ AtrandiBarcodeStats <- function(
 ###############################################
 #' Helper function: Figure out which shards belong together given root input name and extension
 #' i.e. root/name.##.ext
-detect_shards_for_file <- function(bascetRoot, inputName){
+detect_shards_for_file <- function(
+    bascetRoot, 
+    inputName
+){
   allfiles <- list.files(bascetRoot)
 
   allzip <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","zip", "$"))
@@ -360,7 +372,12 @@ detect_shards_for_file <- function(bascetRoot, inputName){
 ###############################################
 #' Helper function: Generate suitable output filenames according to shard system
 #' i.e. root/name.##.ext
-make_output_shard_names <- function(bascetRoot, outputName, ext, num_shards){
+make_output_shard_names <- function(
+    bascetRoot, 
+    outputName, 
+    ext, 
+    num_shards
+){
   file.path(bascetRoot, paste0(outputName,".",seq_len(num_shards),".",ext))
 }
 

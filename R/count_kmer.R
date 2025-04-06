@@ -11,7 +11,7 @@
 #' @inheritParams template_BascetFunction
 #' @return TODO
 #' @export
-BascetFeaturise <- function( ########### need a better name; KMC something?
+BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
     bascetRoot, 
     inputName="kmc", 
     outputName="sumkmers", 
@@ -77,13 +77,14 @@ BascetFeaturise <- function( ########### need a better name; KMC something?
 #' @param useKMERs description
 #' @return TODO
 #' @export
-BascetQuery <- function(
+BascetQueryKMC <- function(
     bascetRoot, 
     inputName="kmc",
     outputName="kmer", 
     useKMERs,
     runner,
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   
   #Figure out input and output file names  
@@ -169,7 +170,7 @@ ReadBascetCountMatrix <- function(
 
 
 ################################################################################
-############################# KMER tools #######################################
+############################# KMC KMER tools ###################################
 ################################################################################
 
 
@@ -306,3 +307,191 @@ if(FALSE){
   
   KmcChooseKmerFeatures("/home/mahogny/github/bascet/testdata/all_kmc")
 }
+
+
+
+
+###############################################
+############################################### new kmer system
+###############################################
+
+
+
+###############################################
+#' Compute minhashes for each cell.
+#' This is a thin wrapper around BascetMapCell
+#' 
+#' @inheritParams template_BascetFunction
+#' @return TODO
+#' @export
+BascetComputeMinhash <- function( 
+    bascetRoot, 
+    inputName="filtered", 
+    outputName="minhash", 
+    #includeCells=NULL,
+    runner,
+    bascet_instance=bascet_instance.default
+){
+  BascetMapCell(
+    bascetRoot=bascetRoot, 
+    withfunction="_minhash_fq", 
+    inputName=inputName, 
+    outputName=outputName,
+    #includeCells=includeCells
+    runner=runner,
+    bascet_instance=bascet_instance)
+}
+
+
+
+
+###############################################
+#' Gather all minhashes into a single histogram file
+#' 
+#' @inheritParams template_BascetFunction
+#' @return A job
+#' @export
+BascetMakeMinhashHistogram <- function( 
+  bascetRoot, 
+  inputName="minhash", 
+  outputName="minhash_hist.csv", 
+  includeCells=NULL,
+  runner,
+  bascet_instance=bascet_instance.default
+){
+
+  #Figure out input and output file names
+  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+  
+  if(num_shards==0){
+    stop("No input files")
+  }
+  
+  outputFile <- file.path(bascetRoot, outputName)
+
+  #If cell list is provided, produce a file for input (not all transform calls can handle this, so optional)
+  produce_cell_list <- !is.null(includeCells)
+  if(produce_cell_list) {
+    #Currently using the same cell list for all shards (good idea?)
+    list_cell_for_shard <- list()
+    for(i in 1:length(inputFiles)){
+      list_cell_for_shard[[i]] <- includeCells
+    }
+  }
+
+  #Make the command
+  cmd <- c(
+    shellscript_set_tempdir(bascet_instance),
+    if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+    paste(
+      bascet_instance@prepend_cmd,
+      bascet_instance@bin, 
+      "minhash-hist",
+      if(produce_cell_list) "--cells $CELLFILE",
+      "-t $BASCET_TEMPDIR",
+      "-i", shellscript_make_commalist(inputFiles),
+      "-o", outputFile
+    )
+  )
+
+  #Run the job
+  RunJob(
+    runner = runner, 
+    jobname = "bascet_minhash_hist",
+    cmd = cmd,
+    arraysize = 1
+  )  
+}
+
+
+
+
+
+
+
+
+###############################################
+#' Build count table from FASTQ reads and a list of selected kmers
+#' 
+#' @inheritParams template_BascetFunction
+#' @param useKMERs description
+#' @return TODO
+#' @export
+BascetQueryFq <- function(
+    bascetRoot, 
+    inputName="filtered",
+    outputName="kmer_counts", 
+    useKMERs,
+    runner,
+    bascet_instance=bascet_instance.default
+){
+  
+  
+  #Figure out input and output file names  
+  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+  
+  if(num_shards==0){
+    stop("No input files")
+  }
+  
+  if(length(useKMERs)==0){
+    stop("No KMERs")
+  }
+  
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "h5", num_shards)
+  
+  #Run the job
+  RunJob(
+    runner = runner, 
+    jobname = "bascet_query",
+    cmd = c(
+      shellscript_set_tempdir(bascet_instance),
+      shellscript_make_bash_array("files_in",inputFiles),
+      shellscript_make_bash_array("files_out",outputFiles),
+      shellscript_make_one_file_expander("KMERFILE", useKMERs), 
+      paste(
+        bascet_instance@prepend_cmd,
+        bascet_instance@bin, 
+        "query-fq",
+        "-t $BASCET_TEMPDIR",
+        "-f $KMERFILE",
+        "-i ${files_in[$TASK_ID]}",
+        "-o ${files_out[$TASK_ID]}"
+      )
+    ),
+    arraysize = num_shards
+  )
+}
+
+
+
+
+
+
+
+BascetReadMinhashHistogram <- function(
+    bascetRoot,
+    inputName="minhash_hist.csv"
+){
+  dat <- as.data.frame(data.table::fread(file.path(bascetRoot,"minhash_hist.csv")))
+  colnames(dat) <- c("kmer","cnt")
+  dat <- dat[order(dat$cnt, decreasing = TRUE),,drop=FALSE]
+  dat
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
