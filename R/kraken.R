@@ -111,7 +111,7 @@ BascetRunKraken <- function(
         if(is_paired) "${files_in_R2[$TASK_ID]}"
       )
     ),
-    arraysize = 1
+    arraysize = num_shards
   )  
 }
 

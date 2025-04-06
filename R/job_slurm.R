@@ -215,11 +215,11 @@ setMethod(
           num_failed <- floor(sum(info$status=="FAILED")/2)  ### for some reason, these are reported twice.. ish ?
           
           print(paste0(
-            job@jobname,
+            job@jobname,"   ",
             "Total to run: ",num_total,"   ",
             "Total completed: ",num_completed,"   ",
             "Total running: ",num_running,"   ",
-            "Total failed:", num_failed
+            "Total failed: ", num_failed
             ))
 #          print(table(info$status))
           Sys.sleep(5)
