@@ -1,0 +1,77 @@
+---
+title: "De novo KMER-based workflow"
+output:
+  html_document:
+    theme: united
+    df_print: kable
+  pdf_document: default
+---
+
+
+
+First set up your Zorn/Bascet workdirectory as before. If you wish to run
+these steps on a SLURM cluster, see separate vignette and adapt accordingly.
+
+```{r, eval=F, echo=T}
+library(Zorn)
+bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascetRoot = "/home/yours/an_empty_workdirectory"
+```
+
+
+
+
+[(SLURM-compatible step)](slurm.html)
+
+```{r, eval=F, echo=T}
+
+### Compute minhashes for each cell
+BascetComputeMinhash(
+  bascetRoot,
+  runner=bascet_runner
+)
+
+### Gather minhashes into a single histogram
+BascetMakeMinhashHistogram(
+  bascetRoot,
+  runner=bascet_runner
+)
+```
+
+
+
+
+
+
+```{r, eval=F, echo=T}
+kmer_hist <- BascetReadMinhashHistogram(bascetRoot)
+
+kmer_hist$rank <- 1:nrow(kmer_hist)
+ggplot(kmer_hist[kmer_hist$cnt>2,], aes(rank, cnt)) + 
+  geom_point() + 
+  scale_x_log10() + 
+  scale_y_log10()
+```
+
+
+
+
+
+```{r, eval=F, echo=T}
+
+### Pick KMERs
+useKMERs <- kmer_hist$kmer[kmer_hist$cnt>5]
+
+### Build count table by looking up selected KMERs in per-cell KMER databases
+BascetQueryFq(
+  bascetRoot,
+  useKMERs=useKMERs,
+  runner=bascet_runner
+)
+
+```
+
+
+
+
+

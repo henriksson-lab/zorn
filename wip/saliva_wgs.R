@@ -196,7 +196,7 @@ BascetMapTransform(
   bascetRoot, 
   "filtered", 
   "asfq",
-  out_format="fq.gz",   ## TODO we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
+  out_format="R1.fq.gz",  
   runner=inst
 )
 
@@ -207,10 +207,9 @@ BascetAlignToReference(
   numLocalThreads=10
 )
 
-BascetFilterAlignedReads(
+BascetFilterAlignment(
   bascetRoot,
-  inputwwwwww ="asfq",
-  #useReference="/husky/fromsequencer/241210_joram_rnaseq/ref/all.fa",
+  inputName="asfq",
   numLocalThreads=10
   
 )

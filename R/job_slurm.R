@@ -23,6 +23,7 @@ setClass("SlurmJob", slots=list(
   pid="character", 
   cmd="character", 
   logfile="character",
+  jobname="character",
   arraysize="numeric"
 )
 ) 
@@ -174,6 +175,7 @@ setMethod(
         pid=pid,
         cmd=cmd, 
         logfile="todo",
+        jobname=jobname,
         arraysize=arraysize
       )
     } else {
@@ -185,7 +187,7 @@ setMethod(
 )
 
 
-
+# 34465829 fix
 
 
 #Has possibility of ctrl+c; just keeps polling, possibly with a status indicator from log. or keep plotting log file
@@ -210,11 +212,14 @@ setMethod(
           num_total <- job@arraysize
           num_running <- floor(sum(info$status=="RUNNING")/2)
           num_completed <- floor(sum(info$status=="COMPLETED")/2)  ### for some reason, these are reported twice.. ish
+          num_failed <- floor(sum(info$status=="FAILED")/2)  ### for some reason, these are reported twice.. ish ?
           
           print(paste0(
+            job@jobname,
             "Total to run: ",num_total,"   ",
             "Total completed: ",num_completed,"   ",
-            "Total running: ",num_running
+            "Total running: ",num_running,"   ",
+            "Total failed:", num_failed
             ))
 #          print(table(info$status))
           Sys.sleep(5)

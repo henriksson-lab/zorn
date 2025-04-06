@@ -1,0 +1,52 @@
+---
+title: "De novo assembly"
+output:
+  html_document:
+    theme: united
+    df_print: kable
+  pdf_document: default
+---
+
+
+
+First set up your Zorn/Bascet work directory as before.
+
+Assembly can then performed using SKESA, via the MapCell system:
+
+[(SLURM-compatible step)](slurm.html)
+
+```{r, eval=F, echo=T}
+### Assemble all genomes
+BascetMapCell(
+  bascetRoot,
+  withfunction = "_skesa",
+  inputName = "filtered",
+  outputName = "skesa",
+  runner=bascet_runner,
+  bascet_instance=bascet_instance
+)
+```
+
+This produce contigs for each cell, all grouped together in "skesa". Note that
+both skesa and spades only assembles cells for which there are sufficient number of reads.
+
+
+
+```{r, eval=F, echo=T}
+
+#TODO extract an individual genome
+
+```
+
+
+
+
+```{r, eval=F, echo=T}
+
+#TODO QUAST for QC etc
+
+```
+
+
+
+

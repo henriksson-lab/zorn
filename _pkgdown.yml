@@ -21,6 +21,12 @@ navbar:
           href: articles/alignment.html
         - text: "Map scripts"
           href: articles/map_scripts.html
+        - text: "De novo assembly"
+          href: articles/assembly.html
+        - text: "Clustering"
+          href: articles/clustering.html
+        - text: "De novo KMER-based workflow"
+          href: articles/kmer.html
         - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html
