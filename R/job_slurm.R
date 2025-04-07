@@ -146,9 +146,9 @@ setMethod(
     
     ## Write the script to a temporary file
     slurm_script <- tempfile(fileext = ".sh")
-    print(slurm_script)    
+    #print(slurm_script)    
     writeLines(con=slurm_script, scriptcontent)
-    print(scriptcontent)
+    #print(scriptcontent)
         
     ## Run the script; catch the message from sbatch
     cmd <- paste0("sbatch --array=0-",arraysize-1,"  ",slurm_script)
