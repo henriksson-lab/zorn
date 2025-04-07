@@ -213,14 +213,17 @@ setMethod(
           num_running <- floor(sum(info$status=="RUNNING")/2)
           num_completed <- floor(sum(info$status=="COMPLETED")/2)  ### for some reason, these are reported twice.. ish
           num_failed <- floor(sum(info$status=="FAILED")/2)  ### for some reason, these are reported twice.. ish ?
+          num_outofmem <- floor(sum(stringr::str_starts(info$status,"OUT_OF_ME"))/2)  ### for some reason, these are reported twice.. ish ?
           
           print(paste0(
+            job@pid," ",
             job@jobname,"   ",
             "Total to run: ",num_total,"   ",
             "Total completed: ",num_completed,"   ",
             "Total running: ",num_running,"   ",
-            "Total failed: ", num_failed
-            ))
+            "Total failed: ", num_failed,"   ",
+            "Total out-of-mem: ", num_outofmem
+          ))
 #          print(table(info$status))
           Sys.sleep(5)
         }

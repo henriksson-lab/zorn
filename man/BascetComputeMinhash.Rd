@@ -9,6 +9,7 @@ BascetComputeMinhash(
   bascetRoot,
   inputName = "filtered",
   outputName = "minhash",
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

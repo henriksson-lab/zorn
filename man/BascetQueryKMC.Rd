@@ -9,6 +9,7 @@ BascetQueryKMC(
   inputName = "kmc",
   outputName = "kmer",
   useKMERs,
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

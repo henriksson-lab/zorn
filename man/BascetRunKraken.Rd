@@ -10,6 +10,7 @@ BascetRunKraken(
   numLocalThreads = 1,
   inputName = "asfq",
   outputName = "kraken_out",
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

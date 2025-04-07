@@ -9,6 +9,7 @@ BascetMakeKrakenCountMatrix(
   numLocalThreads = 1,
   inputName = "kraken_out",
   outputName = "kraken",
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

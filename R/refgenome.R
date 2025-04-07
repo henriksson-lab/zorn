@@ -48,6 +48,7 @@ is_bam_paired_alignment <- function(
 BascetIndexGenomeBWA <- function(  
     bascetRoot, 
     genomeFile, 
+    overwrite=FALSE,
     runner, 
     bascet_instance=bascet_instance.default
 ){
@@ -56,20 +57,24 @@ BascetIndexGenomeBWA <- function(
     stop("Could not find genome FASTA file")
   }
   
-  #Produce the script and run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_bwa_index",
-    cmd = c(
-      ### For sorting
-      paste(
-        bascet_instance@prepend_cmd,
-        "bwa index",
-        genomeFile
-      )
-    ),
-    arraysize = 1
-  )
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Produce the script and run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_bwa_index",
+      cmd = c(
+        ### For sorting
+        paste(
+          bascet_instance@prepend_cmd,
+          "bwa index",
+          genomeFile
+        )
+      ),
+      arraysize = 1
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -138,6 +143,7 @@ BascetAlignmentToBigwig <- function(
     bascetRoot, 
     inputName="aligned", 
     outputName="pileup",
+    overwrite=FALSE,
     runner, 
     bascet_instance=bascet_instance.default
 ){
@@ -151,30 +157,35 @@ BascetAlignmentToBigwig <- function(
   inputFiles <- file.path(bascetRoot, input_shards) 
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "bigwig", num_shards)
   
-  ### Build command
-  cmd <- c(
-    shellscript_set_tempdir(bascet_instance),
-    shellscript_make_bash_array("files_in", inputFiles),
-    shellscript_make_bash_array("files_out", outputFiles),
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
     
-    ### For sorting
-    paste(
-      bascet_instance@prepend_cmd,
-      "bamCoverage",
-      "-b ${files_in[$TASK_ID]}",     #Each job takes a single output
-      "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
+    ### Build command
+    cmd <- c(
+      shellscript_set_tempdir(bascet_instance),
+      shellscript_make_bash_array("files_in", inputFiles),
+      shellscript_make_bash_array("files_out", outputFiles),
+      
+      ### For sorting
+      paste(
+        bascet_instance@prepend_cmd,
+        "bamCoverage",
+        "-b ${files_in[$TASK_ID]}",     #Each job takes a single output
+        "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
+      )
     )
-  )
-  
-  
-  
-  #Produce the script and run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_tobw",
-    cmd = cmd,
-    arraysize = num_shards
-  )
+    
+    
+    
+    #Produce the script and run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_tobw",
+      cmd = cmd,
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -220,53 +231,56 @@ BascetFilterAlignment <- function(
   
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "bam", num_shards)
 
-  
-  
-  ### Set flags for samtools. Depends on if paired alignment or not
-  samtools_flags <- ""
-  is_paired_al <- is_bam_paired_alignment(inputFiles[1])
-  print(paste("Detect paired alignment: ",is_paired_al))
-  
-  if(is_paired_al) {
-    if(keep_mapped){
-      samtools_flags <- paste(samtools_flags, "-F2")
-    } else {
-      samtools_flags <- paste(samtools_flags, "-f2")
-    }
-  } else {
-    if(keep_mapped){
-      samtools_flags <- paste(samtools_flags, "-F4")
-    } else {
-      samtools_flags <- paste(samtools_flags, "-f4")
-    }
-  }
-  
-  ### Build command
-  cmd <- c(
-    shellscript_set_tempdir(bascet_instance),
-    shellscript_make_bash_array("files_in", inputFiles),
-    shellscript_make_bash_array("files_out", outputFiles),
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
     
-    ### For sorting
-    paste(
-      bascet_instance@prepend_cmd,
-      "samtools view",
-      samtools_flags, 
-      "-@ ",numLocalThreads,          #Number of threads to use
-      "${files_in[$TASK_ID]}",        #Each job takes a single output
-      "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
+    ### Set flags for samtools. Depends on if paired alignment or not
+    samtools_flags <- ""
+    is_paired_al <- is_bam_paired_alignment(inputFiles[1])
+    print(paste("Detect paired alignment: ",is_paired_al))
+    
+    if(is_paired_al) {
+      if(keep_mapped){
+        samtools_flags <- paste(samtools_flags, "-F2")
+      } else {
+        samtools_flags <- paste(samtools_flags, "-f2")
+      }
+    } else {
+      if(keep_mapped){
+        samtools_flags <- paste(samtools_flags, "-F4")
+      } else {
+        samtools_flags <- paste(samtools_flags, "-f4")
+      }
+    }
+    
+    ### Build command
+    cmd <- c(
+      shellscript_set_tempdir(bascet_instance),
+      shellscript_make_bash_array("files_in", inputFiles),
+      shellscript_make_bash_array("files_out", outputFiles),
+      
+      ### For sorting
+      paste(
+        bascet_instance@prepend_cmd,
+        "samtools view",
+        samtools_flags, 
+        "-@ ",numLocalThreads,          #Number of threads to use
+        "${files_in[$TASK_ID]}",        #Each job takes a single output
+        "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
+      )
     )
-  )
+      
     
-  
-  
-  #Produce the script and run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_filteraln",
-    cmd = cmd,
-    arraysize = num_shards
-  )
+    
+    #Produce the script and run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_filteraln",
+      cmd = cmd,
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -331,6 +345,7 @@ BascetAlignToReference <- function(
   }
 
   ### Build command: basic alignment
+  final_outputFiles <- outputFilesBAMunsorted
   cmd <- c(
     shellscript_set_tempdir(bascet_instance),
     shellscript_make_bash_array("files_in_r1", inputFiles_R1),
@@ -354,6 +369,7 @@ BascetAlignToReference <- function(
   
   ### Build command: sorting and indexing
   if(do_sort){
+    final_outputFiles <- outputFilesBAMsorted
     cmd <- c(
       cmd,
       
@@ -377,14 +393,17 @@ BascetAlignToReference <- function(
     )
   }
   
-  
-  #Produce the script and run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_aln",
-    cmd = cmd,
-    arraysize = num_shards
-  )
+  if(bascet_check_overwrite_output(final_outputFiles, overwrite)) {
+    #Produce the script and run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_aln",
+      cmd = cmd,
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -405,6 +424,7 @@ BascetBam2Fragments <- function(
     bascetRoot, 
     inputName="aligned",
     outputName="fragments", 
+    overwrite=FALSE,
     runner, 
     bascet_instance=bascet_instance.default
 ){
@@ -419,25 +439,28 @@ BascetBam2Fragments <- function(
   #One output per input pair of reads  
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "tsv.gz", num_shards)  
   
-
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_bam2fragments",
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in", inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles),
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "bam2fragments",
-        "-t $BASCET_TEMPDIR",
-        "-i ${files_in[$TASK_ID]}",  
-        "-o ${files_out[$TASK_ID]}"
-      )
-    ),
-    arraysize = length(inputFiles)
-  )
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_bam2fragments",
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_bash_array("files_in", inputFiles),
+        shellscript_make_bash_array("files_out",outputFiles),
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin, 
+          "bam2fragments",
+          "-t $BASCET_TEMPDIR",
+          "-i ${files_in[$TASK_ID]}",  
+          "-o ${files_out[$TASK_ID]}"
+        )
+      ),
+      arraysize = length(inputFiles)
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -454,6 +477,7 @@ BascetCountChrom <- function(
     bascetRoot, 
     inputName="aligned",
     outputName="chromcount", 
+    overwrite=FALSE,
     runner, 
     bascet_instance=bascet_instance.default
 ){
@@ -468,25 +492,28 @@ BascetCountChrom <- function(
   #One output per input alignment
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "hd5", num_shards)  
   
-  
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_countchrom",
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in", inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles),
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "countchrom",
-        "-t $BASCET_TEMPDIR",
-        "-i ${files_in[$TASK_ID]}",  
-        "-o ${files_out[$TASK_ID]}"
-      )
-    ),
-    arraysize = length(inputFiles)
-  )
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_countchrom",
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_bash_array("files_in", inputFiles),
+        shellscript_make_bash_array("files_out",outputFiles),
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin, 
+          "countchrom",
+          "-t $BASCET_TEMPDIR",
+          "-i ${files_in[$TASK_ID]}",  
+          "-o ${files_out[$TASK_ID]}"
+        )
+      ),
+      arraysize = length(inputFiles)
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -518,7 +545,9 @@ TabixGetFragmentsSeqs <- function(
 #' @return A ChromatinAssay
 #' 
 #' @export
-FragmentsToSignac <- function(fragpath) {
+FragmentsToSignac <- function(
+    fragpath
+) {
   
   #### Index if needed; this should already have been done but added here just in case
   fragpath_index <- paste(fragpath,".tbi",sep="")

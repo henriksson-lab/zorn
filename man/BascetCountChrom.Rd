@@ -8,6 +8,7 @@ BascetCountChrom(
   bascetRoot,
   inputName = "aligned",
   outputName = "chromcount",
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

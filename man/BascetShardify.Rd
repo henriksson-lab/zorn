@@ -10,6 +10,7 @@ BascetShardify(
   includeCells = NULL,
   num_output_shards = 1,
   outputName = "filtered",
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

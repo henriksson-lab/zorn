@@ -1,13 +1,4 @@
 
-if(FALSE){
-  #to run roxygen --- run in clean workspace!
-  devtools::document()
-}
-
-if(FALSE){
-  install.packages("Zorn_0.1.0.tar.gz", repos = NULL, type = 'source')
-}
-
 
 ###############################################
 #' Function template, where basic parameter documentation can be obtained from
@@ -26,6 +17,37 @@ template_BascetFunction <- function(
     bascetRoot, 
     runner, 
     bascet_instance=bascet_instance.default){}
+
+
+
+
+###############################################
+#' Detect metadata for raw input FASTQ files
+#' 
+#' _R1 -- common from illumina sequencer
+#' SRR****_1.fastq.gz -- typical from SRA
+#' 
+#' TODO Would be convenient to handle multiple samples, as sample1/xxx; in this case, 
+#' should prepend the sample name to the barcodes.
+#' 
+#' issue: when shardifying, good to keep info about what to merge. this reduces the work plenty!
+#' could keep a list of which shards belong for the next step
+#' 
+#' 
+#' @param outputFiles Files that we expect to exist
+#' @param overwrite Files that we expect to exist
+#' @return TRUE if ok to proceed
+bascet_check_overwrite_output <- function(
+  outputFiles, 
+  overwrite
+){
+  if(all(file.exists(outputFiles)) & !overwrite){
+    print("All files to write already exist; skipping. To change this behaviour, set overwrite=TRUE")
+    FALSE
+  } else {
+    TRUE
+  }
+}
 
   
 
@@ -130,6 +152,7 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
 #' @param outputName Name output files: Debarcoded reads
 #' @param outputNameIncomplete Name of output files: Reads that could not be parsed
 #' @param chemistry The type of data to be parsed
+#' @param overwrite description
 #' @export
 BascetGetRaw <- function(
     bascetRoot, 
@@ -137,8 +160,10 @@ BascetGetRaw <- function(
     outputName="debarcoded", 
     outputNameIncomplete="incomplete_reads", 
     chemistry="atrandi_wgs",  #or atrandi_rnaseq; any way to get list from software?
+    overwrite=FALSE,
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
 
   #One output per input pair of reads  
   num_shards <- nrow(rawmeta)
@@ -151,31 +176,35 @@ BascetGetRaw <- function(
   #Check if libnames should be added
   add_libnames <- any(rawmeta$prefix!="")
 
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_getraw",
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
-      shellscript_make_bash_array("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
-      shellscript_make_bash_array("libnames",rawmeta$prefix),
-      shellscript_make_bash_array("files_out",outputFilesComplete),
-      shellscript_make_bash_array("files_out_incomplete",outputFilesIncomplete),
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "getraw",
-        "-t $BASCET_TEMPDIR",
-        "--chemistry",chemistry,  
-        "--r1 ${files_r1[$TASK_ID]}",  
-        "--r2 ${files_r2[$TASK_ID]}",
-        if(add_libnames) "--libname ${libnames[$TASK_ID]}",
-        "--out-complete   ${files_out[$TASK_ID]}",                 #Each job produces a single output
-        "--out-incomplete ${files_out_incomplete[$TASK_ID]}"                 #Each job produces a single output
-      )
-    ),
-    arraysize = nrow(rawmeta)
-  )
+  if(bascet_check_overwrite_output(outputFilesComplete)) {
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_getraw",
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_bash_array("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
+        shellscript_make_bash_array("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
+        shellscript_make_bash_array("libnames",rawmeta$prefix),
+        shellscript_make_bash_array("files_out",outputFilesComplete),
+        shellscript_make_bash_array("files_out_incomplete",outputFilesIncomplete),
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin, 
+          "getraw",
+          "-t $BASCET_TEMPDIR",
+          "--chemistry",chemistry,  
+          "--r1 ${files_r1[$TASK_ID]}",  
+          "--r2 ${files_r2[$TASK_ID]}",
+          if(add_libnames) "--libname ${libnames[$TASK_ID]}",
+          "--out-complete   ${files_out[$TASK_ID]}",                 #Each job produces a single output
+          "--out-incomplete ${files_out_incomplete[$TASK_ID]}"                 #Each job produces a single output
+        )
+      ),
+      arraysize = nrow(rawmeta)
+    )    
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -223,8 +252,10 @@ BascetShardify <- function(
     includeCells=NULL, ############# TODO: get rid of this parameter; only support direct merging
     num_output_shards=1,
     outputName="filtered", 
+    overwrite=FALSE,
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
 
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
   if(length(input_shards)==0){
@@ -245,41 +276,31 @@ BascetShardify <- function(
   inputFiles <- file.path(bascetRoot, input_shards)
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "tirp.gz", num_output_shards)
 
-  #Produce the script and run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_shardify",
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
-      shellscript_make_bash_array("files_out", outputFiles),
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin,
-        "shardify", 
-        "-t $BASCET_TEMPDIR",
-        "-i",shellscript_make_commalist(inputFiles), #Need to give all input files for each job
-        "-o ${files_out[$TASK_ID]}",                 #Each job produces a single output
-        "--cells $CELLFILE"                          #Each job takes its own list of cells
-      ),  
-      "rm $CELLFILE"
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Produce the script and run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_shardify",
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+        shellscript_make_bash_array("files_out", outputFiles),
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin,
+          "shardify", 
+          "-t $BASCET_TEMPDIR",
+          "-i",shellscript_make_commalist(inputFiles), #Need to give all input files for each job
+          "-o ${files_out[$TASK_ID]}",                 #Each job produces a single output
+          "--cells $CELLFILE"                          #Each job takes its own list of cells
+        ),  
+        "rm $CELLFILE"
       ), 
-    arraysize = num_output_shards
-  )
-  
-}
-
-
-
-
-###############################################
-#' Assemble the genomes
-#' 
-#' TODO not yet implemented
-#' 
-#' @export
-BascetAssemble <- function(bascetRoot, inputName="rawreads", outputName="assembled", runner, bascet_instance=bascet_instance.default){
-  stop("this is done using MapCell; but we could produce a wrapper for it")
+      arraysize = num_output_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -307,8 +328,10 @@ BascetMapTransform <- function(
     num_merge=1,
     out_format="tirp.gz", ### not really!
     includeCells=NULL,
+    overwrite=FALSE,
     runner, 
-    bascet_instance=bascet_instance.default){
+    bascet_instance=bascet_instance.default
+){
   
   
   is.integer.overequal1 <- function(x){
@@ -344,62 +367,35 @@ BascetMapTransform <- function(
       list_cell_for_shard[[i]] <- includeCells
     }
   }
-
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = paste0("bascet_transform"),
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles),
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "transform",
-        if(produce_cell_list) "--cells $CELLFILE",
-        #"-t $BASCET_TEMPDIR",  ##not supported
-        "-i ${files_in[$TASK_ID]}",
-        "-o ${files_out[$TASK_ID]}"
-      )
-    ),
-    arraysize = num_shards
-  )  
+  
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = paste0("bascet_transform"),
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+        shellscript_make_bash_array("files_in",inputFiles),
+        shellscript_make_bash_array("files_out",outputFiles),
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin, 
+          "transform",
+          if(produce_cell_list) "--cells $CELLFILE",
+          #"-t $BASCET_TEMPDIR",  ##not supported
+          "-i ${files_in[$TASK_ID]}",
+          "-o ${files_out[$TASK_ID]}"
+        )
+      ),
+      arraysize = num_shards
+    )  
+  } else {
+    new_no_job()
+  }
 }
 
 
-
-
-
-
-
-
-################################################################################
-################ Bascet command line tools: isolate genomes ####################
-################################################################################
-
-
-###############################################
-####### Add raw FASTQs of isolates, enabling them to be treated as cells, assembled etc
-# todo think about what to name this file. maybe separate from cell fastq to enable easy rerunning
-# todo allow this function to be called multiple times?
-BascetAddIsolateRawFastq <- function(bascetRoot, listFastqR1, listFastqR2, names, runner, bascet_instance=bascet_instance.default){
-  
-  
-}
-
-
-
-
-###############################################
-####### Add isolate genomes, treating them as assembled, enabling clustering, comparison with cells, etc
-# todo think about what to name this file. maybe separate from cell assembly to enable easy rerunning
-# todo allow this function to be called multiple times?
-BascetAddAssembledIsolate <- function(bascetRoot, listFasta, names, runner, bascet_instance=bascet_instance.default){
-  
-  
-}
 
 
 
@@ -467,7 +463,9 @@ KneeplotPerSpecies <- function(
 #' @param adata A Seurat object with the DefaultAssay set to species count
 #' @return a ggarranged set of ggplots
 #' @export
-BarnyardPlotMatrix <- function(adata){
+BarnyardPlotMatrix <- function(
+    adata
+){
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   cnt <- cnt[rowSums(cnt)>0,]  ##Only consider species we have
   list_species <- rownames(cnt)#[1:5] ######## Just do a few!

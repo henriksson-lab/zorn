@@ -12,6 +12,7 @@ BascetMapTransform(
   num_merge = 1,
   out_format = "tirp.gz",
   includeCells = NULL,
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

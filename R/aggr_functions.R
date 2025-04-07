@@ -4,7 +4,11 @@
 ################################################################################
 
 
-aggr.example <- function(bascetFile, cellID, bascet_instance){
+aggr.example <- function(
+    bascetFile, 
+    cellID, 
+    bascet_instance
+){
   
   ###### Option #1 -- Store the content in a temporary file that you have to remove once done
   tmp <- BascetReadFile(bascetFile, cellID, "out.csv", as="tempfile", bascet_instance=bascet_instance)
@@ -37,7 +41,11 @@ aggr.example <- function(bascetFile, cellID, bascet_instance){
 #' 
 #' @return QUAST data for each cell
 #' @export
-aggr.quast <- function(bascetFile, cellID, bascet_instance){
+aggr.quast <- function(
+    bascetFile, 
+    cellID, 
+    bascet_instance
+){
   
   if(FALSE){
     bascetFile <- OpenBascet(bascetRoot,"quast")
@@ -101,7 +109,11 @@ aggr.quast <- function(bascetFile, cellID, bascet_instance){
 #' 
 #' @return Minhash data (minhash.txt) for each cell
 #' @export
-aggr.minhash <- function(bascetFile, cellID, bascet_instance){
+aggr.minhash <- function(
+    bascetFile, 
+    cellID, 
+    bascet_instance
+){
   tmp <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="tempfile", bascet_instance=bascet_instance)
   dat <- readLines(tmp)
   file.remove(tmp)

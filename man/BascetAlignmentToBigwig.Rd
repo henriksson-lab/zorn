@@ -9,6 +9,7 @@ BascetAlignmentToBigwig(
   bascetRoot,
   inputName = "aligned",
   outputName = "pileup",
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

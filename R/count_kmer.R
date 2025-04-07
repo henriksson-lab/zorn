@@ -16,6 +16,7 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
     inputName="kmc", 
     outputName="sumkmers", 
     includeCells=NULL,
+    overwrite=FALSE,
     runner,
     bascet_instance=bascet_instance.default
 ){
@@ -41,28 +42,31 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
     }
   }
   
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_query",
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles),
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "featurise",
-        if(produce_cell_list) "--cells $CELLFILE",
-        "-t $BASCET_TEMPDIR",
-        "-i ${files_in[$TASK_ID]}",
-        "-o ${files_out[$TASK_ID]}"
-      )
-    ),
-    arraysize = num_shards
-  )  
-  
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_query",
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+        shellscript_make_bash_array("files_in",inputFiles),
+        shellscript_make_bash_array("files_out",outputFiles),
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin, 
+          "featurise",
+          if(produce_cell_list) "--cells $CELLFILE",
+          "-t $BASCET_TEMPDIR",
+          "-i ${files_in[$TASK_ID]}",
+          "-o ${files_out[$TASK_ID]}"
+        )
+      ),
+      arraysize = num_shards
+    )  
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -82,6 +86,7 @@ BascetQueryKMC <- function(
     inputName="kmc",
     outputName="kmer", 
     useKMERs,
+    overwrite=FALSE,
     runner,
     bascet_instance=bascet_instance.default
 ){
@@ -101,28 +106,31 @@ BascetQueryKMC <- function(
 
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "counts.hdf5", num_shards)
   
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_query",
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles),
-      shellscript_make_one_file_expander("KMERFILE", useKMERs), 
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "query",
-        "-t $BASCET_TEMPDIR",
-        "-f $KMERFILE",
-        "-i ${files_in[$TASK_ID]}",
-        "-o ${files_out[$TASK_ID]}"
-        )
-    ),
-    arraysize = num_shards
-  )  
-  
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_query",
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_bash_array("files_in",inputFiles),
+        shellscript_make_bash_array("files_out",outputFiles),
+        shellscript_make_one_file_expander("KMERFILE", useKMERs), 
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin, 
+          "query",
+          "-t $BASCET_TEMPDIR",
+          "-f $KMERFILE",
+          "-i ${files_in[$TASK_ID]}",
+          "-o ${files_out[$TASK_ID]}"
+          )
+      ),
+      arraysize = num_shards
+    )  
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -329,6 +337,7 @@ BascetComputeMinhash <- function(
     inputName="filtered", 
     outputName="minhash", 
     #includeCells=NULL,
+    overwrite=FALSE,
     runner,
     bascet_instance=bascet_instance.default
 ){
@@ -338,6 +347,7 @@ BascetComputeMinhash <- function(
     inputName=inputName, 
     outputName=outputName,
     #includeCells=includeCells
+    overwrite=overwrite,
     runner=runner,
     bascet_instance=bascet_instance)
 }
@@ -356,6 +366,7 @@ BascetMakeMinhashHistogram <- function(
   inputName="minhash", 
   outputName="minhash_hist.csv", 
   includeCells=NULL,
+  overwrite=FALSE,
   runner,
   bascet_instance=bascet_instance.default
 ){
@@ -380,28 +391,32 @@ BascetMakeMinhashHistogram <- function(
     }
   }
 
-  #Make the command
-  cmd <- c(
-    shellscript_set_tempdir(bascet_instance),
-    if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
-    paste(
-      bascet_instance@prepend_cmd,
-      bascet_instance@bin, 
-      "minhash-hist",
-      if(produce_cell_list) "--cells $CELLFILE",
-      "-t $BASCET_TEMPDIR",
-      "-i", shellscript_make_commalist(inputFiles),
-      "-o", outputFile
+  if(bascet_check_overwrite_output(outputFile, overwrite)) {
+    #Make the command
+    cmd <- c(
+      shellscript_set_tempdir(bascet_instance),
+      if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+      paste(
+        bascet_instance@prepend_cmd,
+        bascet_instance@bin, 
+        "minhash-hist",
+        if(produce_cell_list) "--cells $CELLFILE",
+        "-t $BASCET_TEMPDIR",
+        "-i", shellscript_make_commalist(inputFiles),
+        "-o", outputFile
+      )
     )
-  )
-
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_minhash_hist",
-    cmd = cmd,
-    arraysize = 1
-  )  
+  
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_minhash_hist",
+      cmd = cmd,
+      arraysize = 1
+    )  
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -442,27 +457,31 @@ BascetQueryFq <- function(
   
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "h5", num_shards)
   
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = "bascet_query",
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles),
-      shellscript_make_one_file_expander("KMERFILE", useKMERs), 
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "query-fq",
-        "-t $BASCET_TEMPDIR",
-        "-f $KMERFILE",
-        "-i ${files_in[$TASK_ID]}",
-        "-o ${files_out[$TASK_ID]}"
-      )
-    ),
-    arraysize = num_shards
-  )
+  if(bascet_check_overwrite_output(outputFile, overwrite)) {
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_query",
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_bash_array("files_in",inputFiles),
+        shellscript_make_bash_array("files_out",outputFiles),
+        shellscript_make_one_file_expander("KMERFILE", useKMERs), 
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin, 
+          "query-fq",
+          "-t $BASCET_TEMPDIR",
+          "-f $KMERFILE",
+          "-i ${files_in[$TASK_ID]}",
+          "-o ${files_out[$TASK_ID]}"
+        )
+      ),
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 

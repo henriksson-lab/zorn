@@ -10,6 +10,7 @@ BascetGetRaw(
   outputName = "debarcoded",
   outputNameIncomplete = "incomplete_reads",
   chemistry = "atrandi_wgs",
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )
@@ -24,6 +25,8 @@ BascetGetRaw(
 \item{outputNameIncomplete}{Name of output files: Reads that could not be parsed}
 
 \item{chemistry}{The type of data to be parsed}
+
+\item{overwrite}{description}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

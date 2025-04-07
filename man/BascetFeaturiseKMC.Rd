@@ -9,6 +9,7 @@ BascetFeaturiseKMC(
   inputName = "kmc",
   outputName = "sumkmers",
   includeCells = NULL,
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

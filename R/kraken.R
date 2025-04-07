@@ -2,7 +2,9 @@
 
 ###############################################
 # TODO finish properly
-SpeciesCorrMatrix <- function(adata){
+SpeciesCorrMatrix <- function(
+    adata
+){
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   cnt <- cnt[rowSums(cnt)>0,]
   
@@ -67,6 +69,7 @@ BascetRunKraken <- function(
     numLocalThreads=1,
     inputName="asfq", ######### should be able to take filtered and pipe to kraken if needed  "filtered"
     outputName="kraken_out",
+    overwrite=FALSE,
     runner,
     bascet_instance=bascet_instance.default
 ){
@@ -90,29 +93,32 @@ BascetRunKraken <- function(
     inputFiles_R2 <- get_fastq_R2_from_R1(inputFiles_R1)
   }
   
-  
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = paste0("bascet_kraken"),
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in_R1",inputFiles_R1),
-      if(is_paired) shellscript_make_bash_array("files_in_R2",inputFiles_R2),
-      shellscript_make_bash_array("files_out",outputFiles),
-      paste(
-        bascet_instance@prepend_cmd,
-        "kraken2",
-        "--db", useKrakenDB,
-        "--threads", numLocalThreads,
-        "--output ${files_out[$TASK_ID]}",
-        if(is_paired) "--paired",
-        "${files_in_R1[$TASK_ID]}",
-        if(is_paired) "${files_in_R2[$TASK_ID]}"
-      )
-    ),
-    arraysize = num_shards
-  )  
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = paste0("bascet_kraken"),
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_bash_array("files_in_R1",inputFiles_R1),
+        if(is_paired) shellscript_make_bash_array("files_in_R2",inputFiles_R2),
+        shellscript_make_bash_array("files_out",outputFiles),
+        paste(
+          bascet_instance@prepend_cmd,
+          "kraken2",
+          "--db", useKrakenDB,
+          "--threads", numLocalThreads,
+          "--output ${files_out[$TASK_ID]}",
+          if(is_paired) "--paired",
+          "${files_in_R1[$TASK_ID]}",
+          if(is_paired) "${files_in_R2[$TASK_ID]}"
+        )
+      ),
+      arraysize = num_shards
+    )  
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -134,6 +140,7 @@ BascetMakeKrakenCountMatrix <- function(
     numLocalThreads=1,
     inputName="kraken_out", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputName="kraken", 
+    overwrite=FALSE,
     runner, 
     bascet_instance=bascet_instance.default
 ){
@@ -147,28 +154,30 @@ BascetMakeKrakenCountMatrix <- function(
   inputFiles <- file.path(bascetRoot, input_shards)
   
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "counts.hdf5", num_shards) 
-
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = paste0("bascet_kraken"),
-    cmd = c(
-      shellscript_set_tempdir(bascet_instance),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles),
-      paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "kraken",
-        "-t $BASCET_TEMPDIR",
-        "-i ${files_in[$TASK_ID]}",
-        "-o ${files_out[$TASK_ID]}"
-        )
-    ),
-    arraysize = num_shards
-  )  
   
-  
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = paste0("bascet_kraken"),
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_bash_array("files_in",inputFiles),
+        shellscript_make_bash_array("files_out",outputFiles),
+        paste(
+          bascet_instance@prepend_cmd,
+          bascet_instance@bin, 
+          "kraken",
+          "-t $BASCET_TEMPDIR",
+          "-i ${files_in[$TASK_ID]}",
+          "-o ${files_out[$TASK_ID]}"
+          )
+      ),
+      arraysize = num_shards
+    )  
+  } else {
+    new_no_job()
+  }
 }
 
 

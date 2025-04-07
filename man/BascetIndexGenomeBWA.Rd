@@ -7,6 +7,7 @@
 BascetIndexGenomeBWA(
   bascetRoot,
   genomeFile,
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

@@ -8,6 +8,7 @@ BascetBam2Fragments(
   bascetRoot,
   inputName = "aligned",
   outputName = "fragments",
+  overwrite = FALSE,
   runner,
   bascet_instance = bascet_instance.default
 )

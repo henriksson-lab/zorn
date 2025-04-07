@@ -27,7 +27,11 @@ setClass("BascetInstance", slots=list(
 #' @param prepend_cmd Something to prepend to the command, to e.g. support container systems
 #' @return A Bascet instance
 #' @export
-BascetInstance <- function(bin, tempdir, prepend_cmd=""){
+BascetInstance <- function(
+    bin, 
+    tempdir, 
+    prepend_cmd=""
+){
   if(!is.null(tempdir) & !file.exists(tempdir)){
     stop(sprintf("temp directory %s does not exist", tempdir))
   }
@@ -60,7 +64,9 @@ bascet_instance.default <- BascetInstance(
 #' @param bascet_instance A Bascet instance
 #' @return A path to a temp directory that can be created. Must be removed when done
 #' @export
-GetBascetTempDir <- function(bascet_instance){
+GetBascetTempDir <- function(
+    bascet_instance
+){
   if(is.null(bascet_instance@tempdir)){
     tempfile()
   } else {
@@ -78,7 +84,10 @@ GetBascetTempDir <- function(bascet_instance){
 #' 
 #' @return A Bascet instance
 #' @export
-getBascetSingularityImage <- function(store_at="./", tempdir=NULL) {
+getBascetSingularityImage <- function(
+    store_at="./", 
+    tempdir=NULL
+){
   
   file_bascet_sif <- file.path(store_at, "bascet.sif")
   
@@ -119,7 +128,9 @@ getBascetSingularityImage <- function(store_at="./", tempdir=NULL) {
 #' @param bascet_instance Bascet instance
 #' @return "ok" if the instance works; panic otherwise
 #' @export
-TestBascetInstance <- function(bascet_instance) {
+TestBascetInstance <- function(
+    bascet_instance
+) {
   
   cmd <- paste(
     bascet_instance@prepend_cmd,
