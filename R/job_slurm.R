@@ -127,7 +127,7 @@ setMethod(
       scriptcontent <- c(scriptcontent, paste("#SBATCH -A",runner@account))
     }
     if(runner@ncpu!=""){
-      scriptcontent <- c(scriptcontent, paste("#SBATCH -n",runner@ncpu))
+      scriptcontent <- c(scriptcontent, paste("#SBATCH -c",runner@ncpu))  #number of cores https://docs.hpc2n.umu.se/documentation/batchsystem/batch_scripts/
     }
     if(runner@time!=""){
       scriptcontent <- c(scriptcontent, paste("#SBATCH -t",runner@time))
