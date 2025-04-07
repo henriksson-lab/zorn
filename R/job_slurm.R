@@ -187,9 +187,6 @@ setMethod(
 )
 
 
-# 34465829 fix
-
-
 #Has possibility of ctrl+c; just keeps polling, possibly with a status indicator from log. or keep plotting log file
 #' @export
 setMethod(
@@ -197,11 +194,19 @@ setMethod(
   signature ="SlurmJob",
   definition = function(job) {
     # sacct -j JOBID -o jobid,submit,start,end,state
+    
+    cli::cli_progress_bar(
+      total = job@arraysize,
+      format = "{pb_bar} {pb_percent} | {cur_summary}"
+    )
+    
     while(TRUE) {
       info <- JobStatus(job)
       
       if(nrow(info)==0){
-        print("Waiting to start")  
+        #print("Waiting to start")  
+        cur_summary <- "Waiting for SLURM job to start"
+        cli::cli_progress_update(set = 0)
         Sys.sleep(5)
       } else {
         if(all(info$status=="COMPLETED")){
@@ -215,7 +220,8 @@ setMethod(
           num_failed <- floor(sum(info$status=="FAILED")/2)  ### for some reason, these are reported twice.. ish ?
           num_outofmem <- floor(sum(stringr::str_starts(info$status,"OUT_OF_ME"))/2)  ### for some reason, these are reported twice.. ish ?
           
-          print(paste0(
+          
+          cur_summary <- paste0(
             job@pid," ",
             job@jobname,"   ",
             "Total to run: ",num_total,"   ",
@@ -223,12 +229,14 @@ setMethod(
             "Total running: ",num_running,"   ",
             "Total failed: ", num_failed,"   ",
             "Total out-of-mem: ", num_outofmem
-          ))
-#          print(table(info$status))
+          )
+          cli::cli_progress_update(set = num_completed)
+
           Sys.sleep(5)
         }
       }
     }
+      
   }
 )
 

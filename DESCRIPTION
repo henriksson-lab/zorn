@@ -29,6 +29,7 @@ Imports:
     processx,
     progress,
     taxonomizr,
+    cli,
     sparseMatrixStats (>= 1.10.0)
 Suggests: 
     rmarkdown
