@@ -82,18 +82,18 @@ workflow manager 2. a suite of analysis tools 3. fewer files to
 manage</p>
 <p>Depending on your use case, there are two ways to do this:</p>
 <div class="section level2">
-<h2 id="if-you-have-a-few-input-fastq-files">If you have a few input FASTQ files<a class="anchor" aria-label="anchor" href="#if-you-have-a-few-input-fastq-files"></a>
+<h2 id="if-you-have-a-few-input-fastq-or-fasta-files">If you have a few input FASTQ or FASTA files<a class="anchor" aria-label="anchor" href="#if-you-have-a-few-input-fastq-or-fasta-files"></a>
 </h2>
-<p>There is a special file format, “list-fastq”, which is a TSV that
-simply consists of * A name for each sample * Links to raw
-FASTQ-files</p>
+<p>There are two special file formats, “list-fastq” and “list-fasta”,
+which is a TSV that simply consists of * A name for each sample * Links
+to raw FASTQ-files or FASTA-files</p>
 <p>This file can be used in place of a Bascet TIRP or ZIP-file, e.g., as
 the source of filtered reads. In effect, you skip debarcoding and
 sharding.</p>
 <p>TODO file format example</p>
 </div>
 <div class="section level2">
-<h2 id="if-you-have-really-many-fastq-files">If you have really many FASTQ files<a class="anchor" aria-label="anchor" href="#if-you-have-really-many-fastq-files"></a>
+<h2 id="if-you-have-really-many-fastafastq-files">If you have really many FASTA/FASTQ files<a class="anchor" aria-label="anchor" href="#if-you-have-really-many-fastafastq-files"></a>
 </h2>
 <p>In this case we recommend you to produce TIRP files yourself, in a
 way that makes sense based on your infrastructure. See the section on
@@ -108,11 +108,11 @@ the same time.</p>
 given stage; i.e. if you have filtered reads, they must all be in TIRP
 format, or another format.</p>
 <p>The easiest way to mix samples is to 1. Perform debarcoding and
-sharding of your single-cell data into TIRP 2. In a separate bulk
-working directory, Use Bascet transform to convert a list-FASTQ to TIRP
-3. Copy this bulk TIRP as filtered.xxx.tirp.gz in your single-cell
-directory, where xxx is the next number after your current single-cell
-shards</p>
+sharding of your single-cell data into TIRP 2. In a separate working
+directory for bulk data, use Bascet transform to convert a
+list-FASTQ/FASTA to TIRP 3. Copy this bulk TIRP as filtered.xxx.tirp.gz
+in your single-cell directory, where xxx is the next number after your
+current single-cell shards</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
