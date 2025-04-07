@@ -176,7 +176,7 @@ BascetGetRaw <- function(
   #Check if libnames should be added
   add_libnames <- any(rawmeta$prefix!="")
 
-  if(bascet_check_overwrite_output(outputFilesComplete)) {
+  if(bascet_check_overwrite_output(outputFilesComplete, overwrite)) {
     RunJob(
       runner = runner, 
       jobname = "bascet_getraw",
