@@ -197,7 +197,7 @@ setMethod(
     
     cli::cli_progress_bar(
       total = job@arraysize,
-      format = "{pb_bar} {pb_percent} | {cur_summary}"
+      format = "{cli::pb_bar} {cli::pb_percent} | {cur_summary}"
     )
     
     while(TRUE) {
