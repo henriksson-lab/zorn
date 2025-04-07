@@ -82,22 +82,24 @@ setMethod(
 
 
 
+#' @export
+setClass("NoJob", slots=list(
+  evil="character"
+)
+) 
+
 ###############################################
 #' Create an empty job. It is considered to have terminated from the start
 #' 
 #' @return A no-job
 new_no_job <- function() {
   new(
-    "NoJob"
+    "NoJob",
+    evil="666" #might need a member to avoid virtual class errors
   )
 }
 
 
-
-#' @export
-setClass("NoJob", slots=list(
-  )
-) 
 
 
 
