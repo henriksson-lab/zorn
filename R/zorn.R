@@ -179,7 +179,7 @@ BascetGetRaw <- function(
   if(bascet_check_overwrite_output(outputFilesComplete, overwrite)) {
     RunJob(
       runner = runner, 
-      jobname = "bascet_getraw",
+      jobname = "Z_getraw",
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
@@ -280,7 +280,7 @@ BascetShardify <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "bascet_shardify",
+      jobname = "Z_shardify",
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
         shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
@@ -372,7 +372,7 @@ BascetMapTransform <- function(
     #Run the job
     RunJob(
       runner = runner, 
-      jobname = paste0("bascet_transform"),
+      jobname = "Z_transform",
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
         if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),

@@ -97,7 +97,7 @@ BascetRunKraken <- function(
     #Run the job
     RunJob(
       runner = runner, 
-      jobname = paste0("bascet_kraken"),
+      jobname = paste0("Z_kraken_fq"),
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in_R1",inputFiles_R1),
@@ -159,7 +159,7 @@ BascetMakeKrakenCountMatrix <- function(
     #Run the job
     RunJob(
       runner = runner, 
-      jobname = paste0("bascet_kraken"),
+      jobname = paste0("Z_kraken_mat"),
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in",inputFiles),

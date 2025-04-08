@@ -1,0 +1,107 @@
+---
+title: "SNP analysis"
+output:
+  html_document:
+    theme: united
+    df_print: kable
+  pdf_document: default
+---
+
+
+
+
+
+
+# SNP-calling
+
+
+
+Generate FASTQ-files for alignment
+
+[(SLURM-compatible step)](slurm.html)
+
+```{r, eval=F, echo=T}
+
+
+###TODO
+
+```
+
+
+
+Align your reads using STAR (not BWA):
+
+[(SLURM-compatible step)](slurm.html)
+
+```{r, eval=F, echo=T}
+
+
+###TODO
+
+
+
+```
+
+
+
+
+
+
+# Detect known SNPs
+
+This workflow is useful if you wish to perform SNP-based donor deconvolution
+using [Vireo](https://github.com/single-cell-genetics/vireo).
+The [Vireo workflow](https://vireosnp.readthedocs.io/en/latest/genotype.html)
+recommends obtaining a [pre-processed SNP list](https://sourceforge.net/projects/cellsnp/files/SNPlist/).
+
+Given a VCF-file, containing your curated SNPs, to can run the following
+command on your aligned reads (internally using cellsnp-lite):
+
+[(SLURM-compatible step)](slurm.html)
+
+```{r, eval=F, echo=T}
+#TODO r command
+#TODO option to not use UMI
+
+#pip install -U vireoSNP
+
+cellsnp-lite -s $BAM -b $BARCODE -O $OUT_DIR -R $REGION_VCF -p 10 --minMAF 0.1 --minCOUNT 20 --gzip
+
+# https://cellsnp-lite.readthedocs.io/en/latest/
+```
+
+
+# Detect unknown SNPs
+
+
+
+
+```{r, eval=F, echo=T}
+#TODO r command
+#TODO option to not use UMI
+cellsnp-lite -s $BAM -b $BARCODE -O $OUT_DIR -p 10 --minMAF 0.1 --minCOUNT 100 --gzip
+```
+
+
+
+# Performing SNP-based donor deconvolution
+
+This workflow relies on [Vireo](https://github.com/single-cell-genetics/vireo).
+
+TODO option to provide donor genotype file
+
+
+
+# https://vireosnp.readthedocs.io/en/latest/manual.html
+
+
+# Citing
+
+In addition to citing Zorn/Bascet, please also cite the following tools that
+it wraps:
+
+Xianjie Huang, Yuanhua Huang, Cellsnp-lite: an efficient tool for genotyping single cells, Bioinformatics, Volume 37, Issue 23, December 2021, Pages 4569–4571, https://doi.org/10.1093/bioinformatics/btab358
+
+
+
+

@@ -61,7 +61,7 @@ BascetIndexGenomeBWA <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "bascet_bwa_index",
+      jobname = "Z_bwa_index",
       cmd = c(
         ### For sorting
         paste(
@@ -76,6 +76,62 @@ BascetIndexGenomeBWA <- function(
     new_no_job()
   }
 }
+
+
+
+###############################################
+#' Index a genome using STAR such that it can be used for alignment
+#' 
+#' @param genomeFile Name of FASTA file
+#' @param gtfFile description
+#' @param outDir A directory in which to store the output genome. This directory will be created
+#' 
+#' @export
+BascetIndexGenomeSTAR <- function(  
+    bascetRoot, 
+    fastaFile, 
+    gtfFile,
+    outDir,
+    numLocalThreads=10,
+    runner, 
+    bascet_instance=bascet_instance.default
+){
+  
+  if(!file.exists(fastaFile)){
+    stop("Could not find genome FASTA file")
+  }
+  if(!file.exists(gtfFile)){
+    stop("Could not find genome GTF file")
+  }
+  if(file.exists(outDir)){
+    return(new_no_job())
+  }
+
+    
+  #Produce the script and run the job.
+  #Note: overwrite not supported. It is too dangerous to implement
+  RunJob(
+    runner = runner, 
+    jobname = "Z_star_index",
+    cmd = c(
+      paste(
+        "mdkir -p", outDir
+      ),
+      paste(
+        bascet_instance@prepend_cmd,
+        "STAR --runThreadN", as.character(numThreads),
+        "--runMode genomeGenerate",
+        "--genomeDir",outDir,
+        "--genomeFastaFiles",fastaFile,
+        "--sjdbGTFfile", gtfFile
+      )
+    ),
+    arraysize = 1
+  )
+}
+
+
+
 
 
 
@@ -179,7 +235,7 @@ BascetAlignmentToBigwig <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "bascet_tobw",
+      jobname = "Z_tobw",
       cmd = cmd,
       arraysize = num_shards
     )
@@ -274,7 +330,7 @@ BascetFilterAlignment <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "bascet_filteraln",
+      jobname = "Z_filteraln",
       cmd = cmd,
       arraysize = num_shards
     )
@@ -311,6 +367,7 @@ BascetAlignToReference <- function(
     outputNameBAMunsorted="unsorted_aligned", 
     outputNameBAMsorted="aligned", 
     do_sort=TRUE,
+    overwrite=FALSE,
     runner, 
     bascet_instance=bascet_instance.default
 ){
@@ -361,8 +418,9 @@ BascetAlignToReference <- function(
       "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
       "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
       "-t", numLocalThreads,
-      ">",
-      "${files_out_unsorted[$TASK_ID]}"       #Each input means one output
+      "| ", bascet_instance@bin, "pipe-sam-add-tags",
+      "| samtools view -b -o",
+      "${files_out_unsorted[$TASK_ID]}"       #Each input means one output /////////// TODO this is a SAM-file. should be BAM!
     )
   )
   
@@ -397,7 +455,7 @@ BascetAlignToReference <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "bascet_aln",
+      jobname = "Z_aln",
       cmd = cmd,
       arraysize = num_shards
     )
@@ -442,7 +500,7 @@ BascetBam2Fragments <- function(
   if(bascet_check_overwrite_output(outputFiles, overwrite)) {
     RunJob(
       runner = runner, 
-      jobname = "bascet_bam2fragments",
+      jobname = "Z_bam2fragments",
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in", inputFiles),
@@ -495,7 +553,7 @@ BascetCountChrom <- function(
   if(bascet_check_overwrite_output(outputFiles, overwrite)) {
     RunJob(
       runner = runner, 
-      jobname = "bascet_countchrom",
+      jobname = "Z_countchrom",
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in", inputFiles),
