@@ -413,6 +413,7 @@ BascetAlignToReference <- function(
     ### For alignment
     paste(
       bascet_instance@prepend_cmd,
+      "bash -c \"",
       "bwa mem", 
       useReference,
       "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
@@ -420,7 +421,8 @@ BascetAlignToReference <- function(
       "-t", numLocalThreads,
       "| ", bascet_instance@bin, "pipe-sam-add-tags",
       "| samtools view -b -o",
-      "${files_out_unsorted[$TASK_ID]}"       #Each input means one output /////////// TODO this is a SAM-file. should be BAM!
+      "${files_out_unsorted[$TASK_ID]}",       #Each input means one output /////////// TODO this is a SAM-file. should be BAM!
+      "\""
     )
   )
   
@@ -450,6 +452,8 @@ BascetAlignToReference <- function(
       )      
     )
   }
+  
+  print(cmd)
   
   if(bascet_check_overwrite_output(final_outputFiles, overwrite)) {
     #Produce the script and run the job
