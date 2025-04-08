@@ -76,6 +76,8 @@ BascetMapCell <- function(
       cmd = cmd,
       arraysize = num_shards
     )      
+  } else {
+    new_no_job()
   }
 }
 
