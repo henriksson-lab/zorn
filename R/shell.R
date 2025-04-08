@@ -1,4 +1,3 @@
-######## shell hacking
 
 
 
@@ -20,6 +19,10 @@
 # 
 # cat ${TMPFILE}/cells.0.txt
 
+
+###############################################
+#' 
+#' 
 shellscript_make_files_expander <- function(tmpname, list_content, compare_to_var="TASK_ID") {
   script_lines <- c(
     paste0(tmpname,"=$(mktemp)")
@@ -39,8 +42,8 @@ shellscript_make_files_expander <- function(tmpname, list_content, compare_to_va
   tot
 }
 
-
-## from [a,b] to "a,b"
+###############################################
+#' from [a,b] to "a,b"
 shellscript_make_commalist <- function(f) {
   stringr::str_flatten(f, collapse = ",")
 }
@@ -61,6 +64,9 @@ shellscript_make_bash_array <- function(variable, vals){
 
 
 
+###############################################
+#' 
+#' 
 shellscript_split_arr_into_list_randomly <- function(arr, num_divide){
   set.seed(666)
   shard_assignment_for_cell <- sample(1:num_divide, length(arr), replace = TRUE)
@@ -75,6 +81,9 @@ shellscript_split_arr_into_list_randomly <- function(arr, num_divide){
 
 
 
+###############################################
+#' 
+#' 
 shellscript_set_tempdir <- function(bascet_instance){
   paste0("BASCET_TEMPDIR=",GetBascetTempDir(bascet_instance))
 }
@@ -84,7 +93,9 @@ shellscript_set_tempdir <- function(bascet_instance){
 
 
 
-
+###############################################
+#' 
+#' 
 shellscript_make_one_file_expander <- function(tmpname, list_lines) {
   script_lines <- c(
     paste0(tmpname,"=$(mktemp)"),
@@ -100,6 +111,21 @@ shellscript_make_one_file_expander <- function(tmpname, list_lines) {
 
 
 
+
+
+###############################################
+#' Create a piece of script to exit a job early if file exists
+#' 
+#' @return script 
+helper_cancel_job_if_file_exists <- function(fvar) {
+  c(
+    paste0(
+      "if [ -f",fvar,"]; then"),
+    "  echo \"Skipping job as the output exists already\"",
+    "  exit 0",
+    "fi"
+  )
+}
 
 
 

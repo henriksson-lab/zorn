@@ -383,6 +383,11 @@ BascetAlignToReference <- function(
   outputFilesBAMunsorted <- make_output_shard_names(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
   outputFilesBAMsorted   <- make_output_shard_names(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
+  ### What files to look for if to avoid overwriting
+  outputFilesFinal <- outputFilesBAMunsorted
+  if(do_sort){
+    outputFilesFinal <- outputFilesBAMsorted
+  }
   
   ### Verify that the input is FASTQ. check what type
   if(!is_fastq(inputFiles_R1[1])) {
@@ -409,6 +414,10 @@ BascetAlignToReference <- function(
     shellscript_make_bash_array("files_in_r2", inputFiles_R2),
     shellscript_make_bash_array("files_out_unsorted", outputFilesBAMunsorted),
     shellscript_make_bash_array("files_out_sorted", outputFilesBAMsorted),
+    shellscript_make_bash_array("files_out_final", outputFilesFinal),
+
+    ### Abort early if needed    
+    if(!overwrite) helper_cancel_job_if_file_exists("${files_out_final[$TASK_ID]}"),
     
     ### For alignment
     paste(
@@ -421,7 +430,7 @@ BascetAlignToReference <- function(
       "-t", numLocalThreads,
       "| ", bascet_instance@bin, "pipe-sam-add-tags",
       "| samtools view -b -o",
-      "${files_out_unsorted[$TASK_ID]}",       #Each input means one output /////////// TODO this is a SAM-file. should be BAM!
+      "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
       "\""
     )
   )
@@ -452,6 +461,7 @@ BascetAlignToReference <- function(
       )      
     )
   }
+  
   
   print(cmd)
   
@@ -509,6 +519,10 @@ BascetBam2Fragments <- function(
         shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in", inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
+        
+        ### Abort early if needed    
+        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        
         paste(
           bascet_instance@prepend_cmd,
           bascet_instance@bin, 
@@ -562,6 +576,10 @@ BascetCountChrom <- function(
         shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in", inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
+        
+        ### Abort early if needed    
+        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        
         paste(
           bascet_instance@prepend_cmd,
           bascet_instance@bin, 

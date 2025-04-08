@@ -187,6 +187,10 @@ BascetGetRaw <- function(
         shellscript_make_bash_array("libnames",rawmeta$prefix),
         shellscript_make_bash_array("files_out",outputFilesComplete),
         shellscript_make_bash_array("files_out_incomplete",outputFilesIncomplete),
+        
+        ### Abort early if needed    
+        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        
         paste(
           bascet_instance@prepend_cmd,
           bascet_instance@bin, 
@@ -283,8 +287,12 @@ BascetShardify <- function(
       jobname = "Z_shardify",
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
-        shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
         shellscript_make_bash_array("files_out", outputFiles),
+        
+        ### Abort early if needed    
+        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        
+        shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
         paste(
           bascet_instance@prepend_cmd,
           bascet_instance@bin,
@@ -375,9 +383,13 @@ BascetMapTransform <- function(
       jobname = "Z_transform",
       cmd = c(
         shellscript_set_tempdir(bascet_instance),
-        if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
+        
+        ### Abort early if needed    
+        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        
+        if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
         paste(
           bascet_instance@prepend_cmd,
           bascet_instance@bin, 
