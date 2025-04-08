@@ -27,6 +27,8 @@ navbar:
           href: articles/clustering.html
         - text: "De novo KMER-based workflow"
           href: articles/kmer.html
+        - text: "Genome annotation"
+          href: articles/genome_annotation.html
         - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html
@@ -34,7 +36,6 @@ navbar:
           href: articles/slurm.html
         - text: "For developers"
           href: articles/for_developers.html
-          
     - text: FAQ
       href: articles/faq.html
     - text: "Reference"

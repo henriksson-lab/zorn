@@ -1,0 +1,42 @@
+---
+title: "Genome annotation tools"
+output:
+  html_document:
+    theme: united
+    df_print: kable
+  pdf_document: default
+---
+
+
+
+# QUAST
+
+
+
+
+# Bakta
+
+
+```{r, eval=F, echo=T}
+
+#do stuff to download database
+
+```
+
+
+You can run then run Bakta on all cells using 
+
+[(SLURM-compatible step)](slurm.html)
+
+```{r, eval=F, echo=T}
+### ....
+BascetMapCellBakta(
+  bascetRoot,
+  db = "....",
+  runner=bascet_runner,
+  bascet_instance=bascet_instance
+)
+```
+
+
+
