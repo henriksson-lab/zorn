@@ -21,9 +21,11 @@ BascetMapCell <- function(
     withfunction, 
     inputName, 
     outputName, 
-    runner,
     args=list(),
-    bascet_instance=bascet_instance.default){
+    overwrite=TRUE,
+    runner,
+    bascet_instance=bascet_instance.default
+){
   
   #Figure out input and output file names  
   inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
@@ -35,44 +37,46 @@ BascetMapCell <- function(
   
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
   
-  #Build the command - custom arguments
-  cmd <- c()
-  for(key in names(args)){
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Build the command - custom arguments
+    cmd <- c()
+    for(key in names(args)){
+      
+      #Escape value
+      val <- args[[key]]
+      val <- stringr::str_replace_all(val,stringr::fixed("\""),"\\\"")
+      
+      #Add argument
+      cmd <- c(
+        cmd,
+        paste0("export ",key,"=\"",val,"\"")
+      )
+    }
     
-    #Escape value
-    val <- args[[key]]
-    val <- stringr::str_replace_all(val,stringr::fixed("\""),"\\\"")
-    
-    #Add argument
+    #Build the command - the rest
     cmd <- c(
       cmd,
-      paste0("export ",key,"=\"",val,"\"")
+      shellscript_set_tempdir(bascet_instance),
+      shellscript_make_bash_array("files_in",inputFiles),
+      shellscript_make_bash_array("files_out",outputFiles),
+      paste(
+        bascet_instance@prepend_cmd,
+        bascet_instance@bin, 
+        "mapcell",
+        "-t $BASCET_TEMPDIR",
+        "-i ${files_in[$TASK_ID]}",
+        "-o ${files_out[$TASK_ID]}",
+        "-s", withfunction)
     )
+    
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = paste0("bascet_map_",withfunction),
+      cmd = cmd,
+      arraysize = num_shards
+    )      
   }
-  
-  #Build the command - the rest
-  cmd <- c(
-    cmd,
-    shellscript_set_tempdir(bascet_instance),
-    shellscript_make_bash_array("files_in",inputFiles),
-    shellscript_make_bash_array("files_out",outputFiles),
-    paste(
-      bascet_instance@prepend_cmd,
-      bascet_instance@bin, 
-      "mapcell",
-      "-t $BASCET_TEMPDIR",
-      "-i ${files_in[$TASK_ID]}",
-      "-o ${files_out[$TASK_ID]}",
-      "-s", withfunction)
-  )
-  
-  #Run the job
-  RunJob(
-    runner = runner, 
-    jobname = paste0("bascet_map_",withfunction),
-    cmd = cmd,
-    arraysize = num_shards
-  )  
 }
 
 
