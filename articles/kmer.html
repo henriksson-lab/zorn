@@ -42,6 +42,7 @@
     <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/kmer.html">De novo KMER-based workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
@@ -97,7 +98,7 @@ accordingly.</p>
 <span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">kmer_hist</span> <span class="op">&lt;-</span> <span class="fu">BascetReadMinhashHistogram</span><span class="op">(</span><span class="va">bascetRoot</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">kmer_hist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetReadMinhashHistogram.html">BascetReadMinhashHistogram</a></span><span class="op">(</span><span class="va">bascetRoot</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">kmer_hist</span><span class="op">$</span><span class="va">rank</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">kmer_hist</span><span class="op">)</span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span><span class="va">kmer_hist</span><span class="op">[</span><span class="va">kmer_hist</span><span class="op">$</span><span class="va">cnt</span><span class="op">&gt;</span><span class="fl">2</span>,<span class="op">]</span>, <span class="fu">aes</span><span class="op">(</span><span class="va">rank</span>, <span class="va">cnt</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>

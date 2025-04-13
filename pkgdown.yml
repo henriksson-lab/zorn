@@ -9,6 +9,7 @@ articles:
   faq: faq.html
   fileformats: fileformats.html
   for_developers: for_developers.html
+  genome_annotation: genome_annotation.html
   get_started: get_started.html
   install: install.html
   isolates: isolates.html
@@ -16,7 +17,9 @@ articles:
   kraken: kraken.html
   map_scripts: map_scripts.html
   slurm: slurm.html
-last_built: 2025-04-08T07:38Z
+  snp_analysis: snp_analysis.html
+  tcr_analysis: tcr_analysis.html
+last_built: 2025-04-13T14:45Z
 urls:
   reference: https://henriksson-lab.github.io/zorn/reference
   article: https://henriksson-lab.github.io/zorn/articles

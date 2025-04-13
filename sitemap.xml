@@ -8,6 +8,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/articles/faq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/fileformats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/for_developers.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/genome_annotation.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/get_started.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/index.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/install.html</loc></url>
@@ -16,6 +17,8 @@
 <url><loc>https://henriksson-lab.github.io/zorn/articles/kraken.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/map_scripts.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/slurm.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/snp_analysis.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/tcr_analysis.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/authors.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/index.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/AggregateMinhashes.html</loc></url>
@@ -27,26 +30,35 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignmentToBigwig.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetBam2Fragments.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCellNames.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetComputeCountSketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetComputeMinhash.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountChrom.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFeaturiseKMC.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWA.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeSTAR.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetInstance.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetListFilesForCell.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMakeKrakenCountMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMakeMinhashHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCell.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellAriba.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellBakta.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryKMC.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadFile.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadMinhashHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunKraken.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetShardify.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/ChooseInformativeKMERs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ChromToSpeciesCount.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CountGrangeFeatures.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/DetectRawFileMeta.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/DownloadDatabaseAMRfinder.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/DownloadDatabaseAriba.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/DownloadDatabaseBakta.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/FragmentCountsPerChrom.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/FragmentCountsPerChromAssay.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/FragmentsToSignac.html</loc></url>
@@ -64,6 +76,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadBascetCountMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadBascetKrakenMatrix.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/ReadBascetKrakenMatrix_one.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/SetTaxonomyNamesFeatures.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/SlurmRunner.html</loc></url>
@@ -77,6 +90,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/detect_shards_for_file.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/get_fastq_R2_from_R1.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/helper_cancel_job_if_file_exists.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/index.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is_bam_paired_alignment.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is_fastq.html</loc></url>
@@ -84,6 +98,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/make_output_shard_names.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/new_no_job.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscript_make_bash_array.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/shellscript_make_commalist.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/template_BascetFunction.html</loc></url>
 </urlset>
 
