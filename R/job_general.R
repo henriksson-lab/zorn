@@ -67,8 +67,6 @@ NoRunner <- function(show_script=FALSE){
 }
 
 
-
-
 #' @export
 setMethod(
   f = "RunJob",
@@ -78,8 +76,6 @@ setMethod(
     new_no_job()
   }
 )
-
-
 
 
 #' @export

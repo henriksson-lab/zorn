@@ -25,6 +25,7 @@ Imports:
     Signac,
     Matrix (>= 1.5-0),
     MatrixGenerics (>= 1.10.0),
+    MatrixExtra (>= 0.1.15),
     ggplot2,
     processx,
     progress,
@@ -48,3 +49,5 @@ Collate:
   'refgenome.R'
   'kraken.R'
   'container.R'
+  'ext_tools.R'
+  'tcr.R'

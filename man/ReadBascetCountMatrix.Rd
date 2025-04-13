@@ -2,16 +2,15 @@
 % Please edit documentation in R/count_kmer.R
 \name{ReadBascetCountMatrix}
 \alias{ReadBascetCountMatrix}
-\title{Read a count matrix as produced by Bascet (hdf5 format)}
+\title{Read a count matrix as produced by Bascet (hdf5 format).
+This can be output from both BascetQueryFq and BascetCountChrom}
 \usage{
-ReadBascetCountMatrix(fname)
-}
-\arguments{
-\item{fname}{Full name of the hdf5 count matrix}
+ReadBascetCountMatrix(bascetRoot, inputName)
 }
 \value{
 Count matrix as sparseMatrix
 }
 \description{
-Read a count matrix as produced by Bascet (hdf5 format)
+Read a count matrix as produced by Bascet (hdf5 format).
+This can be output from both BascetQueryFq and BascetCountChrom
 }

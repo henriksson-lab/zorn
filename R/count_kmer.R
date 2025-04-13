@@ -153,22 +153,77 @@ BascetQueryKMC <- function(
 
 
 ###############################################
-#' Read a count matrix as produced by Bascet (hdf5 format)
+#' Read a count matrix as produced by Bascet (hdf5 format).
+#' This can be output from both BascetQueryFq and BascetCountChrom
 #' 
-#' @param fname Full name of the hdf5 count matrix 
 #' @return Count matrix as sparseMatrix
 #' @export
 ReadBascetCountMatrix <- function(
-    fname
+    bascetRoot, 
+    inputName
 ){
   print("Loading HDF5 file")
+ 
+  
+  #Figure out input file names  
+  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles <- file.path(bascetRoot, input_shards)
+  if(tools::file_ext(inputFiles[1])!="hd5"){
+    stop("Wrong input format. should be hd5")
+  }
+  
+  #Load individual matrices. Sizes may not match
+  list_mat <- list()
+  for(f in inputFiles){
+    mat <- ReadBascetCountMatrix_one(f)
+    #print(dim(mat))
+    #print(colnames(mat))
+#    print(table(colnames(mat)))
+    list_mat[[f]] <- mat
+  }
+
+  #Find union of features  
+  all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
+  print(all_colnames)
+  num_col <- length(all_colnames)
+  map_name_to_i <- data.frame(row.names = all_colnames, ind=1:length(all_colnames))
+  print(map_name_to_i)
+  
+  #Make sizes compatible
+  list_resized_mat <- list()
+  for(f in inputFiles){
+    mat <- list_mat[[f]]
+    new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "R", dtype = "d")
+    rownames(new_mat) <- rownames(mat)
+    colnames(new_mat) <- all_colnames
+    #new_mat[1:nrow(mat), colnames(mat)] <- MatrixExtra::as.csr.matrix(mat)
+    #print(map_name_to_i[colnames(mat),])
+    new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column names!
+   # print(dim(new_mat))
+    list_resized_mat[[f]] <- new_mat
+  }
+  
+  #Concatenate matrices
+  do.call(rbind, list_resized_mat) #TODO check that above worked properly!
+}
+
+
+
+ReadBascetCountMatrix_one <- function(
+    fname
+){
+  #print("Loading HDF5 file")
   h5f <- rhdf5::H5Fopen(fname)
   indices <- h5f$X$indices+1
   indptr <-  h5f$X$indptr
   dat <- h5f$X$data
   shape <- h5f$X$shape
-
-  print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
+  
+  #print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
   mat <- Matrix::sparseMatrix(  
     j=indices, 
     p=indptr,
@@ -183,6 +238,8 @@ ReadBascetCountMatrix <- function(
   
   t(mat)
 }
+
+
 
 
 ################################################################################
@@ -333,6 +390,46 @@ if(FALSE){
 
 
 
+
+
+###############################################
+#' Compute count sketch for each cell.
+#' This is a thin wrapper around BascetMapCell
+#' 
+#' @inheritParams template_BascetFunction
+#' @return TODO
+#' @export
+BascetComputeCountSketch <- function( 
+    bascetRoot, 
+    inputName="filtered", 
+    outputName="countsketch", 
+    #includeCells=NULL,
+    overwrite=FALSE,
+    max_reads=100000,  #for 5M genome, 150x2 reads, this is 6x coverage
+    kmer_size=31,
+    sketch_size=5000,
+    runner,
+    bascet_instance=bascet_instance.default
+){
+  BascetMapCell(
+    bascetRoot=bascetRoot, 
+    withfunction="_countsketch_fq", 
+    inputName=inputName, 
+    outputName=outputName,
+    #includeCells=includeCells
+    args = list(
+      KMER_SIZE=kmer_size,
+      SKETCH_SIZE=sketch_size,
+      MAX_READS=max_reads
+    ),
+    overwrite=overwrite,
+    runner=runner,
+    bascet_instance=bascet_instance)
+}
+
+
+
+
 ###############################################
 #' Compute minhashes for each cell.
 #' This is a thin wrapper around BascetMapCell
@@ -346,6 +443,8 @@ BascetComputeMinhash <- function(
     outputName="minhash", 
     #includeCells=NULL,
     overwrite=FALSE,
+    max_reads=100000,  #This is most likely enough to get an overall histogram
+    kmer_size=31,
     runner,
     bascet_instance=bascet_instance.default
 ){
@@ -355,6 +454,10 @@ BascetComputeMinhash <- function(
     inputName=inputName, 
     outputName=outputName,
     #includeCells=includeCells
+    args = list(
+      KMER_SIZE=kmer_size,
+      MAX_READS=max_reads
+    ),
     overwrite=overwrite,
     runner=runner,
     bascet_instance=bascet_instance)
@@ -446,6 +549,7 @@ BascetQueryFq <- function(
     inputName="filtered",
     outputName="kmer_counts", 
     useKMERs,
+    max_reads=1000000, 
     runner,
     bascet_instance=bascet_instance.default
 ){
@@ -484,6 +588,7 @@ BascetQueryFq <- function(
           bascet_instance@bin, 
           "query-fq",
           "-t $BASCET_TEMPDIR",
+          "-m ", as.character(max_reads),
           "-f $KMERFILE",
           "-i ${files_in[$TASK_ID]}",
           "-o ${files_out[$TASK_ID]}"
@@ -501,12 +606,20 @@ BascetQueryFq <- function(
 
 
 
-
+###############################################
+#' Read histogram of KMERs, the output of BascetMakeMinhashHistogram
+#' 
+#' @return KMER histogram
+#' @export
 BascetReadMinhashHistogram <- function(
     bascetRoot,
     inputName="minhash_hist.csv"
 ){
-  dat <- as.data.frame(data.table::fread(file.path(bascetRoot,"minhash_hist.csv")))
+  fname <- file.path(bascetRoot,inputName)
+  if(!file.exists(fname)) {
+    stop(paste("File is missing:",fname))
+  }
+  dat <- as.data.frame(data.table::fread(fname))
   colnames(dat) <- c("kmer","cnt")
   dat <- dat[order(dat$cnt, decreasing = TRUE),,drop=FALSE]
   dat
@@ -516,6 +629,39 @@ BascetReadMinhashHistogram <- function(
 
 
 
+
+
+
+
+###############################################
+#' Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range
+#' 
+#' @param fname description
+#' @param num_pick description
+#' @param minfreq description
+#' @param maxfreq description
+#' @return List of KMERs
+#' @export
+ChooseInformativeKMERs <- function(
+    kmer_hist,
+    num_pick=1000, 
+    minfreq=0.01, 
+    maxfreq=0.10
+) {
+  
+  ## Possibly expensive to get them all... is the total count stored somewhere? can we sample?
+  kmer_hist <- kmer_hist[order(kmer_hist$cnt),]
+  num_kmer <- nrow(kmer_hist)
+  
+  all_kmer <- kmer_hist$kmer[round(num_kmer*minfreq):round(num_kmer*maxfreq)]
+  
+  if(length(all_kmer)<num_pick){
+    stop(paste("Cannot pick",num_pick," KMERS; only",length(all_kmer),"pass frequency criteria"))  
+  }
+  
+  set.seed(0)
+  sample(all_kmer, num_pick)
+}
 
 
 

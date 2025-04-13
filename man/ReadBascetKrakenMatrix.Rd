@@ -4,7 +4,7 @@
 \alias{ReadBascetKrakenMatrix}
 \title{Read a KRAKEN2 count matrix as produced by Bascet (hdf5 format)}
 \usage{
-ReadBascetKrakenMatrix(fname)
+ReadBascetKrakenMatrix(bascetRoot, inputName = "kraken")
 }
 \arguments{
 \item{fname}{Full name of the HDF5 count matrix file}

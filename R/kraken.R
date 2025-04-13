@@ -157,7 +157,7 @@ BascetMakeKrakenCountMatrix <- function(
   }
   inputFiles <- file.path(bascetRoot, input_shards)
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "counts.hdf5", num_shards) 
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "kraken5", num_shards) 
   
   if(bascet_check_overwrite_output(outputFiles, overwrite)) {
     #Run the job
@@ -198,19 +198,54 @@ BascetMakeKrakenCountMatrix <- function(
 #' @return Counts as a sparseMatrix
 #' @export
 ReadBascetKrakenMatrix <- function(
+    bascetRoot,
+    inputName="kraken"
+){
+  #Figure out input file names  
+  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles <- file.path(bascetRoot, input_shards)
+  
+  #Load individual matrices. these may not have compatible sizes
+  list_mat <- list()
+  for(f in inputFiles){
+    mat <- ReadBascetKrakenMatrix_one(f)
+    list_mat[[f]] <- mat
+  }
+  
+  ## Resize the matrices to have matching number of rows.
+  ## Could also assemble them at this step if faster (probably not)
+  max_row <- max(sapply(list_mat, nrow))
+  list_resized_mat <- list()
+  for(f in inputFiles){
+    mat <- list_mat[[f]]
+    new_mat <- MatrixExtra::emptySparse(nrow = max_row, ncol = ncol(mat), format = "R", dtype = "d")
+    new_mat[1:nrow(mat), 1:ncol(mat)] <- mat
+    rownames(new_mat) <- rownames(mat)
+    colnames(new_mat) <- colnames(mat)
+    list_resized_mat[[f]] <- new_mat
+  }
+
+  all_mat <- do.call(cbind, list_resized_mat)
+  all_mat
+}
+
+
+###############################################
+#' Internal function, to load a single kraken matrix
+ReadBascetKrakenMatrix_one <- function(
     fname
 ){
-  
-  #fname <- "/husky/henriksson/atrandi/wgs_miseq2/kraken_count.hdf5"
-  #print(fname)
-  #print("Loading HDF5 file")
   h5f <- rhdf5::H5Fopen(fname)
   indices <- h5f$X$indices+1
   indptr <-  h5f$X$indptr
   dat <- h5f$X$data
   shape <- h5f$X$shape
   
-  print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
+  #print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
   mat <- Matrix::sparseMatrix(  
     j=indices, 
     p=indptr,
@@ -221,12 +256,12 @@ ReadBascetKrakenMatrix <- function(
   rownames(mat) <- h5f$obs$`_index`
   
   rhdf5::H5close()
-
+  
   mat <- t(mat)
   ##Note that taxid 0 is added, but with index 1 in R. Thus need to remove the first column
   unident <- mat[-1,]
   mat <- mat[-1,]
-#  dim(mat)
+  #  dim(mat)
 }
 
 
