@@ -355,17 +355,14 @@ detect_shards_for_file <- function(
   all_kraken <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","kraken_out", "$"))
   
   #TODO: rename to kraken5?
-  all_kraken_counts <- c(
-    stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","counts\\.hdf5", "$")), #remove in future
+  all_kraken_counts <- 
+    stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","counts\\.hdf5", "$")) | #remove in future
     stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","kraken5", "$"))  
-  )
-  
-  all_feature_counts <- c(
-    stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","hd5", "$")), #todo remove
+
+  all_feature_counts <- 
+    stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","hd5", "$")) | #todo remove
     stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","h5", "$"))  # better name?
-  )
-  
-  
+
   
   allfq <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","fq\\.gz", "$"))
   allfq_r1 <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","R1\\.fq.gz", "$"))

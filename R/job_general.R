@@ -105,6 +105,7 @@ setMethod(
   f = "WaitForJob",
   signature ="NoJob",
   definition = function(job) {
+    invisible()
   }
 )
 
@@ -117,6 +118,7 @@ setMethod(
   f = "CancelJob",
   signature ="NoJob",
   definition = function(job) {
+    invisible()
   }
 )
 
@@ -128,6 +130,6 @@ setMethod(
   f = "JobStatus",
   signature ="NoJob",
   definition = function(job) {
-    NULL
+    invisible()
   }
 )
