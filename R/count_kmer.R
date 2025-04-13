@@ -441,7 +441,7 @@ BascetComputeCountSketch <- function(
 BascetGatherCountSketch <- function( 
     bascetRoot, 
     inputName="countsketch", 
-    outputName="countsketch_mat", 
+    outputName="countsketch_mat.csv", 
     includeCells=NULL,
     overwrite=FALSE,
     runner,
