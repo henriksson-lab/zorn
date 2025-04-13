@@ -418,9 +418,9 @@ BascetComputeCountSketch <- function(
     outputName=outputName,
     #includeCells=includeCells
     args = list(
-      KMER_SIZE=kmer_size,
-      SKETCH_SIZE=sketch_size,
-      MAX_READS=max_reads
+      KMER_SIZE=format(kmer_size, scientific=FALSE),
+      SKETCH_SIZE=format(sketch_size, scientific=FALSE),
+      MAX_READS=format(max_reads, scientific=FALSE)
     ),
     overwrite=overwrite,
     runner=runner,
@@ -455,8 +455,8 @@ BascetComputeMinhash <- function(
     outputName=outputName,
     #includeCells=includeCells
     args = list(
-      KMER_SIZE=kmer_size,
-      MAX_READS=max_reads
+      KMER_SIZE=format(kmer_size, scientific=FALSE),
+      MAX_READS=format(max_reads, scientific=FALSE)
     ),
     overwrite=overwrite,
     runner=runner,
@@ -588,7 +588,7 @@ BascetQueryFq <- function(
           bascet_instance@bin, 
           "query-fq",
           "-t $BASCET_TEMPDIR",
-          "-m ", as.character(max_reads),
+          "-m ", format(max_reads, scientific=FALSE),
           "-f $KMERFILE",
           "-i ${files_in[$TASK_ID]}",
           "-o ${files_out[$TASK_ID]}"
@@ -600,8 +600,6 @@ BascetQueryFq <- function(
     new_no_job()
   }
 }
-
-
 
 
 
