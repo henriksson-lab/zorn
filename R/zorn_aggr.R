@@ -22,7 +22,7 @@ BascetMapCell <- function(
     inputName, 
     outputName, 
     args=list(),
-    overwrite=TRUE,
+    overwrite=FALSE,
     runner,
     bascet_instance=bascet_instance.default
 ){

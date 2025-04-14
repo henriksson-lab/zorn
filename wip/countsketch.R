@@ -8,9 +8,14 @@ map_len$name <- str_split_i(map_len$longname,"\\.", 1)
 rownames(map_len) <- map_len$name
 
 
+
+mat <- read.table("/husky/henriksson/atrandi/v2_wgs_novaseq1/countsketch_mat.csv", comment.char = "")
+
 #mat <- read.table("/home/mahogny/github/bascet/miseqdata/countsketch_mat.csv")
 mat <- read.table("/husky/henriksson/atrandi/simulated1/countsketch_mat.csv", comment.char = "")
 #TODO what if we don't produce "cells" from plasmids?
+
+
 
 ######## Break apart the input file
 cellid <- mat[,1]
@@ -23,10 +28,15 @@ rownames(Q) <- paste0("f",1:nrow(Q))
 
 
 ####### Read-depth normalized version of Q. but maybe better to normalize later after decomposition?
-Qnorm <- Q
-for(i in 1:ncol(Qnorm)){
-  Qnorm[,i] <- Qnorm[,i]/celldepth[i]
+normalize_Q <- function(Q){
+  Qnorm <- Q
+  for(i in 1:ncol(Q)){
+    Qnorm[,i] <- Qnorm[,i]/(10000*celldepth[i]) #factor to avoid too small numbers
+  }
+  Qnorm
 }
+Qnorm <- normalize_Q(Q)
+
 
 if(FALSE){
   #Makes no sense!
@@ -114,7 +124,7 @@ for(i in 1:nrow(cell_pos)){
 }
 
 
-
+#mean(celldepth>10000)
 
 library(umap)
 pc.umap <- umap(cell_norm)  #TODO exclude component1; only pick first 10 components?
@@ -148,6 +158,8 @@ toplot <- data.frame(
   y=pc.umap$layout[,2],
   len=map_len[celltype,]$len,
   ct=celltype)
+
+
 
 sqldf::sqldf("select len, ct, count(*) as cnt from toplot group by ct order by len")
 
@@ -185,3 +197,123 @@ ggplot(
 table(toplot$len)
 table(toplot$ct)
 
+
+
+
+
+
+################################################################################
+############### UMAP on Q directly -- for mock
+################################################################################
+
+head(Qnorm)
+Qnorm[1:10,1:10]
+
+mean(celldepth>100000)
+mean(celldepth<30000)
+keep_cells <- celldepth>200000
+keep_cells <- celldepth<30000
+mean(keep_cells)
+sum(keep_cells)
+
+library(umap)
+#pc.umap <- umap(t(Q))
+#pc.umap <- umap(t(Qnorm))  #same depth for now, so can ignore issue
+#pc.umap <- umap(t(Qnorm[1:10,]))  #first features only
+#pc.umap <- umap(t(Qnorm[1:20,keep_cells]), verbose=TRUE)  #first features only
+pc.umap <- umap(t(norm_redQ[,keep_cells]), verbose=TRUE)  
+
+
+toplot <- data.frame(
+  x=pc.umap$layout[,1], 
+  y=pc.umap$layout[,2],
+  depth=celldepth[keep_cells]
+)
+
+ggplot(
+  toplot, aes(x,y,color=log10(depth))) + 
+  geom_point() 
+
+
+#machine precision issues?
+#solve umap with division on the fly?
+
+
+
+
+
+
+
+
+
+
+########### Hadamard-like matrix
+
+#n
+
+if(FALSE){
+  numfeat <- 10
+  hadmat <- matrix(data = 0, ncol=nrow(Q), nrow=numfeat)
+  for(i in 1:numfeat){
+    hadmat[i,]
+  }
+}
+
+
+reduceQ <- function(Q, numfeat){
+  redQ <- matrix(data=0, ncol=ncol(Q), nrow=numfeat)
+  numblock <- nrow(Q)/numfeat
+  for(i in 1:numblock){
+    redQ <- redQ + Q[(1:numfeat)+(numfeat*(i-1)),]*sign((i%%2)-0.5)
+  }
+  colnames(redQ) <- colnames(Q)
+  redQ  
+}
+redQ <- reduceQ(Q, 1000)
+norm_redQ <- normalize_Q(redQ)
+
+
+
+################################################################################
+############### Seurat version
+################################################################################
+
+
+#put norm_redQ as PC
+
+#RunPCA
+#https://satijalab.org/seurat/reference/runpca
+
+#https://github.com/satijalab/seurat/blob/HEAD/R/dimensional_reduction.R
+
+## NN graph takes a lot of time for regular umap. seurat better?
+
+
+
+eduction.data <- CreateDimReducObject(
+  embeddings = cell.embeddings,
+  loadings = feature.loadings,
+  assay = assay,
+  stdev = sdev,
+  key = reduction.key,
+  misc = list(total.variance = total.variance)
+)
+
+
+
+
+
+
+
+pbmc <- CreateSeuratObject(counts = norm_redQ[,keep_cells], project = "pbmc3k", min.cells = 0, min.features = 0)
+#Warning: Data is of class matrix. Coercing to dgCMatrix.
+
+pbmc <- FindNeighbors(pbmc, dims = 1:10, reduction = )
+pbmc <- FindClusters(pbmc, resolution = 0.5)
+
+
+pbmc <- RunUMAP(pbmc, dims = 1:10)
+
+
+
+#TODO try cells with low coverage!!
