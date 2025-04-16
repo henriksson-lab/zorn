@@ -511,3 +511,84 @@ BarnyardPlotMatrix <- function(
 
 
 
+
+
+
+
+###############################################
+#' Run FASTP for each cell. Input must be in FASTQ file format
+#'
+#' @param useKrakenDB Path to KRAKEN2 database
+#' @export
+#' 
+BascetRunFASTP <- function(
+    bascetRoot,
+    numLocalThreads=1,
+    inputName="asfq", ######### should be able to take filtered and pipe to if needed  "filtered"  TODO
+    outputName="fastp",
+    overwrite=FALSE,
+    runner,
+    bascet_instance=bascet_instance.default
+){
+  
+  #Figure out input and output file names  
+  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles_R1 <- file.path(bascetRoot, input_shards)
+  
+  outputFiles_R1 <- make_output_shard_names(bascetRoot, outputName, "R1.fq.gz", num_shards) 
+  outputFiles_R2 <- make_output_shard_names(bascetRoot, outputName, "R2.fq.gz", num_shards) 
+
+  outputFiles_report_json <- make_output_shard_names(bascetRoot, outputName, "html", num_shards) 
+  outputFiles_report_html <- make_output_shard_names(bascetRoot, outputName, "json", num_shards) 
+  
+  ### Check if paired or not
+  is_paired <- is_paired_fastq(inputFiles_R1[1])
+  print(paste("Detect paired FASTQ:",is_paired))
+  
+  ### Figure out R2 names
+  if(is_paired){
+    inputFiles_R2 <- get_fastq_R2_from_R1(inputFiles_R1)
+  }
+  
+  
+  if(bascet_check_overwrite_output(outputFiles_R1, overwrite)) {
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = paste0("Z_fastp"),
+      cmd = c(
+        shellscript_set_tempdir(bascet_instance),
+        shellscript_make_bash_array("files_html",outputFiles_report_json),
+        shellscript_make_bash_array("files_json",outputFiles_report_html),
+        shellscript_make_bash_array("files_in_R1",inputFiles_R1),
+        if(is_paired) shellscript_make_bash_array("files_in_R2",inputFiles_R2),
+        shellscript_make_bash_array("files_out_R1",outputFiles_R1),
+        if(is_paired) shellscript_make_bash_array("files_out_R2",outputFiles_R2),
+        
+        ### Abort early if needed    
+        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        
+        paste(
+          bascet_instance@prepend_cmd,
+          "fastp",
+          "--thread", numLocalThreads,
+          "-h ${files_html[$TASK_ID]}",
+          "-j ${files_json[$TASK_ID]}",
+          "-i ${files_in_R1[$TASK_ID]}",
+          if(is_paired) "-I ${files_in_R2[$TASK_ID]}",
+          "-o ${files_out_R1[$TASK_ID]}",
+          if(is_paired) "-O ${files_out_R2[$TASK_ID]}"
+        )
+      ),
+      arraysize = num_shards
+    )  
+  } else {
+    new_no_job()
+  }
+}
+
+

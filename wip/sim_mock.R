@@ -39,27 +39,36 @@ simulate_one_cell <- function(ch, genome_name, num_read=1000, insert_max_size=80
  
 #ch <- as.character(allfa[1])
 
-simulate_all_cells <- function(outf, num_cells=1000, num_read=1000, insert_max_size=800){
-#  outf <- "/husky/henriksson/atrandi/simulated1/filtered.1.tirp"
-  file.remove(outf)
+simulate_all_cells <- function(allfa, outf, num_cells=1000, num_read=1000, insert_max_size=800, append=FALSE, finalize=TRUE, startseq=1){
+  if(!append){
+    file.remove(outf)
+  }
   for(cur_cell in 1:num_cells){
     print(cur_cell)
     for_genome <- runif(1, min = 1, max=length(allfa))
     
     df <- simulate_one_cell(
       as.character(allfa[for_genome]), 
-      genome_name = paste0(str_split_i(names(allfa),"\\.",1)[for_genome], "#", cur_cell),
+      genome_name = paste0(str_split_i(names(allfa),"\\.",1)[for_genome], "#", startseq+cur_cell),
       num_read = num_read,
       insert_max_size = insert_max_size
     )
     
     write.table(df, outf, row.names = FALSE, col.names = FALSE, sep="\t", quote = FALSE, append=TRUE)   
   }
+  if(finalize){
+    print("finalizing")
+    finalize_file(outf)
+  }
+}
+finalize_file <- function(outf){
   system(paste0("bgzip -f ",outf))
   system(paste0("tabix -f -p bed ",outf, ".gz"))  
 }
 
+
 simulate_all_cells(
+  allfa, 
   "/husky/henriksson/atrandi/simulated1/filtered.1.tirp",
   num_cells=1000,
   num_read=1000
@@ -68,15 +77,52 @@ simulate_all_cells(
 
 
 simulate_all_cells(
+  allfa, 
   "/husky/henriksson/atrandi/simulated1/filtered.1.tirp",
   num_cells=100,
   num_read=10000
 )
-#1M reads
+#1M reads total
 
 #idea: larger genomes, will this result in a more average vector, more toward the middle? likely!
 
 
 
 
+allfa_main <- allfa[str_length(allfa)>1000000]
 
+
+simulate_all_cells(
+  allfa_main, 
+  "/husky/henriksson/atrandi/simulated1/filtered.1.tirp",
+  num_cells=30,
+  num_read=5000,
+  startseq=1000
+#  finalize = FALSE
+)
+simulate_all_cells(
+  allfa_main, 
+  "/husky/henriksson/atrandi/simulated1/filtered.2.tirp",
+  num_cells=30,
+  num_read=10000,
+  startseq=2000
+#  append = TRUE
+#  finalize = FALSE
+)
+simulate_all_cells(
+  allfa_main, 
+  "/husky/henriksson/atrandi/simulated1/filtered.3.tirp",
+  num_cells=30,
+  num_read=30000,
+  startseq=3000
+#  append = TRUE,
+#  finalize = FALSE
+)
+simulate_all_cells(
+  allfa_main, 
+  "/husky/henriksson/atrandi/simulated1/filtered.4.tirp",
+  num_cells=10,
+  num_read=50000,
+  startseq=4000
+#  append = TRUE
+)

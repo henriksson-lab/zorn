@@ -47,53 +47,55 @@ aggr.quast <- function(
     bascet_instance
 ){
   
+  
+  ### For testing
   if(FALSE){
     bascetFile <- OpenBascet(bascetRoot,"quast")
-    #"quast.1.zip"
-    #    bascetFile()
-    cellID <- "A1_B5_H8_H10"
-    bascet_instance <- bascet_inst
+    #cellID <- "A1_B5_H8_H10"
+    cellID <- "_A2_D5_H8_D12"
+    bascet_instance <- bascet_instance.default
     
     foo <- BascetListFilesForCell(bascetFile,cellID)
     foo <- foo[foo$file!="cellmap.log",]
+    foo <- foo[foo$cell==cellID,]
     foo
-  }
-  
-  
-  if(FALSE){
+    
     #can find info here on e.g. if contigs where too short to be analyzed
     tmp <- BascetReadFile(bascetFile, cellID, "quast.log", as="tempfile", bascet_instance=bascet_instance)
     readLines(tmp)
   }
   
-  if(FALSE){
-    #General output of the script
-    tmp <- BascetReadFile(bascetFile, cellID, "cellmap.log", as="tempfile", bascet_instance=bascet_instance)
-    readLines(tmp)
-  }  
-  
-  
-  
-  #tmp <- BascetReadFile(bascetFile, cellID, "transposed_report2.tsv", as="tempfile", bascet_instance=bascet_instance) #how to detect error?
-  tmp <- BascetReadFile(bascetFile, cellID, "transposed_report.tsv", as="tempfile", bascet_instance=bascet_instance)
-  fcont <- readLines(tmp, n=2)
-  #dat <- read.table(tmp)
-  file.remove(tmp)
-  
-  dat <- data.frame(
-    row.names=stringr::str_split(fcont[1],"\t")[[1]],
-    value=stringr::str_split(fcont[2],"\t")[[1]]
+  #print(cellID)
+  tmp <- BascetReadFile(
+    bascetFile, 
+    cellID, 
+    "transposed_report.tsv", 
+    as="tempfile", 
+    bascet_instance=bascet_instance
   )
-  dat <- dat[-1,,drop=FALSE]
-  
-  rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
-  
-  #Arrange in the right format
-  dat <- t(dat)
-  
-  #TODO set data types to double whenever possible
-  
-  dat
+  if(!is.null(tmp)){
+    fcont <- readLines(tmp, n=2)
+    #dat <- read.table(tmp)
+    file.remove(tmp)
+    
+    dat <- data.frame(
+      row.names=stringr::str_split(fcont[1],"\t")[[1]],
+      value=stringr::str_split(fcont[2],"\t")[[1]]
+    )
+    dat <- dat[-1,,drop=FALSE]
+    
+    rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
+    
+    #Arrange in the right format
+    dat <- t(dat)
+    
+    #TODO set data types to double whenever possible
+    
+    dat    
+  } else {
+    data.frame()
+  }
+
 }
 
 

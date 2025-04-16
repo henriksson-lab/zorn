@@ -160,7 +160,7 @@ BascetReadFile <- function(
       #cargo +nightly run extract -i /Users/mahogny/Desktop/rust/hack_robert/testdata/quast.zip  -o /Users/mahogny/Desktop/rust/hack_robert/testdata/out.temp -b a  -f report.txt
       tname.out <- tempfile()
       
-      cmd = paste(
+      cmd <- paste(
         bascet_instance@prepend_cmd,
         bascet_instance@bin, 
         "extract -i",name_of_zip, 
@@ -169,11 +169,14 @@ BascetReadFile <- function(
         "-b",cellID,
         "-f",filename
       )
-      system(cmd)#, show.output.on.console = TRUE)
-      #      files_in[$TASK_ID] --o files_out[$TASK_ID] -f ", withfunction),
+      ret <- system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE) #returns 0 if ok
+      #print(ret)
+      if(ret==1){
+        print(paste("cell", cellID,": Failed to get file", filename))
+        return(NULL)
+      }
     }
-    
-    
+
     #Return temp file location
     return(tname.out)
   } else {

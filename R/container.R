@@ -51,7 +51,7 @@ BascetInstance <- function(
 #' @return A Bascet instance
 #' @export
 bascet_instance.default <- BascetInstance(
-  bin="/home/mahogny/jupyter/bascet/target/debug/robert",
+  bin="/home/mahogny/jupyter/bascet/target/debug/bascet",
   tempdir="./"
 )
 

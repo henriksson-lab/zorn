@@ -86,6 +86,8 @@ setMethod(
       #print(tfile)
       file.remove(tfile) #assumes process has started. can we do better?
       
+      #Return no job, as it is done already
+      new_no_job()
     } else {
       print("Using separate process")
       write(tfile,paste("\n", "rm", tfile), append=TRUE)  ##this will make the script delete itself at the end ; or put command first?

@@ -4,7 +4,7 @@
 ################## Preprocessing with Bascet/Zorn ##############################
 ################################################################################
 
-bascet_runner <- LocalInstance(direct = TRUE, show_script=TRUE)
+bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
 bascetRoot = "/husky/henriksson/atrandi/wgs_miseq2/"
 #bascetRoot = "/husky/henriksson/atrandi/wgs_novaseq3/"
 rawmeta <- DetectRawFileMeta("/husky/fromsequencer/240903_wgs_atcc2_miseq/raw")

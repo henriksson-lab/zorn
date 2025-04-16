@@ -93,8 +93,29 @@ BascetMapCell <- function(
 #' @return TODO
 #' @export
 MapListAsDataFrame <- function(mylist){
+  
+  if(FALSE){
+    mylist <- list()
+    mylist[["a"]] <- data.frame(x=6)
+    mylist[["b"]] <- data.frame(x=3)
+#    mylist[["c"]] <- data.frame()
+    mylist[["c"]] <- NULL
+  }
+  
+  #Make table
   out <- do.call(rbind, mylist)
-  rownames(out) <- names(mylist)
+
+  #Some functions return multiple, or no, lines. figure out count
+  num_entry <- sapply(mylist, nrow)
+  final_row_name <- rep(-1, nrow(out))
+  cur_row <- 1
+  for(i in 1:length(num_entry)){
+    final_row_name[cur_row:(cur_row-1+num_entry[i])] <- i
+    cur_row <- cur_row+num_entry[i]
+  }
+  
+  #Set row names based on index
+  rownames(out) <- names(mylist)[final_row_name]    #names(mylist)[!is.null(mylist)]
   out
 }
 
@@ -113,8 +134,9 @@ BascetAggregateMap <- function(
     bascetRoot, 
     bascetName, 
     aggrFunction,
+    include_cells=NULL,
     showProgress=TRUE,
-    bascet_instance
+    bascet_instance=bascet_instance.default
 ){
   
   #Get file coordinates of all objects in zip file
@@ -128,9 +150,14 @@ BascetAggregateMap <- function(
     pbar$tick(0)
   }
   
+  #Loop over all cells by default
+  if(is.null(include_cells)){
+    include_cells <- bascetFile@cellmeta$cell
+  }
+  
   #Loop over all files in the bascet
   output <- list()
-  for(cellname in bascetFile@cellmeta$cell){
+  for(cellname in include_cells){
     output[[cellname]] <- aggrFunction(bascetFile, cellname, bascet_instance)
     if(showProgress){
       pbar$tick()
