@@ -29,35 +29,49 @@ it, these are only default values, such as which partition to submit to, and
 the name of your account. You can also set a permissible default timeout time:
 
 ```{r, eval=F, echo=T}
-slurm_runner <- SlurmRunner(
+## Set the new default runner. Note that the name should not be changed!
+bascet_runner.default <- SlurmRunner(
   partition="shared", 
   account="name_of_your_project", 
   time="0-24:00:00"
 )
+
+## get a Bascet instance as usual; this is a separate concern from the runner
+bascet_instance.default <- getBascetSingularityImage(store_at="~/")
 ```
 
 
 You then make calls to Bascet as in all other tutorials. The difference is
 that you pass a reference to SLURM. You also pass job-specific settings related
-to the number of CPUs and memory per node. The way it is done here, the default
-settings are used but then overridden:
+to the number of CPUs and memory per node. 
+
+```{r, eval=F, echo=T}
+my_job <- BascetGetRawAtrandiWGS(
+  bascetRoot,
+  rawmeta,
+  #runner= # the default is to take whatever is set in bascet_runner.default
+)
+```
+
+You likely want to tune each SLURM job a bit in terms of how many cores are used.
+This is the suggested method, where only relevant settings are overridden on a per-job basis:
 
 ```{r, eval=F, echo=T}
 my_job <- BascetGetRawAtrandiWGS(
   bascetRoot,
   rawmeta,
   runner=SlurmRunner(
-    slurm_runner, 
+    bascet_runner.default, 
     ncpu=5, 
     mem="5g")
 )
 ```
 
-The major difference here is that this function will now return immediately (asynchronous execution),
+The major difference vs a typical local runner is that this function will now return immediately (asynchronous execution),
 compared to the usual local runner. This means that you can keep working in R
 until the task is done, or set up parallel jobs (which then should be named differently).
 
-todo -- runner can be made to block by default
+todo -- runner can be made to block by default; add option
 
 If you want to schedule a series of tasks, as is common, then you can use the WaitForJob
 command to pause R until done. Putting this in-between commands will let you batch

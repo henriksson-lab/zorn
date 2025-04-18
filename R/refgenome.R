@@ -272,6 +272,7 @@ BascetFilterAlignment <- function(
     inputName, 
     outputName,
     keep_mapped=FALSE,
+    overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascet_instance=GetDefaultBascetInstance()
 ){
