@@ -101,37 +101,49 @@ recommend you to do it, these are only default values, such as which
 partition to submit to, and the name of your account. You can also set a
 permissible default timeout time:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">slurm_runner</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co">## Set the new default runner. Note that the name should not be changed!</span></span>
+<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
 <span>  partition<span class="op">=</span><span class="st">"shared"</span>, </span>
 <span>  account<span class="op">=</span><span class="st">"name_of_your_project"</span>, </span>
 <span>  time<span class="op">=</span><span class="st">"0-24:00:00"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## get a Bascet instance as usual; this is a separate concern from the runner</span></span>
+<span><span class="va">bascet_instance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>store_at<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span></span></code></pre></div>
 <p>You then make calls to Bascet as in all other tutorials. The
 difference is that you pass a reference to SLURM. You also pass
-job-specific settings related to the number of CPUs and memory per node.
-The way it is done here, the default settings are used but then
-overridden:</p>
+job-specific settings related to the number of CPUs and memory per
+node.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_job</span> <span class="op">&lt;-</span> <span class="fu">BascetGetRawAtrandiWGS</span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="va">rawmeta</span>,</span>
+<span>  <span class="co">#runner= # the default is to take whatever is set in bascet_runner.default</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>You likely want to tune each SLURM job a bit in terms of how many
+cores are used. This is the suggested method, where only relevant
+settings are overridden on a per-job basis:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_job</span> <span class="op">&lt;-</span> <span class="fu">BascetGetRawAtrandiWGS</span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  <span class="va">rawmeta</span>,</span>
 <span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
-<span>    <span class="va">slurm_runner</span>, </span>
+<span>    <span class="va">bascet_runner.default</span>, </span>
 <span>    ncpu<span class="op">=</span><span class="fl">5</span>, </span>
 <span>    mem<span class="op">=</span><span class="st">"5g"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The major difference here is that this function will now return
-immediately (asynchronous execution), compared to the usual local
-runner. This means that you can keep working in R until the task is
-done, or set up parallel jobs (which then should be named
+<p>The major difference vs a typical local runner is that this function
+will now return immediately (asynchronous execution), compared to the
+usual local runner. This means that you can keep working in R until the
+task is done, or set up parallel jobs (which then should be named
 differently).</p>
-<p>todo – runner can be made to block by default</p>
+<p>todo – runner can be made to block by default; add option</p>
 <p>If you want to schedule a series of tasks, as is common, then you can
 use the WaitForJob command to pause R until done. Putting this
 in-between commands will let you batch all the tasks. The main script,
 in charge of the control flow, should be run in <a href="https://github.com/tmux/tmux/wiki" class="external-link">tmux</a> or <a href="https://linuxize.com/post/how-to-use-linux-screen/" class="external-link">screen</a>, on
 a login node of your cluster.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">WaitForJob</span><span class="op">(</span><span class="va">my_job</span><span class="op">)</span> </span></code></pre></div>
 <p>You can press ctrl+c to end the waiting loop early.</p>
 </div>
