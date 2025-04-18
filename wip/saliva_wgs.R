@@ -658,7 +658,6 @@ GetDefaultBascetInstance()
 bascetRoot <- "/husky/henriksson/atrandi/v2_wgs_miseq2"
 bascetRoot <- "/husky/henriksson/atrandi/wgs_novaseq3"
 all_kmer <- AggregateMinhashes(bascetRoot) 
-#bascetFile <- OpenBascet(bascetRoot, "minhash")
 
 
 streamer <- extractstreamer_start(bascet_instance = bascet_instance)

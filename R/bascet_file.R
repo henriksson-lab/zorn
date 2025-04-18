@@ -571,7 +571,7 @@ extractstreamer_showtext <- function(p, fname) {
   newlines <- extractstreamer_read_one_line(p)
   n_lines <- as.integer(newlines)
   extractstreamer_read_n_lines(p, n_lines)
-  sile
+  invisible()
 }
 
 
