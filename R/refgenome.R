@@ -14,7 +14,7 @@
 #' @export
 is_bam_paired_alignment <- function(
     fname,
-    bascet_instance=bascet_instance.default
+    bascet_instance=GetDefaultBascetInstance()
 ){
 
   #Note: can also see this from the BAM header, but a real mess to parse out!
@@ -49,8 +49,8 @@ BascetIndexGenomeBWA <- function(
     bascetRoot, 
     genomeFile, 
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   if(!file.exists(genomeFile)){
@@ -93,8 +93,8 @@ BascetIndexGenomeSTAR <- function(
     gtfFile,
     outDir,
     numLocalThreads=10,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   if(!file.exists(fastaFile)){
@@ -200,8 +200,8 @@ BascetAlignmentToBigwig <- function(
     inputName="aligned", 
     outputName="pileup",
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names
@@ -272,8 +272,8 @@ BascetFilterAlignment <- function(
     inputName, 
     outputName,
     keep_mapped=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   
@@ -368,8 +368,8 @@ BascetAlignToReference <- function(
     outputNameBAMsorted="aligned", 
     do_sort=TRUE,
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  
@@ -497,8 +497,8 @@ BascetBam2Fragments <- function(
     inputName="aligned",
     outputName="fragments", 
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
@@ -554,8 +554,8 @@ BascetCountChrom <- function(
     inputName="aligned",
     outputName="chromcount", 
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
@@ -610,7 +610,7 @@ BascetCountChrom <- function(
 #' @export
 TabixGetFragmentsSeqs <- function(
     fragpath,
-    bascet_instance=bascet_instance.default
+    bascet_instance=GetDefaultBascetInstance()
 ) {
   system(paste(bascet_instance@prepend_cmd,"tabix -l ", fragpath), intern = TRUE)
 }
@@ -678,7 +678,7 @@ FragmentsToSignac <- function(
 #' @export
 FragmentCountsPerChrom <- function(
     chrom_assay,
-    bascet_instance=bascet_instance.default
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Figure out where the fragment file is

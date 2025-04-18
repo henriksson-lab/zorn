@@ -126,3 +126,35 @@ simulate_all_cells(
   startseq=4000
 #  append = TRUE
 )
+
+
+
+
+
+
+######################## write individual genomes as cells
+
+
+str_length(allfa_main)
+
+df <- data.frame(
+  name=names(allfa_main), #paste0(,"__",1:length(insert_r1)),
+  pos1=1,
+  pos2=1,
+  r1=as.character(allfa_main),
+  r2="",
+  q1="",
+  q2="",
+  umi=""
+)
+for(i in 1:nrow(df)){
+  df$q1 <- str_flatten(rep("F",str_length(df$r1[i])))
+}
+outf <- "/husky/henriksson/atrandi/simulated1/allgenome/filtered.1.tirp"
+write.table(df, outf, row.names = FALSE, col.names = FALSE, sep="\t", quote = FALSE)
+finalize_file(outf)
+
+
+
+
+

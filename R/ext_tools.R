@@ -16,8 +16,8 @@ BascetMapCellBakta <- function(
     db,
     #includeCells=NULL,
     overwrite=FALSE,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -49,8 +49,8 @@ BascetMapCellAriba <- function(
     db,
     #includeCells=NULL,
     overwrite=FALSE,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -80,7 +80,7 @@ BascetMapCellAriba <- function(
 DownloadDatabaseBakta <- function(
   dbdir,
   dbtype=c("light","full"),  #todo look up how to handle documentation for this
-  bascet_instance=bascet_instance.default
+  bascet_instance=GetDefaultBascetInstance()
 ) {
   if(file.exists(dbdir)) {
     print("Database already exists; skipping")
@@ -103,7 +103,7 @@ DownloadDatabaseBakta <- function(
 #' @export
 DownloadDatabaseAMRfinder <- function(
     dbdir,
-    bascet_instance=bascet_instance.default
+    bascet_instance=GetDefaultBascetInstance()
 ) {
   if(file.exists(dbdir)) {
     print("Database already exists; skipping")
@@ -129,7 +129,7 @@ DownloadDatabaseAMRfinder <- function(
 DownloadDatabaseAriba <- function(
     dbdir,
     ref=c("argannot", "card", "ncbi", "megares", "plasmidfinder", "resfinder", "srst2_argannot", "vfdb_core", "vfdb_full", "virulencefinder"),
-    bascet_instance=bascet_instance.default
+    bascet_instance=GetDefaultBascetInstance()
 ) {
   
   tmp <- tempfile()
@@ -157,11 +157,6 @@ DownloadDatabaseAriba <- function(
 
 # ariba getref ncbi out.ncbi
 # ariba prepareref -f out.ncbi.fa -m out.ncbi.tsv out.ncbi.prepareref
-
-
-
-
-
 
 # TODO aggregate scripts for outputs
 

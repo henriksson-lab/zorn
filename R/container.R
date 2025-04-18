@@ -57,6 +57,16 @@ bascet_instance.default <- BascetInstance(
 
 
 
+###############################################
+#' Get Bascet instance from global variable
+#' 
+#' @return A Bascet instance
+#' @export
+GetDefaultBascetInstance <- function(){
+  bascet_instance.default
+}
+
+
 
 ###############################################
 #' Get a temp directory to use; need to be created

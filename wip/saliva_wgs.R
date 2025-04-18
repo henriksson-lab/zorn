@@ -3,16 +3,19 @@
 ################## Preprocessing with Bascet/Zorn ##############################
 ################################################################################
 
-bascet_inst <- LocalInstance(direct = TRUE, show_script=TRUE)
-bascetRoot = "/husky/henriksson/atrandi/wgs_saliva1/"
+#bascet_inst <- LocalInstance(direct = TRUE, show_script=TRUE)
+bascet_runner.default <- LocalRunner(direct = TRUE, show_script=FALSE)
+bascet_instance.default <- BascetInstance(bin = "/home/mahogny/github/bascet/target/debug/bascet", tempdir = "/tmp/")
+bascet_instance.default <- getBascetSingularityImage("/home/mahogny/github/bascet/singularity/") #BascetInstance(bin = "/home/mahogny/github/bascet/target/debug/bascet", tempdir = "/tmp/")#, direct = TRUE, show_script=FALSE)
+
+bascetRoot <- "/husky/henriksson/atrandi/wgs_saliva1/"
 rawmeta <- DetectRawFileMeta("/husky/fromsequencer/250311_failed_saliva/saliva_wgs/raw")
 
 
 ### Debarcode the reads, then sort them.  BUG, BGZIP IS ONLY USING ONE CPU
 BascetGetRaw(
   bascetRoot,
-  rawmeta,
-  runner=bascet_inst
+  rawmeta
 )
 
 ### Decide cells to include
@@ -23,9 +26,9 @@ length(includeCells)
 
 ### Shardify i.e. divide into multiple sets of files for parallel processing  BUG ONLY USING ONE CPU
 BascetShardify(
-  bascetRoot,
+  bascetRoot
   #  includeCells = includeCells,  #TODO: best to NOT filter anything at this stage. use includeCells in later stage for quality genomes
-  runner = bascet_inst
+  #  runner = bascet_inst
 )
 
 ################################################################################
@@ -41,8 +44,8 @@ BascetMapTransform(
   bascetRoot, 
   "filtered", 
   "asfq",
-  out_format="fq.gz",   ## but we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
-  runner=bascet_inst
+  out_format="fq.gz"   ## but we need two fq as out!! ideally at least. or if R1.fq.gz => write two of them. otherwise gather?
+  #  runner=bascet_inst
 )
 
 
@@ -50,14 +53,14 @@ BascetMapTransform(
 BascetRunKraken(  ### BUG!!! detected 4 input files, but only processed the first
   bascetRoot, 
   useKrakenDB="/data/henlab/kraken/standard-8",
-  numLocalThreads=10,
-  runner=bascet_inst
+  numLocalThreads=10
+  #  runner=bascet_inst
 )
 BascetRunKrakenMakeMatrix(
   bascetRoot, 
   useKrakenDB="/data/henlab/kraken/standard-8",
-  numLocalThreads=10,
-  runner=bascet_inst
+  numLocalThreads=10
+  #  runner=bascet_inst
 )
 
 
@@ -196,8 +199,8 @@ BascetMapTransform(
   bascetRoot, 
   "filtered", 
   "asfq",
-  out_format="R1.fq.gz",  
-  runner=inst
+  out_format="R1.fq.gz"
+  #  runner=inst
 )
 
 ### Perform alignment -- internally wraps mapshard
@@ -230,8 +233,8 @@ BascetMapCell(
   bascetRoot,
   withfunction = "_quast",
   inputName = "filtered",
-  outputName = "quast",
-  runner=bascet_inst
+  outputName = "quast"
+  #  runner=bascet_inst
 )
 
 #quast is in /home/mahogny/.local/bin/quast.py
@@ -279,6 +282,7 @@ BascetMapCell(
 
 if(TRUE){
   ############################ Could be good to use a #read cutoff; this avoids pulling in noisy kmers. how about weight 1/#read count?
+  bascetRoot <- "/husky/henriksson/atrandi/v2_wgs_miseq2"
   all_kmer <- AggregateMinhashes(bascetRoot) 
   
   PlotMinhashDistribution <- function(all_kmer){
@@ -634,5 +638,30 @@ idxstat <- get_idx_stats_from_bam("/husky/henriksson/atrandi/wgs_saliva1/sorted_
 
 ### 98% unmapped
 idxstat$unmapped[idxstat$id=="*"]/(sum(idxstat$unmapped)+sum(idxstat$mapped))
+
+
+
+
+
+
+
+
+###########################
+
+
+bascet_runner.default <- LocalRunner(direct = TRUE, show_script=FALSE)
+#bascet_instance.default <- BascetInstance(bin = "/home/mahogny/github/bascet/target/debug/bascet", tempdir = "/tmp/")
+bascet_instance.default <- getBascetSingularityImage("/home/mahogny/github/bascet/singularity/") #BascetInstance(bin = "/home/mahogny/github/bascet/target/debug/bascet", tempdir = "/tmp/")#, direct = TRUE, show_script=FALSE)
+
+GetDefaultBascetInstance()
+
+bascetRoot <- "/husky/henriksson/atrandi/v2_wgs_miseq2"
+bascetRoot <- "/husky/henriksson/atrandi/wgs_novaseq3"
+all_kmer <- AggregateMinhashes(bascetRoot) 
+#bascetFile <- OpenBascet(bascetRoot, "minhash")
+
+
+streamer <- extractstreamer_start(bascet_instance = bascet_instance)
+extractstreamer_open(streamer, "/husky/henriksson/atrandi/v2_wgs_miseq2/minhash.1.zip")
 
 

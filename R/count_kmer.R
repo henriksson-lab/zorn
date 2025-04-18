@@ -17,8 +17,8 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
     outputName="sumkmers", 
     includeCells=NULL,
     overwrite=FALSE,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   
@@ -91,8 +91,8 @@ BascetQueryKMC <- function(
     outputName="kmer", 
     useKMERs,
     overwrite=FALSE,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   
@@ -408,8 +408,8 @@ BascetComputeCountSketch <- function(
     max_reads=100000,  #for 5M genome, 150x2 reads, this is 6x coverage
     kmer_size=31,
     sketch_size=5000,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -444,8 +444,8 @@ BascetGatherCountSketch <- function(
     outputName="countsketch_mat.csv", 
     includeCells=NULL,
     overwrite=FALSE,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names
@@ -524,8 +524,8 @@ BascetComputeMinhash <- function(
     overwrite=FALSE,
     max_reads=100000,  #This is most likely enough to get an overall histogram
     kmer_size=31,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -557,8 +557,8 @@ BascetMakeMinhashHistogram <- function(
   outputName="minhash_hist.csv", 
   includeCells=NULL,
   overwrite=FALSE,
-  runner,
-  bascet_instance=bascet_instance.default
+  runner=GetDefaultBascetRunner(),
+  bascet_instance=GetDefaultBascetInstance()
 ){
 
   #Figure out input and output file names
@@ -629,8 +629,8 @@ BascetQueryFq <- function(
     outputName="kmer_counts", 
     useKMERs,
     max_reads=1000000, 
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   

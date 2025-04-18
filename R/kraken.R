@@ -50,13 +50,6 @@ SpeciesCorrMatrix <- function(
 
 
 
-
-
-
-
-
-
-
 ###############################################
 #' Run KRAKEN2 for each cell
 #'
@@ -70,8 +63,8 @@ BascetRunKraken <- function(
     inputName="asfq", ######### should be able to take filtered and pipe to kraken if needed  "filtered"
     outputName="kraken_out",
     overwrite=FALSE,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
 
   #Figure out input and output file names  
@@ -145,8 +138,8 @@ BascetMakeKrakenCountMatrix <- function(
     inputName="kraken_out", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputName="kraken", 
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  

@@ -48,8 +48,6 @@ setGeneric(
 ################################################################################
 
 
-
-
 #' @export
 setClass("NoRunner", slots=list(
   show_script="logical"
@@ -67,6 +65,7 @@ NoRunner <- function(show_script=FALSE){
 }
 
 
+###############################################
 #' @export
 setMethod(
   f = "RunJob",
@@ -78,6 +77,7 @@ setMethod(
 )
 
 
+###############################################
 #' @export
 setClass("NoJob", slots=list(
   evil="character"
@@ -96,9 +96,7 @@ new_no_job <- function() {
 }
 
 
-
-
-
+###############################################
 #Has possibility of ctrl+c; just keeps polling, possibly with a status indicator from log. or keep plotting log file
 #' @export
 setMethod(
@@ -109,10 +107,7 @@ setMethod(
   }
 )
 
-
-
-
-
+###############################################
 #' @export
 setMethod(
   f = "CancelJob",
@@ -122,9 +117,7 @@ setMethod(
   }
 )
 
-
-
-
+###############################################
 #' @export
 setMethod(
   f = "JobStatus",
@@ -133,3 +126,17 @@ setMethod(
     invisible()
   }
 )
+
+
+
+################################################################################
+########### Default runner #####################################################
+################################################################################
+
+
+###############################################
+#' @export
+GetDefaultBascetRunner <- function() {
+  bascet_runner.default
+}
+

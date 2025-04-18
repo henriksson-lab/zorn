@@ -12,7 +12,8 @@
 setClass("Bascet", slots=list(
   num_shards="numeric",
   files="character",
-  cellmeta="ANY"
+  cellmeta="ANY",
+  streamer="ANY"
 )
 ) 
 
@@ -76,18 +77,43 @@ if(FALSE){
 #' @export
 OpenBascet <- function(
     bascetRoot, 
-    bascetName
+    bascetName,
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   shards <- detect_shards_for_file(bascetRoot,bascetName)
   num_shards <- length(shards)
   cellname_coord <- BascetCellNames(bascetRoot, bascetName)
   
+  streamer <- extractstreamer_start(bascet_instance = bascet_instance)
+  
   new("Bascet", 
       num_shards=num_shards, 
       files=file.path(bascetRoot, shards), 
-      cellmeta=BascetCellNames(bascetRoot, bascetName))
+      cellmeta=BascetCellNames(bascetRoot, bascetName),
+      streamer=streamer
+  )
 }
+
+
+
+
+
+###############################################
+#' Close a Bascet file.
+#' 
+#' This should always be performed to avoid memory leaks
+#' 
+#' @inheritParams template_BascetFunction
+#' @return A handle to a Bascet
+#' @export
+ClooseBascet <- function(
+    bascetFile
+){
+  extractstreamer_exit(bascetFile)
+  invisible()
+}
+
 
 
 
@@ -108,7 +134,7 @@ BascetReadFile <- function(
     cellID, 
     filename, 
     as=c("tempfile"), 
-    bascet_instance=bascet_instance.default, 
+    bascet_instance=GetDefaultBascetInstance(), 
     verbose=FALSE
 ){
   
@@ -118,9 +144,21 @@ BascetReadFile <- function(
     stop("Cell not present in file")
   }
   
-  if(as=="pipe"){
-    #bascet pipe <<<file  <<<cellname
-    stop("not implemented")    
+  
+  name_of_zip <- bascetFile@files[cellmeta$shard+1]
+  extract_files <- file.path(cellID,filename)
+  
+  
+  if(as=="text"){
+    
+    if(extractstreamer_open(bascetFile@streamer, name_of_zip)==0) {
+      ret <- extractstreamer_showtext(bascetFile@streamer, extract_files)
+      return(ret)
+    } else {
+      print(paste("Could not open file",name_of_zip))
+      return(NULL)
+    }  #is this ok? check return value TODO
+    
   } else if(as=="tempfile"){
     
     #Need a directory to unzip to
@@ -128,9 +166,6 @@ BascetReadFile <- function(
     dir.create(tname.dir)
     
     #Extract this zip file and then check that it worked
-    name_of_zip <- bascetFile@files[cellmeta$shard+1]
-    extract_files <- file.path(cellID,filename)
-    
     if(verbose){
       print(name_of_zip)
       print(extract_files)
@@ -138,47 +173,28 @@ BascetReadFile <- function(
     }
     
     
-    if(FALSE){
-      ########### Pure R version. does not support our zip format
-      unzip(name_of_zip, files=extract_files, exdir=tname.dir) ### 666 cannot operate on our rust files. 
-      
-      name_of_outfile <- file.path(tname.dir, cellID, filename) ## should be checked
-      if(!file.exists(name_of_outfile)){
-        stop(paste("unzip failed to produce expected ",name_of_outfile))
-      }
-      
-      #Move the output file to a new temp file, such that the callback function need not delete whole directory
+    ### TODO use new API
+    
+    
+    ########### Use Bascet to unzip
+    #cargo +nightly run extract -i /Users/mahogny/Desktop/rust/hack_robert/testdata/quast.zip  -o /Users/mahogny/Desktop/rust/hack_robert/testdata/out.temp -b a  -f report.txt
+    
+    ret <- extractstreamer_open(bascetFile@streamer, name_of_zip)  #is this ok? check return value TODO
+    if(ret==0){
       tname.out <- tempfile()
-      file.rename(name_of_outfile, tname.out)
-      
-      #Recursive delete. to be safe, remove expected files
-      file.remove(file.path(tname.dir, cellID))
-      file.remove(tname.dir)
-      
+      ret <- extractstreamer_extract_to(bascetFile@streamer, extract_files, tname.out)
+      if(ret==0) {
+        #Return temp file location
+        return(tname.out)
+      } else {
+        print(paste("cell", cellID,": Failed to get file", filename, " from shard", name_of_zip, ":", ret))
+        return(NULL)      
+      }
     } else {
-      ########### Use Bascet to unzip
-      #cargo +nightly run extract -i /Users/mahogny/Desktop/rust/hack_robert/testdata/quast.zip  -o /Users/mahogny/Desktop/rust/hack_robert/testdata/out.temp -b a  -f report.txt
-      tname.out <- tempfile()
-      
-      cmd <- paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
-        "extract -i",name_of_zip, 
-        #"-t", bascet_instance@tempdir,
-        "-o",tname.out,
-        "-b",cellID,
-        "-f",filename
-      )
-      ret <- system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE) #returns 0 if ok
-      #print(ret)
-      if(ret==1){
-        print(paste("cell", cellID,": Failed to get file", filename))
-        return(NULL)
-      }
+      print(paste("cell", cellID,": Failed to open shard", name_of_zip, ":", ret))
+      return(NULL)      
     }
 
-    #Return temp file location
-    return(tname.out)
   } else {
     stop("Unsupported output format")
   }
@@ -207,7 +223,7 @@ BascetReadFile <- function(
 BascetListFilesForCell <- function(
     bascetFile, 
     cellID, 
-    bascet_instance=bascet_instance.default
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   ## Check if the cell is present at all
@@ -219,13 +235,22 @@ BascetListFilesForCell <- function(
   #Extract this zip file and then check that it worked
   name_of_zip <- bascetFile@files[cellmeta$shard+1]
 
-  res <- unzip(name_of_zip, list=TRUE)
-  div <- stringr::str_split_fixed(res$Name,stringr::fixed("/"),2)
-  data.frame(
-    cell=div[,1],
-    file=div[,2],
-    size=res$Length
-  )
+  ret <- extractstreamer_open(bascetFile@streamer, name_of_zip)  #is this ok? check return value TODO
+  if(ret==0){
+    res <- extractstreamer_ls(bascetFile@streamer)
+    
+    div <- stringr::str_split_fixed(res$Name,stringr::fixed("/"),2)
+    data.frame(
+      cell=div[,1],
+      file=div[,2],
+      size=res$Length
+    )    
+  } else {
+    print("Could not open shard",name_of_zip)
+    data.frame()
+  }
+  
+
 }
 
 
@@ -249,7 +274,7 @@ BascetListFilesForCell <- function(
 ReadHistogram <- function(
     bascetRoot, 
     inputName, 
-    bascet_instance=bascet_instance.default
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Get all the TIRPs, sum up the reads  
@@ -320,7 +345,7 @@ if(FALSE){
 AtrandiBarcodeStats <- function(
     bascetRoot, 
     inputName="debarcoded", 
-    bascet_instance=bascet_instance.default
+    bascet_instance=GetDefaultBascetInstance()
 ){
 
   #Get frequency of each barcode  
@@ -401,5 +426,222 @@ if(FALSE){
   #detect_shards_for_file("~/jupyter/zorn/test","fakein","zip")
   #make_output_shard_names("/","bar","zip", 5)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+################ Extract Streamer API ##########################################
+################################################################################
+
+
+
+###############################################
+#' extract streamer: create an instance
+#' 
+#' @return The process
+extractstreamer_start <- function(
+    fname=NULL,
+    verbose=FALSE,
+    bascet_instance=GetDefaultBascetInstance()
+) {
+  
+  #Assemble the command
+  all_cmd <- stringr::str_trim(paste(
+    bascet_instance@prepend_cmd,
+    bascet_instance@bin,
+    "extract-stream",
+    if(!is.null(fname)) c("-i",fname)
+  ))
+  
+  #processx wants the command delivered one argument at a time
+  all_cmd_split <- stringr::str_split(all_cmd, " ")[[1]]
+  all_cmd_split <- all_cmd_split[all_cmd_split!=""] #not sure if needed; but helped make it run
+  if(verbose){
+    print(all_cmd_split)
+  }
+  p <- processx::process$new(
+    all_cmd_split[1], 
+    all_cmd_split[-1],
+    stdin="|", stdout = "|", stderr = "|"
+  )
+  all_out <- c()
+  while(TRUE){
+    newlines <- p$read_output_lines()
+    all_out <- c(all_out, newlines)
+    if(verbose){
+      print(newlines)
+    }
+    
+    if(length(all_out)>0) {
+      last_line <- all_out[length(all_out)] 
+      if(last_line=="ready"){
+        return(p)
+      } else if(stringr::str_starts(last_line,"error")) {
+        print(paste("error from extract streamer start:",last_line))
+        break
+      }
+    }
+  }
+  p
+}
+
+
+###############################################
+#' extract streamer: list all files in current zip-file
+#' 
+#' @return list of files
+extractstreamer_ls <- function(p){
+  p$write_input("ls\n")
+  #Figure out how many lines to get
+  newlines <- extractstreamer_read_one_line(p)
+  n_lines <- as.integer(newlines)
+  extractstreamer_read_n_lines(p, n_lines)
+}
+
+
+
+
+###############################################
+#' extract streamer: end an instance.
+#' the object should no longer be used after calling this function
+#' 
+extractstreamer_exit <- function(p){
+  p$write_input("exit\n")
+}
+
+
+###############################################
+#' extract streamer: helper function to read one line
+#' 
+#' @return the line
+extractstreamer_read_one_line <- function(p){
+  while(TRUE){
+    newlines <- p$read_output_lines(n = 1)
+    if(length(newlines)>0) {
+      return(newlines)
+    }
+  }
+}
+
+
+###############################################
+#' extract streamer: helper function to read N lines
+#' 
+#' @return all the lines
+extractstreamer_read_n_lines <- function(p, n_lines){
+  all_out <- c()
+  while(length(all_out) < n_lines){
+    newlines <- p$read_output_lines()
+    all_out <- c(all_out, newlines)
+  }
+  all_out
+}
+
+###############################################
+#' extract streamer: get content of file, assumed to be text (or this function crashes)
+#' 
+#' @return The text, divided by line
+extractstreamer_showtext <- function(p, fname) {
+  p$write_input(paste0("showtext ",fname,"\n"))
+  #Figure out how many lines to get, then get them
+  newlines <- extractstreamer_read_one_line(p)
+  n_lines <- as.integer(newlines)
+  extractstreamer_read_n_lines(p, n_lines)
+  sile
+}
+
+
+###############################################
+#' extract streamer: set which file is open
+#' 
+#' @return 0 if ok
+extractstreamer_open <- function(p, fname) {
+  p$write_input(paste0("open ",fname,"\n"))
+  #Figure out how many lines to get, then get them
+  newlines <- extractstreamer_read_one_line(p)
+  if(newlines=="ok"){
+    0
+  } else {
+    print(paste("from extract streamer:",newlines))
+    1
+  }
+}
+
+
+###############################################
+#' extract streamer: extract to external file
+#' @return 0 if ok
+extractstreamer_extract_to <- function(
+    p, 
+    fname, 
+    outpath
+) {
+  p$write_input(paste0("extract_to ",fname," ",outpath,"\n"))
+  newlines <- extractstreamer_read_one_line(p) #done or error
+  if(newlines=="ok"){
+    0
+  } else {
+    print(newlines)
+    1
+  }
+}
+
+
+
+
+################################################################################
+########### Testing ############################################################
+################################################################################
+
+
+if(FALSE){
+  system("singularity run /home/mahogny/github/bascet/singularity/bascet.sif ls /home/mahogny/github/bascet/testdata/minhash.0.zip")
+  system("singularity run /home/mahogny/github/bascet/singularity/bascet.sif ls /home/mahogny/foo/minhash.0.zip")
+  system("ls /home/mahogny/github/bascet/testdata/minhash.0.zip")
+  system("singularity run /home/mahogny/github/bascet/singularity/bascet.sif bascet extract-stream -i /home/mahogny/github/bascet/testdata/minhash.0.zip")
+}
+
+
+if(FALSE){
+  #p <- extractstreamer_start("/home/mahogny/github/bascet/testdata/minhash.0.zip")
+  p <- extractstreamer_start()
+  extractstreamer_open(p, "/home/mahogny/foo/minhash.0.zip")
+  extractstreamer_ls(p)
+  extractstreamer_showtext(p,"C1_B4_B9_A12/cellmap.log")
+  for(i in 1:100){
+    extractstreamer_showtext(p,"C1_B4_B9_A12/minhash.txt")
+  }
+  
+  extractstreamer_extract_to(p,"C1_B4_B9_A12/minhash.txt","/home/mahogny/temp.bar")
+  
+}
+
+
+
+
 
 

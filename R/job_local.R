@@ -8,6 +8,7 @@
 #library(processx) ##### 
 
 
+###############################################
 #' @export
 setClass("LocalRunner", slots=list(
   maxcpu="character",
@@ -17,6 +18,7 @@ setClass("LocalRunner", slots=list(
 ) 
 
 
+###############################################
 #' @export
 setClass("LocalJob", slots=list(
   cmd="character",
@@ -38,6 +40,7 @@ LocalRunner <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
 
 
 
+###############################################
 #' @export
 setMethod(
   f = "RunJob",
@@ -112,6 +115,7 @@ setMethod(
 
 
 
+###############################################
 #' @export
 setMethod(
   f = "CancelJob",
@@ -126,6 +130,7 @@ setMethod(
 
 
 
+###############################################
 #' @export
 setMethod(
   f = "JobStatus",
@@ -140,13 +145,13 @@ setMethod(
 )
 
 
+###############################################
 #' @export
 setMethod(
   f = "JobLog",
   signature ="LocalJob",
   definition = function(job) {
     #read this file
-    
     #job@logfile
   }
 )
@@ -156,7 +161,18 @@ setMethod(
 
 
 
-############ Testing
+################################################################################
+########### Default runner #####################################################
+################################################################################
+
+bascet_runner.default <- LocalRunner(direct = TRUE, show_script=FALSE)
+
+
+
+################################################################################
+########### Testing ############################################################
+################################################################################
+
 if(FALSE){
   
   inst <- LocalRunner(direct=TRUE)

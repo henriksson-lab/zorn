@@ -15,8 +15,8 @@
 #' @return A job to be executed
 template_BascetFunction <- function(
     bascetRoot, 
-    runner, 
-    bascet_instance=bascet_instance.default){}
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()){}
 
 
 
@@ -161,8 +161,8 @@ BascetGetRaw <- function(
     outputNameIncomplete="incomplete_reads", 
     chemistry="atrandi_wgs",  #or atrandi_rnaseq; any way to get list from software?
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
 
   #One output per input pair of reads  
@@ -257,8 +257,8 @@ BascetShardify <- function(
     num_output_shards=1,
     outputName="filtered", 
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
 
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
@@ -337,8 +337,8 @@ BascetMapTransform <- function(
     out_format="tirp.gz", ### not really!
     includeCells=NULL,
     overwrite=FALSE,
-    runner, 
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   
@@ -527,8 +527,8 @@ BascetRunFASTP <- function(
     inputName="asfq", ######### should be able to take filtered and pipe to if needed  "filtered"  TODO
     outputName="fastp",
     overwrite=FALSE,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  

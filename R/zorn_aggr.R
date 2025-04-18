@@ -23,8 +23,8 @@ BascetMapCell <- function(
     outputName, 
     args=list(),
     overwrite=FALSE,
-    runner,
-    bascet_instance=bascet_instance.default
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  
@@ -136,15 +136,21 @@ BascetAggregateMap <- function(
     aggrFunction,
     include_cells=NULL,
     showProgress=TRUE,
-    bascet_instance=bascet_instance.default
+    verbose=FALSE,
+    bascet_instance=GetDefaultBascetInstance()
 ){
   
   #Get file coordinates of all objects in zip file
   cellname_coord <- BascetCellNames(bascetRoot, bascetName)
   
   #Open the file, prep for reading
+  if(verbose){
+    print("Creating extract streamer session")
+  }
   bascetFile <- OpenBascet(bascetRoot, bascetName)
-  
+  if(verbose){
+    print("Extract streamer session ok")
+  }
   pbar <- progress::progress_bar$new(total = length(bascetFile@cellmeta$cell))
   if(showProgress){
     pbar$tick(0)
@@ -163,19 +169,26 @@ BascetAggregateMap <- function(
       pbar$tick()
     }
   }
+  
+  #End associated bascet session
+  CloseBascet(bascetFile)
+  
   output
 }
 
+################################################################################
+########### Testing ############################################################
+################################################################################
 
 
 if(FALSE){
   bascetRoot <- "/home/mahogny/jupyter/bascet/zorn/try_unzip"
   bascetName <- "quast"
-  aggrFunction <- aggr.quast
+  #aggrFunction <- aggr.quast
   BascetAggregateMap("/home/mahogny/jupyter/bascet/zorn/try_unzip","quast",aggr.quast) 
   
   #tmp <- BascetReadMapFile(bascetFile, cellID, "out.csv", as="tempfile")
- 
+
   
   
   
