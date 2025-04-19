@@ -6,6 +6,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/articles/clustering.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/countsketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/debarcoding.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/example_data.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/faq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/fileformats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/for_developers.html</loc></url>
@@ -30,6 +31,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignToReference.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignmentToBigwig.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetBam2Fragments.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCacheComputation.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCellNames.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetComputeCountSketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetComputeMinhash.html</loc></url>
