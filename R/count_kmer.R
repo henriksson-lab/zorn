@@ -160,7 +160,8 @@ BascetQueryKMC <- function(
 #' @export
 ReadBascetCountMatrix <- function(
     bascetRoot, 
-    inputName
+    inputName,
+    verbose=FALSE
 ){
   print("Loading HDF5 file")
  
@@ -180,7 +181,9 @@ ReadBascetCountMatrix <- function(
   list_mat <- list()
   for(f in inputFiles){
     mat <- ReadBascetCountMatrix_one(f)
-    #print(dim(mat))
+    if(verbose){
+      print(dim(mat))
+    }
     #print(colnames(mat))
 #    print(table(colnames(mat)))
     list_mat[[f]] <- mat
@@ -208,13 +211,15 @@ ReadBascetCountMatrix <- function(
   }
   
   #Concatenate matrices
-  do.call(rbind, list_resized_mat) #TODO check that above worked properly!
+  allmat <- do.call(rbind, list_resized_mat) #TODO check that above worked properly!
+  Matrix::t(allmat) #note, t in _one; could rewrite to not do it twice
 }
 
 
 
 ReadBascetCountMatrix_one <- function(
-    fname
+    fname,
+    verbose=FALSE
 ){
   #print("Loading HDF5 file")
   h5f <- rhdf5::H5Fopen(fname)
@@ -236,7 +241,8 @@ ReadBascetCountMatrix_one <- function(
   
   rhdf5::H5close()
   
-  t(mat)
+  #print("does this work?")
+  Matrix::t(mat) #overkill? todo
 }
 
 
@@ -503,7 +509,7 @@ BascetMakeMinhashHistogram <- function(
 #' @param useKMERs description
 #' @return TODO
 #' @export
-BascetQueryFq <- function(
+BascetQueryFq <- function( #666
     bascetRoot, 
     inputName="filtered",
     outputName="kmer_counts", 
@@ -528,7 +534,7 @@ BascetQueryFq <- function(
   
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "h5", num_shards)
   
-  if(bascet_check_overwrite_output(outputFile, overwrite)) {
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
     #Run the job
     RunJob(
       runner = runner, 

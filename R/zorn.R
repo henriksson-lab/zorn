@@ -20,6 +20,26 @@ template_BascetFunction <- function(
 
 
 
+###############################################
+#' A wrapper to cache a computation. Put your function in as an argument,
+#' as R will only compute its value if needed. If the cache file exist,
+#' it will not be run again
+#' 
+#' @param fname Name of the file to store the cache in. The extension .RDS is added automatically
+#' @return The value
+BascetCacheComputation <- function(bascetRoot, fname, value){
+  fname <- file.path(bascetRoot,paste0(fname,".RDS"))
+  if(file.exists(fname)){
+    print("Found previously cached value")
+    readRDS(fname)
+  } else {
+    print("Running calculation and caching value")
+    saveRDS(value, fname) 
+    value
+  }
+}
+
+
 
 ###############################################
 #' Detect metadata for raw input FASTQ files

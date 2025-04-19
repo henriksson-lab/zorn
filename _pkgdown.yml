@@ -38,6 +38,8 @@ navbar:
           href: articles/slurm.html
         - text: "For developers"
           href: articles/for_developers.html
+        - text: "Example data"
+          href: articles/example_data.html
     - text: FAQ
       href: articles/faq.html
     - text: "Reference"

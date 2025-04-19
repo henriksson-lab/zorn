@@ -5,7 +5,7 @@
 \title{Read a count matrix as produced by Bascet (hdf5 format).
 This can be output from both BascetQueryFq and BascetCountChrom}
 \usage{
-ReadBascetCountMatrix(bascetRoot, inputName)
+ReadBascetCountMatrix(bascetRoot, inputName, verbose = FALSE)
 }
 \value{
 Count matrix as sparseMatrix
