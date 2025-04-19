@@ -515,6 +515,7 @@ BascetQueryFq <- function( #666
     outputName="kmer_counts", 
     useKMERs,
     max_reads=1000000, 
+    overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
     bascet_instance=GetDefaultBascetInstance()
 ){
