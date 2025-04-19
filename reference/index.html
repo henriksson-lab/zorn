@@ -145,6 +145,12 @@
         <dd>Filter an alignment (BAM-file).</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetGatherCountSketch.html">BascetGatherCountSketch()</a></code>
+
+        </dt>
+        <dd>Gather all count sketches into a single count sketch matrix</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetGetRaw.html">BascetGetRaw()</a></code>
 
         </dt>
@@ -173,6 +179,12 @@
 
         </dt>
         <dd>List files for a cell in a Bascet</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetLoadCountSketchMatrix.html">BascetLoadCountSketchMatrix()</a></code>
+
+        </dt>
+        <dd>Load count sketch matrix as Seurat object</dd>
       </dl><dl><dt>
 
           <code><a href="BascetMakeKrakenCountMatrix.html">BascetMakeKrakenCountMatrix()</a></code>
@@ -235,6 +247,12 @@
         <dd>Read histogram of KMERs, the output of BascetMakeMinhashHistogram</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetRunFASTP.html">BascetRunFASTP()</a></code>
+
+        </dt>
+        <dd>Run FASTP for each cell. Input must be in FASTQ file format</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetRunKraken.html">BascetRunKraken()</a></code>
 
         </dt>
@@ -259,10 +277,22 @@
         <dd>Produce a count matrix on strain level</dd>
       </dl><dl><dt>
 
+          <code><a href="ClooseBascet.html">ClooseBascet()</a></code>
+
+        </dt>
+        <dd>Close a Bascet file.</dd>
+      </dl><dl><dt>
+
           <code><a href="CountGrangeFeatures.html">CountGrangeFeatures()</a></code>
 
         </dt>
         <dd>Obtain a feature matrix (as seurat object) given an seurat object having Fragments associated</dd>
+      </dl><dl><dt>
+
+          <code><a href="CreateSeuratObjectWithReduction.html">CreateSeuratObjectWithReduction()</a></code>
+
+        </dt>
+        <dd>Create a seurat object from e.g. count sketch reduction</dd>
       </dl><dl><dt>
 
           <code><a href="DetectRawFileMeta.html">DetectRawFileMeta()</a></code>
@@ -311,6 +341,12 @@
 
         </dt>
         <dd>Get a temp directory to use; need to be created</dd>
+      </dl><dl><dt>
+
+          <code><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance()</a></code>
+
+        </dt>
+        <dd>Get Bascet instance from global variable</dd>
       </dl><dl><dt>
 
           <code><a href="KmcChooseKmerFeatures.html">KmcChooseKmerFeatures()</a></code>
@@ -379,6 +415,12 @@
         <dd>Plot a histogram, loaded by ReadHistogram</dd>
       </dl><dl><dt>
 
+          <code><a href="PlotJohnsonLindenstraussMinDim.html">PlotJohnsonLindenstraussMinDim()</a></code>
+
+        </dt>
+        <dd>Plot minimum number of dimensions needed to retain distance between samples</dd>
+      </dl><dl><dt>
+
           <code><a href="ReadBascetCountMatrix.html">ReadBascetCountMatrix()</a></code>
 
         </dt>
@@ -433,7 +475,19 @@
         <dd>Callback function for aggregating min-hashes for each cell To be called from BascetAggregateMap</dd>
       </dl><dl><dt>
 
+          <code><a href="aggr.minhash_via_fs.html">aggr.minhash_via_fs()</a></code>
+
+        </dt>
+        <dd>Callback function for aggregating min-hashes for each cell To be called from BascetAggregateMap</dd>
+      </dl><dl><dt>
+
           <code><a href="aggr.quast.html">aggr.quast()</a></code>
+
+        </dt>
+        <dd>Callback function for aggregating QUAST data. To be called from BascetAggregateMap</dd>
+      </dl><dl><dt>
+
+          <code><a href="aggr.quast_via_filesystem.html">aggr.quast_via_filesystem()</a></code>
 
         </dt>
         <dd>Callback function for aggregating QUAST data. To be called from BascetAggregateMap</dd>
@@ -461,6 +515,54 @@
 
         </dt>
         <dd>Helper function: Figure out which shards belong together given root input name and extension i.e. root/name.##.ext</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamer_exit.html">extractstreamer_exit()</a></code>
+
+        </dt>
+        <dd>extract streamer: end an instance. the object should no longer be used after calling this function</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamer_extract_to.html">extractstreamer_extract_to()</a></code>
+
+        </dt>
+        <dd>extract streamer: extract to external file</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamer_ls.html">extractstreamer_ls()</a></code>
+
+        </dt>
+        <dd>extract streamer: list all files in current zip-file</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamer_open.html">extractstreamer_open()</a></code>
+
+        </dt>
+        <dd>extract streamer: set which file is open</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamer_read_n_lines.html">extractstreamer_read_n_lines()</a></code>
+
+        </dt>
+        <dd>extract streamer: helper function to read N lines</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamer_read_one_line.html">extractstreamer_read_one_line()</a></code>
+
+        </dt>
+        <dd>extract streamer: helper function to read one line</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamer_showtext.html">extractstreamer_showtext()</a></code>
+
+        </dt>
+        <dd>extract streamer: get content of file, assumed to be text (or this function crashes)</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamer_start.html">extractstreamer_start()</a></code>
+
+        </dt>
+        <dd>extract streamer: create an instance</dd>
       </dl><dl><dt>
 
           <code><a href="getBascetSingularityImage.html">getBascetSingularityImage()</a></code>
@@ -497,6 +599,12 @@
 
         </dt>
         <dd>Check if a file is a paired FASTQ file</dd>
+      </dl><dl><dt>
+
+          <code><a href="lseq.html">lseq()</a></code>
+
+        </dt>
+        <dd>logarithmic spaced sequence, from emdbook library</dd>
       </dl><dl><dt>
 
           <code><a href="make_output_shard_names.html">make_output_shard_names()</a></code>

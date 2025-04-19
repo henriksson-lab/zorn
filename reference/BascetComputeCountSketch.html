@@ -48,7 +48,7 @@ This is a thin wrapper around BascetMapCell"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Compute count sketch for each cell. This is a thin wrapper around BascetMapCell</h1>
-      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/R/count_kmer.R" class="external-link"><code>R/count_kmer.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/R/countsketch.R" class="external-link"><code>R/countsketch.R</code></a></small>
       <div class="d-none name"><code>BascetComputeCountSketch.Rd</code></div>
     </div>
 
@@ -67,8 +67,8 @@ This is a thin wrapper around BascetMapCell</p>
 <span>  max_reads <span class="op">=</span> <span class="fl">1e+05</span>,</span>
 <span>  kmer_size <span class="op">=</span> <span class="fl">31</span>,</span>
 <span>  sketch_size <span class="op">=</span> <span class="fl">5000</span>,</span>
-<span>  <span class="va">runner</span>,</span>
-<span>  bascet_instance <span class="op">=</span> <span class="va">bascet_instance.default</span></span>
+<span>  runner <span class="op">=</span> <span class="fu">GetDefaultBascetRunner</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  bascet_instance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 

@@ -82,8 +82,8 @@ run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascet_runner</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, show_script<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">bascetRoot</span> <span class="op">=</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
+<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, show_script<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <p>We will use BWA for alignment, which wants the data in FASTQ format.
 Here we assume that you use a single-cell WGS chemistry that produces
 paired reads, and direct Zorn to produce R1/R2 FASTQ files (only R1
@@ -94,10 +94,9 @@ typical sharded reads:</p>
 <code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
 <span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"filtered"</span>,   <span class="co">#default; can omit</span></span>
-<span>  <span class="st">"asfq"</span>,  <span class="co">###name parameter</span></span>
-<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span>,</span>
-<span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
+<span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,   <span class="co">#default; can omit</span></span>
+<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,  <span class="co">###name parameter</span></span>
+<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Before alignment, you need to prepare your reference by indexing it.
 You can do this using “bwa index” in the terminal; but you can also do
@@ -107,9 +106,8 @@ also be gzipped):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Build a reference</span></span>
 <span><span class="fu"><a href="../reference/BascetIndexGenomeBWA.html">BascetIndexGenomeBWA</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>, </span>
-<span>  <span class="st">"/your_reference/all.fa"</span>, </span>
-<span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  <span class="st">"/your_reference/all.fa"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>You can now proceed with alignment using BWA. By default, this
 command outputs both unsorted and sorted BAM-files.</p>
@@ -124,19 +122,17 @@ regions, i.e., WGS species counting and RNA-seq</li>
 <span><span class="fu"><a href="../reference/BascetAlignToReference.html">BascetAlignToReference</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  useReference<span class="op">=</span><span class="st">"/your_reference/all.fa"</span>,</span>
-<span>  numLocalThreads<span class="op">=</span><span class="fl">10</span>,</span>
-<span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
+<span>  numLocalThreads<span class="op">=</span><span class="fl">10</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>TODO: Filtering</p>
-<p>==================== Host filtering workflow ==============</p>
+<p>#Host filtering workflow</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetFilterAlignment.html">BascetFilterAlignment</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  outputName<span class="op">=</span><span class="st">"filter_paired"</span>,</span>
-<span>  keep_mapped<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
+<span>  keep_mapped<span class="op">=</span><span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>==================== Counting workflow ==============</p>
+<p>#Counting workflow</p>
 <p>If you want to analyze where reads mapped, either for RNA-seq
 counting for genes, or more generally, what the count is within a
 genomic region, you can use Signac for great flexibility in this task.
@@ -150,8 +146,7 @@ operations this is typically enough.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Generate fragments BED file suited for quantifying reads/chromosome using Signac later </span></span>
 <span><span class="fu"><a href="../reference/BascetBam2Fragments.html">BascetBam2Fragments</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
+<span>  <span class="va">bascetRoot</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>If you just want to get the number of reads per chromosome (i.e. to
 compare a metagenomic sample to a number of defined strains), then we
@@ -161,8 +156,7 @@ load with Seurat:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Count reads per chromosome</span></span>
 <span><span class="fu"><a href="../reference/BascetCountChrom.html">BascetCountChrom</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>, </span>
-<span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
+<span>  <span class="va">bascetRoot</span></span>
 <span><span class="op">)</span></span></code></pre></div>
   </main>
 </div>

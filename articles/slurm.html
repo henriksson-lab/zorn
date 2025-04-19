@@ -128,8 +128,8 @@ settings are overridden on a per-job basis:</p>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="va">rawmeta</span>,</span>
 <span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
-<span>    <span class="va">bascet_runner.default</span>, </span>
-<span>    ncpu<span class="op">=</span><span class="fl">5</span>, </span>
+<span>    <span class="va">bascet_runner.default</span>,</span>
+<span>    ncpu<span class="op">=</span><span class="fl">5</span>,</span>
 <span>    mem<span class="op">=</span><span class="st">"5g"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The major difference vs a typical local runner is that this function
@@ -144,7 +144,7 @@ in-between commands will let you batch all the tasks. The main script,
 in charge of the control flow, should be run in <a href="https://github.com/tmux/tmux/wiki" class="external-link">tmux</a> or <a href="https://linuxize.com/post/how-to-use-linux-screen/" class="external-link">screen</a>, on
 a login node of your cluster.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">WaitForJob</span><span class="op">(</span><span class="va">my_job</span><span class="op">)</span> </span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">WaitForJob</span><span class="op">(</span><span class="va">my_job</span><span class="op">)</span></span></code></pre></div>
 <p>You can press ctrl+c to end the waiting loop early.</p>
 </div>
 <div class="section level2">

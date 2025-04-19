@@ -93,8 +93,7 @@ quality metrics of each assembled genome:</p>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  withfunction <span class="op">=</span> <span class="st">"_quast"</span>,</span>
 <span>  inputName <span class="op">=</span> <span class="st">"skesa"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"quast"</span>,</span>
-<span>  runner<span class="op">=</span><span class="va">inst</span></span>
+<span>  outputName <span class="op">=</span> <span class="st">"quast"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -107,7 +106,7 @@ object:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">quast_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MapListAsDataFrame.html">MapListAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="../reference/BascetAggregateMap.html">BascetAggregateMap</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"quast"</span>,</span>
+<span>  inputName<span class="op">=</span><span class="st">"quast"</span>,</span>
 <span>  <span class="va">aggr.quast</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -138,8 +137,7 @@ path:</p>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  withfunction <span class="op">=</span> <span class="st">"/path/to/your/script.sh"</span>,</span>
 <span>  inputName <span class="op">=</span> <span class="st">"..."</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"..."</span>,</span>
-<span>  runner<span class="op">=</span><span class="va">inst</span></span>
+<span>  outputName <span class="op">=</span> <span class="st">"..."</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>In most cases you want to write your own aggregate function. This
 function will take the output from your tool, parse it, and put in a
@@ -152,7 +150,7 @@ but it may help you in debugging and development:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">quast_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MapListAsDataFrame.html">MapListAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="../reference/BascetAggregateMap.html">BascetAggregateMap</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"input.."</span>,</span>
+<span>  inputName<span class="op">=</span><span class="st">".."</span>,</span>
 <span>  <span class="fu">aggr.raw</span><span class="op">(</span><span class="st">"out.txt"</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -186,6 +184,11 @@ waste of time trying to do it again, in which case the script can return
 <p>How many threads to use for this particular process. Note that Bascet
 is already calling multiple MAP scripts in parallel and there is thus
 typically little benefit in making individual process multithreaded</p>
+<pre class="console"><code><span><span class="op">-</span><span class="op">-</span><span class="va">recommend</span><span class="op">-</span><span class="va">threads</span></span></code></pre>
+<p>Return how many threads (at least 1) the job should get. This is used
+if the user runs mapcell but only specifies the total number of threads.
+Bascet will then try to allocate workers accordingly. Return 1 if your
+mapcell script does not support multithreading</p>
 <pre class="console"><code><span><span class="op">-</span><span class="op">-</span><span class="va">preflight</span><span class="op">-</span><span class="va">check</span></span></code></pre>
 <p>This is called once only, to check that the script has the needed
 software dependencies. In such case, it returns “MAPCELL-CHECK”</p>

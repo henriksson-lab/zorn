@@ -82,8 +82,8 @@ wish to run these steps on a SLURM cluster, see separate vignette and
 adapt accordingly.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascet_runner</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, show_script<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">bascetRoot</span> <span class="op">=</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
+<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, show_script<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <p>The first step in data processing is take the raw FASTQ files and
 identify which read belongs to which cell. Zorn can automatically figure
 out which files to use for what:</p>
@@ -99,8 +99,7 @@ SPC-based MDA protocol for WGS.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetGetRaw.html">BascetGetRaw</a></span><span class="op">(</span></span>
 <span>    <span class="va">bascetRoot</span>, </span>
 <span>    <span class="va">rawmeta</span>,</span>
-<span>    chemistry<span class="op">=</span><span class="st">"atrandi_wgs"</span>,</span>
-<span>    runner<span class="op">=</span><span class="va">bascet_runner</span></span>
+<span>    chemistry<span class="op">=</span><span class="st">"atrandi_wgs"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Once barcodes have been processed, you can perform knee plot
 analysis, which is the first important quality control.</p>
@@ -138,15 +137,55 @@ to cause mistakes.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  includeCells <span class="op">=</span> <span class="va">includeCells</span>,</span>
-<span>  num_output_shards <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  runner<span class="op">=</span><span class="va">bascet_runner</span></span>
+<span>  num_output_shards <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="additional-trimming">Additional trimming<a class="anchor" aria-label="anchor" href="#additional-trimming"></a>
+</h2>
+<p>Bascet only does rudimentary trimming. We recommend trimming the
+reads further. To do this, first convert your data to FASTQ format:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
+<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,   <span class="co">#default; can omit</span></span>
+<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,  </span>
+<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Now use FASTP to perform the trimming:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Get reads in fastq format for BWA</span></span>
+<span><span class="fu"><a href="../reference/BascetRunFASTP.html">BascetRunFASTP</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  numLocalThreads<span class="op">=</span><span class="fl">10</span>,</span>
+<span>  inputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
+<span>  outputName<span class="op">=</span><span class="st">"fastp"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>If your plan is to perform alignment, then the resulting fastp FASTQ
+files can be used as input (don’t forget to specify inputName=“fastp”!).
+If you want to instead get a TIRP file, you can convert it back:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  <span class="st">"fastp"</span>,</span>
+<span>  <span class="st">"new_filtered"</span>,</span>
+<span>  out_format<span class="op">=</span><span class="st">"tirp.gz"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>You now have a TIRP file again, equivalent to the first shardified
+output. Don’t forget to specify inputName=“new_filtered” to later
+commands, as the default is to use “filtered”</p>
+</div>
+<div class="section level2">
+<h2 id="onward">Onward<a class="anchor" aria-label="anchor" href="#onward"></a>
+</h2>
 <p>If you make it here then you have passed one of the heaviest and most
 critical steps in the workflow!</p>
-<p>How you proceed depends on your usecase. If you are doing single-cell
-metagenomics of a sample of unknown composition then we recommend the
-KRAKEN2 workflow next.</p>
-  </main>
+<p>How you proceed depends on your use case. If you are doing
+single-cell metagenomics of a sample of unknown composition then we
+recommend the KRAKEN2 workflow next.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
