@@ -107,7 +107,7 @@ OpenBascet <- function(
 #' @inheritParams template_BascetFunction
 #' @return A handle to a Bascet
 #' @export
-ClooseBascet <- function(
+CloseBascet <- function(
     bascetFile
 ){
   extractstreamer_exit(bascetFile)
@@ -521,6 +521,7 @@ extractstreamer_ls <- function(p){
   n_lines <- as.integer(newlines)
   extractstreamer_read_n_lines(p, n_lines)
 }
+
 
 
 

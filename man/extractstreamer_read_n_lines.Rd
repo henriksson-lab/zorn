@@ -4,7 +4,7 @@
 \alias{extractstreamer_read_n_lines}
 \title{extract streamer: helper function to read N lines}
 \usage{
-extractstreamer_read_n_lines(p, n_lines)
+extractstreamer_read_n_lines(p, n_lines, verbose = FALSE)
 }
 \value{
 all the lines
