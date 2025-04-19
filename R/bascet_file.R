@@ -552,11 +552,23 @@ extractstreamer_read_one_line <- function(p){
 #' extract streamer: helper function to read N lines
 #' 
 #' @return all the lines
-extractstreamer_read_n_lines <- function(p, n_lines){
+extractstreamer_read_n_lines <- function(p, n_lines, verbose=FALSE){
   all_out <- c()
   while(length(all_out) < n_lines){
+    if(!p$is_alive()){
+      stop("process is unexpectedly dead")
+    }
     newlines <- p$read_output_lines()
+    if(verbose){
+      print("got more lines:")
+      print(newlines)
+      print(paste("len all out", length(all_out)))
+      print(paste("n_lines", n_lines))
+    }
     all_out <- c(all_out, newlines)
+  }
+  if(verbose){
+    print("return from extractstreamer_read_n_lines")
   }
   all_out
 }
@@ -567,11 +579,18 @@ extractstreamer_read_n_lines <- function(p, n_lines){
 #' @return The text, divided by line
 extractstreamer_showtext <- function(p, fname) {
   p$write_input(paste0("showtext ",fname,"\n"))
+
   #Figure out how many lines to get, then get them
   newlines <- extractstreamer_read_one_line(p)
-  n_lines <- as.integer(newlines)
-  extractstreamer_read_n_lines(p, n_lines)
-  invisible()
+  if(stringr::str_starts(newlines, "error")){
+    #print(newlines)
+    #Return nothing
+    NULL
+  } else {
+    #Get all the lines
+    n_lines <- as.integer(newlines)
+    extractstreamer_read_n_lines(p, n_lines)
+  }
 }
 
 
