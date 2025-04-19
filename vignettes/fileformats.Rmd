@@ -8,6 +8,87 @@ output:
 ---
 
 
+# Bascet-TIRP (.tirp.gz)
+
+TIRP (Tabix-indexed read pairs) is a bgzip'ed text file with the following
+columns, separated by a tab:
+
+* Name of cell
+* 1 (start position in tabix format; ignored)
+* 1 (end position in tabix format; ignored)
+* R1 sequence
+* R2 sequence
+* R1 quality score
+* R2 quality score
+* UMI
+
+With the only exception of right after debarcoding, TIRPs are always sorted by
+the name of the cell. They are then indexed using tabix. This means that you can
+retrieve a list of cells in a file using the tabix tool, but we advise you to
+use higher level wrappers in Zorn/Bascet to not get locked to this file format.
+
+An optional read count histogram can be stored as file: xxx.tirp.gz.hist
+
+# Bascet-ZIP (.zip)
+
+We use zip files as a means of storing general data. There are the conventions:
+
+* File Y for cell XX are stored as XX/Y
+* If a cells has reads, there are stored as XX/r1.fq and XX/r2.fq
+* If a cell has contigs, they are stored as XX/contigs.fa
+* The file XX/_mapcell.log is the output from the mapcell script
+* Overall, files named XX/_YY are reserved as special output from future tools. Thus avoid storing files starting with _ in their name
 
 
-TODO
+# Bascet-FASTQ (.R1.fq.gz and .R2.fq.gz)
+
+Some tools require FASTQ as input or output. To keep track of the cell origin of reads,
+the reads have a special naming convention:
+
+"BASCET_" cellID ":" UMI ":" read_number ":" read_index 
+
+where
+* cellID is the name of the cell. As FASTQ only supports some characters, names will be mangled in the future (to be implemented)
+* UMI is the unique molecular identifier
+* read_number is just a number, with the same number for R1 and R2. it can be used to track read correspondence if reads are filtered, multimapped etc.
+* read_index is 1 or 2, for R1 and R2
+
+Reads in Bascet-FASTQ are typically sorted by cellID, read_number and read_index,
+in this order. This makes it easy to read all reads for one cell without having to
+scan through the entire file.
+
+# Bascet-BAM (.bam)
+
+To keep track of the cellular origin, reads in BAM files typically follow the
+same naming convention as in Bascet-FASTQ. Thus, running any aligner on a
+Bascet-FASTQ should result in valid Bascet-BAM.
+
+To support other tools, the reads may also be annotated using tags. If read names
+are not named according to the FASTQ scheme, i.e, if they do not start with "BASCET_",
+tools must instead scan for tags:
+
+* @CB:Z:.... cell_ID
+* @UB:Z..... UMI
+
+This is similar to CellRanger annotation (https://www.10xgenomics.com/support/software/cell-ranger/7.2/analysis/outputs/cr-outputs-bam),
+except Bascet does not have tags for yet-to-be-corrected cell IDs and UMIs.
+
+
+# Bascet-KRAKEN5 (.kraken5)
+
+This is a sparse matrix HDF5 file, aimed to store counts from KRAKEN2.
+As KRAKEN2 outputs taxonomy IDs (starting from 0), these are used as column indices
+in this matrix format.
+
+More details to follow
+
+
+
+# Bascet-HDF5 (.hd5)
+
+This format loosely implements the Anndata count matrix format (https://anndata.readthedocs.io).
+To accommodate for the needs to store other types of data, these files will likely
+deviate from the standard in the future. Thus, do not expect to be able to load
+them with regular anndata-compatible software.
+
+More details to follow

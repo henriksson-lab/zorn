@@ -110,7 +110,7 @@ OpenBascet <- function(
 CloseBascet <- function(
     bascetFile
 ){
-  extractstreamer_exit(bascetFile)
+  extractstreamer_exit(bascetFile@streamer)
   invisible()
 }
 

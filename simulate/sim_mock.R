@@ -1,12 +1,5 @@
 library(Biostrings)
 
-allfa <- Biostrings::readDNAStringSet("/husky/fromsequencer/240809_novaseq_wgs1/trimmed/ref10/all.fa")
-
-data.frame(
-  name=names(allfa),
-  len=str_length(allfa)
-)
-
 
 simulate_one_cell <- function(ch, genome_name, num_read=1000, insert_max_size=800) {
   totlen <- str_length(ch)
@@ -36,8 +29,7 @@ simulate_one_cell <- function(ch, genome_name, num_read=1000, insert_max_size=80
     umi=""
   )  
 }
- 
-#ch <- as.character(allfa[1])
+
 
 simulate_all_cells <- function(allfa, outf, num_cells=1000, num_read=1000, insert_max_size=800, append=FALSE, finalize=TRUE, startseq=1){
   if(!append){
@@ -61,11 +53,20 @@ simulate_all_cells <- function(allfa, outf, num_cells=1000, num_read=1000, inser
     finalize_file(outf)
   }
 }
+
+
 finalize_file <- function(outf){
   system(paste0("bgzip -f ",outf))
   system(paste0("tabix -f -p bed ",outf, ".gz"))  
 }
 
+
+############### Load fasta to simulate
+allfa <- Biostrings::readDNAStringSet("/husky/fromsequencer/240809_novaseq_wgs1/trimmed/ref10/all.fa")
+data.frame(
+  name=names(allfa),
+  len=str_length(allfa)
+)
 
 simulate_all_cells(
   allfa, 
@@ -84,13 +85,13 @@ simulate_all_cells(
 )
 #1M reads total
 
-#idea: larger genomes, will this result in a more average vector, more toward the middle? likely!
 
 
-
+#####################################
+#####################################
+#####################################
 
 allfa_main <- allfa[str_length(allfa)>1000000]
-
 
 simulate_all_cells(
   allfa_main, 
@@ -131,14 +132,14 @@ simulate_all_cells(
 
 
 
-
+######################## 
 ######################## write individual genomes as cells
+######################## 
 
-
-str_length(allfa_main)
+#str_length(allfa_main)
 
 df <- data.frame(
-  name=names(allfa_main), #paste0(,"__",1:length(insert_r1)),
+  name=names(allfa_main),
   pos1=1,
   pos2=1,
   r1=as.character(allfa_main),
