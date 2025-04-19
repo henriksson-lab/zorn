@@ -4,7 +4,7 @@
 \alias{is_bam_paired_alignment}
 \title{Figure out if a BAM-file is a paired alignment or not}
 \usage{
-is_bam_paired_alignment(fname, bascet_instance = bascet_instance.default)
+is_bam_paired_alignment(fname, bascet_instance = GetDefaultBascetInstance())
 }
 \arguments{
 \item{fname}{Name of BAM-file}

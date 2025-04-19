@@ -10,9 +10,9 @@ BascetMapCell(
   inputName,
   outputName,
   args = list(),
-  overwrite = TRUE,
-  runner,
-  bascet_instance = bascet_instance.default
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

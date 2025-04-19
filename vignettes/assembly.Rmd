@@ -21,9 +21,7 @@ BascetMapCell(
   bascetRoot,
   withfunction = "_skesa",
   inputName = "filtered",
-  outputName = "skesa",
-  runner=bascet_runner,
-  bascet_instance=bascet_instance
+  outputName = "skesa"
 )
 ```
 

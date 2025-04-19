@@ -10,8 +10,8 @@ BascetIndexGenomeSTAR(
   gtfFile,
   outDir,
   numLocalThreads = 10,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

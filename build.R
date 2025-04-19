@@ -9,13 +9,13 @@ if(FALSE){
   source("R/zorn_aggr.R")
   source("R/aggr_functions.R")
   source("R/count_kmer.R")
+  source("R/countsketch.R")
   source("R/refgenome.R")
   source("R/kraken.R")
   source("R/container.R")
   source("R/ext_tools.R")
-} 
-
-if(FALSE) {
+  
+} else {
   library(Zorn)
 }
 

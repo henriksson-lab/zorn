@@ -15,6 +15,7 @@ rownames(map_len) <- map_len$name
 mat <- as.data.frame(data.table::fread("/husky/henriksson/atrandi/v2_wgs_novaseq1/countsketch_mat.csv"))
 mat <- as.data.frame(data.table::fread("/husky/henriksson/atrandi/v3_wgs_novaseq1/countsketch_mat.csv"))
 mat <- as.data.frame(data.table::fread("/husky/henriksson/atrandi/v2_wgs_saliva1/countsketch_mat.csv"))
+mat <- as.data.frame(data.table::fread("/husky/henriksson/atrandi/v4_wgs_saliva1/countsketch_mat.csv"))
 
 
 #mat <- read.table("/home/mahogny/github/bascet/miseqdata/countsketch_mat.csv")
@@ -398,6 +399,9 @@ if(FALSE){
 ############### Seurat version
 ################################################################################
 
+
+
+CreateSeuratObjectWithReduction(Q)
 
 
 

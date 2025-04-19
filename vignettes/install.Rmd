@@ -17,6 +17,11 @@ if (!requireNamespace("devtools", quietly = TRUE))
 devtools::install_github("henriksson-lab/zorn")
 ```
 
+You can then load it:
+```{r, eval=F, echo=T}
+library(Zorn)
+```
+
 You also need Bascet. Unless you are a Bascet developer, you will find it
 easiest to run it through Singularity or Docker. Pick the one that is easiest
 to set up on your particular system (i.e. if you already have one of these set
@@ -31,7 +36,7 @@ We recommend keeping it in a separate directory from your workspace, as
 multiple workspaces can share the same image
 
 ```{r, eval=F, echo=T}
-bascet_inst <- getBascetSingularityImage(store_at="/somewhere/on/your/disk/")
+bascet_instance.default <- getBascetSingularityImage(store_at="/somewhere/on/your/disk/")
 ```
 
 
@@ -44,14 +49,14 @@ We recommend keeping it in a separate directory from your workspace, as
 multiple workspaces can share the same image
 
 ```{r, eval=F, echo=T}
-bascet_inst <- getBascetDockerImage(store_at="/somewhere/on/your/disk/")
+bascet_instance.default <- getBascetDockerImage(store_at="/somewhere/on/your/disk/")
 ```
 
 # Testing the installation
 
 Run the following and see if you get "ok" before proceeding:
 ```{r, eval=F, echo=T}
-TestBascetInstance(bascet_inst)
+TestBascetInstance(bascet_instance.default)
 ```
 
 

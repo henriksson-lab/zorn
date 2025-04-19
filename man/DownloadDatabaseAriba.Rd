@@ -8,7 +8,7 @@ DownloadDatabaseAriba(
   dbdir,
   ref = c("argannot", "card", "ncbi", "megares", "plasmidfinder", "resfinder",
     "srst2_argannot", "vfdb_core", "vfdb_full", "virulencefinder"),
-  bascet_instance = bascet_instance.default
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \description{

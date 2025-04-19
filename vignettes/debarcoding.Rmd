@@ -13,8 +13,8 @@ these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
-bascetRoot = "/home/yours/an_empty_workdirectory"
+bascet_runner.default <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
 
@@ -39,8 +39,7 @@ you have, where "atrandi_wgs" is for the Atrandi SPC-based MDA protocol for WGS.
 BascetGetRaw(
     bascetRoot, 
     rawmeta,
-    chemistry="atrandi_wgs",
-    runner=bascet_runner
+    chemistry="atrandi_wgs"
 )
 ```
 
@@ -90,8 +89,7 @@ In this step we also filter out barcodes with too low read counts (optional).
 BascetShardify(
   bascetRoot,
   includeCells = includeCells,
-  num_output_shards = 1,
-  runner=bascet_runner
+  num_output_shards = 1
 )
 ```
 

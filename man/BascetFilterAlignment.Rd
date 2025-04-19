@@ -10,8 +10,9 @@ BascetFilterAlignment(
   inputName,
   outputName,
   keep_mapped = FALSE,
-  runner,
-  bascet_instance = bascet_instance.default
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

@@ -10,8 +10,8 @@ BascetMakeKrakenCountMatrix(
   inputName = "kraken_out",
   outputName = "kraken",
   overwrite = FALSE,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

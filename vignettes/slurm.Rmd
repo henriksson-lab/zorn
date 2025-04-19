@@ -61,8 +61,8 @@ my_job <- BascetGetRawAtrandiWGS(
   bascetRoot,
   rawmeta,
   runner=SlurmRunner(
-    bascet_runner.default, 
-    ncpu=5, 
+    bascet_runner.default,
+    ncpu=5,
     mem="5g")
 )
 ```
@@ -81,7 +81,7 @@ or [screen](https://linuxize.com/post/how-to-use-linux-screen/),
 on a login node of your cluster.
 
 ```{r, eval=F, echo=T}
-WaitForJob(my_job) 
+WaitForJob(my_job)
 ```
 You can press ctrl+c to end the waiting loop early.
 

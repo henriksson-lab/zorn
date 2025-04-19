@@ -8,7 +8,7 @@ how many times it occurs across the cells. Presented as a 96-well plate matrix}
 AtrandiBarcodeStats(
   bascetRoot,
   inputName = "debarcoded",
-  bascet_instance = bascet_instance.default
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \value{

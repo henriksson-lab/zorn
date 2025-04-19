@@ -13,8 +13,8 @@ BascetAlignToReference(
   outputNameBAMsorted = "aligned",
   do_sort = TRUE,
   overwrite = FALSE,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

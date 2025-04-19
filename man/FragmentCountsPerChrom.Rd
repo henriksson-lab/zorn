@@ -4,7 +4,10 @@
 \alias{FragmentCountsPerChrom}
 \title{From a Signac chromatin assay with fragments, for each cell, count how many reads per chromosome}
 \usage{
-FragmentCountsPerChrom(chrom_assay, bascet_instance = bascet_instance.default)
+FragmentCountsPerChrom(
+  chrom_assay,
+  bascet_instance = GetDefaultBascetInstance()
+)
 }
 \value{
 a FeatureMatrix

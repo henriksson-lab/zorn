@@ -10,8 +10,8 @@ BascetQueryFq(
   outputName = "kmer_counts",
   useKMERs,
   max_reads = 1e+06,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

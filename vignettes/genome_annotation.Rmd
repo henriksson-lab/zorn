@@ -32,9 +32,7 @@ You can run then run Bakta on all cells using
 ### ....
 BascetMapCellBakta(
   bascetRoot,
-  db = "....",
-  runner=bascet_runner,
-  bascet_instance=bascet_instance
+  db = "...."
 )
 ```
 

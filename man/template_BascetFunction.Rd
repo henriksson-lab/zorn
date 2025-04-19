@@ -6,8 +6,8 @@
 \usage{
 template_BascetFunction(
   bascetRoot,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

@@ -12,8 +12,8 @@ BascetComputeMinhash(
   overwrite = FALSE,
   max_reads = 1e+05,
   kmer_size = 31,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

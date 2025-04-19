@@ -17,17 +17,23 @@ is_bam_paired_alignment <- function(
     bascet_instance=GetDefaultBascetInstance()
 ){
 
+  #example
+  #@PG     ID:bwa  PN:bwa  VN:0.7.18-r1243-dirty   CL:bwa mem /home/m/mahogny/mystore/atrandi/bwa_ref/combo_hx/all.fa.gz /pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/atrandi/v2_wgs_saliva1/asfq.1.R1.fq.gz /pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/atrandi/v2_wgs_saliva1/asfq.1.R2.fq.gz -t 10
+  
   #Note: can also see this from the BAM header, but a real mess to parse out!
   # samtools view unsorted_aligned.1.bam  -H
   # @PG	ID:bwa	PN:bwa	VN:0.7.17-r1198-dirty	CL:bwa mem /husky/fromsequencer/241210_joram_rnaseq/ref/all.fa /husky/henriksson/atrandi/v2_rnaseq5//asfq.1.R1.fq.gz /husky/henriksson/atrandi/v2_rnaseq5/asfq.1.R2.fq.gz -t 20
   
+  cmd <- paste(
+    bascet_instance@prepend_cmd, 
+    "samtools view",
+    fname,
+    "-h | head -n 10000 | ", #100 was not enough to be reliable
+    bascet_instance@prepend_cmd," samtools view -c -f 1"
+  )
+  
   ret <- system(
-    paste(
-      bascet_instance@prepend_cmd, 
-      "samtools view",
-      fname,
-      "-h | head -n 100 | samtools view -c -f 1"
-    ), 
+    cmd, 
     intern = TRUE, 
     ignore.stderr=TRUE,
   )
@@ -292,7 +298,7 @@ BascetFilterAlignment <- function(
     
     ### Set flags for samtools. Depends on if paired alignment or not
     samtools_flags <- ""
-    is_paired_al <- is_bam_paired_alignment(inputFiles[1])
+    is_paired_al <- is_bam_paired_alignment(inputFiles[1], bascet_instance)
     print(paste("Detect paired alignment: ",is_paired_al))
     
     if(is_paired_al) {
@@ -326,6 +332,7 @@ BascetFilterAlignment <- function(
       )
     )
       
+    print(cmd)
     
     
     #Produce the script and run the job

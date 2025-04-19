@@ -9,8 +9,8 @@ BascetCountChrom(
   inputName = "aligned",
   outputName = "chromcount",
   overwrite = FALSE,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \value{

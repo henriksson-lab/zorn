@@ -11,8 +11,8 @@ BascetShardify(
   num_output_shards = 1,
   outputName = "filtered",
   overwrite = FALSE,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

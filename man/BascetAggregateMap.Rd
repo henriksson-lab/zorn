@@ -8,8 +8,10 @@ BascetAggregateMap(
   bascetRoot,
   bascetName,
   aggrFunction,
+  include_cells = NULL,
   showProgress = TRUE,
-  bascet_instance
+  verbose = FALSE,
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \value{

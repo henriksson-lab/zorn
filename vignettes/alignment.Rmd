@@ -14,8 +14,8 @@ these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
-bascetRoot = "/home/yours/an_empty_workdirectory"
+bascet_runner.default <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
 We will use BWA for alignment, which wants the data in FASTQ format. Here we assume that you use a single-cell
@@ -28,10 +28,9 @@ We name the output Bascets "asfq", taking as input the typical sharded reads:
 ### Get reads in fastq format
 BascetMapTransform(
   bascetRoot,
-  "filtered",   #default; can omit
-  "asfq",  ###name parameter
-  out_format="R1.fq.gz",
-  runner=bascet_runner
+  inputName="filtered",   #default; can omit
+  outputName="asfq",  ###name parameter
+  out_format="R1.fq.gz"
 )
 ```
 
@@ -47,9 +46,8 @@ it via Zorn. This assumes that you have a FASTA-file named all.fa
 ```{r, eval=F, echo=T}
 #Build a reference
 BascetIndexGenomeBWA(
-  bascetRoot, 
-  "/your_reference/all.fa", 
-  runner=bascet_runner
+  bascetRoot,
+  "/your_reference/all.fa"
 )
 ```
 
@@ -70,24 +68,22 @@ outputs both unsorted and sorted BAM-files.
 BascetAlignToReference(
   bascetRoot,
   useReference="/your_reference/all.fa",
-  numLocalThreads=10,
-  runner=bascet_runner
+  numLocalThreads=10
 )
 ```
 
 
 TODO: Filtering
 
-==================== Host filtering workflow ==============
 
+#Host filtering workflow 
 
 
 ```{r, eval=F, echo=T}
 BascetFilterAlignment(
   bascetRoot,
   outputName="filter_paired",
-  keep_mapped=TRUE,
-  runner=bascet_runner
+  keep_mapped=TRUE
 )
 ```
 
@@ -96,10 +92,7 @@ BascetFilterAlignment(
 
 
 
-
-
-
-==================== Counting workflow ==============
+#Counting workflow
 
 
 If you want to analyze where reads mapped, either for RNA-seq counting for genes,
@@ -117,8 +110,7 @@ this is typically enough.
 ```{r, eval=F, echo=T}
 ### Generate fragments BED file suited for quantifying reads/chromosome using Signac later 
 BascetBam2Fragments(
-  bascetRoot,
-  runner=bascet_runner
+  bascetRoot
 )
 ```
 
@@ -132,8 +124,7 @@ then we provide a simpler counter. The output is a small matrix that you can loa
 ```{r, eval=F, echo=T}
 ### Count reads per chromosome
 BascetCountChrom(
-  bascetRoot, 
-  runner=bascet_runner
+  bascetRoot
 )
 ```
 

@@ -5,7 +5,11 @@
 \title{Read the count histogram associated with a Bascet.
 Not all Bascets have one, but it is typically produced after debarcoding}
 \usage{
-ReadHistogram(bascetRoot, inputName, bascet_instance = bascet_instance.default)
+ReadHistogram(
+  bascetRoot,
+  inputName,
+  bascet_instance = GetDefaultBascetInstance()
+)
 }
 \arguments{
 \item{bascet_instance}{A Bascet instance}

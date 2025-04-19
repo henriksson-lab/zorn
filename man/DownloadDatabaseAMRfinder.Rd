@@ -4,7 +4,7 @@
 \alias{DownloadDatabaseAMRfinder}
 \title{....}
 \usage{
-DownloadDatabaseAMRfinder(dbdir, bascet_instance = bascet_instance.default)
+DownloadDatabaseAMRfinder(dbdir, bascet_instance = GetDefaultBascetInstance())
 }
 \description{
 ....

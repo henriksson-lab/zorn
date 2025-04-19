@@ -9,8 +9,8 @@ BascetBam2Fragments(
   inputName = "aligned",
   outputName = "fragments",
   overwrite = FALSE,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \value{

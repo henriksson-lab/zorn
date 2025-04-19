@@ -16,8 +16,8 @@ these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascet_runner <- LocalRunner(direct = TRUE, show_script=TRUE)
-bascetRoot = "/home/yours/an_empty_workdirectory"
+bascet_runner.default <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
 
@@ -33,8 +33,7 @@ BascetMapTransform(
   bascetRoot,
   "filtered",   #default; can omit
   "asfq",  ###name parameter
-  out_format="R1.fq.gz",
-  runner=bascet_runner
+  out_format="R1.fq.gz"
 )
 ```
 
@@ -53,15 +52,13 @@ can then run KRAKEN2 like this:
 BascetRunKraken(
   bascetRoot,
   useKrakenDB="/your_disk/kraken/standard-8",
-  numLocalThreads=20,
-  runner=bascet_runner
+  numLocalThreads=20
 )
 
 ### Produce a count matrix of taxonomy features
 BascetMakeKrakenCountMatrix(
   bascetRoot,
-  numLocalThreads=20,
-  runner=bascet_runner
+  numLocalThreads=20
 )
 ```
 

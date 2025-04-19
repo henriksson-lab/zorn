@@ -11,8 +11,8 @@ BascetGetRaw(
   outputNameIncomplete = "incomplete_reads",
   chemistry = "atrandi_wgs",
   overwrite = FALSE,
-  runner,
-  bascet_instance = bascet_instance.default
+  runner = GetDefaultBascetRunner(),
+  bascet_instance = GetDefaultBascetInstance()
 )
 }
 \arguments{

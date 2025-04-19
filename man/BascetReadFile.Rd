@@ -9,7 +9,7 @@ BascetReadFile(
   cellID,
   filename,
   as = c("tempfile"),
-  bascet_instance = bascet_instance.default,
+  bascet_instance = GetDefaultBascetInstance(),
   verbose = FALSE
 )
 }
