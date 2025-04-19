@@ -1,0 +1,28 @@
+---
+title: "Example data"
+output:
+  html_document:
+    theme: united
+    df_print: kable
+  pdf_document: default
+---
+
+# Simulated data
+
+To test the pipeline, we have prepared a simulated dataset at (TODO upload)
+
+You can also simulate your own data, to, e.g., check performance on genomes that
+you might expect in a sample. This can be useful for power calculations/estimation.
+See [the Zorn github repo](https://github.com/henriksson-lab/zorn/tree/main/simulate).
+Note that the simulation scripts are for developers primarily, and likely have
+rough corners. Please get in touch if you have a need of this and need directions
+on how to use the code.
+
+
+# Real data
+
+
+TODO
+
+
+

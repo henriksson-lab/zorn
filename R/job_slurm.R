@@ -148,7 +148,11 @@ setMethod(
     slurm_script <- tempfile(fileext = ".sh")
     #print(slurm_script)    
     writeLines(con=slurm_script, scriptcontent)
-    #print(scriptcontent)
+    
+    if(TRUE){
+      #/var/spool/slurmd/job34516237/slurm_script: line 9: [: missing `]'   --- need to fix
+      print(scriptcontent)
+    }
         
     ## Run the script; catch the message from sbatch
     cmd <- paste0("sbatch --array=0-",arraysize-1,"  ",slurm_script)
