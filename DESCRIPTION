@@ -46,6 +46,7 @@ Collate:
   'zorn_aggr.R'
   'aggr_functions.R'
   'count_kmer.R'
+  'countsketch.R'
   'refgenome.R'
   'kraken.R'
   'container.R'
