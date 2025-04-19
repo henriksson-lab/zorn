@@ -1,14 +1,6 @@
 
 
 ###############################################
-############################################### count sketch system
-###############################################
-
-
-
-
-
-###############################################
 #' Compute count sketch for each cell.
 #' This is a thin wrapper around BascetMapCell
 #' 
@@ -119,6 +111,31 @@ BascetGatherCountSketch <- function(
 
 
 
+###############################################
+#' Load count sketch matrix as Seurat object
+#' 
+#' @return A seurat object
+#' @export
+BascetLoadCountSketchMatrix <- function(
+    bascetRoot,
+    inputName="countsketch_mat.csv"
+) {
+  #"/husky/henriksson/atrandi/v2_wgs_novaseq1/countsketch_mat.csv"
+  mat <- as.data.frame(data.table::fread(fname))
+  
+  cellid <- mat[,1]
+  celldepth <- mat[,2]
+  
+  Q <- t(mat[,-(1:2)])  #Each column is one cell
+  colnames(Q) <- cellid
+  rownames(Q) <- paste0("f",1:nrow(Q))
+  
+  adata <- CreateSeuratObjectWithReduction(Q)
+  adata$celldepth <- celldepth
+  
+  adata
+}
+
 
 
 
@@ -136,37 +153,12 @@ CreateSeuratObjectWithReduction <- function(Q, reduction_name="kmersketch", assa
   
   pbmc <- CreateSeuratObject(counts = m, project = "a", min.cells = 0, min.features = 0)
   pbmc@reductions[[reduction_name]] <- CreateDimReducObject(
-    embeddings = sign(t(Q)), 
+    embeddings = sign(t(Q)),  ####################################### postpone??
     key = reduction_name,
     assay = assay
   )
   pbmc
 }
-
-
-
-if(FALSE){
-  library(future)
-  plan("multicore", workers = 10)
-  
-  pbmc <- CreateSeuratObjectWithReduction(Q[,1:1000])
-  pbmc
-  reduction_name <- "kmersketch"
-  pbmc <- RunUMAP(
-    pbmc, 
-    dims = 1:ncol(pbmc@reductions[[reduction_name]]@cell.embeddings), 
-    reduction = reduction_name,
-    metric = "cosine"
-  )  
-  
-  
-  #todo cosine distance??
-  
-  ##pbmc <- FindNeighbors(pbmc, reduction = "kmersketch", annoy.metric = "cosine")
-  
-}
-
-
 
 
 
@@ -214,3 +206,34 @@ PlotJohnsonLindenstraussMinDim <- function(list_eps, min_cells=10, max_cells=100
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+if(FALSE){
+  library(future)
+  plan("multicore", workers = 10)
+  
+  pbmc <- CreateSeuratObjectWithReduction(Q[,1:1000])
+  pbmc
+  reduction_name <- "kmersketch"
+  pbmc <- RunUMAP(
+    pbmc, 
+    dims = 1:ncol(pbmc@reductions[[reduction_name]]@cell.embeddings), 
+    reduction = reduction_name,
+    metric = "cosine"
+  )  
+  
+  
+  #todo cosine distance??
+  
+  ##pbmc <- FindNeighbors(pbmc, reduction = "kmersketch", annoy.metric = "cosine")
+  
+}

@@ -94,10 +94,58 @@ BascetShardify(
 ```
 
 
+# Additional trimming
+
+Bascet only does rudimentary trimming. We recommend trimming the reads further.
+To do this, first convert your data to FASTQ format:
+
+```{r, eval=F, echo=T}
+### Get reads in fastq format
+BascetMapTransform(
+  bascetRoot,
+  inputName="filtered",   #default; can omit
+  outputName="asfq",  
+  out_format="R1.fq.gz"
+)
+```
+
+Now use FASTP to perform the trimming:
+
+```{r, eval=F, echo=T}
+### Get reads in fastq format for BWA
+BascetRunFASTP(
+  bascetRoot,
+  numLocalThreads=10,
+  inputName="asfq",
+  outputName="fastp"
+)
+```
+
+If your plan is to perform alignment, then the resulting fastp FASTQ files
+can be used as input (don't forget to specify inputName="fastp"!).
+If you want to instead get a TIRP file, you can convert it back:
+
+```{r, eval=F, echo=T}
+BascetMapTransform(
+  bascetRoot,
+  "fastp",
+  "new_filtered",
+  out_format="tirp.gz"
+)
+```
+
+
+You now have a TIRP file again, equivalent to the first shardified output.
+Don't forget to specify inputName="new_filtered" to later commands, as the default
+is to use "filtered"
+
+
+# Onward
+
 If you make it here then you have passed one of the heaviest and most critical
 steps in the workflow!
 
-How you proceed depends on your usecase. If you are doing single-cell metagenomics
+How you proceed depends on your use case. If you are doing single-cell metagenomics
 of a sample of unknown composition then we recommend the KRAKEN2 workflow next.
 
 
