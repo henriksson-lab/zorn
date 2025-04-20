@@ -18,6 +18,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/articles/kmer.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/kraken.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/map_scripts.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/read_quality_control.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/slurm.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/snp_analysis.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/tcr_analysis.html</loc></url>
@@ -27,7 +28,9 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/AtrandiBarcodeStats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BarnyardPlotMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/Bascet-class.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateAMRfinder.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateAbricate.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateFASTQC.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignToReference.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignmentToBigwig.html</loc></url>
@@ -77,6 +80,8 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/FragmentsToSignac.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetBascetTempDir.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetDefaultBascetInstance.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCassembledDF.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCpassfailStats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KmcChooseKmerFeatures.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KmcGetHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KmcGetKmers.html</loc></url>
@@ -89,6 +94,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/MapListAsDataFrame.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/NoRunner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/OpenBascet.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/PlotFASTQCadapterContent.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotJohnsonLindenstraussMinDim.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadBascetCountMatrix.html</loc></url>
@@ -96,6 +102,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadBascetKrakenMatrix_one.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/SetTaxonomyNamesFeatures.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/ShowFASTQCforCell.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/SlurmRunner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/TabixGetFragmentsSeqs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/TestBascetInstance.html</loc></url>
@@ -103,6 +110,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.amrfinder.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.ariba.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.checkm.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.fastqc.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.gecco.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.minhash.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.quast.html</loc></url>

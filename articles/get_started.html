@@ -31,22 +31,25 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/install.html">Install</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/get_started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/slurm.html">Using SLURM</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><h6 class="dropdown-header" data-toc-skip>Introductory Vignettes</h6></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
+    <li><a class="dropdown-item" href="../articles/read_quality_control.html">Read-based quality control</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/kraken.html">KRAKEN-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
-    <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
-    <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/kmer.html">Informative KMER-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/countsketch.html">Count sketch KMER-based workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
+    <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
+    <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
-    <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
     <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
     <li><a class="dropdown-item" href="../articles/example_data.html">Example data</a></li>
   </ul>
@@ -79,10 +82,13 @@
 
     
     
-<p>Zorn and Bascet can do many things: * Preprocess reads for
-single-cell metagenomics, WGS and RNA-seq * Perform de novo assembly and
-other tasks relevant for whole-genome sequencing * Perform custom
-per-cell detailed analysis operations</p>
+<p>Zorn and Bascet can do many things:</p>
+<ul>
+<li>Preprocess reads for single-cell metagenomics, WGS and RNA-seq</li>
+<li>Perform de novo assembly and other tasks relevant for whole-genome
+sequencing</li>
+<li>Perform custom per-cell detailed analysis operations</li>
+</ul>
 <p>The interface is designed to interoperate with Signac and Seurat for
 high-level analysis of the data, after the preprocessing.</p>
 <p>Depending on your use case, you will need different tutorials.
@@ -94,7 +100,10 @@ However, these are in common for all workflows:</p>
 high-performance environment</li>
 <li>
 <a href="debarcoding.html">Debarcoding tutorial</a> - Ingesting raw
-FASTQ and preparing for later steps</li>
+FASTQ, trimming, and preparing for later steps</li>
+<li>
+<a href="read_quality_control.html">Read-based quality control</a> -
+Quality control of reads</li>
 </ul>
 <p>The next step to get an overview is likely:</p>
 <ul>
@@ -121,15 +130,22 @@ analysis:</p>
 samples</li>
 <li><a href="assembly.html">De novo assembly</a></li>
 <li>
+<a href="genome_annotation.html">Genome annotation</a> - annotate
+your assemblies</li>
+<li>
 <a href="map_scripts.html">Running software for each cell using
-MAP</a> - Such as QC analysis etc</li>
+MAP</a> - the general method for performing calculations on each
+cell</li>
 </ul>
-<p>These may help you understand Zorn and Bascet better</p>
+<p>These may help you understand the design of Zorn and Bascet:</p>
 <ul>
 <li><a href="fileformats.html">Overview of file formats</a></li>
 <li>
 <a href="for_developers.html">For developers</a> - if you wish to
 modify Bascet</li>
+<li>
+<a href="example_data.html">Example data</a> - you can run the
+workflow with some small datasets before you scale up</li>
 </ul></main>
 </div>
 
