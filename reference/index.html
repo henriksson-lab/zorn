@@ -87,6 +87,12 @@
         <dd>A bascet, along with all the shards</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetAggregateAbricate.html">BascetAggregateAbricate()</a></code>
+
+        </dt>
+        <dd>Aggregate data from Abricate This is a thin wrapper around BascetAggregateMap</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetAggregateMap.html">BascetAggregateMap()</a></code>
 
         </dt>
@@ -213,16 +219,34 @@
         <dd>Call a MAP function for all cells</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetMapCellAMRfinder.html">BascetMapCellAMRfinder()</a></code>
+
+        </dt>
+        <dd>Run AMRfinder on contigs of all cells. This is a thin wrapper around BascetMapCell</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetMapCellAbricate.html">BascetMapCellAbricate()</a></code>
+
+        </dt>
+        <dd>Run Abricate on contigs of all cells. This is a thin wrapper around BascetMapCell</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetMapCellAriba.html">BascetMapCellAriba()</a></code>
 
         </dt>
-        <dd>.... This is a thin wrapper around BascetMapCell</dd>
+        <dd>Run Ariba on reads of all cells. This is a thin wrapper around BascetMapCell</dd>
       </dl><dl><dt>
 
           <code><a href="BascetMapCellBakta.html">BascetMapCellBakta()</a></code>
 
         </dt>
-        <dd>.... This is a thin wrapper around BascetMapCell</dd>
+        <dd>Run Bakta on contigs of all cells. This is a thin wrapper around BascetMapCell</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetMapCellFASTQC.html">BascetMapCellFASTQC()</a></code>
+
+        </dt>
+        <dd>Run FASTQC on contigs of all cells. This is a thin wrapper around BascetMapCell</dd>
       </dl><dl><dt>
 
           <code><a href="BascetMapTransform.html">BascetMapTransform()</a></code>
@@ -291,6 +315,12 @@
         <dd>Close a Bascet file.</dd>
       </dl><dl><dt>
 
+          <code><a href="CountDataFrameToSparseMatrix.html">CountDataFrameToSparseMatrix()</a></code>
+
+        </dt>
+        <dd>Count entries in long format data frame and return as a sparse matrix</dd>
+      </dl><dl><dt>
+
           <code><a href="CountGrangeFeatures.html">CountGrangeFeatures()</a></code>
 
         </dt>
@@ -312,19 +342,19 @@
           <code><a href="DownloadDatabaseAMRfinder.html">DownloadDatabaseAMRfinder()</a></code>
 
         </dt>
-        <dd>....</dd>
+        <dd>Download a database for AMRfinder</dd>
       </dl><dl><dt>
 
           <code><a href="DownloadDatabaseAriba.html">DownloadDatabaseAriba()</a></code>
 
         </dt>
-        <dd>....</dd>
+        <dd>Download database for Ariba</dd>
       </dl><dl><dt>
 
           <code><a href="DownloadDatabaseBakta.html">DownloadDatabaseBakta()</a></code>
 
         </dt>
-        <dd>....</dd>
+        <dd>Download a database for Bakta</dd>
       </dl><dl><dt>
 
           <code><a href="FragmentCountsPerChrom.html">FragmentCountsPerChrom()</a></code>
@@ -393,10 +423,22 @@
         <dd>Using a KRAKEN2 count matrix, produce a "kneeplot" of species</dd>
       </dl><dl><dt>
 
+          <code><a href="ListDatabaseAbricate.html">ListDatabaseAbricate()</a></code>
+
+        </dt>
+        <dd>List installed databases available for Abricate</dd>
+      </dl><dl><dt>
+
           <code><a href="LocalRunner.html">LocalRunner()</a></code>
 
         </dt>
         <dd>Create new local runner instance</dd>
+      </dl><dl><dt>
+
+          <code><a href="MapCellMultiListAsDataFrame.html">MapCellMultiListAsDataFrame()</a></code>
+
+        </dt>
+        <dd>Convenience function; alternative is to somehow implement as.data.frame</dd>
       </dl><dl><dt>
 
           <code><a href="MapListAsDataFrame.html">MapListAsDataFrame()</a></code>
@@ -477,25 +519,43 @@
         <dd>Check if a Bascet instance works</dd>
       </dl><dl><dt>
 
+          <code><a href="aggr.abricate.html">aggr.abricate()</a></code>
+
+        </dt>
+        <dd>Callback function for aggregating ABRicate data for each cell. To be called from BascetAggregateMap</dd>
+      </dl><dl><dt>
+
+          <code><a href="aggr.amrfinder.html">aggr.amrfinder()</a></code>
+
+        </dt>
+        <dd>Callback function for aggregating AMRFinderPlus data for each cell. To be called from BascetAggregateMap</dd>
+      </dl><dl><dt>
+
+          <code><a href="aggr.ariba.html">aggr.ariba()</a></code>
+
+        </dt>
+        <dd>Callback function for aggregating ARIBA data for each cell. To be called from BascetAggregateMap</dd>
+      </dl><dl><dt>
+
+          <code><a href="aggr.checkm.html">aggr.checkm()</a></code>
+
+        </dt>
+        <dd>Callback function for aggregating CheckM data for each cell. To be called from BascetAggregateMap</dd>
+      </dl><dl><dt>
+
+          <code><a href="aggr.gecco.html">aggr.gecco()</a></code>
+
+        </dt>
+        <dd>Callback function for aggregating GECCO data for each cell. To be called from BascetAggregateMap</dd>
+      </dl><dl><dt>
+
           <code><a href="aggr.minhash.html">aggr.minhash()</a></code>
 
         </dt>
-        <dd>Callback function for aggregating min-hashes for each cell To be called from BascetAggregateMap</dd>
-      </dl><dl><dt>
-
-          <code><a href="aggr.minhash_via_fs.html">aggr.minhash_via_fs()</a></code>
-
-        </dt>
-        <dd>Callback function for aggregating min-hashes for each cell To be called from BascetAggregateMap</dd>
+        <dd>Callback function for aggregating min-hashes for each cell. To be called from BascetAggregateMap</dd>
       </dl><dl><dt>
 
           <code><a href="aggr.quast.html">aggr.quast()</a></code>
-
-        </dt>
-        <dd>Callback function for aggregating QUAST data. To be called from BascetAggregateMap</dd>
-      </dl><dl><dt>
-
-          <code><a href="aggr.quast_via_filesystem.html">aggr.quast_via_filesystem()</a></code>
 
         </dt>
         <dd>Callback function for aggregating QUAST data. To be called from BascetAggregateMap</dd>
