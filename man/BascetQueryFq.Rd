@@ -10,6 +10,7 @@ BascetQueryFq(
   outputName = "kmer_counts",
   useKMERs,
   max_reads = 1e+06,
+  overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascet_instance = GetDefaultBascetInstance()
 )

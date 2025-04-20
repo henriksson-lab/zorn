@@ -2,7 +2,7 @@
 % Please edit documentation in R/aggr_functions.R
 \name{aggr.minhash}
 \alias{aggr.minhash}
-\title{Callback function for aggregating min-hashes for each cell
+\title{Callback function for aggregating min-hashes for each cell.
 To be called from BascetAggregateMap}
 \usage{
 aggr.minhash(bascetFile, cellID, bascet_instance)
@@ -11,6 +11,6 @@ aggr.minhash(bascetFile, cellID, bascet_instance)
 Minhash data (minhash.txt) for each cell
 }
 \description{
-Callback function for aggregating min-hashes for each cell
+Callback function for aggregating min-hashes for each cell.
 To be called from BascetAggregateMap
 }

@@ -250,7 +250,7 @@ ReadBascetKrakenMatrix_one <- function(
   
   rhdf5::H5close()
   
-  mat <- t(mat)
+  mat <- Matrix::t(mat)
   ##Note that taxid 0 is added, but with index 1 in R. Thus need to remove the first column
   unident <- mat[-1,]
   mat <- mat[-1,]

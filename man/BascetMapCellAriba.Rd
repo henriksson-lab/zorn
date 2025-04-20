@@ -2,7 +2,7 @@
 % Please edit documentation in R/ext_tools.R
 \name{BascetMapCellAriba}
 \alias{BascetMapCellAriba}
-\title{....
+\title{Run Ariba on reads of all cells.
 This is a thin wrapper around BascetMapCell}
 \usage{
 BascetMapCellAriba(
@@ -28,6 +28,6 @@ BascetMapCellAriba(
 TODO
 }
 \description{
-....
+Run Ariba on reads of all cells.
 This is a thin wrapper around BascetMapCell
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ext_tools.R
 \name{DownloadDatabaseBakta}
 \alias{DownloadDatabaseBakta}
-\title{....}
+\title{Download a database for Bakta}
 \usage{
 DownloadDatabaseBakta(
   dbdir,
@@ -11,5 +11,5 @@ DownloadDatabaseBakta(
 )
 }
 \description{
-....
+Download a database for Bakta
 }

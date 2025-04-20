@@ -2,7 +2,7 @@
 % Please edit documentation in R/ext_tools.R
 \name{DownloadDatabaseAriba}
 \alias{DownloadDatabaseAriba}
-\title{....}
+\title{Download database for Ariba}
 \usage{
 DownloadDatabaseAriba(
   dbdir,
@@ -12,5 +12,5 @@ DownloadDatabaseAriba(
 )
 }
 \description{
-....
+Download database for Ariba
 }

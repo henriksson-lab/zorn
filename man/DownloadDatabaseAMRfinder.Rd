@@ -2,10 +2,10 @@
 % Please edit documentation in R/ext_tools.R
 \name{DownloadDatabaseAMRfinder}
 \alias{DownloadDatabaseAMRfinder}
-\title{....}
+\title{Download a database for AMRfinder}
 \usage{
 DownloadDatabaseAMRfinder(dbdir, bascet_instance = GetDefaultBascetInstance())
 }
 \description{
-....
+Download a database for AMRfinder
 }

@@ -77,67 +77,61 @@ aggr.quast <- function(
 
 
 
-###############################################
-#' Callback function for aggregating QUAST data.
-#' To be called from BascetAggregateMap
-#' 
-#' @return QUAST data for each cell
-#' @export
-aggr.quast_via_filesystem <- function(
-    bascetFile, 
-    cellID, 
-    bascet_instance
-){
-  
-  
-  ### For testing
-  if(FALSE){
-    bascetFile <- OpenBascet(bascetRoot,"quast")
-    #cellID <- "A1_B5_H8_H10"
-    cellID <- "_A2_D5_H8_D12"
-    bascet_instance <- bascet_instance.default
-    
-    foo <- BascetListFilesForCell(bascetFile,cellID)
-    foo <- foo[foo$file!="cellmap.log",]
-    foo <- foo[foo$cell==cellID,]
-    foo
-    
-    #can find info here on e.g. if contigs where too short to be analyzed
-    tmp <- BascetReadFile(bascetFile, cellID, "quast.log", as="tempfile", bascet_instance=bascet_instance)
-    readLines(tmp)
-  }
-  
-  #print(cellID)
-  tmp <- BascetReadFile(
-    bascetFile, 
-    cellID, 
-    "transposed_report.tsv", 
-    as="tempfile", 
-    bascet_instance=bascet_instance
-  )
-  if(!is.null(tmp)){
-    fcont <- readLines(tmp, n=2)
-    #dat <- read.table(tmp)
-    file.remove(tmp)
-    
-    dat <- data.frame(
-      row.names=stringr::str_split(fcont[1],"\t")[[1]],
-      value=stringr::str_split(fcont[2],"\t")[[1]]
-    )
-    dat <- dat[-1,,drop=FALSE]
-    
-    rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
-    
-    #Arrange in the right format
-    dat <- t(dat)
-    
-    #TODO set data types to double whenever possible
-    
-    dat    
-  } else {
-    data.frame()
-  }
-}
+# aggr.quast_via_filesystem <- function(
+#     bascetFile, 
+#     cellID, 
+#     bascet_instance
+# ){
+#   
+#   
+#   ### For testing
+#   if(FALSE){
+#     bascetFile <- OpenBascet(bascetRoot,"quast")
+#     #cellID <- "A1_B5_H8_H10"
+#     cellID <- "_A2_D5_H8_D12"
+#     bascet_instance <- bascet_instance.default
+#     
+#     foo <- BascetListFilesForCell(bascetFile,cellID)
+#     foo <- foo[foo$file!="cellmap.log",]
+#     foo <- foo[foo$cell==cellID,]
+#     foo
+#     
+#     #can find info here on e.g. if contigs where too short to be analyzed
+#     tmp <- BascetReadFile(bascetFile, cellID, "quast.log", as="tempfile", bascet_instance=bascet_instance)
+#     readLines(tmp)
+#   }
+#   
+#   #print(cellID)
+#   tmp <- BascetReadFile(
+#     bascetFile, 
+#     cellID, 
+#     "transposed_report.tsv", 
+#     as="tempfile", 
+#     bascet_instance=bascet_instance
+#   )
+#   if(!is.null(tmp)){
+#     fcont <- readLines(tmp, n=2)
+#     #dat <- read.table(tmp)
+#     file.remove(tmp)
+#     
+#     dat <- data.frame(
+#       row.names=stringr::str_split(fcont[1],"\t")[[1]],
+#       value=stringr::str_split(fcont[2],"\t")[[1]]
+#     )
+#     dat <- dat[-1,,drop=FALSE]
+#     
+#     rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
+#     
+#     #Arrange in the right format
+#     dat <- t(dat)
+#     
+#     #TODO set data types to double whenever possible
+#     
+#     dat    
+#   } else {
+#     data.frame()
+#   }
+# }
 
 
 
@@ -159,9 +153,7 @@ aggr.minhash <- function(
     bascet_instance
 ){
   dat <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="text", bascet_instance=bascet_instance)
-#  dat <- readLines(tmp)
-#  file.remove(tmp)
-  
+
   set_kmer <- stringr::str_split_i(dat,"\t",1)
   set_kmer
 }
@@ -170,46 +162,26 @@ aggr.minhash <- function(
 
 
 
-###############################################
-#' Callback function for aggregating min-hashes for each cell.
-#' To be called from BascetAggregateMap
-#' 
-#' @return Minhash data (minhash.txt) for each cell
-#' @export
-aggr.minhash_via_fs <- function(
-    bascetFile, 
-    cellID, 
-    bascet_instance
-){
-  tmp <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="tempfile", bascet_instance=bascet_instance)
-  dat <- readLines(tmp)
-  file.remove(tmp)
+# aggr.minhash_via_fs <- function(
+#     bascetFile, 
+#     cellID, 
+#     bascet_instance
+# ){
+#   tmp <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="tempfile", bascet_instance=bascet_instance)
+#   dat <- readLines(tmp)
+#   file.remove(tmp)
+#   
+#   set_kmer <- stringr::str_split_i(dat,"\t",1)
+#   set_kmer
+# }
+
+
+
+
   
-  set_kmer <- stringr::str_split_i(dat,"\t",1)
-  set_kmer
-}
 
 
 
-
-###############################################
-#' Callback function for aggregating ABRicate data for each cell.
-#' To be called from BascetAggregateMap
-#' 
-#' @return TODO
-#' @export
-aggr.abricate <- function(bascetFile, cellID, bascet_instance){
-
-  #possible to parse a list of strings instead?  dat <- BascetReadFile(bascetFile, cellID, "abricate.tsv", as="text", bascet_instance=bascet_instance)
-  
-  tmp <- BascetReadFile(bascetFile, cellID, "abricate.tsv", as="tempfile", bascet_instance=bascet_instance)
-  dat <- read.delim(file = tmp, header = F, sep = "\t", stringsAsFactors = F, check.names = F)
-  file.remove(tmp)
-
-  #more stuff
-    
-  dat
-}
 
 
 

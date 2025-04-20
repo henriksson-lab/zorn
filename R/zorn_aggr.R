@@ -122,6 +122,71 @@ MapListAsDataFrame <- function(mylist){
 
 
 
+
+
+###############################################
+#' Convenience function; alternative is to somehow implement as.data.frame
+#' 
+#' This one puts cellID as a new column
+#' 
+#' make this the new MapListAsDataFrame ?
+#' 
+#' @return TODO
+#' @export
+MapCellMultiListAsDataFrame <- function(mylist){
+  
+  if(FALSE){
+    mylist <- list()
+    mylist[["a"]] <- data.frame(x=6)
+    mylist[["b"]] <- data.frame(x=3)
+    mylist[["c"]] <- NULL
+  }
+  
+  newlist <- list()
+  for(i in names(mylist)){
+    one_entry <- mylist[[i]]
+    if(nrow(one_entry)>0){
+      one_entry$cellID <- i
+      newlist[[i]] <- one_entry
+    }
+  }
+  
+  out <- do.call(rbind, newlist)
+  
+  out
+}
+
+
+
+###############################################
+#' Count entries in long format data frame and return as a sparse matrix
+#' 
+#' @param dat A data.frame
+#' @param rowname Column to use as matrix row name
+#' @param colname Column to use as matrix column name
+#' @return A dgCMatrix sparse matrix
+#' @export
+CountDataFrameToSparseMatrix <- function(dat, rowname, colname) {
+  red_dat <- data.frame(
+    col=dat[,colname],
+    row=dat[,rowname]
+  )
+  red_dat <- sqldf::sqldf("select col, row, count(*) as cnt from red_dat group by col, row") 
+  
+  red_dat$col <- factor(red_dat$col)
+  red_dat$row <- factor(red_dat$row)
+  mat <- Matrix::sparseMatrix(  
+    i=as.integer(red_dat$row),
+    j=as.integer(red_dat$col), 
+    x=red_dat$cnt
+  )
+  colnames(mat) <- levels(red_dat$col)
+  rownames(mat) <- levels(red_dat$row)
+  mat
+}
+
+
+
 ###############################################
 #' Aggregate data from previous Map call
 #' 
