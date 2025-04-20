@@ -2,12 +2,12 @@
 % Please edit documentation in R/ext_tools.R
 \name{BascetMapCellFASTQC}
 \alias{BascetMapCellFASTQC}
-\title{Run FASTQC on contigs of all cells.
+\title{Run FASTQC on reads of all cells.
 This is a thin wrapper around BascetMapCell}
 \usage{
 BascetMapCellFASTQC(
   bascetRoot,
-  inputName = "contigs",
+  inputName = "filtered",
   outputName = "fastqc",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
@@ -27,6 +27,6 @@ BascetMapCellFASTQC(
 TODO
 }
 \description{
-Run FASTQC on contigs of all cells.
+Run FASTQC on reads of all cells.
 This is a thin wrapper around BascetMapCell
 }

@@ -8,6 +8,7 @@ output:
 ---
 
 Zorn and Bascet can do many things:
+
 * Preprocess reads for single-cell metagenomics, WGS and RNA-seq
 * Perform de novo assembly and other tasks relevant for whole-genome sequencing
 * Perform custom per-cell detailed analysis operations
@@ -21,8 +22,8 @@ these are in common for all workflows:
 
 * [Installing Zorn and Bascet](install.html)
 * [Using SLURM](slurm.html) - If you want to run this in a high-performance environment
-* [Debarcoding tutorial](debarcoding.html) - Ingesting raw FASTQ and preparing for later steps
-
+* [Debarcoding tutorial](debarcoding.html) - Ingesting raw FASTQ, trimming, and preparing for later steps
+* [Read-based quality control](read_quality_control.html) - Quality control of reads
 
 The next step to get an overview is likely:
 
@@ -31,17 +32,17 @@ The next step to get an overview is likely:
 * [Informative KMER-based workflow](kmer.html) - if you don't know what your sample contains, and want to find novel genome compositions - Option #1
 * [Count sketch KMER-based workflow](countsketch.html) - if you don't know what your sample contains, and want to find novel genome compositions - Option #2
 
-
 Then there are several options on how to continue with deeper analysis:
 
 * [Clustering](clustering.html) - to visualize your samples
 * [De novo assembly](assembly.html)
-* [Running software for each cell using MAP](map_scripts.html) - Such as QC analysis etc
+* [Genome annotation](genome_annotation.html) - annotate your assemblies
+* [Running software for each cell using MAP](map_scripts.html) - the general method for performing calculations on each cell
 
-These may help you understand Zorn and Bascet better
+These may help you understand the design of Zorn and Bascet:
 
 * [Overview of file formats](fileformats.html)
 * [For developers](for_developers.html) - if you wish to modify Bascet
-
+* [Example data](example_data.html) - you can run the workflow with some small datasets before you scale up
 
 

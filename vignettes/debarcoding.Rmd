@@ -64,7 +64,7 @@ will speed up computation. Here is one example for getting the names and number
 of cells having at least 100 reads:
 
 ```{r, eval=F, echo=T}
-includeCells <- h$cellid[h$count>100]   
+includeCells <- h$cellid[h$count>100]
 length(includeCells)
 ```
 

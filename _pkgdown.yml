@@ -10,32 +10,36 @@ navbar:
       href: articles/install.html
     - text: "Get started"
       href: articles/get_started.html
+    - text: "Using SLURM"
+      href: articles/slurm.html
     - text: "Vignettes"
       menu:
         - text: Introductory Vignettes
         - text: "Debarcoding"
           href: articles/debarcoding.html
+        - text: "Read-based quality control"
+          href: articles/read_quality_control.html
+        - text: -------
         - text: "KRAKEN-based workflow"
           href: articles/kraken.html
         - text: "Alignment-based workflow"
           href: articles/alignment.html
-        - text: "Map scripts"
-          href: articles/map_scripts.html
-        - text: "De novo assembly"
-          href: articles/assembly.html
-        - text: "Clustering"
-          href: articles/clustering.html
         - text: "Informative KMER-based workflow"
           href: articles/kmer.html
         - text: "Count sketch KMER-based workflow"
           href: articles/countsketch.html
+        - text: -------
+        - text: "Clustering"
+          href: articles/clustering.html
+        - text: "De novo assembly"
+          href: articles/assembly.html
         - text: "Genome annotation"
           href: articles/genome_annotation.html
+        - text: "Map scripts"
+          href: articles/map_scripts.html
         - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html
-        - text: "Using SLURM"
-          href: articles/slurm.html
         - text: "For developers"
           href: articles/for_developers.html
         - text: "Example data"

@@ -76,7 +76,7 @@ BascetAlignToReference(
 TODO: Filtering
 
 
-#Host filtering workflow 
+# Host filtering workflow 
 
 
 ```{r, eval=F, echo=T}
@@ -92,7 +92,7 @@ BascetFilterAlignment(
 
 
 
-#Counting workflow
+# Counting workflow
 
 
 If you want to analyze where reads mapped, either for RNA-seq counting for genes,
