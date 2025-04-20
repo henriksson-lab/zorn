@@ -148,7 +148,7 @@ aggr.quast_via_filesystem <- function(
 
 
 ###############################################
-#' Callback function for aggregating min-hashes for each cell
+#' Callback function for aggregating min-hashes for each cell.
 #' To be called from BascetAggregateMap
 #' 
 #' @return Minhash data (minhash.txt) for each cell
@@ -171,7 +171,7 @@ aggr.minhash <- function(
 
 
 ###############################################
-#' Callback function for aggregating min-hashes for each cell
+#' Callback function for aggregating min-hashes for each cell.
 #' To be called from BascetAggregateMap
 #' 
 #' @return Minhash data (minhash.txt) for each cell
@@ -188,6 +188,127 @@ aggr.minhash_via_fs <- function(
   set_kmer <- stringr::str_split_i(dat,"\t",1)
   set_kmer
 }
+
+
+
+
+###############################################
+#' Callback function for aggregating ABRicate data for each cell.
+#' To be called from BascetAggregateMap
+#' 
+#' @return TODO
+#' @export
+aggr.abricate <- function(bascetFile, cellID, bascet_instance){
+
+  #possible to parse a list of strings instead?  dat <- BascetReadFile(bascetFile, cellID, "abricate.tsv", as="text", bascet_instance=bascet_instance)
+  
+  tmp <- BascetReadFile(bascetFile, cellID, "abricate.tsv", as="tempfile", bascet_instance=bascet_instance)
+  dat <- read.delim(file = tmp, header = F, sep = "\t", stringsAsFactors = F, check.names = F)
+  file.remove(tmp)
+
+  #more stuff
+    
+  dat
+}
+
+
+
+###############################################
+#' Callback function for aggregating AMRFinderPlus data for each cell.
+#' To be called from BascetAggregateMap
+#' 
+#' @return TODO
+#' @export
+aggr.amrfinder <- function(bascetFile, cellID, bascet_instance){
+  
+  tmp <- BascetReadFile(bascetFile, cellID, "amrfinder.tsv", as="tempfile", bascet_instance=bascet_instance)
+  dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
+  file.remove(tmp)
+  
+  #more stuff
+  
+  dat
+}
+
+###############################################
+#' Callback function for aggregating ARIBA data for each cell.
+#' To be called from BascetAggregateMap
+#' 
+#' @return TODO
+#' @export
+aggr.ariba <- function(bascetFile, cellID, bascet_instance){
+  
+  tmp <- BascetReadFile(bascetFile, cellID, "out.run", as="tempfile", bascet_instance=bascet_instance)
+  dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
+  file.remove(tmp)
+  
+  #more stuff
+  
+  dat
+}
+
+
+
+
+
+###############################################
+#' Callback function for aggregating CheckM data for each cell.
+#' To be called from BascetAggregateMap
+#' 
+#' @return TODO
+#' @export
+aggr.checkm <- function(bascetFile, cellID, bascet_instance){
+  
+  tmp <- BascetReadFile(bascetFile, cellID, "checkm.tsv", as="tempfile", bascet_instance=bascet_instance)
+  dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
+  file.remove(tmp)
+  
+  #more stuff
+  
+  dat
+}
+
+
+
+
+###############################################
+#' Callback function for aggregating GECCO data for each cell.
+#' To be called from BascetAggregateMap
+#' 
+#' @return TODO
+#' @export
+aggr.gecco <- function(bascetFile, cellID, bascet_instance){
+  
+
+  tmp <- BascetReadFile(bascetFile, cellID, "gecco_out/clusters.tsv", as="tempfile", bascet_instance=bascet_instance)
+  dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
+  file.remove(tmp)
+  
+  #more stuff
+  
+  dat
+}
+
+
+
+
+
+######### Callback function for aggregating GTDB-Tk data ---- needs new functions to be implemented in bascet API
+# aggr.gtdbtk <- function(bascetFile, cellID, bascet_instance){
+#   
+#   
+#   gtdbtk.name <- Sys.glob("gtdbtk_out/gtdbtk.**.summary.tsv")[1]  ## will not work
+#   tmp <- BascetReadFile(bascetFile, cellID, gtdbtk.name,
+#                         as="tempfile", bascet_instance=bascet_instance)
+#   dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
+#   #dat <- read.table(tmp)
+#   file.remove(tmp)
+#   
+#   #TODO set data types to double whenever possible
+#   
+#   dat
+# }
+
 
 
 
@@ -226,6 +347,7 @@ AggregateMinhashes <- function(
   
   all_kmer
 }
+
 
 
 
