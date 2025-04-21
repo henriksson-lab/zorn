@@ -1,16 +1,19 @@
 <!---
--->
 <p align="center">
 <img src="man/figures/bascet_logo_300.jpg" alt="Zorn logo" style={{height: "auto", width: "auto"}}/>
 </p>
+-->
 
 <p align="center">
 <img src="man/figures/bascet_logo_300.jpg" alt="Zorn logo" style="height: auto; width: auto;"/>
 </p>
 
+
+<!---
 <p align="center">
 ![](man/figures/bascet_logo_300.jpg "Zorn logo")
 </p>
+-->
 
 
 # **Zorn**
