@@ -3,7 +3,9 @@
 
 ## **Zorn**
 
-We are proud to announce Zorn! To install the package, see the [install page](articles/install.html). 
+We are proud to announce Zorn, an R package and workflow manager for scalable single-cell analysis!
+
+To install the package, see the [install page](articles/install.html). 
 
 ## **About Zorn**
 
