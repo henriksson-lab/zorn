@@ -10,11 +10,11 @@ navbar:
       href: articles/install.html
     - text: "Get started"
       href: articles/get_started.html
-    - text: "Using SLURM"
-      href: articles/slurm.html
     - text: "Vignettes"
       menu:
         - text: Introductory Vignettes
+        - text: "Using SLURM"
+          href: articles/slurm.html
         - text: "Debarcoding"
           href: articles/debarcoding.html
         - text: "Read-based quality control"

@@ -10,15 +10,29 @@ aggr.example <- function(
     bascet_instance
 ){
   
-  ###### Option #1 -- Store the content in a temporary file that you have to remove once done
-  tmp <- BascetReadFile(bascetFile, cellID, "out.csv", as="tempfile", bascet_instance=bascet_instance)
-  my_df <- read.csv(tmp)
-  file.remove(tmp)
+  if(TRUE){
+    ###### Option #1 -- Store the content in a temporary file that you have to remove once done
+    tmp <- BascetReadFile(bascetFile, cellID, "out.csv", as="tempfile", bascet_instance=bascet_instance)
+    my_df <- read.csv(tmp)
+    file.remove(tmp)
+    
+  }
+
+  if(TRUE){
+    ###### Option #2 -- Get the content directly, possibly higher performance
+    my_data <- BascetReadFile(bascetFile, cellID, "out.csv", as="text")   #equivalent to readLines() i.e. one big string returned (or get a list, one per line?)
+    
+    # If you do option #2, you can do this to parse the lines using common table readers
+    zz <- textConnection(my_data)
+    dat <- read.delim(zz)
+    close(zz)    
+  }  
+
   
-  ###### Option #2 -- Get the content directly, possibly higher performance
-  my_data <- BascetReadFile(bascetFile, cellID, "out.csv", as="text")   #equivalent to readLines() i.e. one big string returned (or get a list, one per line?)
   
-  ###### Do something with the data and return as a data.frame
+  ###### Do something with the data and return ideally as a one-line data.frame (multiple lines if multiple outputs).
+  ###### Note #1: there is no notion of cellIDs here. this is handled on a higher abstraction level
+  ###### Note #2: you can return the data in any shape you want. just be prepared to handle it after aggregation!
   return(data.frame(
     quality=666,
     completeness=50
@@ -26,118 +40,9 @@ aggr.example <- function(
 }
 
 
-
-
-
 ################################################################################
-################## Normal aggregate-functions ##################################
+################## Core aggregate-functions ####################################
 ################################################################################
-
-
-
-###############################################
-#' Callback function for aggregating QUAST data.
-#' To be called from BascetAggregateMap
-#' 
-#' @return QUAST data for each cell
-#' @export
-aggr.quast <- function(
-    bascetFile, 
-    cellID, 
-    bascet_instance
-){
-  
-  #print(cellID)
-  fcont <- BascetReadFile(
-    bascetFile, 
-    cellID, 
-    "transposed_report.tsv", 
-    as="text", 
-    bascet_instance=bascet_instance
-  )
-  if(!is.null(fcont)){
-    dat <- data.frame(
-      row.names=stringr::str_split(fcont[1],"\t")[[1]],
-      value=stringr::str_split(fcont[2],"\t")[[1]]
-    )
-    dat <- dat[-1,,drop=FALSE]
-    
-    rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
-    
-    #Arrange in the right format
-    dat <- t(dat)
-    
-    #TODO set data types to double whenever possible
-    
-    dat    
-  } else {
-    data.frame()
-  }
-}
-
-
-
-# aggr.quast_via_filesystem <- function(
-#     bascetFile, 
-#     cellID, 
-#     bascet_instance
-# ){
-#   
-#   
-#   ### For testing
-#   if(FALSE){
-#     bascetFile <- OpenBascet(bascetRoot,"quast")
-#     #cellID <- "A1_B5_H8_H10"
-#     cellID <- "_A2_D5_H8_D12"
-#     bascet_instance <- bascet_instance.default
-#     
-#     foo <- BascetListFilesForCell(bascetFile,cellID)
-#     foo <- foo[foo$file!="cellmap.log",]
-#     foo <- foo[foo$cell==cellID,]
-#     foo
-#     
-#     #can find info here on e.g. if contigs where too short to be analyzed
-#     tmp <- BascetReadFile(bascetFile, cellID, "quast.log", as="tempfile", bascet_instance=bascet_instance)
-#     readLines(tmp)
-#   }
-#   
-#   #print(cellID)
-#   tmp <- BascetReadFile(
-#     bascetFile, 
-#     cellID, 
-#     "transposed_report.tsv", 
-#     as="tempfile", 
-#     bascet_instance=bascet_instance
-#   )
-#   if(!is.null(tmp)){
-#     fcont <- readLines(tmp, n=2)
-#     #dat <- read.table(tmp)
-#     file.remove(tmp)
-#     
-#     dat <- data.frame(
-#       row.names=stringr::str_split(fcont[1],"\t")[[1]],
-#       value=stringr::str_split(fcont[2],"\t")[[1]]
-#     )
-#     dat <- dat[-1,,drop=FALSE]
-#     
-#     rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
-#     
-#     #Arrange in the right format
-#     dat <- t(dat)
-#     
-#     #TODO set data types to double whenever possible
-#     
-#     dat    
-#   } else {
-#     data.frame()
-#   }
-# }
-
-
-
-
-
-
 
 
 
@@ -157,129 +62,6 @@ aggr.minhash <- function(
   set_kmer <- stringr::str_split_i(dat,"\t",1)
   set_kmer
 }
-
-
-
-
-
-# aggr.minhash_via_fs <- function(
-#     bascetFile, 
-#     cellID, 
-#     bascet_instance
-# ){
-#   tmp <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="tempfile", bascet_instance=bascet_instance)
-#   dat <- readLines(tmp)
-#   file.remove(tmp)
-#   
-#   set_kmer <- stringr::str_split_i(dat,"\t",1)
-#   set_kmer
-# }
-
-
-
-
-  
-
-
-
-
-
-
-###############################################
-#' Callback function for aggregating AMRFinderPlus data for each cell.
-#' To be called from BascetAggregateMap
-#' 
-#' @return TODO
-#' @export
-aggr.amrfinder <- function(bascetFile, cellID, bascet_instance){
-  
-  tmp <- BascetReadFile(bascetFile, cellID, "amrfinder.tsv", as="tempfile", bascet_instance=bascet_instance)
-  dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
-  file.remove(tmp)
-  
-  #more stuff
-  
-  dat
-}
-
-###############################################
-#' Callback function for aggregating ARIBA data for each cell.
-#' To be called from BascetAggregateMap
-#' 
-#' @return TODO
-#' @export
-aggr.ariba <- function(bascetFile, cellID, bascet_instance){
-  
-  tmp <- BascetReadFile(bascetFile, cellID, "out.run", as="tempfile", bascet_instance=bascet_instance)
-  dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
-  file.remove(tmp)
-  
-  #more stuff
-  
-  dat
-}
-
-
-
-
-
-###############################################
-#' Callback function for aggregating CheckM data for each cell.
-#' To be called from BascetAggregateMap
-#' 
-#' @return TODO
-#' @export
-aggr.checkm <- function(bascetFile, cellID, bascet_instance){
-  
-  tmp <- BascetReadFile(bascetFile, cellID, "checkm.tsv", as="tempfile", bascet_instance=bascet_instance)
-  dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
-  file.remove(tmp)
-  
-  #more stuff
-  
-  dat
-}
-
-
-
-
-###############################################
-#' Callback function for aggregating GECCO data for each cell.
-#' To be called from BascetAggregateMap
-#' 
-#' @return TODO
-#' @export
-aggr.gecco <- function(bascetFile, cellID, bascet_instance){
-  
-
-  tmp <- BascetReadFile(bascetFile, cellID, "gecco_out/clusters.tsv", as="tempfile", bascet_instance=bascet_instance)
-  dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
-  file.remove(tmp)
-  
-  #more stuff
-  
-  dat
-}
-
-
-
-
-
-######### Callback function for aggregating GTDB-Tk data ---- needs new functions to be implemented in bascet API
-# aggr.gtdbtk <- function(bascetFile, cellID, bascet_instance){
-#   
-#   
-#   gtdbtk.name <- Sys.glob("gtdbtk_out/gtdbtk.**.summary.tsv")[1]  ## will not work
-#   tmp <- BascetReadFile(bascetFile, cellID, gtdbtk.name,
-#                         as="tempfile", bascet_instance=bascet_instance)
-#   dat <- read.delim(file = tmp, header = T, sep = "\t", stringsAsFactors = F, check.names = F)
-#   #dat <- read.table(tmp)
-#   file.remove(tmp)
-#   
-#   #TODO set data types to double whenever possible
-#   
-#   dat
-# }
 
 
 
@@ -329,7 +111,6 @@ AggregateMinhashes <- function(
 
 
 
-
 ###############################################
 #' Callback function for just getting raw file contents
 #' To be called from BascetAggregateMap
@@ -340,6 +121,7 @@ AggregateMinhashes <- function(
 aggr.rawtext <- function(fname){
   function(bascetFile, cellID, bascet_instance){
     rawtext <- BascetReadFile(bascetFile, cellID, fname, as="text")  
+    
     data.frame(
       rawtext=rawtext
     )

@@ -1,5 +1,122 @@
 
 ################################################################################
+################ QUAST #########################################################
+################################################################################
+
+
+
+###############################################
+#' Run QUAST on reads of all cells.
+#' This is a thin wrapper around BascetMapCell
+#' 
+#' @inheritParams template_BascetFunction
+#' @param db description
+#' @return TODO
+#' @export
+BascetMapCellQUAST <- function( 
+    bascetRoot, 
+    inputName="filtered",
+    outputName="quast", 
+    #includeCells=NULL,
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
+){
+  BascetMapCell(
+    bascetRoot=bascetRoot, 
+    withfunction="_quast", 
+    inputName=inputName, 
+    outputName=outputName,
+    #includeCells=includeCells
+    overwrite=overwrite,
+    runner=runner,
+    bascet_instance=bascet_instance
+  )
+}
+
+###############################################
+#' Callback function for aggregating QUAST data.
+#' To be called from BascetAggregateMap
+#' 
+#' @return QUAST data for each cell
+#' @export
+aggr.quast <- function(
+    bascetFile, 
+    cellID, 
+    bascet_instance
+){
+  
+  #print(cellID)
+  fcont <- BascetReadFile(
+    bascetFile, 
+    cellID, 
+    "transposed_report.tsv", 
+    as="text", 
+    bascet_instance=bascet_instance
+  )
+  if(!is.null(fcont)){
+    dat <- data.frame(
+      row.names=stringr::str_split(fcont[1],"\t")[[1]],
+      value=stringr::str_split(fcont[2],"\t")[[1]]
+    )
+    dat <- dat[-1,,drop=FALSE]
+    
+    rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
+    
+    #Arrange in the right format
+    dat <- t(dat)
+    
+    #TODO should set data types to double whenever possible
+    
+    dat    
+  } else {
+    data.frame()
+  }
+}
+
+
+
+# aggr.quast_via_filesystem <- function(
+    #     bascetFile, 
+#     cellID, 
+#     bascet_instance
+# ){
+#   
+#   #print(cellID)
+#   tmp <- BascetReadFile(
+#     bascetFile, 
+#     cellID, 
+#     "transposed_report.tsv", 
+#     as="tempfile", 
+#     bascet_instance=bascet_instance
+#   )
+#   if(!is.null(tmp)){
+#     fcont <- readLines(tmp, n=2)
+#     #dat <- read.table(tmp)
+#     file.remove(tmp)
+#     
+#     dat <- data.frame(
+#       row.names=stringr::str_split(fcont[1],"\t")[[1]],
+#       value=stringr::str_split(fcont[2],"\t")[[1]]
+#     )
+#     dat <- dat[-1,,drop=FALSE]
+#     
+#     rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
+#     
+#     #Arrange in the right format
+#     dat <- t(dat)
+#     
+#     #TODO set data types to double whenever possible
+#     
+#     dat    
+#   } else {
+#     data.frame()
+#   }
+# }
+
+
+
+################################################################################
 ################ FASTQC ########################################################
 ################################################################################
 
@@ -578,7 +695,44 @@ DownloadDatabaseAriba <- function(
 }
 
 
-# TODO aggregate scripts for outputs
+###############################################
+#' Callback function for aggregating ARIBA data for each cell.
+#' To be called from BascetAggregateMap
+#' 
+#' @return TODO
+#' @export
+aggr.ariba <- function(bascetFile, cellID, bascet_instance){
+  tmp <- BascetReadFile(bascetFile, cellID, "report.tsv", as="text", bascet_instance=bascet_instance)
+  #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/ariba/report.tsv")
+  zz <- textConnection(tmp)
+  dat <- read.delim(zz)
+  close(zz)
+  dat
+}
+
+
+
+###############################################
+#' Aggregate data from Ariba
+#' This is a thin wrapper around BascetAggregateMap
+#' 
+#' @export
+BascetAggregateAriba <- function( 
+    bascetRoot, 
+    inputName="ariba",
+    #cacheFile=NULL, #option
+    include_cells=NULL,
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
+){
+  CountDataFrameToSparseMatrix(MapCellMultiListAsDataFrame(BascetAggregateMap(
+    bascetRoot,
+    inputName,
+    aggr.ariba,
+    include_cells=include_cells
+  )), "cellID","cluster")
+}
+
 
 
 ################################################################################
@@ -670,9 +824,6 @@ aggr.amrfinder <- function(bascetFile, cellID, bascet_instance){
 }
 
 
-"Element.symbol"
-
-
 ###############################################
 #' Aggregate data from AMRfinder
 #' This is a thin wrapper around BascetAggregateMap
@@ -694,4 +845,87 @@ BascetAggregateAMRfinder <- function(
     include_cells=include_cells
   )), "cellID",get_column)
 }
+
+
+
+################################################################################
+################ GECCO #########################################################
+################################################################################
+
+
+
+
+###############################################
+#' Run GEECCO on contigs of all cells.
+#' This is a thin wrapper around BascetMapCell
+#' 
+#' @inheritParams template_BascetFunction
+#' @param db description
+#' @return TODO
+#' @export
+BascetMapCellGECCO <- function( 
+    bascetRoot, 
+    inputName="contigs",
+    outputName="gecco", 
+    #includeCells=NULL,
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
+){
+  BascetMapCell(
+    bascetRoot=bascetRoot, 
+    withfunction="_gecco", 
+    inputName=inputName, 
+    outputName=outputName,
+    #includeCells=includeCells
+    overwrite=overwrite,
+    runner=runner,
+    bascet_instance=bascet_instance
+  )
+}
+
+
+###############################################
+#' Callback function for aggregating GECCO data for each cell.
+#' To be called from BascetAggregateMap
+#' 
+#' @return TODO
+#' @export
+aggr.gecco <- function(bascetFile, cellID, bascet_instance){ 
+  
+  tmp <- BascetReadFile(bascetFile, cellID, "gecco_out/clusters.tsv", as="text", bascet_instance=bascet_instance)
+  tmp <- readLines("/home/mahogny/github/zorn/test_aggr/gecco/salmonella_SRR33219394.clusters.tsv")
+  zz <- textConnection(tmp)
+  dat <- read.delim(zz)
+  close(zz)
+  dat
+  
+}
+
+
+
+###############################################
+#' Aggregate data from GECCO
+#' This is a thin wrapper around BascetAggregateMap
+#' 
+#' @export
+BascetAggregateGECCO <- function( 
+    bascetRoot, 
+    inputName="gecco",
+    #cacheFile=NULL, #option
+    include_cells=NULL,
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
+){
+  BascetAggregateMap(
+    bascetRoot,
+    inputName,
+    aggr.gecco,
+    include_cells=include_cells
+  )
+}
+
+
+
+
 

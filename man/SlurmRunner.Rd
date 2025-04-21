@@ -11,7 +11,8 @@ SlurmRunner(
   account = NULL,
   time = NULL,
   prepend = NULL,
-  mem = NULL
+  mem = NULL,
+  direct = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ SlurmRunner(
 \item{prepend}{description}
 
 \item{mem}{description}
+
+\item{direct}{Run and get the result directly. FALSE implies asynchronous execution}
 }
 \value{
 A SLURM runner

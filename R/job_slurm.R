@@ -12,7 +12,8 @@ setClass("SlurmRunner", slots=list(
   account="character", 
   time="character",
   prepend="character",
-  mem="character"
+  mem="character",
+  direct="logical"
 )
 ) 
 
@@ -55,6 +56,7 @@ setClass("SlurmJob", slots=list(
 #' @param time The time the job is allowed to run, e.g. "0-72:00:00"
 #' @param prepend description
 #' @param mem description
+#' @param direct Run and get the result directly. FALSE implies asynchronous execution
 #' 
 #' @return A SLURM runner
 #' @export
@@ -65,7 +67,8 @@ SlurmRunner <- function(
     account=NULL, 
     time=NULL, 
     prepend=NULL, 
-    mem=NULL
+    mem=NULL,
+    direct=TRUE
 ){
   
   ## Create a new default
@@ -77,7 +80,8 @@ SlurmRunner <- function(
       account="",  #or NULL??
       time="0-72:00:00",
       prepend="",
-      mem=""
+      mem="",
+      direct=direct
     )
   }
   
@@ -173,7 +177,7 @@ setMethod(
       
       pid <- stringr::str_remove(ret, stringr::fixed("Submitted batch job "))
       
-      #Return the job with PID set  
+      #Create the job
       job <- new(
         "SlurmJob",
         pid=pid,
@@ -182,6 +186,16 @@ setMethod(
         jobname=jobname,
         arraysize=arraysize
       )
+      
+      if(runner@direct){
+        #Wait for the job if direct mode
+        WaitForJob(job)
+        new_no_job()
+      } else {
+        #Return the job with PID set  
+        job
+      }
+      
     } else {
       stop("Failed to start job (err2)")
       #print(slurm_script)

@@ -105,7 +105,7 @@ getBascetSingularityImage <- function(
     print("No singularity image present; downloading")
  
     if(download.file("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif)!=0){
-      stop("Failed to download singularity")      
+      stop("Failed to download singularity image")      
     }
     
 #    ret <- system("singularity pull --arch amd64 library://lmc297/bascet/bascet:0.01")
@@ -130,6 +130,53 @@ getBascetSingularityImage <- function(
     prepend_cmd=prepend_cmd
   ) 
 }
+
+
+
+
+###############################################
+#' Get a Bascet image (singularity or docker). 
+#' It will be cached in the provided directory to avoid downloading it all the time
+#' 
+#' @return A Bascet instance
+#' @export
+getBascetDockerImage <- function(
+    store_at="./",
+    tempdir=NULL
+){
+  
+  # docker image inspect busybox:latest >/dev/null 2>&1 && echo yes || echo no
+  
+  ret <- system("docker image inspect henriksson-lab/bascet:latest >/dev/null 2>&1 && echo yes || echo no", intern = TRUE)
+
+  file_bascet_image <- file.path(store_at, "bascet.tar")
+  
+  if(ret=="no") {
+    print("No docker image present; downloading")
+    
+    if(download.file("http://beagle.henlab.org/public/bascet/bascet.tar",file_bascet_image)!=0){
+      stop("Failed to download docker image")      
+    }
+    
+    system(paste("docker load -i ", file_bascet_image))
+    
+  } else {
+    print(paste("Found existing Bascet Docker image"))
+  }
+  
+  prepend_cmd <- paste("docker run henriksson-lab/bascet ")
+  
+  if(is.null(tempdir)){
+    tempdir <- tempdir()
+  }
+  
+  BascetInstance(
+    bin="bascet",
+    tempdir=tempdir,
+    prepend_cmd=prepend_cmd
+  ) 
+}
+
 
 
 ###############################################
