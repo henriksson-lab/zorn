@@ -7,7 +7,7 @@ output:
   pdf_document: default
 ---
 
-# Step 1: Install Zorn
+## Step 1: Install Zorn
 
 Zorn is under active development, so just get it straight
 from GitHub and install from source:
@@ -23,11 +23,11 @@ You can then load it:
 library(Zorn)
 ```
 
-# Step 2: Install Bascet
+## Step 2: Install Bascet
 
 You also need Bascet, our command-line suite for single-cell analysis. Most users will find it easiest to run Bascet through Singularity or Docker; instructions for each are described below.
 
-## Install Bascet via Singularity
+### Install Bascet via Singularity
 
 First [install Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html).
 
@@ -40,7 +40,7 @@ bascet_instance.default <- getBascetSingularityImage(store_at="/somewhere/on/you
 ```
 
 
-## Install Bascet via Docker
+### Install Bascet via Docker
 
 First [install Docker](https://docs.docker.com/get-started/).
 
@@ -52,20 +52,20 @@ multiple workspaces can share the same image
 bascet_instance.default <- getBascetDockerImage(store_at="/somewhere/on/your/disk/")
 ```
 
-# Step 3: Test the installation
+## Step 3: Test the installation
 
 Run the following and see if you get "ok" before proceeding:
 ```{r, eval=F, echo=T}
 TestBascetInstance(bascet_instance.default)
 ```
 
-# Using the Bascet instance
+## Using the Bascet instance
 
 You need to pass the bascet_inst variable to each Zorn command that requires it.
 The singularity image will be cached, so if you run this again, it will instead use
 the previous image. You will need to delete it manually if you wish to replace it.
 
-# For developers: Accessing a locally compiled Bascet
+## For developers: Accessing a locally compiled Bascet
 
 See [Bascet for Developers](for_developers.html)
 
