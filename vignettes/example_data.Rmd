@@ -9,7 +9,9 @@ output:
 
 # Simulated data
 
-To test the pipeline, we have prepared a simulated dataset at (TODO upload)
+To test the pipeline, we have prepared (a simulated dataset)[http://beagle.henlab.org/public/bascet/demodata/simulated.zip].
+This is is not raw data, but rather what you get after shardification. If you follow
+the tutorial, the first steps are thus already done.
 
 You can also simulate your own data, to, e.g., check performance on genomes that
 you might expect in a sample. This can be useful for power calculations/estimation.
@@ -21,8 +23,11 @@ on how to use the code.
 
 # Real data
 
+You can also investigate some (miseq data)[http://beagle.henlab.org/public/bascet/demodata/miseq.zip].
+Note that this data is ultra-shallowly sequenced, so don't expect to see much.
+But there is a great number of barcodes which will stress test some parts of
+Zorn/Bascet without the need for a large computational cluster.
 
-TODO
 
 
 

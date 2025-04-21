@@ -135,8 +135,7 @@ getBascetSingularityImage <- function(
 
 
 ###############################################
-#' Get a Bascet image (singularity or docker). 
-#' It will be cached in the provided directory to avoid downloading it all the time
+#' Get and install a Bascet docker image.
 #' 
 #' @return A Bascet instance
 #' @export
@@ -149,16 +148,21 @@ getBascetDockerImage <- function(
   
   ret <- system("docker image inspect henriksson-lab/bascet:latest >/dev/null 2>&1 && echo yes || echo no", intern = TRUE)
 
-  file_bascet_image <- file.path(store_at, "bascet.tar")
-  
   if(ret=="no") {
     print("No docker image present; downloading")
+
+    
+    file_bascet_image <- file.path(store_at, "bascet.tar")
+    
+    options(timeout = 60*60*5) #timeout in seconds
     
     if(download.file("http://beagle.henlab.org/public/bascet/bascet.tar",file_bascet_image)!=0){
       stop("Failed to download docker image")      
     }
-    
+
     system(paste("docker load -i ", file_bascet_image))
+    
+    print(paste("The huge image at",file_bascet_image,"can now be removed if the installation worked. You can otherwise try to install it manually using Docker"))
     
   } else {
     print(paste("Found existing Bascet Docker image"))
@@ -175,6 +179,16 @@ getBascetDockerImage <- function(
     tempdir=tempdir,
     prepend_cmd=prepend_cmd
   ) 
+}
+
+
+
+###############################################
+#' Remove current Bascet docker image 
+#' 
+#' @export
+removeBascetDockerImage <- function(){
+  system("docker image rm -f henriksson-lab/bascet")
 }
 
 
