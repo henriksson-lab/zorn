@@ -30,7 +30,9 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/Bascet-class.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateAMRfinder.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateAbricate.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateAriba.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateFASTQC.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateGECCO.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignToReference.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignmentToBigwig.html</loc></url>
@@ -57,6 +59,8 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellAriba.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellBakta.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellFASTQC.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellGECCO.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryKMC.html</loc></url>
@@ -109,7 +113,6 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.abricate.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.amrfinder.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.ariba.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.checkm.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.fastqc.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.gecco.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.minhash.html</loc></url>
@@ -126,6 +129,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamer_read_one_line.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamer_showtext.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamer_start.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetDockerImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/get_fastq_R2_from_R1.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/helper_cancel_job_if_file_exists.html</loc></url>

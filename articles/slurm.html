@@ -31,11 +31,11 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/install.html">Install</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/get_started.html">Get started</a></li>
-<li class="active nav-item"><a class="nav-link" href="../articles/slurm.html">Using SLURM</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><h6 class="dropdown-header" data-toc-skip>Introductory Vignettes</h6></li>
+    <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/read_quality_control.html">Read-based quality control</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -115,21 +115,14 @@ permissible default timeout time:</p>
 <span></span>
 <span><span class="co">## get a Bascet instance as usual; this is a separate concern from the runner</span></span>
 <span><span class="va">bascet_instance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>store_at<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span></span></code></pre></div>
-<p>You then make calls to Bascet as in all other tutorials. The
-difference is that you pass a reference to SLURM. You also pass
-job-specific settings related to the number of CPUs and memory per
-node.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_job</span> <span class="op">&lt;-</span> <span class="fu">BascetGetRawAtrandiWGS</span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="va">rawmeta</span>,</span>
-<span>  <span class="co">#runner= # the default is to take whatever is set in bascet_runner.default</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<p>You then make calls to Bascet as in all other tutorials. The main
+script, in charge of the control flow, should be run in <a href="https://github.com/tmux/tmux/wiki" class="external-link">tmux</a> or <a href="https://linuxize.com/post/how-to-use-linux-screen/" class="external-link">screen</a>, on
+a login node of your cluster.</p>
 <p>You likely want to tune each SLURM job a bit in terms of how many
 cores are used. This is the suggested method, where only relevant
 settings are overridden on a per-job basis:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_job</span> <span class="op">&lt;-</span> <span class="fu">BascetGetRawAtrandiWGS</span><span class="op">(</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">BascetGetRawAtrandiWGS</span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="va">rawmeta</span>,</span>
 <span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
@@ -137,25 +130,6 @@ settings are overridden on a per-job basis:</p>
 <span>    ncpu<span class="op">=</span><span class="fl">5</span>,</span>
 <span>    mem<span class="op">=</span><span class="st">"5g"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The major difference vs a typical local runner is that this function
-will now return immediately (asynchronous execution), compared to the
-usual local runner. This means that you can keep working in R until the
-task is done, or set up parallel jobs (which then should be named
-differently).</p>
-<p>todo – runner can be made to block by default; add option</p>
-<p>If you want to schedule a series of tasks, as is common, then you can
-use the WaitForJob command to pause R until done. Putting this
-in-between commands will let you batch all the tasks. The main script,
-in charge of the control flow, should be run in <a href="https://github.com/tmux/tmux/wiki" class="external-link">tmux</a> or <a href="https://linuxize.com/post/how-to-use-linux-screen/" class="external-link">screen</a>, on
-a login node of your cluster.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">WaitForJob</span><span class="op">(</span><span class="va">my_job</span><span class="op">)</span></span></code></pre></div>
-<p>You can press ctrl+c to end the waiting loop early.</p>
-</div>
-<div class="section level2">
-<h2 id="job-status">Job status<a class="anchor" aria-label="anchor" href="#job-status"></a>
-</h2>
-<p>todo</p>
 </div>
 <div class="section level2">
 <h2 id="slurm-settings">SLURM settings<a class="anchor" aria-label="anchor" href="#slurm-settings"></a>
@@ -172,6 +146,40 @@ per node. Speed is however limited by disk access speed. It it thus
 worth investigating your log files after execution to see how much
 CPU/memory you actually needed, to improve long-term running of
 Bascet.</p>
+</div>
+<div class="section level2">
+<h2 id="advanced-asynchronous-execution">Advanced: Asynchronous execution<a class="anchor" aria-label="anchor" href="#advanced-asynchronous-execution"></a>
+</h2>
+<p>You can also set up SLURM jobs to run in the background, instead of
+stalling your R session until done. This can primarily be useful if you
+want to use the same R session for doing other work while waiting for
+the job.</p>
+<p>To set up this mode of running, you create the SLURM runner slightly
+differently:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="do">## Set the new default runner. Note that the name should not be changed!</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>bascet_runner.default <span class="ot">&lt;-</span> <span class="fu">SlurmRunner</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  ... <span class="co">#previous settings</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">direct=</span><span class="cn">FALSE</span> <span class="do">## new! asynchronous mode</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="do">## get a Bascet instance as usual; this is a separate concern from the runner</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>bascet_instance.default <span class="ot">&lt;-</span> <span class="fu">getBascetSingularityImage</span>(<span class="at">store_at=</span><span class="st">"~/"</span>)</span></code></pre></div>
+<p>Whenever you run a job, you now want to catch a handle to the job in
+a variable:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_job</span> <span class="op">&lt;-</span> <span class="fu">BascetGetRawAtrandiWGS</span><span class="op">(</span>  <span class="co">#note, store job in a variable</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  <span class="va">rawmeta</span>,</span>
+<span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
+<span>    <span class="va">bascet_runner.default</span>,</span>
+<span>    ncpu<span class="op">=</span><span class="fl">5</span>,</span>
+<span>    mem<span class="op">=</span><span class="st">"5g"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>After running this command, you will immediately get the control
+back. To see the status of a job, it is best to just run WaitForJob:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">WaitForJob</span><span class="op">(</span><span class="va">my_job</span><span class="op">)</span></span></code></pre></div>
+<p>You can press ctrl+c to end the waiting loop early</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

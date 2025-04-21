@@ -17,10 +17,10 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/install.html">Install</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/get_started.html">Get started</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/slurm.html">Using SLURM</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><h6 class="dropdown-header" data-toc-skip>Introductory Vignettes</h6></li>
+    <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/read_quality_control.html">Read-based quality control</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -102,10 +102,22 @@
         <dd>Aggregate data from Abricate This is a thin wrapper around BascetAggregateMap</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetAggregateAriba.html">BascetAggregateAriba()</a></code>
+
+        </dt>
+        <dd>Aggregate data from Ariba This is a thin wrapper around BascetAggregateMap</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetAggregateFASTQC.html">BascetAggregateFASTQC()</a></code>
 
         </dt>
         <dd>Aggregate data from FASTQC This is a thin wrapper around BascetAggregateMap</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetAggregateGECCO.html">BascetAggregateGECCO()</a></code>
+
+        </dt>
+        <dd>Aggregate data from GECCO This is a thin wrapper around BascetAggregateMap</dd>
       </dl><dl><dt>
 
           <code><a href="BascetAggregateMap.html">BascetAggregateMap()</a></code>
@@ -262,6 +274,18 @@
 
         </dt>
         <dd>Run FASTQC on reads of all cells. This is a thin wrapper around BascetMapCell</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetMapCellGECCO.html">BascetMapCellGECCO()</a></code>
+
+        </dt>
+        <dd>Run GEECCO on contigs of all cells. This is a thin wrapper around BascetMapCell</dd>
+      </dl><dl><dt>
+
+          <code><a href="BascetMapCellQUAST.html">BascetMapCellQUAST()</a></code>
+
+        </dt>
+        <dd>Run QUAST on reads of all cells. This is a thin wrapper around BascetMapCell</dd>
       </dl><dl><dt>
 
           <code><a href="BascetMapTransform.html">BascetMapTransform()</a></code>
@@ -567,19 +591,13 @@
           <code><a href="aggr.amrfinder.html">aggr.amrfinder()</a></code>
 
         </dt>
-        <dd>Callback function for aggregating AMRFinderPlus data for each cell. To be called from BascetAggregateMap</dd>
+        <dd>Callback function for aggregating ABRicate data for each cell. To be called from BascetAggregateMap</dd>
       </dl><dl><dt>
 
           <code><a href="aggr.ariba.html">aggr.ariba()</a></code>
 
         </dt>
         <dd>Callback function for aggregating ARIBA data for each cell. To be called from BascetAggregateMap</dd>
-      </dl><dl><dt>
-
-          <code><a href="aggr.checkm.html">aggr.checkm()</a></code>
-
-        </dt>
-        <dd>Callback function for aggregating CheckM data for each cell. To be called from BascetAggregateMap</dd>
       </dl><dl><dt>
 
           <code><a href="aggr.fastqc.html">aggr.fastqc()</a></code>
@@ -676,6 +694,12 @@
 
         </dt>
         <dd>extract streamer: create an instance</dd>
+      </dl><dl><dt>
+
+          <code><a href="getBascetDockerImage.html">getBascetDockerImage()</a></code>
+
+        </dt>
+        <dd>Get a Bascet image (singularity or docker). It will be cached in the provided directory to avoid downloading it all the time</dd>
       </dl><dl><dt>
 
           <code><a href="getBascetSingularityImage.html">getBascetSingularityImage()</a></code>
