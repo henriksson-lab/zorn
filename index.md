@@ -1,4 +1,4 @@
-![logo](man/figures/bascet_logo_300.jpg "Zorn logo")
+![](man/figures/bascet_logo_300.jpg "Zorn logo")
 
 
 ## **Zorn**
