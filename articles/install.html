@@ -82,8 +82,11 @@
 
     
     
-<p>First install Zorn. It is under active development, so just get it
-straight from GitHub and install from source:</p>
+<div class="section level2">
+<h2 id="step-1-install-zorn">Step 1: Install Zorn<a class="anchor" aria-label="anchor" href="#step-1-install-zorn"></a>
+</h2>
+<p>Zorn is under active development, so just get it straight from GitHub
+and install from source:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"devtools"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
@@ -91,34 +94,38 @@ straight from GitHub and install from source:</p>
 <p>You can then load it:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span></code></pre></div>
-<p>You also need Bascet. Unless you are a Bascet developer, you will
-find it easiest to run it through Singularity or Docker. Pick the one
-that is easiest to set up on your particular system (i.e. if you already
-have one of these set up, go with that option)</p>
+</div>
 <div class="section level2">
-<h2 id="accessing-bascet-via-singularity">Accessing Bascet via Singularity<a class="anchor" aria-label="anchor" href="#accessing-bascet-via-singularity"></a>
+<h2 id="step-2-install-bascet">Step 2: Install Bascet<a class="anchor" aria-label="anchor" href="#step-2-install-bascet"></a>
 </h2>
+<p>You also need Bascet, our command-line suite for single-cell
+analysis. Most users will find it easiest to run Bascet through
+Singularity or Docker; instructions for each are described below.</p>
+<div class="section level3">
+<h3 id="install-bascet-via-singularity">Install Bascet via Singularity<a class="anchor" aria-label="anchor" href="#install-bascet-via-singularity"></a>
+</h3>
 <p>First <a href="https://docs.sylabs.io/guides/3.0/user-guide/installation.html" class="external-link">install
-Singularity</a></p>
+Singularity</a>.</p>
 <p>Once installed, Zorn can then pull down the latest Singularity image
 for you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascet_instance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>store_at<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="accessing-bascet-via-docker">Accessing Bascet via Docker<a class="anchor" aria-label="anchor" href="#accessing-bascet-via-docker"></a>
-</h2>
+<div class="section level3">
+<h3 id="install-bascet-via-docker">Install Bascet via Docker<a class="anchor" aria-label="anchor" href="#install-bascet-via-docker"></a>
+</h3>
 <p>First <a href="https://docs.docker.com/get-started/" class="external-link">install
-Docker</a></p>
+Docker</a>.</p>
 <p>Once installed, Zorn can then pull down the latest Docker image for
 you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascet_instance.default</span> <span class="op">&lt;-</span> <span class="fu">getBascetDockerImage</span><span class="op">(</span>store_at<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
 <div class="section level2">
-<h2 id="testing-the-installation">Testing the installation<a class="anchor" aria-label="anchor" href="#testing-the-installation"></a>
+<h2 id="step-3-test-the-installation">Step 3: Test the installation<a class="anchor" aria-label="anchor" href="#step-3-test-the-installation"></a>
 </h2>
 <p>Run the following and see if you get “ok” before proceeding:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -135,7 +142,7 @@ it manually if you wish to replace it.</p>
 <div class="section level2">
 <h2 id="for-developers-accessing-a-locally-compiled-bascet">For developers: Accessing a locally compiled Bascet<a class="anchor" aria-label="anchor" href="#for-developers-accessing-a-locally-compiled-bascet"></a>
 </h2>
-<p>See <a href="for_developers.html">separate page</a></p>
+<p>See <a href="for_developers.html">Bascet for Developers</a></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
