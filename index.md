@@ -16,16 +16,12 @@
 -->
 
 
-# **Zorn**
+# Zorn
 
 We are proud to announce Zorn, an R package and workflow manager for scalable single-cell analysis!
 
 To install the package, see the [install page](articles/install.html). 
 
-## **About Zorn**
-
-Zorn is an R package designed
-
-If you use Zorn in your research, please cite: (TODO)
+If you use Zorn in your research, please cite: (XXX)
 
 Zorn is developed and maintained by the [Henriksson and Carroll labs](authors.html)
