@@ -1,7 +1,10 @@
+<img src="man/figures/bascet_logo_300.jpg" alt="Zorn logo" style={{height: "auto", width: "auto"}} />
+
+
 ![](man/figures/bascet_logo_300.jpg "Zorn logo")
 
 
-## **Zorn**
+# **Zorn**
 
 We are proud to announce Zorn, an R package and workflow manager for scalable single-cell analysis!
 
