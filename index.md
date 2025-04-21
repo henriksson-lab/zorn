@@ -22,6 +22,8 @@ We are proud to announce Zorn, an R package and workflow manager for scalable si
 
 To install Zorn, see the [install page](articles/install.html). 
 
-If you use Zorn in your research, please cite: (XXX)
+To get started using Zorn, see the [manual](articles/get_started.html).
+
+If you use Zorn in your research, please cite (XXX)
 
 Zorn is developed and maintained by the [Henriksson and Carroll labs](authors.html)
