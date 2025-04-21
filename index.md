@@ -20,7 +20,7 @@
 
 We are proud to announce Zorn, an R package and workflow manager for scalable single-cell analysis!
 
-To install the package, see the [install page](articles/install.html). 
+To install Zorn, see the [install page](articles/install.html). 
 
 If you use Zorn in your research, please cite: (XXX)
 
