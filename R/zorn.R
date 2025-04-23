@@ -219,7 +219,7 @@ BascetGetRaw <- function(
           "getraw",
           "-t $BASCET_TEMPDIR",
           "--chemistry",chemistry,  
-          if(!is.null(barcodeTolerance)) c("barcode-tol", barcodeTolerance)
+          if(!is.null(barcodeTolerance)) c("barcode-tol", barcodeTolerance),
           "--r1 ${files_r1[$TASK_ID]}",  
           "--r2 ${files_r2[$TASK_ID]}",
           if(add_libnames) "--libname ${libnames[$TASK_ID]}",
