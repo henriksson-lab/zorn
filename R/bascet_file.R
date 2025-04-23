@@ -477,6 +477,12 @@ extractstreamer_start <- function(
     if(!is.null(fname)) c("-i",fname)
   ))
   
+  #Get home variable. will be "" if empty
+  env_home <- Sys.getenv("HOME") 
+
+  #Somehow ~ did not get expanded... so do the work if needed
+  all_cmd <- stringr::str_replace_all(all_cmd, stringr::fixed("~"), env_home)
+  
   #processx wants the command delivered one argument at a time
   all_cmd_split <- stringr::str_split(all_cmd, " ")[[1]]
   all_cmd_split <- all_cmd_split[all_cmd_split!=""] #not sure if needed; but helped make it run
@@ -490,6 +496,11 @@ extractstreamer_start <- function(
   )
   all_out <- c()
   while(TRUE){
+    if(!p$p$is_alive()){
+      print(p$read_all_error())
+      stop("Streamer unexpectedly died")
+    }
+    
     newlines <- p$read_output_lines()
     all_out <- c(all_out, newlines)
     if(verbose){
@@ -557,7 +568,8 @@ extractstreamer_read_n_lines <- function(p, n_lines, verbose=FALSE){
   all_out <- c()
   while(length(all_out) < n_lines){
     if(!p$is_alive()){
-      stop("process is unexpectedly dead")
+      print(p$read_all_error())
+      stop("process unexpectedly died")
     }
     newlines <- p$read_output_lines()
     if(verbose){
