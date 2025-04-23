@@ -163,6 +163,7 @@ BascetAggregateFASTQC <- function(
     inputName="fastqc",
     #cacheFile=NULL, #option
     include_cells=NULL,
+    verbose=FALSE,
     runner=GetDefaultBascetRunner(),
     bascet_instance=GetDefaultBascetInstance()
 ){
@@ -170,6 +171,7 @@ BascetAggregateFASTQC <- function(
     bascetRoot,
     inputName,
     aggr.fastqc,
+    verbose=verbose,
     include_cells=include_cells
   ))
 }
@@ -271,8 +273,7 @@ internal_parse_fastqc_data <- function(lines){
 
 
 ###############################################
-#' Callback function for aggregating FASTQC data for each cell.
-#' To be called from BascetAggregateMap
+#' Show the FASTQC HTML report for a cell
 #' 
 #' @param readnum 1 or 2, for R1 and R2
 #' @param use_browser Use operating system browser to open file
@@ -529,6 +530,7 @@ BascetAggregateAbricate <- function(
     inputName="abricate",
     #cacheFile=NULL, #option
     include_cells=NULL,
+    verbose=FALSE,
     runner=GetDefaultBascetRunner(),
     bascet_instance=GetDefaultBascetInstance()
 ){
@@ -536,7 +538,8 @@ BascetAggregateAbricate <- function(
     bascetRoot,
     inputName,
     aggr.abricate,
-    include_cells=include_cells
+    include_cells=include_cells,
+    verbose = verbose
   )), "cellID","GENE")
 }
 

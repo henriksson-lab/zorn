@@ -206,15 +206,17 @@ TestBascetInstance <- function(
   cmd <- paste(
     bascet_instance@prepend_cmd,
     bascet_instance@bin,
-    "-h"
+    "-V"
   )
 
   ret <- system(cmd, intern = TRUE)
 
-  if(stringr::str_detect(ret[1], "Usage")){
+  #Print version number (if it works)
+  print(ret)
+  
+  if(stringr::str_detect(ret[1], "bascet")){
     "ok"
   } else {
-    #  print(cmd)
     stop("Could not invoke Bascet")
   }
 }
