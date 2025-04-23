@@ -167,13 +167,15 @@ BascetAggregateFASTQC <- function(
     runner=GetDefaultBascetRunner(),
     bascet_instance=GetDefaultBascetInstance()
 ){
-  CountDataFrameToSparseMatrix(BascetAggregateMap(
+  BascetAggregateMap(
     bascetRoot,
     inputName,
     aggr.fastqc,
     verbose=verbose,
     include_cells=include_cells
-  ))
+  )
+  #print(666)
+  #CountDataFrameToSparseMatrix(m)
 }
 
 
@@ -197,76 +199,81 @@ aggr.fastqc <- function(bascetFile, cellID, bascet_instance){
 
   
   #lines_r1 <- readLines("/home/mahogny/github/zorn/test_aggr/fastqc/new/r1_fastqc_data.txt")
-  
+
   dat_r1 <- internal_parse_fastqc_data(lines_r1)
   dat_r2 <- internal_parse_fastqc_data(lines_r2)
-  
-  #Return both R1 and R2
-  list(
-    r1=dat_r1, 
-    r2=dat_r2
-  )
+
+  if(!is.null(dat_r1) | !is.null(dat_r2)){    
+    #Return both R1 and R2
+    list(
+      r1=dat_r1, 
+      r2=dat_r2
+    )
+  } else {
+    print(paste("fastqc lengths", length(lines_r1), length(lines_r2)))
+    NULL
+  }
 }
+
 
 #Parse one FASTQC report file, divide into tables for each section
 internal_parse_fastqc_data <- function(lines){
   
-  #Separate state of section
-  all_section_states <- list()
-  
-  #Put each separate section in a list
-  list_sections <- list()
-  lines <- lines[lines!=">>END_MODULE" & lines!=""]
-  section_start <- which(stringr::str_detect(lines,stringr::fixed(">>")))
-  section_end <- c(section_start[-1], length(lines))
-  for(i in 1:length(section_start)) {
-    subsection <- lines[section_start[i]:(section_end[i]-1)]
+  if(length(lines)>0){
+    #Separate state of section
+    all_section_states <- list()
     
-    zz <- textConnection(subsection[-1])
-    dat <- read.delim(zz)
-    close(zz)
-    
-    
-    #Divide section and state
-    section_name_state <- stringr::str_sub(subsection[1],3)
-    section_name_state <- stringr::str_split_fixed(section_name_state, "\t",2)
-    
-    #to_store <- section_name_state[,2]
-    #names(to_store) <- section_name_state[,1]
-    #print(777)
-    #print(t(to_store))
-    all_section_states[[i]] <- data.frame(state=section_name_state[,1], val=section_name_state[,2])
-    #rbind(
-    #  all_section_states, 
-    #  to_store # section_name_state
-    #)
-    
-    #Store this data frame in current section
-    section_name <- section_name_state[1]
-    list_sections[[section_name]] <- dat
-  }
+    #Put each separate section in a list
+    list_sections <- list()
+    lines <- lines[lines!=">>END_MODULE" & lines!=""]
+    section_start <- which(stringr::str_detect(lines,stringr::fixed(">>")))
+    section_end <- c(section_start[-1], length(lines))
+    for(i in 1:length(section_start)) {
+      subsection <- lines[section_start[i]:(section_end[i]-1)]
+      
+      if(length(subsection)>1){
+        zz <- textConnection(subsection[-1])
+        dat <- read.delim(zz)
+        close(zz)
+      } else {
+        dat <- data.frame()
+      }
+      
+      #Divide section and state
+      section_name_state <- stringr::str_sub(subsection[1],3)
+      section_name_state <- stringr::str_split_fixed(section_name_state, "\t",2)
+      
+      all_section_states[[i]] <- data.frame(state=section_name_state[,1], val=section_name_state[,2])
 
-  all_section_states <- do.call(rbind,all_section_states)
-  all_section_states <- data.frame(
-    row.names=all_section_states$state,
-    val=all_section_states$val
+      #Store this data frame in current section
+      section_name <- section_name_state[1]
+      list_sections[[section_name]] <- dat
+    }
+    
+    all_section_states <- do.call(rbind,all_section_states)
+    all_section_states <- data.frame(
+      row.names=all_section_states$state,
+      val=all_section_states$val
     )
-  
-  
-  all_section_states <- t(all_section_states)
-  print(all_section_states)
-  
-  #Name section-state table and include it as well  
-  #colnames(all_section_states) <- c("section","state")
-  #all_section_states <- as.data.frame(all_section_states)
-  list_sections[["section_state"]] <- all_section_states
-  
-  # list_sections <- internal_parse_fastqc_data(readLines("/home/mahogny/github/zorn/test_aggr/fastqc/new/r1_fastqc_data.txt"))
-  
-  #print(666)
-  #print(all_section_states)
-  
-  list_sections
+    
+    
+    all_section_states <- t(all_section_states)
+    #print(all_section_states)
+    
+    #Name section-state table and include it as well  
+    #colnames(all_section_states) <- c("section","state")
+    #all_section_states <- as.data.frame(all_section_states)
+    list_sections[["section_state"]] <- all_section_states
+    
+    # list_sections <- internal_parse_fastqc_data(readLines("/home/mahogny/github/zorn/test_aggr/fastqc/new/r1_fastqc_data.txt"))
+    
+    #print(666)
+    #print(all_section_states)
+    
+    list_sections    
+  } else {
+    NULL
+  }
 }
 
 
@@ -315,15 +322,14 @@ ShowFASTQCforCell <- function(
 }
 
 
-###############################################
-# Helper for FASTQC: get a data.frame across all cells for a section and read
+###############################################  
+# Helper for FASTQC: get a data.frame across all cells for a section and read ############### what happen??
 ###############################################
 #' Get a data frame for one type of FASTQ statistics across across all cells
 #' 
 #' @param readnum 1 or 2, for R1 and R2
 #' @return TODO
 #' @export
-
 GetFASTQCassembledDF <- function(
     aggr_fastq_data, 
     section, 
