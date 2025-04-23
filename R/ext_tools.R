@@ -76,6 +76,34 @@ aggr.quast <- function(
 
 
 
+###############################################
+#' Aggregate data from QUAST
+#' This is a thin wrapper around BascetAggregateMap
+#' 
+#' @export
+BascetAggregateQUAST <- function( 
+    bascetRoot, 
+    inputName="quast",
+    #cacheFile=NULL, #option
+    include_cells=NULL,
+    verbose=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascet_instance=GetDefaultBascetInstance()
+){
+  BascetAggregateMap(
+    bascetRoot,
+    inputName,
+    aggr.quast,
+    verbose=verbose,
+    include_cells=include_cells
+  )
+  #print(666)
+  #CountDataFrameToSparseMatrix(m)
+}
+
+
+
+
 # aggr.quast_via_filesystem <- function(
     #     bascetFile, 
 #     cellID, 
