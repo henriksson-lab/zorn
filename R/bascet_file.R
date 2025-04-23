@@ -496,7 +496,7 @@ extractstreamer_start <- function(
   )
   all_out <- c()
   while(TRUE){
-    if(!p$p$is_alive()){
+    if(!p$is_alive()){
       print(p$read_all_error())
       stop("Streamer unexpectedly died")
     }
