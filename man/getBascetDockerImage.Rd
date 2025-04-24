@@ -2,8 +2,7 @@
 % Please edit documentation in R/container.R
 \name{getBascetDockerImage}
 \alias{getBascetDockerImage}
-\title{Get a Bascet image (singularity or docker).
-It will be cached in the provided directory to avoid downloading it all the time}
+\title{Get and install a Bascet docker image.}
 \usage{
 getBascetDockerImage(store_at = "./", tempdir = NULL)
 }
@@ -11,6 +10,5 @@ getBascetDockerImage(store_at = "./", tempdir = NULL)
 A Bascet instance
 }
 \description{
-Get a Bascet image (singularity or docker).
-It will be cached in the provided directory to avoid downloading it all the time
+Get and install a Bascet docker image.
 }

@@ -120,7 +120,7 @@ shellscript_make_one_file_expander <- function(tmpname, list_lines) {
 helper_cancel_job_if_file_exists <- function(fvar) {
   c(
     paste0(
-      "if [ -f",fvar,"]; then"),
+      "if [ -f ",fvar," ]; then"),
     "  echo \"Skipping job as the output exists already\"",
     "  exit 0",
     "fi"

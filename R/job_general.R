@@ -68,6 +68,18 @@ setMethod(
 )
 
 
+
+###############################################
+#' Create new no-runner instance, used for debugging
+#' 
+#' @return A NoRunner instance
+#' @export
+NoRunner <- function(show_script=TRUE){
+  new("NoRunner", show_script=show_script)
+}
+
+
+
 ################################################################################
 ########### No job - placeholder to return if a job was not needed #############
 ################################################################################

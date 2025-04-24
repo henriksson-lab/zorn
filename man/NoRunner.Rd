@@ -2,13 +2,13 @@
 % Please edit documentation in R/job_general.R
 \name{NoRunner}
 \alias{NoRunner}
-\title{Create new No-runner instance. This system is for testing only}
+\title{Create new no-runner instance, used for debugging}
 \usage{
-NoRunner(show_script = FALSE)
+NoRunner(show_script = TRUE)
 }
 \value{
-A no-runner
+A NoRunner instance
 }
 \description{
-Create new No-runner instance. This system is for testing only
+Create new no-runner instance, used for debugging
 }

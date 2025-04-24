@@ -2,8 +2,7 @@
 % Please edit documentation in R/ext_tools.R
 \name{ShowFASTQCforCell}
 \alias{ShowFASTQCforCell}
-\title{Callback function for aggregating FASTQC data for each cell.
-To be called from BascetAggregateMap}
+\title{Show the FASTQC HTML report for a cell}
 \usage{
 ShowFASTQCforCell(
   bascetFile,
@@ -22,6 +21,5 @@ ShowFASTQCforCell(
 TODO
 }
 \description{
-Callback function for aggregating FASTQC data for each cell.
-To be called from BascetAggregateMap
+Show the FASTQC HTML report for a cell
 }

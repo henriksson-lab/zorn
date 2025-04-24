@@ -358,7 +358,7 @@ SetTaxonomyNamesFeatures <- function(
   #compressed_mat <- mat[use_row, ]
   #rownames(compressed_mat) <- paste0("taxid-", which(use_row))
   
-  use_row <- which(rowSums(mat)>0)
+  use_row <- which(Matrix::rowSums(mat)>0)
   
   taxonomizr::prepareDatabase(getAccessions=FALSE)
   taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(

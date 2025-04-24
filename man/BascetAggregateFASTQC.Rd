@@ -9,6 +9,7 @@ BascetAggregateFASTQC(
   bascetRoot,
   inputName = "fastqc",
   include_cells = NULL,
+  verbose = FALSE,
   runner = GetDefaultBascetRunner(),
   bascet_instance = GetDefaultBascetInstance()
 )

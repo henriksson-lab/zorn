@@ -10,6 +10,7 @@ BascetGetRaw(
   outputName = "debarcoded",
   outputNameIncomplete = "incomplete_reads",
   chemistry = "atrandi_wgs",
+  barcodeTolerance = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascet_instance = GetDefaultBascetInstance()
@@ -25,6 +26,8 @@ BascetGetRaw(
 \item{outputNameIncomplete}{Name of output files: Reads that could not be parsed}
 
 \item{chemistry}{The type of data to be parsed}
+
+\item{barcodeTolerance}{Optional: Number of mismatches allowed in the barcode for it to still be considered valid}
 
 \item{overwrite}{description}
 
