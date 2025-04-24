@@ -126,6 +126,12 @@
         <dd>Aggregate data from previous Map call</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetAggregateQUAST.html">BascetAggregateQUAST()</a></code>
+
+        </dt>
+        <dd>Aggregate data from QUAST This is a thin wrapper around BascetAggregateMap</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetAlignToReference.html">BascetAlignToReference()</a></code>
 
         </dt>
@@ -501,7 +507,7 @@
           <code><a href="NoRunner.html">NoRunner()</a></code>
 
         </dt>
-        <dd>Create new No-runner instance. This system is for testing only</dd>
+        <dd>Create new no-runner instance, used for debugging</dd>
       </dl><dl><dt>
 
           <code><a href="OpenBascet.html">OpenBascet()</a></code>
@@ -561,7 +567,7 @@
           <code><a href="ShowFASTQCforCell.html">ShowFASTQCforCell()</a></code>
 
         </dt>
-        <dd>Callback function for aggregating FASTQC data for each cell. To be called from BascetAggregateMap</dd>
+        <dd>Show the FASTQC HTML report for a cell</dd>
       </dl><dl><dt>
 
           <code><a href="SlurmRunner.html">SlurmRunner()</a></code>
@@ -699,7 +705,7 @@
           <code><a href="getBascetDockerImage.html">getBascetDockerImage()</a></code>
 
         </dt>
-        <dd>Get a Bascet image (singularity or docker). It will be cached in the provided directory to avoid downloading it all the time</dd>
+        <dd>Get and install a Bascet docker image.</dd>
       </dl><dl><dt>
 
           <code><a href="getBascetSingularityImage.html">getBascetSingularityImage()</a></code>
@@ -754,6 +760,12 @@
 
         </dt>
         <dd>Create an empty job. It is considered to have terminated from the start</dd>
+      </dl><dl><dt>
+
+          <code><a href="removeBascetDockerImage.html">removeBascetDockerImage()</a></code>
+
+        </dt>
+        <dd>Remove current Bascet docker image</dd>
       </dl><dl><dt>
 
           <code><a href="shellscript_make_bash_array.html">shellscript_make_bash_array()</a></code>

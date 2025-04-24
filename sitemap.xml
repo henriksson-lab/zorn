@@ -34,6 +34,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateFASTQC.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateGECCO.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateQUAST.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignToReference.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAlignmentToBigwig.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetBam2Fragments.html</loc></url>
@@ -140,6 +141,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/lseq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/make_output_shard_names.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/new_no_job.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscript_make_bash_array.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscript_make_commalist.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/template_BascetFunction.html</loc></url>
