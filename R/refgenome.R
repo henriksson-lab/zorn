@@ -573,7 +573,7 @@ BascetCountChrom <- function(
   inputFiles <- file.path(bascetRoot, input_shards)
   
   #One output per input alignment
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "hd5", num_shards)  
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "h5", num_shards)  
   
   if(bascet_check_overwrite_output(outputFiles, overwrite)) {
     RunJob(

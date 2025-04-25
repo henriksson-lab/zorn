@@ -173,7 +173,7 @@ ReadBascetCountMatrix <- function(
     stop("No input files")
   }
   inputFiles <- file.path(bascetRoot, input_shards)
-  if(tools::file_ext(inputFiles[1])!="hd5"){
+  if(tools::file_ext(inputFiles[1])!="h5"){
     stop("Wrong input format. should be hd5")
   }
   
