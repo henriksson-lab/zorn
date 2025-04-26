@@ -158,7 +158,7 @@ BascetQueryKMC <- function(
 #' 
 #' @return Count matrix as sparseMatrix
 #' @export
-ReadBascetCountMatrix <- function(
+ReadBascetCountMatrix_old <- function(
     bascetRoot, 
     inputName,
     verbose=FALSE
@@ -627,5 +627,123 @@ ChooseInformativeKMERs <- function(
   sample(all_kmer, num_pick)
 }
 
+
+
+
+
+
+
+
+
+################################################################################
+############################# New anndata loader ###################################
+################################################################################
+
+
+
+
+ReadBascetCountMatrix_newone <- function(
+    fname,
+    verbose=FALSE
+){
+  
+  fname <- "/home/mahogny/test/cnt_feature.hdf5"
+  
+  #print("Loading HDF5 file")
+  h5f <- rhdf5::H5Fopen(fname)
+  indices <- h5f$X$indices +1  #??
+  indptr <-  h5f$X$indptr
+  dat <- h5f$X$data
+  shape <- h5f$X$shape
+  
+  #shape
+  #print(indices)
+  
+  #print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
+  mat <- Matrix::sparseMatrix(  
+    j=indices, 
+    p=indptr,
+    x=dat,
+    dims=h5f$X$shape
+  )
+  
+  rownames(mat) <- h5f$var$`_index`
+  colnames(mat) <- h5f$obs$`_index`
+  
+  rhdf5::H5close()
+  
+  mat
+}
+
+
+#ReadBascetCountMatrix_newone("/home/mahogny/test/cnt_feature.hdf5")
+
+
+
+
+
+
+###############################################
+#' Read a count matrix as produced by Bascet (hdf5 format).
+#' This can be output from both BascetQueryFq and BascetCountChrom
+#' 
+#' @return Count matrix as sparseMatrix
+#' @export
+ReadBascetCountMatrix_old <- function(
+    bascetRoot, 
+    inputName,
+    verbose=FALSE
+){
+  print("Loading HDF5 file")
+  
+  
+  #Figure out input file names  
+  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles <- file.path(bascetRoot, input_shards)
+  if(tools::file_ext(inputFiles[1])!="h5"){
+    stop("Wrong input format. should be hd5")
+  }
+  
+  #Load individual matrices. Sizes may not match
+  list_mat <- list()
+  for(f in inputFiles){
+    mat <- ReadBascetCountMatrix_newone(f) ######################## which direction to assemble? todo
+    if(verbose){
+      print(dim(mat))
+    }
+    #print(colnames(mat))
+    #    print(table(colnames(mat)))
+    list_mat[[f]] <- mat
+  }
+  
+  #Find union of features  
+  all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
+  print(all_colnames)
+  num_col <- length(all_colnames)
+  map_name_to_i <- data.frame(row.names = all_colnames, ind=1:length(all_colnames))
+  print(map_name_to_i)
+  
+  #Make sizes compatible
+  list_resized_mat <- list()
+  for(f in inputFiles){
+    mat <- list_mat[[f]]
+    new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "R", dtype = "d")
+    rownames(new_mat) <- rownames(mat)
+    colnames(new_mat) <- all_colnames
+    #new_mat[1:nrow(mat), colnames(mat)] <- MatrixExtra::as.csr.matrix(mat)
+    #print(map_name_to_i[colnames(mat),])
+    new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column names!
+    # print(dim(new_mat))
+    list_resized_mat[[f]] <- new_mat
+  }
+  
+  #Concatenate matrices
+  allmat <- do.call(rbind, list_resized_mat) #TODO check that above worked properly!
+  Matrix::t(allmat) #note, t in _one; could rewrite to not do it twice
+}
 
 
