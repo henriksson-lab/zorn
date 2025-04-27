@@ -150,7 +150,7 @@ BascetMakeKrakenCountMatrix <- function(
   }
   inputFiles <- file.path(bascetRoot, input_shards)
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "kraken5", num_shards) 
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "h5", num_shards) 
   
   if(bascet_check_overwrite_output(outputFiles, overwrite)) {
     #Run the job
@@ -184,78 +184,78 @@ BascetMakeKrakenCountMatrix <- function(
 
 
 
-###############################################
-#' Read a KRAKEN2 count matrix as produced by Bascet (hdf5 format)
+#' ###############################################
+#' #' Read a KRAKEN2 count matrix as produced by Bascet (hdf5 format)
+#' #' 
+#' #' @param fname Full name of the HDF5 count matrix file
+#' #' @return Counts as a sparseMatrix
+#' #' @export
+#' ReadBascetKrakenMatrix <- function(
+#'     bascetRoot,
+#'     inputName="kraken"
+#' ){
+#'   #Figure out input file names  
+#'   input_shards <- detect_shards_for_file(bascetRoot, inputName)
+#'   num_shards <- length(input_shards)
+#'   if(num_shards==0){
+#'     stop("No input files")
+#'   }
+#'   inputFiles <- file.path(bascetRoot, input_shards)
+#'   
+#'   #Load individual matrices. these may not have compatible sizes
+#'   list_mat <- list()
+#'   for(f in inputFiles){
+#'     mat <- ReadBascetKrakenMatrix_one(f)
+#'     list_mat[[f]] <- mat
+#'   }
+#'   
+#'   ## Resize the matrices to have matching number of rows.
+#'   ## Could also assemble them at this step if faster (probably not)
+#'   max_row <- max(sapply(list_mat, nrow))
+#'   list_resized_mat <- list()
+#'   for(f in inputFiles){
+#'     mat <- list_mat[[f]]
+#'     new_mat <- MatrixExtra::emptySparse(nrow = max_row, ncol = ncol(mat), format = "R", dtype = "d")
+#'     new_mat[1:nrow(mat), 1:ncol(mat)] <- mat
+#'     rownames(new_mat) <- rownames(mat)
+#'     colnames(new_mat) <- colnames(mat)
+#'     list_resized_mat[[f]] <- new_mat
+#'   }
 #' 
-#' @param fname Full name of the HDF5 count matrix file
-#' @return Counts as a sparseMatrix
-#' @export
-ReadBascetKrakenMatrix <- function(
-    bascetRoot,
-    inputName="kraken"
-){
-  #Figure out input file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
-  num_shards <- length(input_shards)
-  if(num_shards==0){
-    stop("No input files")
-  }
-  inputFiles <- file.path(bascetRoot, input_shards)
-  
-  #Load individual matrices. these may not have compatible sizes
-  list_mat <- list()
-  for(f in inputFiles){
-    mat <- ReadBascetKrakenMatrix_one(f)
-    list_mat[[f]] <- mat
-  }
-  
-  ## Resize the matrices to have matching number of rows.
-  ## Could also assemble them at this step if faster (probably not)
-  max_row <- max(sapply(list_mat, nrow))
-  list_resized_mat <- list()
-  for(f in inputFiles){
-    mat <- list_mat[[f]]
-    new_mat <- MatrixExtra::emptySparse(nrow = max_row, ncol = ncol(mat), format = "R", dtype = "d")
-    new_mat[1:nrow(mat), 1:ncol(mat)] <- mat
-    rownames(new_mat) <- rownames(mat)
-    colnames(new_mat) <- colnames(mat)
-    list_resized_mat[[f]] <- new_mat
-  }
-
-  all_mat <- do.call(cbind, list_resized_mat)
-  all_mat
-}
-
-
-###############################################
-#' Internal function, to load a single kraken matrix
-ReadBascetKrakenMatrix_one <- function(
-    fname
-){
-  h5f <- rhdf5::H5Fopen(fname)
-  indices <- h5f$X$indices+1
-  indptr <-  h5f$X$indptr
-  dat <- h5f$X$data
-  shape <- h5f$X$shape
-  
-  #print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
-  mat <- Matrix::sparseMatrix(  
-    j=indices, 
-    p=indptr,
-    x=dat,
-    dims=h5f$X$shape
-  )
-  
-  rownames(mat) <- h5f$obs$`_index`
-  
-  rhdf5::H5close()
-  
-  mat <- Matrix::t(mat)
-  ##Note that taxid 0 is added, but with index 1 in R. Thus need to remove the first column
-  unident <- mat[-1,]
-  mat <- mat[-1,]
-  #  dim(mat)
-}
+#'   all_mat <- do.call(cbind, list_resized_mat)
+#'   all_mat
+#' }
+#' 
+#' 
+#' ###############################################
+#' #' Internal function, to load a single kraken matrix
+#' ReadBascetKrakenMatrix_one <- function(
+#'     fname
+#' ){
+#'   h5f <- rhdf5::H5Fopen(fname)
+#'   indices <- h5f$X$indices+1
+#'   indptr <-  h5f$X$indptr
+#'   dat <- h5f$X$data
+#'   shape <- h5f$X$shape
+#'   
+#'   #print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
+#'   mat <- Matrix::sparseMatrix(  
+#'     j=indices, 
+#'     p=indptr,
+#'     x=dat,
+#'     dims=h5f$X$shape
+#'   )
+#'   
+#'   rownames(mat) <- h5f$obs$`_index`
+#'   
+#'   rhdf5::H5close()
+#'   
+#'   mat <- Matrix::t(mat)
+#'   ##Note that taxid 0 is added, but with index 1 in R. Thus need to remove the first column
+#'   unident <- mat[-1,]
+#'   mat <- mat[-1,]
+#'   #  dim(mat)
+#' }
 
 
 
@@ -354,24 +354,24 @@ SetTaxonomyNamesFeatures <- function(
     keep_species_only=TRUE
 ){
   
-  #use_row <- rowSums(mat)>0
-  #compressed_mat <- mat[use_row, ]
-  #rownames(compressed_mat) <- paste0("taxid-", which(use_row))
+  use_row <- as.integer(stringr::str_remove_all(colnames(mat), "taxid_"))
+  #colnames(mat)
+  #use_row <- which(Matrix::rowSums(mat)>0)
   
-  use_row <- which(Matrix::rowSums(mat)>0)
   
   taxonomizr::prepareDatabase(getAccessions=FALSE)
   taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(
     use_row,
     desiredTaxa = c("phylum", "class", "order", "family", "genus","species")
   ))
+  taxid_class_per_cell$taxid <- paste0("taxid_", use_row)
 
   if(keep_species_only) {
     taxid_class_per_cell$use_row <- use_row
     taxid_class_per_cell <- taxid_class_per_cell[!is.na(taxid_class_per_cell$species),]
     
-    compressed_mat <- mat[taxid_class_per_cell$use_row, ]
-    rownames(compressed_mat) <- taxid_class_per_cell$species
+    compressed_mat <- mat[, taxid_class_per_cell$taxid]
+    colnames(compressed_mat) <- taxid_class_per_cell$species
     #compressed_mat    
 
   } else {
@@ -382,11 +382,10 @@ SetTaxonomyNamesFeatures <- function(
     torep <- is.na(taxid_class_per_cell$name)
     taxid_class_per_cell$name[torep] <- "NA"
     
-    use_name <- paste0(use_row,"-",taxid_class_per_cell$name)
+    #use_name <- paste0(use_row,"-",taxid_class_per_cell$name)
     
-    compressed_mat <- mat[use_row, ]
-    rownames(compressed_mat) <- use_name
-    compressed_mat    
+    compressed_mat <- mat[, taxid_class_per_cell$taxid]
+    colnames(compressed_mat) <- paste0(use_row,"-",taxid_class_per_cell$name)
   }
     
   compressed_mat
