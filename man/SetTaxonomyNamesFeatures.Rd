@@ -17,7 +17,5 @@ SetTaxonomyNamesFeatures(mat, keep_species_only = TRUE)
 A named count matrix
 }
 \description{
-Take a KRAKEN2 count matrix where the column is the taxonomyID.
-Convert to a matrix where the columns instead are the names of each taxonomy.
-Unused taxonomyID columns will not be kept
+TODO: should append the name on the axis
 }
