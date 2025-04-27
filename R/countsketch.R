@@ -121,6 +121,7 @@ BascetLoadCountSketchMatrix <- function(
     inputName="countsketch_mat.csv"
 ) {
   #"/husky/henriksson/atrandi/v2_wgs_novaseq1/countsketch_mat.csv"
+  fname <- file.path(bascetRoot, inputName)
   mat <- as.data.frame(data.table::fread(fname))
   
   cellid <- mat[,1]
@@ -130,7 +131,7 @@ BascetLoadCountSketchMatrix <- function(
   colnames(Q) <- cellid
   rownames(Q) <- paste0("f",1:nrow(Q))
   
-  adata <- CreateSeuratObjectWithReduction(Q)
+  adata <- CreateSeuratObjectWithReduction(Q) #Warning: Data is of class matrix. Coercing to dgCMatrix.
   adata$celldepth <- celldepth
   
   adata

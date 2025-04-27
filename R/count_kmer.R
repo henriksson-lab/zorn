@@ -608,23 +608,39 @@ BascetReadMinhashHistogram <- function(
 #' @export
 ChooseInformativeKMERs <- function(
     kmer_hist,
-    num_pick=1000, 
-    minfreq=0.01, 
-    maxfreq=0.10
+    #num_pick=1000, 
+    minfreq=0.005, 
+    maxfreq=1
 ) {
+  #maxfreq = 1
+  #minfreq = 0.02
   
   ## Possibly expensive to get them all... is the total count stored somewhere? can we sample?
   kmer_hist <- kmer_hist[order(kmer_hist$cnt),]
   num_kmer <- nrow(kmer_hist)
   
-  all_kmer <- kmer_hist$kmer[round(num_kmer*minfreq):round(num_kmer*maxfreq)]
+  max_cnt <- max(kmer_hist$cnt)
   
-  if(length(all_kmer)<num_pick){
-    stop(paste("Cannot pick",num_pick," KMERS; only",length(all_kmer),"pass frequency criteria"))  
-  }
+  #all_kmer <- kmer_hist$kmer[round(num_kmer*minfreq):round(num_kmer*maxfreq)]
+  sub_kmer_hist <- kmer_hist[kmer_hist$cnt>=max_cnt*minfreq & kmer_hist$cnt<=max_cnt*maxfreq,]
+  #[kmer_hist$cnt>max_cnt*minfreq & kmer_hist$cnt<max_cnt*maxfreq]
   
-  set.seed(0)
-  sample(all_kmer, num_pick)
+  #count_range <- kmer_hist$cnt[c(round(num_kmer*minfreq),round(num_kmer*maxfreq))]
+  print(paste(
+    "Counts will be in range ",
+    min(sub_kmer_hist$cnt), 
+    max(sub_kmer_hist$cnt),
+    "#kmers", nrow(sub_kmer_hist)))
+
+  all_kmer <- sub_kmer_hist$kmer
+  
+  #if(length(all_kmer)<num_pick){
+  #  stop(paste("Cannot pick",num_pick," KMERS; only",length(all_kmer),"pass frequency criteria"))  
+  #}
+  
+  all_kmer
+  #set.seed(0)
+  #sample(all_kmer, num_pick)
 }
 
 
@@ -733,7 +749,7 @@ ReadBascetCountMatrix <- function(
   for(f in inputFiles){
     mat <- list_mat[[f]]
     new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "R", dtype = "d")
-    new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column names!
+    new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column names!  #here, x[.,.] <- val : x being coerced from Tsparse* to CsparseMatrix
     rownames(new_mat) <- rownames(mat)
     colnames(new_mat) <- all_colnames
     # print(dim(new_mat))

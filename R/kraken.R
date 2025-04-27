@@ -270,6 +270,10 @@ BascetMakeKrakenCountMatrix <- function(
 KrakenFindConsensusTaxonomy <- function(
     mat
 ){
+  
+  #taxid 135 9167  7942
+  
+  
   #turn into triplet representation
   library(Matrix)
   #M <- Matrix::Matrix(mat, sparse = TRUE)
@@ -277,10 +281,13 @@ KrakenFindConsensusTaxonomy <- function(
   
   #Note that indices are zero-based within Matrix package
   df <- data.frame(
-    taxid = M@i + 1,
-    cell_index = M@j + 1,
+    cell_index = M@i + 1,
+    taxid_index = M@j + 1,
     cnt = M@x
   )
+  
+  col_taxid <- stringr::str_remove(colnames(M),"taxid_")
+  df$taxid <- col_taxid[df$taxid_index]
   
   #Not all taxid's will map. so we need to look them up first, then discard some of them
   taxonomizr::prepareDatabase(getAccessions=FALSE)
@@ -305,7 +312,7 @@ KrakenFindConsensusTaxonomy <- function(
   #Add info to each cell
   taxid_class_per_cell <- merge(max_taxid_per_cell, df_taxid, all.x=TRUE)
 
-  taxid_class_per_cell$cell_id <- colnames(mat)[taxid_class_per_cell$cell_index]
+  taxid_class_per_cell$cell_id <- rownames(mat)[taxid_class_per_cell$cell_index]
   taxid_class_per_cell
 }
 
@@ -345,6 +352,8 @@ KrakenSpeciesDistribution <- function(
 #' Convert to a matrix where the columns instead are the names of each taxonomy.
 #' Unused taxonomyID columns will not be kept
 #' 
+#' TODO: should append the name on the axis
+#' 
 #' @param mat description
 #' @param keep_species_only description
 #' @return A named count matrix
@@ -353,6 +362,8 @@ SetTaxonomyNamesFeatures <- function(
     mat, 
     keep_species_only=TRUE
 ){
+  
+  #TODO can check if taxid_ is present for this function
   
   use_row <- as.integer(stringr::str_remove_all(colnames(mat), "taxid_"))
   #colnames(mat)
