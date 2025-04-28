@@ -86,12 +86,14 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetBascetTempDir.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetDefaultBascetInstance.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCassembledDF.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCbasicStats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCpassfailStats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KmcChooseKmerFeatures.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KmcGetHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KmcGetKmers.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KneeplotPerSpecies.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KrakenFindConsensusTaxonomy.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/KrakenKneePlot.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KrakenSpeciesDistribution.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ListDatabaseAbricate.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/LocalRunner.html</loc></url>
