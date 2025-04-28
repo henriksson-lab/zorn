@@ -328,6 +328,78 @@ SetTaxonomyNamesFeatures <- function(
 
 
 
+###############################################
+#' Take a KRAKEN2 adata object and generate per-species kneeplots
+#' 
+#' @param groupby genus, phylum or species
+#' @return A ggplot
+#' @export
+KrakenKneePlot <- function(adata, groupby="phylum", show_num_spec=15) {
+  
+  use_row <- as.integer(stringr::str_remove_all(taxid, "taxid-"))
+  
+  taxonomizr::prepareDatabase(getAccessions=FALSE)
+  taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(
+    use_row,
+    desiredTaxa = c("phylum", "class", "order", "family", "genus","species")
+  ))
+  taxid_class_per_cell$taxid_index <- rownames(taxid_class_per_cell)
+  taxid_class_per_cell
+  
+  #Turn count matrix into long format
+  current_assay <- adata@assays[[DefaultAssay(adata)]]
+  M <- as(current_assay@counts, "TsparseMatrix")
+  M.df <- data.frame(
+    taxid_index=use_row[M@i+1],
+    cell_index=M@j+1, 
+    cnt=M@x
+  )
+  
+  #Decide how to reduce count matrix
+  taxid_tomerge <- data.frame(
+    taxid_index=taxid_class_per_cell$taxid_index,
+    grp=taxid_class_per_cell[,groupby]
+    #grp=taxid_class_per_cell$species  ################ species
+    #grp=taxid_class_per_cell$genus  ################ genus for now
+    #    grp=taxid_class_per_cell$phylum  ################ phylum
+  )
+  taxid_tomerge <- taxid_tomerge[!is.na(taxid_tomerge$grp),]  ## not every taxonomy ID has a group
+  
+  taxid_M <- merge(M.df, taxid_tomerge)
+  
+  #Sum up counts per cell and group
+  toplot <- sqldf("select sum(cnt) as cnt, grp, cell_index from taxid_M group by grp, cell_index")
+  toplot <- toplot[order(toplot$cnt, decreasing = TRUE),]
+  
+  #Set indices for plot
+  toplot$index <- NA
+  for(cur_grp in unique(toplot$grp)){
+    this_index <- which(toplot$grp==cur_grp)
+    toplot$index[this_index] <- 1:length(this_index)
+  }
+  
+  #Abundance for each group?  
+  cnt_per_grp <- sqldf("select sum(cnt) as cnt, grp from taxid_M group by grp order by cnt desc")
+  #cnt_per_grp
+  
+  #Produce the plot
+  toplot_sub <- toplot[toplot$grp %in% cnt_per_grp$grp[1:show_num_spec],]
+  toplot_sub$grp <- factor(toplot_sub$grp, levels = cnt_per_grp$grp)
+  ggplot(
+    toplot_sub, aes(index, cnt, color=grp)) + 
+    geom_line() + 
+    scale_x_log10() + 
+    scale_y_log10() +
+    xlab("Cell index") +
+    ylab("Read counts") + 
+    guides(color=guide_legend(title=stringr::str_to_title(groupby))) +
+    theme_bw()
+}
+
+
+
+
+
 
 if(FALSE){
   taxonomizr::getTaxonomy(

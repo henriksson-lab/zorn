@@ -2,7 +2,7 @@
 % Please edit documentation in R/ext_tools.R
 \name{GetFASTQCpassfailStats}
 \alias{GetFASTQCpassfailStats}
-\title{From aggregated FASTQC data, get overall statistics for overlay on UMAP etc}
+\title{From aggregated FASTQC data, get overall pass-fail statistics for overlay on UMAP etc}
 \usage{
 GetFASTQCpassfailStats(aggr_fastq_data, readnum)
 }
@@ -10,5 +10,5 @@ GetFASTQCpassfailStats(aggr_fastq_data, readnum)
 \item{readnum}{1 or 2, for R1 or R2}
 }
 \description{
-TODO argument if giving many cells
+From aggregated FASTQC data, get overall pass-fail statistics for overlay on UMAP etc
 }

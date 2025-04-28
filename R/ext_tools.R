@@ -364,6 +364,10 @@ GetFASTQCassembledDF <- function(
     readnum
 ) {
   
+  if(!(as.integer(readnum) %in% c(1,2))) {
+    stop("readnum must be 1 or 2")
+  }
+  
   internal_fastqc_getread_in_list <- function(lst,readnum){
     lapply(lst, function(s) s[[paste0("r",readnum)]])
   }
@@ -416,10 +420,32 @@ PlotFASTQCadapterContent <- function(
 
 
 
+
+
 ###############################################
-#' From aggregated FASTQC data, get overall statistics for overlay on UMAP etc
+#' From aggregated FASTQC data, get basic statistics for overlay on UMAP etc
 #' 
-#' TODO argument if giving many cells
+#' @param readnum 1 or 2, for R1 or R2
+#' @export
+GetFASTQCbasicStats <- function(aggr_fastqc, readnum) {
+  df <- GetFASTQCassembledDF(aggr_fastqc,"Basic Statistics",readnum)
+  df <- df[df$X.Measure %in% c("Sequence length","%GC","Sequences flagged as poor quality"),]
+  df.mat <- as.data.frame(reshape2::acast(df, cellID ~ X.Measure, value.var = "Value"))
+  
+  seqlen <- stringr::str_split_fixed(df.mat$`Sequence length`,"-",2)
+  
+  data.frame(
+    row.names = rownames(df.mat),
+    gc=as.numeric(df.mat$`%GC`),
+    num_seq_poor_quality=as.numeric(df.mat$`Sequences flagged as poor quality`),
+    seqlen_from=as.numeric(seqlen[,1]),
+    seqlen_to=as.numeric(seqlen[,2])
+  )
+}
+
+
+###############################################
+#' From aggregated FASTQC data, get overall pass-fail statistics for overlay on UMAP etc
 #' 
 #' @param readnum 1 or 2, for R1 or R2
 #' @export
