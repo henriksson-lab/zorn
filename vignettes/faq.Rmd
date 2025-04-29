@@ -33,3 +33,8 @@ Some examples of tasks:
 * Support for other single-cell chemistries
 * General speed improvements
 
+# Who was Zorn?
+
+See [Anders Zorn on wikipedia!](https://en.wikipedia.org/wiki/Anders_Zorn)
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Anders_Zorn_1908.jpg" alt="Anders Zorn"/>
