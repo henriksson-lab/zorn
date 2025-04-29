@@ -10,8 +10,6 @@ output:
 
 # FASTQC
 
-(move to another section?)
-
 If you want to run QC on all cells as a whole, to get the average picture,
 simply run FASTQC on reads after transformation to FASTQ:
 
@@ -109,5 +107,5 @@ Possible values of section are:
 * "Overrepresented sequences"
 * "Adapter Content"
 
-
+Other statistics can also be extracted. Refer to the full reference manual for a list
 

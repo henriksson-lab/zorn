@@ -18,6 +18,8 @@ bascet_runner.default <- LocalRunner(direct = TRUE, show_script=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
+# Alignment
+
 We will use BWA for alignment, which wants the data in FASTQ format. Here we assume that you use a single-cell
 WGS chemistry that produces paired reads, and direct Zorn to produce R1/R2 FASTQ files (only R1 specified).
 We name the output Bascets "asfq", taking as input the typical sharded reads:
@@ -92,8 +94,7 @@ BascetFilterAlignment(
 
 
 
-# Counting workflow
-
+# Option #1: Counting with Signac
 
 If you want to analyze where reads mapped, either for RNA-seq counting for genes,
 or more generally, what the count is within a genomic region, you can use Signac
@@ -108,16 +109,19 @@ this is typically enough.
 [(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
-### Generate fragments BED file suited for quantifying reads/chromosome using Signac later 
+### Generate fragments BED file suited for quantifying
+### reads/chromosome using Signac later 
 BascetBam2Fragments(
   bascetRoot
 )
 ```
 
+# Option #2: Counting chromosomes (species)
 
-
-If you just want to get the number of reads per chromosome (i.e. to compare a metagenomic sample to a number of defined strains),
-then we provide a simpler counter. The output is a small matrix that you can load with Seurat:
+A simplified scenario is when you just want to get the number of reads per chromosome. These counts
+can later be summarized on the levels of genomes (summing up across chromosomes). We use this to
+for example compare the alignment to an expected mock community, and thus just want to see how
+species mix together. The following command generates counts files:
 
 [(SLURM-compatible step)](slurm.html)
 
@@ -127,5 +131,88 @@ BascetCountChrom(
   bascetRoot
 )
 ```
+
+The output format is one binary HDF5 file for each shard, roughly in the
+[Anndata file format](https://anndata.readthedocs.io/en/stable/fileformat-prose.html).
+To load these, use the following command that loads the files and concatenates them
+into a single matrix. It can then be loaded into Seurat:
+
+```{r, eval=F, echo=T}
+library(Seurat)
+
+cnt <- ReadBascetCountMatrix(bascetRoot,"chromcount", verbose=FALSE)
+
+adata <- CreateSeuratObject(
+  counts = CreateAssayObject(t(cnt)), ## according to anndata standard, there should be a transpose here
+  project = "proj", min.cells = 0, min.features = 0, assay = "chrom_cnt"
+) 
+```
+
+
+Most likely, some cells will have to be discarded. Initially we recommend that
+you keep the cutoff low until you are better informed. You can then apply the cutoff as follows:
+```{r, eval=F, echo=T}
+keep_cells <- adata$nCount_chrom_cnt > 10000 #10k reads
+sum(keep_cells)                              #See how many cells pass this cutoff
+adata <- adata[,keep_cells]                  #Reduce to sensible number
+```
+
+If you have a list of which chromosomes belong together, then you can furthermore
+sum them up to get species-level counts. map_seq2strain should contain two columns: (todo) (TODO filter after instead)
+```{r, eval=F, echo=T}
+adata[["species_cnt"]] <- ChromToSpeciesCount(adata, map_seq2strain)  
+
+#Optional: Figure out which species has most reads in which cell
+cnt <- adata@assays$species_cnt$counts
+adata$species_aln <- rownames(cnt)[apply(cnt, 2, which.max)]
+```
+
+
+Knowing the species, you can generate a per-species kneeplot as follows:
+```{r, eval=F, echo=T}
+DefaultAssay(adata) <- "species_cnt"
+KneeplotPerSpecies(adata)
+```
+
+
+You can now proceed to generate a dimensional reduction in the form of a UMAP.
+See the tutorials for [Seurat](https://satijalab.org/seurat/) and
+[Signac](https://stuartlab.org/signac/) for details. We summarize the required
+command below, where you can apply either an RNA-seq or ATAC-seq dimensional reduction
+depending on what you think is appropriate.
+
+```{r, eval=F, echo=T}
+if(FALSE){
+  #ATAC-seq style analysis
+  library(Signac)
+  adata <- RunTFIDF(adata)
+  adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+  adata <- RunSVD(adata)
+  DepthCor(adata)
+  adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:(nrow(adata)-1), reduction.name = "chrom_umap")  
+} else {
+  #RNA-seq style analysis
+  adata <- NormalizeData(adata)
+  adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = nrow(adata))
+  adata <- ScaleData(adata, features = rownames(adata))
+  adata <- RunPCA(adata, features = VariableFeatures(object = adata))
+  adata <- RunUMAP(adata, dims = 1:(nrow(adata)-1), reduction.name = "chrom_umap")
+}
+```
+
+Finally, you can plot your UMAP. If you also extracted the dominant species column
+in your matrix, you can visualize it on top!
+
+```{r, eval=F, echo=T}
+DimPlot(object = adata, label = TRUE, group.by = "species_aln") + 
+  xlab("BWA1") + 
+  ylab("BWA2")
+```
+
+
+
+# Option #3: Counting features (genes etc)
+
+documentation TODO (count-feature in bascet)
 
 

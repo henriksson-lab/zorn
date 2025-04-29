@@ -18,6 +18,7 @@ bascet_runner.default <- LocalRunner(direct = TRUE, show_script=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
+# Preprocessing
 
 Next, produce a count sketch for each cell. There are further options if you
 wish to alter the number of dimensions. You can reduce the number of dimensions
@@ -44,6 +45,8 @@ BascetGatherCountSketch(
   bascetRoot
 )
 ```
+
+# Postprocessing with Signac/Seurat
 
 You can now load all of this data into R as a Seurat object:
 
