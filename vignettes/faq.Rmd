@@ -35,6 +35,6 @@ Some examples of tasks:
 
 # Who was Zorn?
 
-See [Anders Zorn on wikipedia!](https://en.wikipedia.org/wiki/Anders_Zorn)
+See [Anders Zorn](https://en.wikipedia.org/wiki/Anders_Zorn) on wikipedia!
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Anders_Zorn_1908.jpg" alt="Anders Zorn"/>

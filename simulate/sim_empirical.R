@@ -33,8 +33,8 @@ simulate_one_cell <- function(ch, genome_name, num_read=1000, insert_max_size=80
 
 
 finalize_file <- function(outf){
-  system(paste0("bgzip -f ",outf))
-  system(paste0("tabix -f -p bed ",outf, ".gz"))  
+  system(paste0("bgzip --threads 15 -f ",outf))
+  system(paste0("tabix -f -p bed ",outf, ".gz"))
 }
 
 ################################################################################ 
@@ -89,9 +89,12 @@ while(curcell < 10000) {
     out_rand <- round(runif(1, 1,num_shard))
     fname <- paste0("/husky/henriksson/atrandi/simulated2/filtered.",out_rand,".tirp")  
     
+    genome_name <- names(allfa)[for_genome]
+    genome_name <- stringr::str_split_i(genome_name," ",1)  ## note, only getting the first word in name, but at least no " " in it (would cause problems)
+    
     df <- simulate_one_cell(
       as.character(allfa[for_genome]), 
-      genome_name = paste0(names(allfa)[for_genome], "#", curcell),
+      genome_name = paste0(genome_name, "_", curcell),
       num_read = num_read,
       insert_max_size = insert_max_size
     )
@@ -107,5 +110,5 @@ print("Finalizing")
 for(i in 1:num_shard){
   print(i)
   fname <- paste0("/husky/henriksson/atrandi/simulated2/filtered.",i,".tirp")  
-  finalize_file(fname)
+  finalize_file(fname)  
 }

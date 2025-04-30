@@ -593,7 +593,7 @@ BascetRunFASTP <- function(
         if(is_paired) shellscript_make_bash_array("files_out_R2",outputFiles_R2),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) helper_cancel_job_if_file_exists("${files_out_R1[$TASK_ID]}"),
         
         paste(
           bascet_instance@prepend_cmd,
