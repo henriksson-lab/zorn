@@ -85,9 +85,27 @@
 <div class="section level2">
 <h2 id="simulated-data">Simulated data<a class="anchor" aria-label="anchor" href="#simulated-data"></a>
 </h2>
-<p>To test the pipeline, we have prepared (a simulated dataset)[<a href="http://beagle.henlab.org/public/bascet/demodata/simulated.zip" class="external-link uri">http://beagle.henlab.org/public/bascet/demodata/simulated.zip</a>].
-This is is not raw data, but rather what you get after shardification.
-If you follow the tutorial, the first steps are thus already done.</p>
+<p>To test the pipeline, we have prepared several simulated datasets
+that you can use</p>
+<div class="section level3">
+<h3 id="full-simulation-small">Full simulation (small)<a class="anchor" aria-label="anchor" href="#full-simulation-small"></a>
+</h3>
+<p>To test the full pipeline, we have prepared simulated raw FASTQ files
+* (R1)[<a href="http://beagle.henlab.org/public/bascet/sim3/sim3_R1_001.fastq.gz" class="external-link uri">http://beagle.henlab.org/public/bascet/sim3/sim3_R1_001.fastq.gz</a>]
+* (R2)[<a href="http://beagle.henlab.org/public/bascet/sim3/sim3_R2_001.fastq.gz" class="external-link uri">http://beagle.henlab.org/public/bascet/sim3/sim3_R2_001.fastq.gz</a>]</p>
+</div>
+<div class="section level3">
+<h3 id="debarcoded-simulation-small">Debarcoded simulation (small)<a class="anchor" aria-label="anchor" href="#debarcoded-simulation-small"></a>
+</h3>
+<p>You can use (shardified reads)[<a href="http://beagle.henlab.org/public/bascet/demodata/simulated.zip" class="external-link uri">http://beagle.henlab.org/public/bascet/demodata/simulated.zip</a>]
+as input. There are few cells, of different depth. This is our smallest
+demo dataset. Skip debarcoding and shardification if you use this
+data</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="more-simulate-data">More simulate data<a class="anchor" aria-label="anchor" href="#more-simulate-data"></a>
+</h2>
 <p>You can also simulate your own data, to, e.g., check performance on
 genomes that you might expect in a sample. This can be useful for power
 calculations/estimation. See <a href="https://github.com/henriksson-lab/zorn/tree/main/simulate" class="external-link">the
@@ -97,7 +115,7 @@ if you have a need of this and need directions on how to use the
 code.</p>
 </div>
 <div class="section level2">
-<h2 id="real-data">Real data<a class="anchor" aria-label="anchor" href="#real-data"></a>
+<h2 id="real-data-small">Real data (small)<a class="anchor" aria-label="anchor" href="#real-data-small"></a>
 </h2>
 <p>You can also investigate some (miseq data)[<a href="http://beagle.henlab.org/public/bascet/demodata/miseq.zip" class="external-link uri">http://beagle.henlab.org/public/bascet/demodata/miseq.zip</a>].
 Note that this data is ultra-shallowly sequenced, so don’t expect to see
