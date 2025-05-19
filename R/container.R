@@ -145,40 +145,49 @@ getBascetDockerImage <- function(
 ){
   
   # docker image inspect busybox:latest >/dev/null 2>&1 && echo yes || echo no
-  
-  ret <- system("docker image inspect henriksson-lab/bascet:latest >/dev/null 2>&1 && echo yes || echo no", intern = TRUE)
 
-  if(ret=="no") {
-    print("No docker image present; downloading")
-
+  #check if docker is installed
+  ret <- system("docker ps")
+  if(ret==0) {
     
-    file_bascet_image <- file.path(store_at, "bascet.tar")
     
-    options(timeout = 60*60*5) #timeout in seconds
+    ret <- system("docker image inspect henriksson-lab/bascet:latest")
     
-    if(download.file("http://beagle.henlab.org/public/bascet/bascet.tar",file_bascet_image)!=0){
-      stop("Failed to download docker image")      
+    if(ret!=0) {
+      print("No docker image present; downloading")
+      
+      
+      file_bascet_image <- file.path(store_at, "bascet.tar")
+      
+      options(timeout = 60*60*5) #timeout in seconds
+      
+      if(download.file("http://beagle.henlab.org/public/bascet/bascet.tar",file_bascet_image)!=0){
+        stop("Failed to download docker image")      
+      }
+      
+      system(paste("docker load -i ", file_bascet_image))
+      
+      print(paste("The huge image at",file_bascet_image,"can now be removed if the installation worked. You can otherwise try to install it manually using Docker"))
+      
+    } else {
+      print(paste("Found existing Bascet Docker image"))
     }
-
-    system(paste("docker load -i ", file_bascet_image))
     
-    print(paste("The huge image at",file_bascet_image,"can now be removed if the installation worked. You can otherwise try to install it manually using Docker"))
+    prepend_cmd <- paste("docker run henriksson-lab/bascet ")
+    
+    if(is.null(tempdir)){
+      tempdir <- tempdir()
+    }
+    
+    BascetInstance(
+      bin="bascet",
+      tempdir=tempdir,
+      prepend_cmd=prepend_cmd
+    ) 
     
   } else {
-    print(paste("Found existing Bascet Docker image"))
-  }
-  
-  prepend_cmd <- paste("docker run henriksson-lab/bascet ")
-  
-  if(is.null(tempdir)){
-    tempdir <- tempdir()
-  }
-  
-  BascetInstance(
-    bin="bascet",
-    tempdir=tempdir,
-    prepend_cmd=prepend_cmd
-  ) 
+    stop("Docker is not installed or cannot be run")
+  } 
 }
 
 
