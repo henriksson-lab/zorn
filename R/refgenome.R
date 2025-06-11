@@ -898,7 +898,7 @@ BascetRunCellSNP <- function(
     paste(
       bascet_instance@prepend_cmd,
       "bash -c \"",
-      "samtools view ${files_in[$TASK_ID]} | sed -e 's/^.*CB:Z://' | sed -e 's/\t.*//' | uniq > ${files_listcell[$TASK_ID]}",
+      "samtools view ${files_in[$TASK_ID]} | sed -e 's/^.*CB:Z://' | sed -e 's/\t.*//' | sort | uniq > ${files_listcell[$TASK_ID]}",
       "\""
     ),
     
