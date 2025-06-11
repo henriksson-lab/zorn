@@ -656,9 +656,25 @@ ReadBascetCountMatrix_one <- function(
   rownames(mat) <- h5f$obs$`_index`  #names of cells
   colnames(mat) <- h5f$var$`_index`  #feature names
   
+  ### Read obs matrix
+  
+  #print(666)
+  #print(names(h5f$obs))
+  #list_obs_col <- setdiff(names(h5f$obs),"_index")
+  #print(h5f$obs["_unmapped"])
+  
+  #df_obs <- data.frame(row.names=h5f$obs$`_index`)
+  df_obs <- as.data.frame(h5f$obs)
+  colnames(df_obs) <- names(h5f$obs)
+  #print(head(df_obs))
+  
   rhdf5::H5close()
   
-  mat
+  list(
+    obs=df_obs,
+    X=mat
+  )
+  #mat
 }
 
 
@@ -689,7 +705,11 @@ ReadBascetCountMatrix <- function(
   #Load individual matrices. Sizes may not match
   list_mat <- list()
   for(f in inputFiles){
-    mat <- ReadBascetCountMatrix_one(f)
+    list_one <- ReadBascetCountMatrix_one(f)
+    
+    mat <- list_one$X
+    
+    
     if(verbose){
       print(dim(mat))
     }

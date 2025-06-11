@@ -831,13 +831,105 @@ CountGrangeFeatures <- function(
 
 #https://academic.oup.com/bioinformatics/article/37/23/4569/6272512
 
-
 #like KRAKEN, wrap cellsnp-lite
 
+# is b needed?
+# cellsnp-lite -s $BAM -b $BARCODE -O $OUT_DIR -p 10 --minMAF 0.1 --minCOUNT 100 --gzip
+
+
+# singularity run ~/github/bascet/singularity/bascet.sif cellsnp-lite -s mutans_aligned.1.bam -O cellsnp.1.out -p 1 --minMAF 0.1 --minCOUNT 100 --gzip -b bclist.csv
+#C1_A5_C8_A11
+#F3_G6_H8_C11
+
+
+# singularity run ~/mystore/bascet.sif cellsnp-lite -s mutans_aligned.1.bam -O cellsnp.1.out -p 1 --minMAF 0.1 --minCOUNT 100 --gzip -b bclist.csv
+# creates output dir
 
 
 
+###############################################
+#' Align from FASTQ, generate sorted and indexed BAM file
+#' 
+#' TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed
+#' 
+#' @param useReference Name of the BWA reference to use
+#' @param inputName xx
+#' @param outputName xx
+#' @param numLocalThreads Number of threads to use for each runner
+#' 
+#' @export
+BascetRunCellSNP <- function(  
+    bascetRoot, 
+    numLocalThreads=1,
+    inputName="aligned", 
+    outputName="cellsnp", 
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(), 
+    bascet_instance=GetDefaultBascetInstance()
+){
+  
+  #Figure out input and output file names  
+  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles <- file.path(bascetRoot, input_shards) 
+  
+  outputFiles <- make_output_shard_names(bascetRoot, outputName, "out", num_shards)
+  
+  listcellFiles <- make_output_shard_names(bascetRoot, outputName, "listcell", num_shards)
 
+  
 
+  
+  ### Build command: basic alignment
+  cmd <- c(
+    shellscript_set_tempdir(bascet_instance),
+    shellscript_make_bash_array("files_in", inputFiles),
+    shellscript_make_bash_array("files_out", outputFiles),
+    shellscript_make_bash_array("files_listcell", listcellFiles),
 
+    ### Abort early if needed    
+    #if(!overwrite) helper_cancel_job_if_file_exists("${outputFiles[$TASK_ID]}"),  #does this work on dirs?
+    if(!overwrite) helper_cancel_job_if_file_exists("${files_listcell[$TASK_ID]}"),  
+    
+    ### To make list of cell IDs. could avoid if we write our own cellsnp-lite
+    paste(
+      bascet_instance@prepend_cmd,
+      "bash -c \"",
+      "samtools view ${files_in[$TASK_ID]} | sed -e 's/^.*CB:Z://' | sed -e 's/\t.*//' | uniq > ${files_listcell[$TASK_ID]}",
+      "\""
+    ),
+    
+    ### For SNP-calling
+    paste(
+      bascet_instance@prepend_cmd,
 
+      "cellsnp-lite", 
+      "-s ${files_in[$TASK_ID]}",        #Align BAM
+      "-p", numLocalThreads,
+      "--minMAF 0.1",
+      "--minCOUNT 100",
+      "--gzip",
+      "-b ${files_listcell[$TASK_ID]}",
+      "-O ${files_out[$TASK_ID]}"        #Each input means one output
+    )
+  )
+  
+  
+  
+  print(cmd)
+  
+  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+    #Produce the script and run the job
+    RunJob(
+      runner = runner, 
+      jobname = "Z_cellsnp",
+      cmd = cmd,
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
+}

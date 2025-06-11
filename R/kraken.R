@@ -336,14 +336,14 @@ SetTaxonomyNamesFeatures <- function(
 #' @export
 KrakenKneePlot <- function(adata, groupby="phylum", show_num_spec=15) {
   
-  use_row <- as.integer(stringr::str_remove_all(taxid, "taxid-"))
+  use_row <- as.integer(stringr::str_remove_all(adata$taxid, "taxid-"))   ##really needed??
   
   taxonomizr::prepareDatabase(getAccessions=FALSE)
   taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(
     use_row,
     desiredTaxa = c("phylum", "class", "order", "family", "genus","species")
   ))
-  taxid_class_per_cell$taxid_index <- rownames(taxid_class_per_cell)
+  taxid_class_per_cell$taxid_index <- use_row #rownames(taxid_class_per_cell)
   taxid_class_per_cell
   
   #Turn count matrix into long format
@@ -356,13 +356,12 @@ KrakenKneePlot <- function(adata, groupby="phylum", show_num_spec=15) {
   )
   
   #Decide how to reduce count matrix
-  taxid_tomerge <- data.frame(
+  taxid_tomerge <- unique(data.frame(
     taxid_index=taxid_class_per_cell$taxid_index,
-    grp=taxid_class_per_cell[,groupby]
-    #grp=taxid_class_per_cell$species  ################ species
-    #grp=taxid_class_per_cell$genus  ################ genus for now
-    #    grp=taxid_class_per_cell$phylum  ################ phylum
-  )
+    grp=factor(taxid_class_per_cell[,groupby])
+  ))
+  rownames(taxid_tomerge) <- taxid_tomerge$taxid_index
+  
   taxid_tomerge <- taxid_tomerge[!is.na(taxid_tomerge$grp),]  ## not every taxonomy ID has a group
   
   taxid_M <- merge(M.df, taxid_tomerge)

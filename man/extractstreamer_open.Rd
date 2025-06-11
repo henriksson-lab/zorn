@@ -4,7 +4,7 @@
 \alias{extractstreamer_open}
 \title{extract streamer: set which file is open}
 \usage{
-extractstreamer_open(p, fname)
+extractstreamer_open(p, fname, super_verbose = FALSE)
 }
 \value{
 0 if ok

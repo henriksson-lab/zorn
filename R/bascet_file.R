@@ -179,8 +179,8 @@ BascetReadFile <- function(
     ########### Use Bascet to unzip
     #cargo +nightly run extract -i /Users/mahogny/Desktop/rust/hack_robert/testdata/quast.zip  -o /Users/mahogny/Desktop/rust/hack_robert/testdata/out.temp -b a  -f report.txt
     
-    ret <- extractstreamer_open(bascetFile@streamer, name_of_zip)  #is this ok? check return value TODO
-    if(ret==0){
+    ret <- extractstreamer_open(bascetFile@streamer, name_of_zip)
+    if(ret==0) {
       tname.out <- tempfile()
       ret <- extractstreamer_extract_to(bascetFile@streamer, extract_files, tname.out)
       if(ret==0) {
@@ -223,7 +223,8 @@ BascetReadFile <- function(
 BascetListFilesForCell <- function(
     bascetFile, 
     cellID, 
-    bascet_instance=GetDefaultBascetInstance()
+    bascet_instance=GetDefaultBascetInstance(),
+    super_verbose=FALSE
 ){
   
   ## Check if the cell is present at all
@@ -235,7 +236,7 @@ BascetListFilesForCell <- function(
   #Extract this zip file and then check that it worked
   name_of_zip <- bascetFile@files[cellmeta$shard+1]
 
-  ret <- extractstreamer_open(bascetFile@streamer, name_of_zip)  #is this ok? check return value TODO
+  ret <- extractstreamer_open(bascetFile@streamer, name_of_zip, super_verbose)  #is this ok? check return value TODO
   if(ret==0){
     res <- extractstreamer_ls(bascetFile@streamer)
     
@@ -525,12 +526,12 @@ extractstreamer_start <- function(
 #' extract streamer: list all files in current zip-file
 #' 
 #' @return list of files
-extractstreamer_ls <- function(p){
+extractstreamer_ls <- function(p, super_verbose=FALSE){
   p$write_input("ls\n")
   #Figure out how many lines to get
   newlines <- extractstreamer_read_one_line(p)
   n_lines <- as.integer(newlines)
-  extractstreamer_read_n_lines(p, n_lines)
+  extractstreamer_read_n_lines(p, n_lines, super_verbose)
 }
 
 
@@ -550,10 +551,11 @@ extractstreamer_exit <- function(p){
 #' extract streamer: helper function to read one line
 #' 
 #' @return the line
-extractstreamer_read_one_line <- function(p){
+extractstreamer_read_one_line <- function(p,super_verbose){
   while(TRUE){
     newlines <- p$read_output_lines(n = 1)
     if(length(newlines)>0) {
+      print(paste("superverbose, got line: ",newlines))
       return(newlines)
     }
   }
@@ -564,7 +566,7 @@ extractstreamer_read_one_line <- function(p){
 #' extract streamer: helper function to read N lines
 #' 
 #' @return all the lines
-extractstreamer_read_n_lines <- function(p, n_lines, verbose=FALSE){
+extractstreamer_read_n_lines <- function(p, n_lines, super_verbose=FALSE){
   all_out <- c()
   while(length(all_out) < n_lines){
     if(!p$is_alive()){
@@ -572,7 +574,7 @@ extractstreamer_read_n_lines <- function(p, n_lines, verbose=FALSE){
       stop("process unexpectedly died")
     }
     newlines <- p$read_output_lines()
-    if(verbose){
+    if(super_verbose){
       print("got more lines:")
       print(newlines)
       print(paste("len all out", length(all_out)))
@@ -580,7 +582,7 @@ extractstreamer_read_n_lines <- function(p, n_lines, verbose=FALSE){
     }
     all_out <- c(all_out, newlines)
   }
-  if(verbose){
+  if(super_verbose){
     print("return from extractstreamer_read_n_lines")
   }
   all_out
@@ -590,11 +592,11 @@ extractstreamer_read_n_lines <- function(p, n_lines, verbose=FALSE){
 #' extract streamer: get content of file, assumed to be text (or this function crashes)
 #' 
 #' @return The text, divided by line
-extractstreamer_showtext <- function(p, fname) {
+extractstreamer_showtext <- function(p, fname, super_verbose) {
   p$write_input(paste0("showtext ",fname,"\n"))
 
   #Figure out how many lines to get, then get them
-  newlines <- extractstreamer_read_one_line(p)
+  newlines <- extractstreamer_read_one_line(p, super_verbose)
   if(stringr::str_starts(newlines, "error")){
     #print(newlines)
     #Return nothing
@@ -602,7 +604,7 @@ extractstreamer_showtext <- function(p, fname) {
   } else {
     #Get all the lines
     n_lines <- as.integer(newlines)
-    extractstreamer_read_n_lines(p, n_lines)
+    extractstreamer_read_n_lines(p, n_lines, super_verbose)
   }
 }
 
@@ -611,10 +613,14 @@ extractstreamer_showtext <- function(p, fname) {
 #' extract streamer: set which file is open
 #' 
 #' @return 0 if ok
-extractstreamer_open <- function(p, fname) {
+extractstreamer_open <- function(
+    p, 
+    fname, 
+    super_verbose=FALSE
+) {
   p$write_input(paste0("open ",fname,"\n"))
   #Figure out how many lines to get, then get them
-  newlines <- extractstreamer_read_one_line(p)
+  newlines <- extractstreamer_read_one_line(p,super_verbose)
   if(newlines=="ok"){
     0
   } else {

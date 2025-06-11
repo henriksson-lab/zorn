@@ -7,7 +7,8 @@
 BascetListFilesForCell(
   bascetFile,
   cellID,
-  bascet_instance = GetDefaultBascetInstance()
+  bascet_instance = GetDefaultBascetInstance(),
+  super_verbose = FALSE
 )
 }
 \arguments{

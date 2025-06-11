@@ -4,7 +4,7 @@
 \alias{extractstreamer_showtext}
 \title{extract streamer: get content of file, assumed to be text (or this function crashes)}
 \usage{
-extractstreamer_showtext(p, fname)
+extractstreamer_showtext(p, fname, super_verbose)
 }
 \value{
 The text, divided by line

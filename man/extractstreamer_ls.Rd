@@ -4,7 +4,7 @@
 \alias{extractstreamer_ls}
 \title{extract streamer: list all files in current zip-file}
 \usage{
-extractstreamer_ls(p)
+extractstreamer_ls(p, super_verbose = FALSE)
 }
 \value{
 list of files
