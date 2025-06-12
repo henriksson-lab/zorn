@@ -890,7 +890,8 @@ BascetRunCellSNP <- function(
     shellscript_make_bash_array("files_in", inputFiles),
     shellscript_make_bash_array("files_out", outputFiles),
     shellscript_make_bash_array("files_listcell", listcellFiles),
-
+    shellscript_make_bash_array("files_listchrom", listchromFiles),
+    
     ### Abort early if needed    
     #if(!overwrite) helper_cancel_job_if_file_exists("${outputFiles[$TASK_ID]}"),  #does this work on dirs?
     if(!overwrite) helper_cancel_job_if_file_exists("${files_listcell[$TASK_ID]}"),  
