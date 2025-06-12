@@ -922,8 +922,8 @@ BascetRunCellSNP <- function(
       "-p", numLocalThreads,
       "--genotype",
       "--chrom `cat ${files_listchrom[$TASK_ID]} | paste --serial -d, - -`",
-      "--minMAF 0.1",
-      "--minCOUNT 100",
+      #"--minMAF 0.1",
+      #"--minCOUNT 100",
       "--gzip",
       "-b ${files_listcell[$TASK_ID]}",
       "-O ${files_out[$TASK_ID]}"        #Each input means one output
