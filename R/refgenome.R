@@ -879,7 +879,8 @@ BascetRunCellSNP <- function(
   outputFiles <- make_output_shard_names(bascetRoot, outputName, "out", num_shards)
   
   listcellFiles <- make_output_shard_names(bascetRoot, outputName, "listcell", num_shards)
-
+  listchromFiles <- make_output_shard_names(bascetRoot, outputName, "listchrom", num_shards)
+  
   
 
   
@@ -893,6 +894,15 @@ BascetRunCellSNP <- function(
     ### Abort early if needed    
     #if(!overwrite) helper_cancel_job_if_file_exists("${outputFiles[$TASK_ID]}"),  #does this work on dirs?
     if(!overwrite) helper_cancel_job_if_file_exists("${files_listcell[$TASK_ID]}"),  
+    
+    ### To make list of chromosome IDs
+    paste(
+      bascet_instance@prepend_cmd,
+      "bash -c \"",
+      "samtools idxstats ${files_in[$TASK_ID]} | head -n -1 | cut -f 1 > ${files_listchrom[$TASK_ID]}",
+      "\""
+    ),
+    
     
     ### To make list of cell IDs. could avoid if we write our own cellsnp-lite
     paste(
@@ -909,6 +919,8 @@ BascetRunCellSNP <- function(
       "cellsnp-lite", 
       "-s ${files_in[$TASK_ID]}",        #Align BAM
       "-p", numLocalThreads,
+      "--genotype",
+      "--chrom `cat ${files_listchrom[$TASK_ID]} | paste --serial -d, - -`",
       "--minMAF 0.1",
       "--minCOUNT 100",
       "--gzip",
