@@ -152,7 +152,7 @@ BascetReadFile <- function(
   if(as=="text"){
     
     if(extractstreamer_open(bascetFile@streamer, name_of_zip)==0) {
-      ret <- extractstreamer_showtext(bascetFile@streamer, extract_files)
+      ret <- extractstreamer_showtext(bascetFile@streamer, extract_files, super_verbose = verbose)
       return(ret)
     } else {
       print(paste("Could not open file",name_of_zip))
@@ -238,13 +238,16 @@ BascetListFilesForCell <- function(
 
   ret <- extractstreamer_open(bascetFile@streamer, name_of_zip, super_verbose)  #is this ok? check return value TODO
   if(ret==0){
+    if(super_verbose) print("Doing bascetfile ls")
     res <- extractstreamer_ls(bascetFile@streamer)
     
-    div <- stringr::str_split_fixed(res$Name,stringr::fixed("/"),2)
+    print(res) #666
+    
+    div <- stringr::str_split_fixed(res,stringr::fixed("/"),2)
     data.frame(
       cell=div[,1],
-      file=div[,2],
-      size=res$Length
+      file=div[,2]
+      #size=res$Length
     )    
   } else {
     print("Could not open shard",name_of_zip)
@@ -382,6 +385,7 @@ detect_shards_for_file <- function(
   allbam <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","bam", "$"))
   allcram <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","cram", "$"))
   all_kraken <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","kraken_out", "$"))
+  all_out <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","out", "$"))
   
   #TODO: rename to kraken5?
   all_kraken_counts <- 
@@ -405,7 +409,8 @@ detect_shards_for_file <- function(
     allfq_r1 |
     all_kraken_counts |
     all_feature_counts |
-    all_kraken
+    all_kraken |
+    all_out
   ]
 }
 
@@ -592,7 +597,7 @@ extractstreamer_read_n_lines <- function(p, n_lines, super_verbose=FALSE){
 #' extract streamer: get content of file, assumed to be text (or this function crashes)
 #' 
 #' @return The text, divided by line
-extractstreamer_showtext <- function(p, fname, super_verbose) {
+extractstreamer_showtext <- function(p, fname, super_verbose=FALSE) {
   p$write_input(paste0("showtext ",fname,"\n"))
 
   #Figure out how many lines to get, then get them

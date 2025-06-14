@@ -704,16 +704,15 @@ ReadBascetCountMatrix <- function(
   
   #Load individual matrices. Sizes may not match
   list_mat <- list()
+  list_obs <- list()
   for(f in inputFiles){
     list_one <- ReadBascetCountMatrix_one(f)
     
-    mat <- list_one$X
-    
-    
     if(verbose){
-      print(dim(mat))
+      print(dim(list_one$X))
     }
-    list_mat[[f]] <- mat
+    list_mat[[f]] <- list_one$X
+    list_obs[[f]] <- list_one$obs
   }
   
   #Find union of features  
@@ -738,7 +737,14 @@ ReadBascetCountMatrix <- function(
   #Concatenate matrices
   allmat <- do.call(rbind, list_resized_mat) #TODO check that above worked properly!
   
-  allmat
+  #Concat obs
+  allobs <- do.call(rbind, list_obs)
+ 
+  list(
+    X=allmat,
+    obs=allobs
+  ) 
+  #allmat
 }
 
 

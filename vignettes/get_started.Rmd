@@ -37,11 +37,14 @@ Then there are several options on how to continue with deeper analysis:
 * [Clustering](clustering.html) - to visualize your samples
 * [De novo assembly](assembly.html)
 * [Genome annotation](genome_annotation.html) - annotate your assemblies
+* [SNP analysis](snp_analysis.html) - to check genetic variation
 * [Running software for each cell using MAP](map_scripts.html) - the general method for performing calculations on each cell
 
 These may help you understand the design of Zorn and Bascet:
 
 * [Overview of file formats](fileformats.html)
+* [Working with Bascet files](articles/bascet_files.html)
+
 * [For developers](for_developers.html) - if you wish to modify Bascet
 * [Example data](example_data.html) - you can run the workflow with some small datasets before you scale up
 

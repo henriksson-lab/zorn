@@ -25,11 +25,17 @@ library(Zorn)
 
 ## Step 2: Install Bascet
 
-You also need Bascet, our command-line suite for single-cell analysis. Most users will find it easiest to run Bascet through Singularity or Docker; instructions for each are described below.
+You also need Bascet, our command-line suite for single-cell analysis. Most users will find it easiest to run Bascet through Singularity or Docker; instructions for each are described below. Singularity is for Linux users, while OSX and Windows users have to use Docker.
 
-### Install Bascet via Singularity
+### Install Bascet via Singularity (Linux only)
 
 First [install Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html).
+
+Note one possibly annoying default setting! We could not read Bascet files on some file systems, because they were invisible to Bascet.
+To avoid this, edit /etc/singularity/singularity.conf to below:
+```{}
+mount hostfs = yes
+```
 
 Once installed, Zorn can then pull down the latest Singularity image for you.
 We recommend keeping it in a separate directory from your workspace, as
@@ -40,7 +46,7 @@ bascet_instance.default <- getBascetSingularityImage(store_at="/somewhere/on/you
 ```
 
 
-### Install Bascet via Docker
+### Install Bascet via Docker (Singularity is recommended for Linux)
 
 First [install Docker](https://docs.docker.com/get-started/).
 

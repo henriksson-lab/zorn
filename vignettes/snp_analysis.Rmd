@@ -8,100 +8,167 @@ output:
 ---
 
 
+# Alignment
 
+First align files to a reference of your choice. See the alignment tutorial for full details,
+but this is an example command to align once you have a reference:
 
+[(SLURM-compatible step)](slurm.html)
+```{r, eval=F, echo=T}
+BascetAlignToReference(
+  bascetRoot,
+  inputName="fastp", #FASTP-filtered FASTQ as input
+  outputNameBAMunsorted = "myref_unsorted_aligned",
+  outputNameBAMsorted = "myref_aligned",
+  useReference="..../../../myref",
+  numLocalThreads=10
+)
+```
+
+# Extracting cells most similar to the reference
+
+If you have a complex sample, you likely want to only compare cells of a given species (however you define it).
+You can obtain a rather trivial count table, including how many reads did not align,
+for later filtering. The alignment tutorial has more details, but here is an example
+command:
+
+```{r, eval=F, echo=T}
+BascetCountChrom(
+  bascetRoot,
+  inputName="myref_unsorted_aligned",
+  outputName="cnt_myref",
+  runner=SlurmRunner(bascet_runner.default, ncpu="2") 
+)
+```
 
 
 # SNP-calling
 
-
-
-Generate FASTQ-files for alignment
-
-[(SLURM-compatible step)](slurm.html)
-
-```{r, eval=F, echo=T}
-
-
-###TODO
-
-```
-
-
-
-Align your reads using STAR (not BWA):
+You can now check how each cells genome deviate from the reference and obtain SNPs. This
+is done by calling CellSNP-lite. It is ok to do this on all the cells, even those
+that are not of the species of interest; you can filter later:
 
 [(SLURM-compatible step)](slurm.html)
+```{r, eval=F, echo=T}
+BascetRunCellSNP(
+  bascetRoot,
+  inputName="myref_aligned",
+  numLocalThreads=5,
+  runner=SlurmRunner(bascet_runner.default, ncpu="5") 
+)
+```
+
+
+# Selecting cells
+
+The heavy work is now over. If you generated a count matrix, you can load it like this:
 
 ```{r, eval=F, echo=T}
+# get aligned counts
+cnt_myref <- ReadBascetCountMatrix(bascetRoot,"cnt_myref")
 
+# Compute fraction aligned
+cnt_myref$obs$tot_reads <- as.double(cnt_myref$obs$`_unmapped` + cnt_myref$X)
+cnt_myref$obs$frac_mapped <- as.double(cnt_myref$X/cnt_myref$obs$tot_reads)
+cnt_myref$obs$`_index` <- stringr::str_remove(cnt_myref$obs$`_index`,"BASCET_")  #will not be needed in the future
+rownames(cnt_myref$obs) <- cnt_myref$obs$`_index`
+```
 
-###TODO
+You can then produce a type of kneeplot, showing how well certain cells map to
+this reference:
 
+```{r, eval=F, echo=T}
+### Knee plot of alignment
+df <- data.frame(
+  frac_mapped = sort(cnt_myref$obs$frac_mapped, decreasing = TRUE),
+  index = 1:nrow(cnt_myref$obs)
+)
+ggplot(df, aes(index, frac_mapped)) + 
+  geom_line() + 
+  scale_x_log10() + 
+  theme_bw()
+```
 
+Based on the knee plot, you can extract cells that are close enough to your reference
+like this:
 
+```{r, eval=F, echo=T}
+list_cell_mutans <- cnt_myref$obs$`_index`[which(cnt_myref$obs$frac_mapped>0.8)]
 ```
 
 
 
+#Clustering by SNPs
 
-
-
-# Detect known SNPs
-
-This workflow is useful if you wish to perform SNP-based donor deconvolution
-using [Vireo](https://github.com/single-cell-genetics/vireo).
-The [Vireo workflow](https://vireosnp.readthedocs.io/en/latest/genotype.html)
-recommends obtaining a [pre-processed SNP list](https://sourceforge.net/projects/cellsnp/files/SNPlist/).
-
-Given a VCF-file, containing your curated SNPs, to can run the following
-command on your aligned reads (internally using cellsnp-lite):
-
-[(SLURM-compatible step)](slurm.html)
-
+Load the CellSNP-lite counts as follows:
 ```{r, eval=F, echo=T}
-#TODO r command
-#TODO option to not use UMI
-
-#pip install -U vireoSNP
-
-cellsnp-lite -s $BAM -b $BARCODE -O $OUT_DIR -R $REGION_VCF -p 10 --minMAF 0.1 --minCOUNT 20 --gzip
-
-# https://cellsnp-lite.readthedocs.io/en/latest/
+snp_ad <- ReadCellSNPmatrix(
+  bascetRoot,
+  "cellsnp"
+)
 ```
 
-
-# Detect unknown SNPs
-
-
-
+Create a Seurat object from the counts:
 
 ```{r, eval=F, echo=T}
-#TODO r command
-#TODO option to not use UMI
-cellsnp-lite -s $BAM -b $BARCODE -O $OUT_DIR -p 10 --minMAF 0.1 --minCOUNT 100 --gzip
+pbmc <- CreateSeuratObject(counts = t(snp_ad), project = "pbmc3k", min.cells = 3, min.features = 0)
+
+#only keep selected cells (optional)
+pbmc <- pbmc[,colnames(pbmc) %in% list_cell_mutans]
+
+#transfer count metadata (optional)
+pbmc$frac_mapped <-  cnt_mutans$obs[colnames(pbmc),]$frac_mapped
+pbmc$tot_reads <-  cnt_mutans$obs[colnames(pbmc),]$tot_reads
 ```
 
+Do the usual transformations and clustering:
 
+```{r, eval=F, echo=T}
+### Normalize data, PCA etc
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+pbmc <- NormalizeData(pbmc)
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, features = all.genes) ########## todo should normalize by sequencing depth of original cell! not SNP count
 
-# Performing SNP-based donor deconvolution
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
 
-This workflow relies on [Vireo](https://github.com/single-cell-genetics/vireo).
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = 0.5)
 
-TODO option to provide donor genotype file
+pbmc <- RunUMAP(pbmc, dims = 1:10)
 
+pbmc$snp_count <- rowSums(pbmc@assays$RNA@layers$counts)
+```
 
+Do some quick plots to check for clusters:
 
-# https://vireosnp.readthedocs.io/en/latest/manual.html
+```{r, eval=F, echo=T}
+DimPlot(pbmc, reduction = "umap")
+FeaturePlot(pbmc, reduction = "umap", features = c("snp_count"))
+FeaturePlot(pbmc, reduction = "umap", features = c("frac_mapped"))
+FeaturePlot(pbmc, reduction = "umap", features = c("tot_reads"))
 
+```
 
-# Citing
+Find differential SNPs using the Seurat marker tools
 
-In addition to citing Zorn/Bascet, please also cite the following tools that
-it wraps:
+```{r, eval=F, echo=T}
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
 
-Xianjie Huang, Yuanhua Huang, Cellsnp-lite: an efficient tool for genotyping single cells, Bioinformatics, Volume 37, Issue 23, December 2021, Pages 4569–4571, https://doi.org/10.1093/bioinformatics/btab358
+pbmc.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 2) %>%
+  slice_head(n = 100) %>%
+  ungroup() -> top10
 
+as.data.frame(top10)
 
+```
 
+Plot SNPs to your liking
+```{r, eval=F, echo=T}
+FeaturePlot(pbmc, reduction = "umap", features = c("NZ-CP077404.1-7148-T-to-C"))
+```
 
+That's it!

@@ -923,7 +923,7 @@ BascetRunCellSNP <- function(
       "--genotype",
       "--chrom `cat ${files_listchrom[$TASK_ID]} | paste --serial -d, - -`",
       #"--minMAF 0.1",
-      #"--minCOUNT 100",
+      #"--minCOUNT 100", #no output w these
       "--gzip",
       "-b ${files_listcell[$TASK_ID]}",
       "-O ${files_out[$TASK_ID]}"        #Each input means one output
@@ -945,4 +945,107 @@ BascetRunCellSNP <- function(
   } else {
     new_no_job()
   }
+}
+
+
+
+
+
+
+
+ReadCellSNPmatrix_one <- function(basedir) {
+  
+  #cellSNP.base.vcf  one line per feature
+  snp_info <- read.table(file.path(basedir,"cellSNP.base.vcf.gz"))
+  colnames(snp_info) <- c("chrom","pos","id","ref","alt","qual","filter","info")
+  rownames(snp_info) <- sprintf(
+    "%s_%s_%s_to_%s",
+    snp_info$chrom, snp_info$pos, snp_info$ref, snp_info$alt
+  )
+  
+  snp_cellid <- readLines(file.path(basedir,"cellSNP.samples.tsv"))
+  length(snp_cellid)
+  
+  #depth of ALT alleles
+  snp_ad <- Matrix::readMM(file.path(basedir,"cellSNP.tag.AD.mtx"))
+  colnames(snp_ad) <- snp_cellid
+  rownames(snp_ad) <- rownames(snp_info)
+  
+  #depth of ALT+REF alleles
+  snp_dp <- Matrix::readMM(file.path(basedir,"cellSNP.tag.DP.mtx"))
+  colnames(snp_dp) <- snp_cellid
+  rownames(snp_dp) <- rownames(snp_info)
+  
+  #set feature names
+  list(
+    snp_ad=snp_ad,
+    snp_dp=snp_dp,
+    snp_info=snp_info
+  )
+}
+
+
+###############################################
+#' Read a count matrix as produced by CellSNP, but as shards
+#' 
+#' @return Count matrix as sparseMatrix
+#' @export
+ReadCellSNPmatrix <- function(
+    bascetRoot, 
+    inputName,
+    verbose=FALSE
+){
+  print("Loading CellSNP file")
+  
+  #bascetRoot <- "/husky/henriksson/atrandi/v4_wgs_saliva1"
+  #inputName <- "cellsnp"
+  
+  #Figure out input file names  
+  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles <- file.path(bascetRoot, input_shards)
+  #if(tools::file_ext(inputFiles[1])!="h5"){
+  #  stop("Wrong input format. should be hd5")
+  #}
+  
+  #Load individual matrices. Sizes may not match
+  list_mat <- list()
+  for(f in inputFiles){
+    list_one <- ReadCellSNPmatrix_one(f) ############ edited
+    
+    mat <- Matrix::t(list_one$snp_ad)
+    
+    if(verbose){
+      print(dim(mat))
+    }
+    list_mat[[f]] <- mat
+  }
+  
+  #Find union of features. Assume that no filtering was done such that we can assume 0
+  #count for a feature not present in another shard
+  all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
+  print(all_colnames)
+  num_col <- length(all_colnames)
+  map_name_to_i <- data.frame(row.names = all_colnames, ind=1:length(all_colnames))
+  print(map_name_to_i)
+  
+  #Make sizes compatible
+  list_resized_mat <- list()
+  for(f in inputFiles){
+    mat <- list_mat[[f]]
+    new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "R", dtype = "d")
+    new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column names!  #here, x[.,.] <- val : x being coerced from Tsparse* to CsparseMatrix
+    rownames(new_mat) <- rownames(mat)
+    colnames(new_mat) <- all_colnames
+    # print(dim(new_mat))
+    list_resized_mat[[f]] <- new_mat
+  }
+  
+  #Concatenate matrices
+  allmat <- do.call(rbind, list_resized_mat) #TODO check that above worked properly!
+  
+  allmat
 }
