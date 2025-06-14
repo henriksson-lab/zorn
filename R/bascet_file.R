@@ -531,7 +531,10 @@ extractstreamer_start <- function(
 #' extract streamer: list all files in current zip-file
 #' 
 #' @return list of files
-extractstreamer_ls <- function(p, super_verbose=FALSE){
+extractstreamer_ls <- function(
+    p, 
+    super_verbose=FALSE
+){
   p$write_input("ls\n")
   #Figure out how many lines to get
   newlines <- extractstreamer_read_one_line(p)
@@ -556,11 +559,16 @@ extractstreamer_exit <- function(p){
 #' extract streamer: helper function to read one line
 #' 
 #' @return the line
-extractstreamer_read_one_line <- function(p,super_verbose){
+extractstreamer_read_one_line <- function(
+    p,
+    super_verbose=FALSE
+){
   while(TRUE){
     newlines <- p$read_output_lines(n = 1)
     if(length(newlines)>0) {
-      print(paste("superverbose, got line: ",newlines))
+      if(super_verbose){
+        print(paste("superverbose, got line: ",newlines))
+      }
       return(newlines)
     }
   }
@@ -571,7 +579,11 @@ extractstreamer_read_one_line <- function(p,super_verbose){
 #' extract streamer: helper function to read N lines
 #' 
 #' @return all the lines
-extractstreamer_read_n_lines <- function(p, n_lines, super_verbose=FALSE){
+extractstreamer_read_n_lines <- function(
+    p, 
+    n_lines, 
+    super_verbose=FALSE
+){
   all_out <- c()
   while(length(all_out) < n_lines){
     if(!p$is_alive()){
@@ -597,7 +609,11 @@ extractstreamer_read_n_lines <- function(p, n_lines, super_verbose=FALSE){
 #' extract streamer: get content of file, assumed to be text (or this function crashes)
 #' 
 #' @return The text, divided by line
-extractstreamer_showtext <- function(p, fname, super_verbose=FALSE) {
+extractstreamer_showtext <- function(
+    p, 
+    fname, 
+    super_verbose=FALSE
+) {
   p$write_input(paste0("showtext ",fname,"\n"))
 
   #Figure out how many lines to get, then get them
@@ -654,6 +670,49 @@ extractstreamer_extract_to <- function(
 }
 
 
+
+
+################################################################################
+########### Convenience functions for export ###################################
+################################################################################
+
+
+
+
+###############################################
+#' 
+#' Store all contigs in an output directory, as cell_id.fa
+#' 
+#' @param bascet_instance A Bascet instance
+#' @param inputName Name of input shard
+#' @param outputDir Directory to store FASTA in
+#' @param listCells List of cells to extract
+#' @export
+BascetDumpContigs <- function(
+    bascetRoot,
+    inputName="skesa",
+    listCells,
+    outputDir,
+    bascet_instance
+){
+  skesa_file <- OpenBascet(bascetRoot, inputName, bascet_instance)
+  
+  for(cellid in listCells) {
+    #Read contig
+    contig_file <- BascetReadFile(
+      skesa_file,cellID = cellid, filename = "contigs.fa",
+      as="text"
+    )
+    #If contig exists
+    if(length(contig_file)>0){
+      #Store to output file
+      print(cellid)
+      writeLines(contig_file, file.path(outputDir,paste0(cellid,".fa")))
+    }
+  }
+  
+  CloseBascet(skesa_file)
+}
 
 
 ################################################################################

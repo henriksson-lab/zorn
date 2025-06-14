@@ -4,7 +4,7 @@
 \alias{extractstreamer_read_one_line}
 \title{extract streamer: helper function to read one line}
 \usage{
-extractstreamer_read_one_line(p, super_verbose)
+extractstreamer_read_one_line(p, super_verbose = FALSE)
 }
 \value{
 the line
