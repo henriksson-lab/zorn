@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>De novo assembly • Zorn</title>
+<title>Working with Bascet files • Zorn</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="De novo assembly">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Working with Bascet files">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -75,33 +75,70 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>De novo assembly</h1>
+      <h1>Working with Bascet files</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/assembly.Rmd" class="external-link"><code>vignettes/assembly.Rmd</code></a></small>
-      <div class="d-none name"><code>assembly.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/bascet_files.Rmd" class="external-link"><code>vignettes/bascet_files.Rmd</code></a></small>
+      <div class="d-none name"><code>bascet_files.Rmd</code></div>
     </div>
 
     
     
-<p>First set up your Zorn/Bascet work directory as before.</p>
-<p>Assembly can then performed using SKESA, via the MapCell system:</p>
-<p><a href="slurm.html">(SLURM-compatible step)</a></p>
+<p>If you want to get files out of Bascets, this the tutorial for you!
+Note that you should avoid doing this unless needed - the map system is
+there if you wish to process each cell; aggregate can then be used to
+systematically extract information. These offer the benefit of
+multithreading and you do not need to worry about having copious amounts
+of files which definitely will not make your systems administrator
+happy.</p>
+<p>That said, in case of emergency, or if you just want a single file,
+this is the approach to take.</p>
+<p>First load an instance, and ensure that it works:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Assemble all genomes</span></span>
-<span><span class="fu"><a href="../reference/BascetMapCell.html">BascetMapCell</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  withfunction <span class="op">=</span> <span class="st">"_skesa"</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"skesa"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>This produce contigs for each cell, all grouped together in “skesa”.
-Note that both skesa and spades only assembles cells for which there are
-sufficient number of reads.</p>
+<code class="sourceCode R"><span><span class="va">bascet_instance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascet_instance</span><span class="op">)</span></span></code></pre></div>
+<p>You can now open a file. Internally, this creates an instance of
+Bascet running in a separate thread, which R can send commands to. This
+design is necessary to avoid the startup cost of Docker and Singularity,
+such that you pay the cost only once; but reading many files is very
+fast.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#TODO extract an individual genome</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">skesa_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/OpenBascet.html">OpenBascet</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>, </span>
+<span>  <span class="st">"skesa"</span>, </span>
+<span>  <span class="va">bascet_instance</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>You can obtain a list of files for a cell like this (see reference
+for more commands):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#TODO QUAST for QC etc</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetListFilesForCell.html">BascetListFilesForCell</a></span><span class="op">(</span></span>
+<span>  <span class="va">skesa_file</span>, </span>
+<span>  <span class="st">"G1_E5_H7_E11"</span>, </span>
+<span>  bascet_instance <span class="op">=</span> <span class="va">bascet_instance</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>A common scenario is that you want the assembled genome of a
+particular cell. It can be done like this:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">contig_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetReadFile.html">BascetReadFile</a></span><span class="op">(</span></span>
+<span>  <span class="va">skesa_file</span>,</span>
+<span>  cellID <span class="op">=</span> <span class="st">"G1_E5_H7_E11"</span>, </span>
+<span>  filename <span class="op">=</span> <span class="st">"contigs.fa"</span>,</span>
+<span>  as<span class="op">=</span><span class="st">"text"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Be sure to close the file when you are done, as you have a rather
+large ecosystem of tools still in memory!</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/CloseBascet.html">CloseBascet</a></span><span class="op">(</span></span>
+<span>  <span class="va">skesa_file</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>You can now save the file to disk. If you want to actually look at
+the data, we recommend loading it using the seqinr package rather than
+directly using the raw file data obtained by the function above.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span></span>
+<span>  <span class="va">contig_file</span>, </span>
+<span>  <span class="st">"my_genome.fa"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
   </main>
 </div>
 

@@ -3,6 +3,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/LICENSE-text.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/alignment.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/assembly.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/bascet_files.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/clustering.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/countsketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/debarcoding.html</loc></url>
@@ -106,6 +107,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotJohnsonLindenstraussMinDim.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadBascetCountMatrix.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/ReadCellSNPmatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/SetTaxonomyNamesFeatures.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ShowFASTQCforCell.html</loc></url>

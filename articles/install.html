@@ -47,9 +47,11 @@
     <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
+    <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_files.html">Working with Bascet files</a></li>
     <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
     <li><a class="dropdown-item" href="../articles/example_data.html">Example data</a></li>
   </ul>
@@ -100,27 +102,34 @@ and install from source:</p>
 </h2>
 <p>You also need Bascet, our command-line suite for single-cell
 analysis. Most users will find it easiest to run Bascet through
-Singularity or Docker; instructions for each are described below.</p>
+Singularity or Docker; instructions for each are described below.
+Singularity is for Linux users, while OSX and Windows users have to use
+Docker.</p>
 <div class="section level3">
-<h3 id="install-bascet-via-singularity">Install Bascet via Singularity<a class="anchor" aria-label="anchor" href="#install-bascet-via-singularity"></a>
+<h3 id="install-bascet-via-singularity-linux-only">Install Bascet via Singularity (Linux only)<a class="anchor" aria-label="anchor" href="#install-bascet-via-singularity-linux-only"></a>
 </h3>
 <p>First <a href="https://docs.sylabs.io/guides/3.0/user-guide/installation.html" class="external-link">install
 Singularity</a>.</p>
+<p>Note one possibly annoying default setting! We could not read Bascet
+files on some file systems, because they were invisible to Bascet. To
+avoid this, edit /etc/singularity/singularity.conf to below:</p>
+<pre><code>mount hostfs = yes</code></pre>
 <p>Once installed, Zorn can then pull down the latest Singularity image
 for you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascet_instance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>store_at<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="install-bascet-via-docker">Install Bascet via Docker<a class="anchor" aria-label="anchor" href="#install-bascet-via-docker"></a>
+<h3 id="install-bascet-via-docker-singularity-is-recommended-for-linux">Install Bascet via Docker (Singularity is recommended for
+Linux)<a class="anchor" aria-label="anchor" href="#install-bascet-via-docker-singularity-is-recommended-for-linux"></a>
 </h3>
 <p>First <a href="https://docs.docker.com/get-started/" class="external-link">install
 Docker</a>.</p>
 <p>Once installed, Zorn can then pull down the latest Docker image for
 you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascet_instance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetDockerImage.html">getBascetDockerImage</a></span><span class="op">(</span>store_at<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -128,7 +137,7 @@ workspace, as multiple workspaces can share the same image</p>
 <h2 id="step-3-test-the-installation">Step 3: Test the installation<a class="anchor" aria-label="anchor" href="#step-3-test-the-installation"></a>
 </h2>
 <p>Run the following and see if you get “ok” before proceeding:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascet_instance.default</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
