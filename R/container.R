@@ -104,7 +104,7 @@ getBascetSingularityImage <- function(
   if(!file.exists(file_bascet_sif)) {
     print("No singularity image present; downloading")
  
-    if(download.file("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif)!=0){
+    if(download.file("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif,cacheOK = FALSE, mode = "wb")!=0){
       stop("Failed to download singularity image")      
     }
     
@@ -161,7 +161,7 @@ getBascetDockerImage <- function(
       
       options(timeout = 60*60*5) #timeout in seconds
       
-      if(download.file("http://beagle.henlab.org/public/bascet/bascet.tar",file_bascet_image)!=0){
+      if(download.file("http://beagle.henlab.org/public/bascet/bascet.tar",file_bascet_image, cacheOK = FALSE, mode = "wb")!=0){
         stop("Failed to download docker image")      
       }
       

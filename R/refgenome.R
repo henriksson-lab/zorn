@@ -993,6 +993,7 @@ ReadCellSNPmatrix_one <- function(basedir) {
 ReadCellSNPmatrix <- function(
     bascetRoot, 
     inputName,
+    listCells=NULL,
     verbose=FALSE
 ){
   print("Loading CellSNP file")
@@ -1012,11 +1013,19 @@ ReadCellSNPmatrix <- function(
   #}
   
   #Load individual matrices. Sizes may not match
+  if(verbose){
+    print("Loading matrices")
+  }
   list_mat <- list()
   for(f in inputFiles){
-    list_one <- ReadCellSNPmatrix_one(f) ############ edited
+    list_one <- ReadCellSNPmatrix_one(f) 
     
     mat <- Matrix::t(list_one$snp_ad)
+    
+    if(!is.null(listCells)){
+      rownames(mat)
+      mat <- mat[rownames(mat) %in% listCells,,drop=FALSE]
+    }
     
     if(verbose){
       print(dim(mat))
@@ -1026,15 +1035,28 @@ ReadCellSNPmatrix <- function(
   
   #Find union of features. Assume that no filtering was done such that we can assume 0
   #count for a feature not present in another shard
+  if(verbose){
+    print("Union of features across matrices")
+  }
   all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
-  print(all_colnames)
+  if(verbose){
+    print(all_colnames)
+  }
   num_col <- length(all_colnames)
   map_name_to_i <- data.frame(row.names = all_colnames, ind=1:length(all_colnames))
-  print(map_name_to_i)
+  if(verbose){
+    print(map_name_to_i)
+  }
   
   #Make sizes compatible
+  if(verbose){
+    print("Concatenating")
+  }
   list_resized_mat <- list()
   for(f in inputFiles){
+    if(verbose){
+      print(f)
+    }
     mat <- list_mat[[f]]
     new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "R", dtype = "d")
     new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column names!  #here, x[.,.] <- val : x being coerced from Tsparse* to CsparseMatrix
