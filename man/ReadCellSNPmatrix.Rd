@@ -4,7 +4,7 @@
 \alias{ReadCellSNPmatrix}
 \title{Read a count matrix as produced by CellSNP, but as shards}
 \usage{
-ReadCellSNPmatrix(bascetRoot, inputName, verbose = FALSE)
+ReadCellSNPmatrix(bascetRoot, inputName, listCells = NULL, verbose = FALSE)
 }
 \value{
 Count matrix as sparseMatrix
