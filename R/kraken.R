@@ -332,9 +332,10 @@ SetTaxonomyNamesFeatures <- function(
 #' Take a KRAKEN2 adata object and generate per-species kneeplots
 #' 
 #' @param groupby genus, phylum or species
+#' @param sortbyname Sort by name
 #' @return A ggplot
 #' @export
-KrakenKneePlot <- function(adata, groupby="phylum", show_num_spec=15) {
+KrakenKneePlot <- function(adata, groupby="phylum", show_num_spec=15, sortbyname=FALSE) {
   
   use_row <- as.integer(stringr::str_remove_all(adata$taxid, "taxid-"))   ##really needed??
   
@@ -383,7 +384,11 @@ KrakenKneePlot <- function(adata, groupby="phylum", show_num_spec=15) {
   
   #Produce the plot
   toplot_sub <- toplot[toplot$grp %in% cnt_per_grp$grp[1:show_num_spec],]
-  toplot_sub$grp <- factor(toplot_sub$grp, levels = cnt_per_grp$grp)
+  if(sortbyname){
+    toplot_sub$grp <- factor(toplot_sub$grp, levels = sort(unique(cnt_per_grp$grp)))
+  } else {
+    toplot_sub$grp <- factor(toplot_sub$grp, levels = cnt_per_grp$grp)
+  }
   ggplot(
     toplot_sub, aes(index, cnt, color=grp)) + 
     geom_line() + 

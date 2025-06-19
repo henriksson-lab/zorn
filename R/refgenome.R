@@ -366,7 +366,7 @@ BascetFilterAlignment <- function(
 #' @param do_sort Whether to sort the output or not
 #' 
 #' @export
-BascetAlignToReference <- function(  
+BascetAlignToReference <- function(
     bascetRoot, 
     useReference,
     numLocalThreads=1,
@@ -557,9 +557,10 @@ BascetBam2Fragments <- function(
 #' 
 #' @export
 BascetCountChrom <- function(
-    bascetRoot, 
+    bascetRoot,
     inputName="aligned",
     outputName="chromcount", 
+    min_matching=0,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascet_instance=GetDefaultBascetInstance()
@@ -591,6 +592,7 @@ BascetCountChrom <- function(
           bascet_instance@prepend_cmd,
           bascet_instance@bin, 
           "countchrom",
+          "--min-matching ",min_matching,
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",  
           "-o ${files_out[$TASK_ID]}"
