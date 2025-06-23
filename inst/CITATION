@@ -2,14 +2,24 @@ citHeader("To cite Zorn and Bascet in publications, please use:")
 
 bibentry(bibtype = "article",
   author = c(
-    as.person("todo"),
-    as.person("Laura Carroll"),
-    as.person("Johan Henriksson")
+
+    as.person("Hadrien Gourlé"),
+    as.person("Iryna Yakovenko"),
+    as.person("Jyoti Verma"),
+    as.person("Julian Dicken"),
+    as.person("Florian Albrecht"),
+    as.person("Linas Mazutis"),
+    as.person("Johan Normark"),
+    as.person("Nongfei Sheng"),
+    as.person("Nicklas Strömberg"),
+    as.person("Tommy Löfstedt"),
+    as.person("Laura M Carroll"),
+    as.person("Johan M Henriksson")
   ),
   title = "Scalable single-cell metagenomic analysis with Bascet and Zorn",
-  journal = "Biorxiv",
+  journal = "bioRxiv",
   year = "2025",
-  doi = "todo",
-  url = "https://todo",
-  textVersion = "xxx et al. Scalable single-cell metagenomic analysis with Bascet and Zorn. Biorxiv (2025)"
+  doi = "https://doi.org/10.1101/2025.06.20.660799",
+  url = "https://doi.org/10.1101/2025.06.20.660799",
+  textVersion = "Gourlé, Yakovenko, and Verma, et al. Scalable single-cell metagenomic analysis with Bascet and Zorn. bioRxiv (2025). doi: https://doi.org/10.1101/2025.06.20.660799."
 )
