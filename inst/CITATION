@@ -21,5 +21,5 @@ bibentry(bibtype = "article",
   year = "2025",
   doi = "https://doi.org/10.1101/2025.06.20.660799",
   url = "https://doi.org/10.1101/2025.06.20.660799",
-  textVersion = "Gourlé, Yakovenko, and Verma, et al. Scalable single-cell metagenomic analysis with Bascet and Zorn. bioRxiv (2025). doi: https://doi.org/10.1101/2025.06.20.660799."
+  textVersion = "Gourlé H., Yakovenko I., and Verma J., et al. Scalable single-cell metagenomic analysis with Bascet and Zorn. bioRxiv (2025). doi: https://doi.org/10.1101/2025.06.20.660799."
 )
