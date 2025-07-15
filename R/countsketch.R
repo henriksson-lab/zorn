@@ -79,7 +79,7 @@ BascetGatherCountSketch <- function(
   if(bascet_check_overwrite_output(outputFile, overwrite)) {
     #Make the command
     cmd <- c(
-      shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascet_instance),
       if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
       paste(
         bascet_instance@prepend_cmd,
@@ -96,6 +96,7 @@ BascetGatherCountSketch <- function(
     RunJob(
       runner = runner, 
       jobname = "bascet_get_countsketch",
+      bascet_instance = bascet_instance,
       cmd = cmd,
       arraysize = 1
     )  

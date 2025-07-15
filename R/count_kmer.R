@@ -47,8 +47,9 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
     RunJob(
       runner = runner, 
       jobname = "bascet_query",
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
@@ -115,8 +116,9 @@ BascetQueryKMC <- function(
     RunJob(
       runner = runner, 
       jobname = "bascet_query",
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
@@ -365,7 +367,7 @@ BascetMakeMinhashHistogram <- function(
   if(bascet_check_overwrite_output(outputFile, overwrite)) {
     #Make the command
     cmd <- c(
-      shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascet_instance),
       if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
       paste(
         bascet_instance@prepend_cmd,
@@ -382,6 +384,7 @@ BascetMakeMinhashHistogram <- function(
     RunJob(
       runner = runner, 
       jobname = "bascet_minhash_hist",
+      bascet_instance = bascet_instance,
       cmd = cmd,
       arraysize = 1
     )  
@@ -435,8 +438,9 @@ BascetQueryFq <- function( #666
     RunJob(
       runner = runner, 
       jobname = "bascet_query",
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         

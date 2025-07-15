@@ -56,7 +56,7 @@ BascetMapCell <- function(
     #Build the command - the rest
     cmd <- c(
       cmd,
-      shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascet_instance),
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       
@@ -77,6 +77,7 @@ BascetMapCell <- function(
     RunJob(
       runner = runner, 
       jobname = paste0("Z_map_",withfunction),
+      bascet_instance = bascet_instance,
       cmd = cmd,
       arraysize = num_shards
     )      

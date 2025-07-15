@@ -91,8 +91,9 @@ BascetRunKraken <- function(
     RunJob(
       runner = runner, 
       jobname = paste0("Z_kraken_fq"),
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in_R1",inputFiles_R1),
         if(is_paired) shellscript_make_bash_array("files_in_R2",inputFiles_R2),
         shellscript_make_bash_array("files_out",outputFiles),
@@ -157,8 +158,9 @@ BascetMakeKrakenCountMatrix <- function(
     RunJob(
       runner = runner, 
       jobname = paste0("Z_kraken_mat"),
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         

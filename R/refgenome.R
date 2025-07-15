@@ -222,7 +222,7 @@ BascetAlignmentToBigwig <- function(
     
     ### Build command
     cmd <- c(
-      shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascet_instance),
       shellscript_make_bash_array("files_in", inputFiles),
       shellscript_make_bash_array("files_out", outputFiles),
       
@@ -241,6 +241,7 @@ BascetAlignmentToBigwig <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_tobw",
+      bascet_instance = bascet_instance,
       cmd = cmd,
       arraysize = num_shards
     )
@@ -316,7 +317,7 @@ BascetFilterAlignment <- function(
     
     ### Build command
     cmd <- c(
-      shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascet_instance),
       shellscript_make_bash_array("files_in", inputFiles),
       shellscript_make_bash_array("files_out", outputFiles),
       
@@ -338,6 +339,7 @@ BascetFilterAlignment <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_filteraln",
+      bascet_instance = bascet_instance,
       cmd = cmd,
       arraysize = num_shards
     )
@@ -416,7 +418,7 @@ BascetAlignToReference <- function(
   ### Build command: basic alignment
   final_outputFiles <- outputFilesBAMunsorted
   cmd <- c(
-    shellscript_set_tempdir(bascet_instance),
+    #shellscript_set_tempdir(bascet_instance),
     shellscript_make_bash_array("files_in_r1", inputFiles_R1),
     shellscript_make_bash_array("files_in_r2", inputFiles_R2),
     shellscript_make_bash_array("files_out_unsorted", outputFilesBAMunsorted),
@@ -477,6 +479,7 @@ BascetAlignToReference <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_aln",
+      bascet_instance = bascet_instance,
       cmd = cmd,
       arraysize = num_shards
     )
@@ -522,8 +525,9 @@ BascetBam2Fragments <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_bam2fragments",
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in", inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
@@ -580,8 +584,9 @@ BascetCountChrom <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_countchrom",
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in", inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
@@ -888,7 +893,7 @@ BascetRunCellSNP <- function(
   
   ### Build command: basic alignment
   cmd <- c(
-    shellscript_set_tempdir(bascet_instance),
+    #shellscript_set_tempdir(bascet_instance),
     shellscript_make_bash_array("files_in", inputFiles),
     shellscript_make_bash_array("files_out", outputFiles),
     shellscript_make_bash_array("files_listcell", listcellFiles),
@@ -941,6 +946,7 @@ BascetRunCellSNP <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_cellsnp",
+      bascet_instance = bascet_instance,
       cmd = cmd,
       arraysize = num_shards
     )
