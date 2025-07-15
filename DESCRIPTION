@@ -8,7 +8,7 @@ Authors@R: c(
   person(given = "Johan", family = "Henriksson", email = "johan.henriksson@umu.se", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7745-2844")),
   person(given = "Laura", family = "Carroll", email = "laura.carroll@umu.se", role = c("aut"), comment = c(ORCID = "0000-0002-3677-0192")),
   person(given = "Hadrien", family = "Gourlé", email = "hadrien.gourle@umu.se", role = c("aut"), comment = c(ORCID = "0000-0001-9807-1082")),
-  person(given = "Julian", family = "Dicken", email = "julian@dicken.de", role = c("aut")),
+  person(given = "Julian", family = "Dicken", email = "julian@dicken.de", role = c("aut"), comment = c(ORCID = "https://orcid.org/0009-0009-8614-7321")),
   person("Henriksson Lab, Carroll Lab and Collaborators", role = "fnd")
   )
 License: MIT
@@ -31,6 +31,8 @@ Imports:
     progress,
     taxonomizr,
     cli,
+    readr,
+    data.table,
     sparseMatrixStats (>= 1.10.0)
 Suggests: 
     rmarkdown

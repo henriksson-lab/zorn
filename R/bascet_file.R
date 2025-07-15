@@ -273,31 +273,60 @@ BascetListFilesForCell <- function(
 #' Not all Bascets have one, but it is typically produced after debarcoding
 #' 
 #' @param bascet_instance A Bascet instance
+#' @param minCount Minimum count for a cell to be included. Setting this can have a great impact on speed
 #' @return Histogram as a data.frame
 #' @export
 ReadHistogram <- function(
     bascetRoot, 
     inputName, 
-    bascet_instance=GetDefaultBascetInstance()
+    bascet_instance=GetDefaultBascetInstance(),
+    verbose=TRUE#,
+#    minCount=10 
 ){
   
   #Get all the TIRPs, sum up the reads  
   inputFiles <- detect_shards_for_file(bascetRoot, inputName)
   print(inputFiles)
   
+  if(verbose) {
+    print("Loading barcode lists")
+  }
+  
+  
   list_hist <- list()
   for(f in inputFiles) {
     
     hist_f <- paste0(file.path(bascetRoot, f),".hist") ## only support TIRP for now
-    dat <- read.csv(hist_f, sep="\t")
+    dat <- readr::read_tsv(
+      hist_f,
+      col_types = list(
+        bc = readr::col_character(),
+        cnt = readr::col_double()
+      )
+    ) ### use some data.table alternative?
+    
     list_hist[[f]] <- dat
   }
-  dat <- do.call(rbind, list_hist)
+
+  
+  if(verbose) {
+    print("Merging barcode lists")
+  }
+
+  #Merge tables; data.table seems to be the fastest option  
+  dat <- data.frame(data.table::rbindlist(list_hist))
   colnames(dat) <- c("cellid","count")
   
-  dat <- sqldf::sqldf("select cellid, sum(count) as count from dat group by cellid")
-  dat <- dat[order(dat$count, decreasing=TRUE),]
-  dat 
+  if(verbose) {
+    print("Sorting barcodes by count")
+  }
+  
+  #Add up cells across barcodes. Do the sorting right away to reduce calls
+  dat <- sqldf::sqldf("select cellid, sum(count) as count from dat group by cellid order by count DESC")
+  
+  #It might be beneficial to keep track of origin; this could mean less work during sharding later on
+  
+  dat
 }
 
 
