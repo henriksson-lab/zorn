@@ -70,7 +70,7 @@ SlurmRunner <- function(
     prepend=NULL, 
     mem=NULL,
     direct=TRUE,
-    verbose=FALSE
+    verbose=NULL
 ){
   
   ## Create a new default
@@ -112,6 +112,10 @@ SlurmRunner <- function(
   if(!is.null(mem)){
     settings@mem <- mem
     #mem can have "g" at end. need to parse to integer  TODO
+  }
+  
+  if(!is.null(verbose)){
+    settings@verbose <- verbose
   }
   
   settings
