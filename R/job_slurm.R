@@ -13,7 +13,8 @@ setClass("SlurmRunner", slots=list(
   time="character",
   prepend="character",
   mem="character",
-  direct="logical"
+  direct="logical",
+  verbose="logical"
 )
 ) 
 
