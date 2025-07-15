@@ -45,7 +45,15 @@ LocalRunner <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
 setMethod(
   f = "RunJob",
   signature ="LocalRunner",
-  definition = function(runner, jobname, cmd, arraysize) {  ######## todo likely remove witdata
+  definition = function(runner, jobname, bascet_instance, cmd, arraysize) { 
+    
+    
+    ## Decide on a tempdir location; different for each job
+    cmd <- c(
+      paste0("BASCET_TEMPDIR=",file.path(GetBascetTempDir(bascet_instance), "$TASK_ID")),
+      cmd
+    )
+    
     
     print("Starting local job")
     cmd <- stringr::str_flatten(c(
@@ -55,9 +63,9 @@ setMethod(
     
     print("----------- arg")
     if(runner@show_script){
-      print("=============== final script start =================")
-      cat(cmd)
-      print("=============== final script end =================")
+      print("=============== final local script start =================")
+      writeLines(cmd)
+      print("=============== final local script end =================")
     }
     
     

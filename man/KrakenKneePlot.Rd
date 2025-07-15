@@ -4,10 +4,17 @@
 \alias{KrakenKneePlot}
 \title{Take a KRAKEN2 adata object and generate per-species kneeplots}
 \usage{
-KrakenKneePlot(adata, groupby = "phylum", show_num_spec = 15)
+KrakenKneePlot(
+  adata,
+  groupby = "phylum",
+  show_num_spec = 15,
+  sortbyname = FALSE
+)
 }
 \arguments{
 \item{groupby}{genus, phylum or species}
+
+\item{sortbyname}{Sort by name}
 }
 \value{
 A ggplot

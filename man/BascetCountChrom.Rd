@@ -8,6 +8,7 @@ BascetCountChrom(
   bascetRoot,
   inputName = "aligned",
   outputName = "chromcount",
+  min_matching = 0,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascet_instance = GetDefaultBascetInstance()

@@ -12,7 +12,8 @@ SlurmRunner(
   time = NULL,
   prepend = NULL,
   mem = NULL,
-  direct = TRUE
+  direct = TRUE,
+  verbose = NULL
 )
 }
 \arguments{

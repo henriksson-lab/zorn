@@ -206,8 +206,9 @@ BascetGetRaw <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_getraw",
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
         shellscript_make_bash_array("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
         shellscript_make_bash_array("libnames",rawmeta$prefix),
@@ -312,8 +313,9 @@ BascetShardify <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_shardify",
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_out", outputFiles),
         
         ### Abort early if needed    
@@ -408,8 +410,9 @@ BascetMapTransform <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_transform",
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
@@ -587,8 +590,9 @@ BascetRunFASTP <- function(
     RunJob(
       runner = runner, 
       jobname = paste0("Z_fastp"),
+      bascet_instance = bascet_instance,
       cmd = c(
-        shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascet_instance),
         shellscript_make_bash_array("files_html",outputFiles_report_json),
         shellscript_make_bash_array("files_json",outputFiles_report_html),
         shellscript_make_bash_array("files_in_R1",inputFiles_R1),
