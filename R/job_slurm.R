@@ -68,7 +68,8 @@ SlurmRunner <- function(
     time=NULL, 
     prepend=NULL, 
     mem=NULL,
-    direct=TRUE
+    direct=TRUE,
+    verbose=FALSE
 ){
   
   ## Create a new default
@@ -81,7 +82,8 @@ SlurmRunner <- function(
       time="0-72:00:00",
       prepend="",
       mem="",
-      direct=direct
+      direct=direct,
+      verbose=FALSE
     )
   }
   
@@ -148,14 +150,19 @@ setMethod(
     this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),"$SLURM_ARRAY_TASK_ID")
     scriptcontent <- c(scriptcontent, this_cmd)
     
+    scriptcontent <- c(scriptcontent, "echo \"End of SLURM script\"")
+    
+    
     ## Write the script to a temporary file
     slurm_script <- tempfile(fileext = ".sh")
     #print(slurm_script)    
     writeLines(con=slurm_script, scriptcontent)
     
-    if(TRUE){
+    if(runner@verbose){
       #/var/spool/slurmd/job34516237/slurm_script: line 9: [: missing `]'   --- need to fix
-      print(scriptcontent)
+      writeLines("=========== SLURM script start ===========")
+      writeLines(scriptcontent)
+      writeLines("=========== SLURM script end =============")
     }
         
     ## Run the script; catch the message from sbatch
