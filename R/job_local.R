@@ -87,7 +87,7 @@ setMethod(
       print("Running directly")  
       system(paste("bash", tfile))
       #print(tfile)
-      file.remove(tfile) #assumes process has started. can we do better?
+      file.remove(tfile) #assumes process has started. can we do better? check https://www.linuxjournal.com/content/bash-trap-command 
       
       #Return no job, as it is done already
       new_no_job()

@@ -140,20 +140,24 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
   meta$possible_prefix <- stringr::str_split_i(meta$r1, "_S[0123456789]",1)
   unique_prefix <- unique(meta$possible_prefix)
   if(verbose){
-    print("Detected possible prefixes")
+    print("Detected possible prefixes:")
     print(unique_prefix)
   }
 
   #If there is more than one prefix, then we have to add them. otherwise just keep it simple
   if(length(unique_prefix)>1){
     #Sanitize prefixes. Some characters will break BAM tags etc
+    meta$prefix <- meta$possible_prefix
     meta$prefix <- stringr::str_remove_all(meta$prefix, " ")
     meta$prefix <- stringr::str_remove_all(meta$prefix, "/")
     meta$prefix <- stringr::str_remove_all(meta$prefix, "\"")
-    
+
+    print("Detected multiple libraries")    
   } else {
+    print("Detected a single library")    
+    
     if(verbose){
-      print("Detected one one possible prefix, so not adding it")
+      print("Detected only one possible prefix, so not adding it")
     }
   }
 
