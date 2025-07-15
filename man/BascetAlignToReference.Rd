@@ -13,6 +13,7 @@ BascetAlignToReference(
   outputNameBAMsorted = "aligned",
   do_sort = TRUE,
   overwrite = FALSE,
+  aligner = "BWA",
   runner = GetDefaultBascetRunner(),
   bascet_instance = GetDefaultBascetInstance()
 )

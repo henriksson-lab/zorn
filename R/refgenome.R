@@ -67,6 +67,7 @@ BascetIndexGenomeBWA <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_bwa_index",
+      bascet_instance = bascet_instance,
       cmd = c(
         ### For sorting
         paste(
@@ -118,6 +119,7 @@ BascetIndexGenomeSTAR <- function(
   RunJob(
     runner = runner, 
     jobname = "Z_star_index",
+    bascet_instance = bascet_instance,
     cmd = c(
       paste(
         "mdkir -p", outDir
@@ -377,6 +379,7 @@ BascetAlignToReference <- function(
     outputNameBAMsorted="aligned", 
     do_sort=TRUE,
     overwrite=FALSE,
+    aligner="BWA",
     runner=GetDefaultBascetRunner(), 
     bascet_instance=GetDefaultBascetInstance()
 ){
@@ -415,6 +418,42 @@ BascetAlignToReference <- function(
     inputFiles_R2 <- rep("",length(inputFiles_R1))
   }
 
+  
+  if(aligner=="BWA"){
+    cmd_align <- paste(
+      bascet_instance@prepend_cmd,
+      "bash -c \"",
+      "bwa mem", 
+      useReference,
+      "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
+      "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
+      "-t", numLocalThreads,
+      "| ", bascet_instance@bin, "pipe-sam-add-tags",
+      "| samtools view -b -o",
+      "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
+      "\""
+    )
+  } else if(aligner=="STAR") {
+    cmd_align <- paste(
+      bascet_instance@prepend_cmd,
+      "bash -c \"",
+      "STAR", 
+      "--genomeDir", useReference,
+      "--readFilesIn ${files_in_r1[$TASK_ID]} ${files_in_r2[$TASK_ID]}",                #Align R1 and R2 FASTQ
+      "--runThreadN", numLocalThreads,
+      "--outSAMtype SAM Unsorted",
+      "--outSAMunmapped Within",
+      "--outSAMattributes Standard",
+      "| ", bascet_instance@bin, "pipe-sam-add-tags",
+      "| samtools view -b -o",
+      "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
+      "\""
+    )
+  } else {
+    stop(paste("Unknown aligner: ", aligner))
+  }
+  
+  
   ### Build command: basic alignment
   final_outputFiles <- outputFilesBAMunsorted
   cmd <- c(
@@ -429,19 +468,7 @@ BascetAlignToReference <- function(
     if(!overwrite) helper_cancel_job_if_file_exists("${files_out_final[$TASK_ID]}"),
     
     ### For alignment
-    paste(
-      bascet_instance@prepend_cmd,
-      "bash -c \"",
-      "bwa mem", 
-      useReference,
-      "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
-      "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
-      "-t", numLocalThreads,
-      "| ", bascet_instance@bin, "pipe-sam-add-tags",
-      "| samtools view -b -o",
-      "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
-      "\""
-    )
+    cmd_align
   )
   
   
@@ -487,6 +514,13 @@ BascetAlignToReference <- function(
     new_no_job()
   }
 }
+
+
+
+
+
+
+
 
 
 
