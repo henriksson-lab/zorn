@@ -27,8 +27,11 @@ setClass("Bascet", slots=list(
 #' @export
 BascetCellNames <- function(
     bascetRoot, 
-    bascetName
+    bascetName,
+    bascet_instance
 ){
+  
+  streamer <- extractstreamer_start(bascet_instance = bascet_instance)
   
   #Can support BAM later as well
   shards <- detect_shards_for_file(bascetRoot,bascetName)
@@ -42,7 +45,11 @@ BascetCellNames <- function(
     if(stringr::str_ends(cur_file, stringr::fixed(".zip"))) {
       allfiles <- unzip(cur_file,list = TRUE)$Name
     } else if(stringr::str_ends(cur_file, stringr::fixed(".tirp.gz"))) {
+      
+      
       allfiles <- system(paste("tabix","--list-chroms", cur_file),intern=TRUE)
+      
+      
     } else {
       stop(paste("Cannot list cells for"),cur_file)
     }
@@ -59,7 +66,7 @@ BascetCellNames <- function(
 
 if(FALSE){
   system(paste("tabix","--list-chroms", "/home/mahogny/github/bascet/testdata/filtered.0.tirp.gz"),intern=TRUE)
-  BascetCellNames("/home/mahogny/jupyter/zorn/test/data", "shard")
+  BascetCellNames("/home/mahogny/jupyter/zorn/test/data", "shard", bascet_instance.default)
 }
 
 
@@ -83,14 +90,14 @@ OpenBascet <- function(
   
   shards <- detect_shards_for_file(bascetRoot,bascetName)
   num_shards <- length(shards)
-  cellname_coord <- BascetCellNames(bascetRoot, bascetName)
+  cellname_coord <- BascetCellNames(bascetRoot, bascetName, bascet_instance=bascet_instance) ####### TODO: opening bascet streamer twice here. avoid!
   
   streamer <- extractstreamer_start(bascet_instance = bascet_instance)
   
   new("Bascet", 
       num_shards=num_shards, 
       files=file.path(bascetRoot, shards), 
-      cellmeta=BascetCellNames(bascetRoot, bascetName),
+      cellmeta=cellname_coord, #BascetCellNames(bascetRoot, bascetName), ######################### TODO fix
       streamer=streamer
   )
 }
@@ -382,7 +389,7 @@ AtrandiBarcodeStats <- function(
 ){
 
   #Get frequency of each barcode  
-  cb <- as.data.frame(stringr::str_split_fixed(BascetCellNames(bascetRoot, inputName)$cell,"_",4))
+  cb <- as.data.frame(stringr::str_split_fixed(BascetCellNames(bascetRoot, inputName, bascet_instance=bascet_instance)$cell,"_",4))
   df <- as.data.frame(table(unlist(cb)))
   colnames(df) <- c("well","cnt")
   
@@ -567,10 +574,35 @@ extractstreamer_ls <- function(
   p$write_input("ls\n")
   #Figure out how many lines to get
   newlines <- extractstreamer_read_one_line(p)
-  n_lines <- as.integer(newlines)
-  extractstreamer_read_n_lines(p, n_lines, super_verbose)
+  if(stringr::str_starts(newlines,"error")) {
+    stop(newlines)
+  } else {
+    n_lines <- as.integer(newlines)
+    extractstreamer_read_n_lines(p, n_lines, super_verbose)
+  }
 }
 
+
+
+###############################################
+#' extract streamer: list all cells in a tabix-file
+#' 
+#' @return list of cells
+extractstreamer_lstabix <- function(
+    p, 
+    fname,
+    super_verbose=FALSE
+){
+  p$write_input(paste0("lstabix ",fname,"\n"))
+  #Figure out how many lines to get
+  newlines <- extractstreamer_read_one_line(p)
+  if(stringr::str_starts(newlines,"error")) {
+    stop(newlines)
+  } else {
+    n_lines <- as.integer(newlines)
+    extractstreamer_read_n_lines(p, n_lines, super_verbose)
+  }
+}
 
 
 
