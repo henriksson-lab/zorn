@@ -207,7 +207,7 @@ BascetAggregateMap <- function(
 ){
   
   #Get file coordinates of all objects in zip file
-  cellname_coord <- BascetCellNames(bascetRoot, bascetName)
+  cellname_coord <- BascetCellNames(bascetRoot, bascetName, bascet_instance)  ############## todo: avoid opening streamer twice
   
   #Open the file, prep for reading
   if(verbose){

@@ -27,7 +27,34 @@ setClass("Bascet", slots=list(
 #' @export
 BascetCellNames <- function(
     bascetRoot, 
-    bascetName
+    bascetName,
+    bascet_instance
+){
+  streamer <- extractstreamer_start(bascet_instance = bascet_instance)
+  
+  ret <- BascetCellNames_withstreamer(
+    bascetRoot,
+    bascetName,
+    streamer
+  )
+  
+  extractstreamer_exit(streamer)
+  
+  ret
+}
+
+
+
+###############################################
+#' Get list of cells in a Bascet -- streamer provided
+#' 
+#' @inheritParams template_BascetFunction
+#' @param bascetName Name of the bascet
+#' @return Vector of cell names as strings
+BascetCellNames_withstreamer <- function(
+    bascetRoot, 
+    bascetName,
+    streamer
 ){
   
   #Can support BAM later as well
@@ -42,7 +69,7 @@ BascetCellNames <- function(
     if(stringr::str_ends(cur_file, stringr::fixed(".zip"))) {
       allfiles <- unzip(cur_file,list = TRUE)$Name
     } else if(stringr::str_ends(cur_file, stringr::fixed(".tirp.gz"))) {
-      allfiles <- system(paste("tabix","--list-chroms", cur_file),intern=TRUE)
+      allfiles <- system(paste("tabix","--list-chroms", cur_file),intern=TRUE) ########## TODO: needs to use bascet instance! ; should provide terminal function for this
     } else {
       stop(paste("Cannot list cells for"),cur_file)
     }
@@ -80,17 +107,17 @@ OpenBascet <- function(
     bascetName,
     bascet_instance=GetDefaultBascetInstance()
 ){
+
+  streamer <- extractstreamer_start(bascet_instance = bascet_instance)
   
   shards <- detect_shards_for_file(bascetRoot,bascetName)
   num_shards <- length(shards)
-  cellname_coord <- BascetCellNames(bascetRoot, bascetName)
-  
-  streamer <- extractstreamer_start(bascet_instance = bascet_instance)
+  cellname_coord <- BascetCellNames_withstreamer(bascetRoot, bascetName, streamer)
   
   new("Bascet", 
       num_shards=num_shards, 
       files=file.path(bascetRoot, shards), 
-      cellmeta=BascetCellNames(bascetRoot, bascetName),
+      cellmeta=cellname_coord, #BascetCellNames(bascetRoot, bascetName),
       streamer=streamer
   )
 }
