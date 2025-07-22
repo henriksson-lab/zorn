@@ -85,7 +85,7 @@ BascetAggregateQUAST <- function(
     bascetRoot, 
     inputName="quast",
     #cacheFile=NULL, #option
-    include_cells=NULL,
+    includeCells=NULL,
     verbose=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
@@ -95,7 +95,7 @@ BascetAggregateQUAST <- function(
     inputName,
     aggr.quast,
     verbose=verbose,
-    include_cells=include_cells
+    includeCells=includeCells
   )
   #print(666)
   #CountDataFrameToSparseMatrix(m)
@@ -190,7 +190,7 @@ BascetAggregateFASTQC <- function(
     bascetRoot, 
     inputName="fastqc",
     #cacheFile=NULL, #option
-    include_cells=NULL,
+    includeCells=NULL,
     verbose=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
@@ -200,7 +200,7 @@ BascetAggregateFASTQC <- function(
     inputName,
     aggr.fastqc,
     verbose=verbose,
-    include_cells=include_cells
+    includeCells=includeCells
   )
   #print(666)
   #CountDataFrameToSparseMatrix(m)
@@ -311,14 +311,14 @@ internal_parse_fastqc_data <- function(lines){
 #' Show the FASTQC HTML report for a cell
 #' 
 #' @param readnum 1 or 2, for R1 and R2
-#' @param use_browser Use operating system browser to open file
+#' @param useBrowser Use operating system browser to open file
 #' @return TODO
 #' @export
 ShowFASTQCforCell <- function(
     bascetFile, 
     cellID, 
     readnum="1",
-    use_browser=FALSE,
+    useBrowser=FALSE,
     verbose=FALSE
 ){
   #Open the bascet file, get the HTML report
@@ -341,7 +341,7 @@ ShowFASTQCforCell <- function(
 
   #Show the file
   viewer <- getOption("viewer")
-  if (!is.null(viewer) & !use_browser) {
+  if (!is.null(viewer) & !useBrowser) {
     viewer(htmlFile)
   } else {
     utils::browseURL(htmlFile)
@@ -359,7 +359,7 @@ ShowFASTQCforCell <- function(
 #' @return TODO
 #' @export
 GetFASTQCassembledDF <- function(
-    aggr_fastq_data, 
+    aggrFastqData, 
     section, 
     readnum
 ) {
@@ -380,7 +380,7 @@ GetFASTQCassembledDF <- function(
     })
   }
   
-  list_oneread <- internal_fastqc_getread_in_list(aggr_fastq_data,readnum) #Get data for given read
+  list_oneread <- internal_fastqc_getread_in_list(aggrFastqData,readnum) #Get data for given read
   #print(list_oneread)
   
   list_oneread_section <- lapply(list_oneread, function(s) s[[section]]) #Get sections for each cell
@@ -398,10 +398,10 @@ GetFASTQCassembledDF <- function(
 #' @param readnum 1 or 2, for R1 or R2
 #' @export
 PlotFASTQCadapterContent <- function(
-    aggr_fastq_data,
+    aggrFastqData,
     readnum
 ) {
-  df_section <- GetFASTQCassembledDF(aggr_fastq_data,"Adapter Content",readnum)
+  df_section <- GetFASTQCassembledDF(aggrFastqData,"Adapter Content",readnum)
   xlab_unit <- unique(df_section$X.Position)
   
   df_section$any_adapter <- rowSums(df_section[,!(colnames(df_section) %in% c("X.Position","cellID"))])
@@ -450,10 +450,10 @@ GetFASTQCbasicStats <- function(aggr_fastqc, readnum) {
 #' @param readnum 1 or 2, for R1 or R2
 #' @export
 GetFASTQCpassfailStats <- function(
-    aggr_fastq_data,
+    aggrFastqData,
     readnum
 ) {
-  df <- GetFASTQCassembledDF(aggr_fastq_data,"section_state",readnum)
+  df <- GetFASTQCassembledDF(aggrFastqData,"section_state",readnum)
   rownames(df) <- df$cellID
   df <- df[colnames(df)!="cellID",drop=FALSE]  
   #Could do both r1 and r2
@@ -569,7 +569,7 @@ ListDatabaseAbricate <- function(
 ) {
   ret <- system(
     paste(
-      bascetInstance@prepend_cmd,
+      bascetInstance@prependCmd,
       "abricate --list"
     ),
     intern = TRUE
@@ -589,7 +589,7 @@ BascetAggregateAbricate <- function(
     bascetRoot, 
     inputName="abricate",
     #cacheFile=NULL, #option
-    include_cells=NULL,
+    includeCells=NULL,
     verbose=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
@@ -598,7 +598,7 @@ BascetAggregateAbricate <- function(
     bascetRoot,
     inputName,
     aggr.abricate,
-    include_cells=include_cells,
+    includeCells=includeCells,
     verbose = verbose
   )), "cellID","GENE")
 }
@@ -656,7 +656,7 @@ DownloadDatabaseBakta <- function(
   } else {
     system(
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "bakta_db download --output",
         dbdir,
         "--type",dbtype
@@ -735,7 +735,7 @@ DownloadDatabaseAriba <- function(
     ### Get ref
     system(
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "ariba getref ",ref, tmp, 
         dbdir
       )
@@ -744,7 +744,7 @@ DownloadDatabaseAriba <- function(
     ### prepare the database
     system(
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "ariba prepareref -f ",tmp.fa,
         "-m", tmp.tsv, out.prepareref
         #        dbdir
@@ -784,7 +784,7 @@ BascetAggregateAriba <- function(
     bascetRoot, 
     inputName="ariba",
     #cacheFile=NULL, #option
-    include_cells=NULL,
+    includeCells=NULL,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -792,7 +792,7 @@ BascetAggregateAriba <- function(
     bascetRoot,
     inputName,
     aggr.ariba,
-    include_cells=include_cells
+    includeCells=includeCells
   )), "cellID","cluster")
 }
 
@@ -851,7 +851,7 @@ DownloadDatabaseAMRfinder <- function(
   } else {
     system(
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "amrfinder_update -d",
         dbdir
       )
@@ -896,8 +896,8 @@ BascetAggregateAMRfinder <- function(
     bascetRoot, 
     inputName="AMRfinder",
     #cacheFile=NULL, #option
-    include_cells=NULL,
-    get_column="Element.symbol",  #Element.name is an option, if one also want full name
+    includeCells=NULL,
+    getColumn="Element.symbol",  #Element.name is an option, if one also want full name
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -905,8 +905,8 @@ BascetAggregateAMRfinder <- function(
     bascetRoot,
     inputName,
     aggr.abricate,
-    include_cells=include_cells
-  )), "cellID",get_column)
+    includeCells=includeCells
+  )), "cellID",getColumn)
 }
 
 
@@ -976,7 +976,7 @@ BascetAggregateGECCO <- function(
     bascetRoot, 
     inputName="gecco",
     #cacheFile=NULL, #option
-    include_cells=NULL,
+    includeCells=NULL,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -984,7 +984,7 @@ BascetAggregateGECCO <- function(
     bascetRoot,
     inputName,
     aggr.gecco,
-    include_cells=include_cells
+    includeCells=includeCells
   )
 }
 

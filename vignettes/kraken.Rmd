@@ -13,7 +13,7 @@ these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascet_runner.default <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
@@ -101,7 +101,7 @@ a kneeplot of each species. As different species are differently hard to lyse,
 you will likely have different kneeplot patterns.
 
 ```{r, eval=F, echo=T}
-KrakenKneePlot(adata, groupby = "phylum", show_num_spec=show_num_spec)
+KrakenKneePlot(adata, groupby = "phylum", showNumSpecies=showNumSpecies)
 ```
 
 

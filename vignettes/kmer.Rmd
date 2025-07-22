@@ -14,7 +14,7 @@ these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascet_runner.default <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
@@ -44,10 +44,10 @@ however look for KMERs that are more frequently shared by counting minhashes
 across all cells, and generating a histogram.
 
 ```{r, eval=F, echo=T}
-kmer_hist <- BascetReadMinhashHistogram(bascetRoot)
+kmerHist <- BascetReadMinhashHistogram(bascetRoot)
 
-kmer_hist$rank <- 1:nrow(kmer_hist)
-ggplot(kmer_hist[kmer_hist$cnt>2,], aes(rank, cnt)) +
+kmerHist$rank <- 1:nrow(kmerHist)
+ggplot(kmerHist[kmerHist$cnt>2,], aes(rank, cnt)) +
   geom_point() +
   scale_x_log10() +
   scale_y_log10()
@@ -63,7 +63,7 @@ KMERs based on a cutoff:
 
 ```{r, eval=F, echo=T}
 ### Pick KMERs
-useKMERs <- kmer_hist$kmer[kmer_hist$cnt>5]  #Pick KMERs present in more than 5 cells
+useKMERs <- kmerHist$kmer[kmerHist$cnt>5]  #Pick KMERs present in more than 5 cells
 ```
 
 Using the list of KMERs, you can now re-scan all genomes for their presence.

@@ -18,8 +18,8 @@ approach to take.
 
 First load an instance, and ensure that it works:
 ```{r, eval=F, echo=T}
-bascet_instance <- getBascetSingularityImage(...)
-TestBascetInstance(bascet_instance)
+bascetInstance <- getBascetSingularityImage(...)
+TestBascetInstance(bascetInstance)
 ```
 
 You can now open a file. Internally, this creates an instance of Bascet running
@@ -30,7 +30,7 @@ once; but reading many files is very fast.
 skesa_file <- OpenBascet(
   bascetRoot, 
   "skesa", 
-  bascet_instance
+  bascetInstance
 )
 ```
 
@@ -40,7 +40,7 @@ You can obtain a list of files for a cell like this (see reference for more comm
 BascetListFilesForCell(
   skesa_file, 
   "G1_E5_H7_E11", 
-  bascet_instance = bascet_instance
+  bascetInstance = bascetInstance
 )
 ```
 

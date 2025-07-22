@@ -57,7 +57,7 @@ BascetCacheComputation <- function(bascetRoot, fname, value){
 #' @param outputFiles Files that we expect to exist
 #' @param overwrite Files that we expect to exist
 #' @return TRUE if ok to proceed
-bascet_check_overwrite_output <- function(
+bascetCheckOverwriteOutput <- function(
   outputFiles, 
   overwrite
 ){
@@ -196,8 +196,8 @@ BascetGetRaw <- function(
   if(num_shards==0){
     stop("No input files")
   }
-  outputFilesComplete <- make_output_shard_names(bascetRoot, outputName, "tirp.gz", num_shards)
-  outputFilesIncomplete <- make_output_shard_names(bascetRoot, outputNameIncomplete, "tirp.gz", num_shards)
+  outputFilesComplete <- makeOutputShardNames(bascetRoot, outputName, "tirp.gz", num_shards)
+  outputFilesIncomplete <- makeOutputShardNames(bascetRoot, outputNameIncomplete, "tirp.gz", num_shards)
   
   #Check if libnames should be added
   add_libnames <- any(rawmeta$prefix!="")
@@ -210,7 +210,7 @@ BascetGetRaw <- function(
     row.names = FALSE
   )
 
-  if(bascet_check_overwrite_output(outputFilesComplete, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFilesComplete, overwrite)) {
     RunJob(
       runner = runner, 
       jobname = "Z_getraw",
@@ -224,10 +224,10 @@ BascetGetRaw <- function(
         shellscript_make_bash_array("files_out_incomplete",outputFilesIncomplete),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin, 
           "getraw",
           "-t $BASCET_TEMPDIR",
@@ -297,7 +297,7 @@ BascetShardify <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
 
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
     stop("Found no input files")
   }
@@ -310,13 +310,13 @@ BascetShardify <- function(
   }
 
   #Figure out which cell goes into which shard
-  list_cell_for_shard <- shellscript_split_arr_into_list_randomly(includeCells, num_output_shards)
+  list_cell_for_shard <- shellscriptSplitArrayIntoListRandomly(includeCells, num_output_shards)
   
   #Figure out input and output file names  
   inputFiles <- file.path(bascetRoot, input_shards)
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "tirp.gz", num_output_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "tirp.gz", num_output_shards)
 
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -327,15 +327,15 @@ BascetShardify <- function(
         shellscript_make_bash_array("files_out", outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
-        shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+        shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin,
           "shardify", 
           "-t $BASCET_TEMPDIR",
-          "-i",shellscript_make_commalist(inputFiles), #Need to give all input files for each job
+          "-i",shellscriptMakeCommalist(inputFiles), #Need to give all input files for each job
           "-o ${files_out[$TASK_ID]}",                 #Each job produces a single output
           "--cells $CELLFILE"                          #Each job takes its own list of cells
         ),  
@@ -394,14 +394,14 @@ BascetMapTransform <- function(
   #TODO check outformat
 
   #Figure out input and output file names  
-  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
   
   if(num_shards==0){
     stop("No input files")
   }
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, out_format, num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, out_format, num_shards)
 
   #If cell list is provided, produce a file for input (not all transform calls can handle this, so optional)
   produce_cell_list <- !is.null(includeCells)
@@ -413,7 +413,7 @@ BascetMapTransform <- function(
     }
   }
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Run the job
     RunJob(
       runner = runner, 
@@ -425,11 +425,11 @@ BascetMapTransform <- function(
         shellscript_make_bash_array("files_out",outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
-        if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+        if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin, 
           "transform",
           if(produce_cell_list) "--cells $CELLFILE",
@@ -570,30 +570,30 @@ BascetRunFASTP <- function(
 ){
   
   #Figure out input and output file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")
   }
   inputFiles_R1 <- file.path(bascetRoot, input_shards)
   
-  outputFiles_R1 <- make_output_shard_names(bascetRoot, outputName, "R1.fq.gz", num_shards) 
-  outputFiles_R2 <- make_output_shard_names(bascetRoot, outputName, "R2.fq.gz", num_shards) 
+  outputFiles_R1 <- makeOutputShardNames(bascetRoot, outputName, "R1.fq.gz", num_shards) 
+  outputFiles_R2 <- makeOutputShardNames(bascetRoot, outputName, "R2.fq.gz", num_shards) 
 
-  outputFiles_report_json <- make_output_shard_names(bascetRoot, outputName, "html", num_shards) 
-  outputFiles_report_html <- make_output_shard_names(bascetRoot, outputName, "json", num_shards) 
+  outputFiles_report_json <- makeOutputShardNames(bascetRoot, outputName, "html", num_shards) 
+  outputFiles_report_html <- makeOutputShardNames(bascetRoot, outputName, "json", num_shards) 
   
   ### Check if paired or not
-  is_paired <- is_paired_fastq(inputFiles_R1[1])
+  is_paired <- isPairedFastq(inputFiles_R1[1])
   print(paste("Detect paired FASTQ:",is_paired))
   
   ### Figure out R2 names
   if(is_paired){
-    inputFiles_R2 <- get_fastq_R2_from_R1(inputFiles_R1)
+    inputFiles_R2 <- getFastqR2fromR1(inputFiles_R1)
   }
   
   
-  if(bascet_check_overwrite_output(outputFiles_R1, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles_R1, overwrite)) {
     #Run the job
     RunJob(
       runner = runner, 
@@ -609,10 +609,10 @@ BascetRunFASTP <- function(
         if(is_paired) shellscript_make_bash_array("files_out_R2",outputFiles_R2),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out_R1[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_R1[$TASK_ID]}"),
         
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           "fastp",
           "--thread", numLocalThreads,
           "-h ${files_html[$TASK_ID]}",
@@ -708,7 +708,7 @@ ReadBascetCountMatrix <- function(
   print("Loading HDF5 file")
   
   #Figure out input file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")

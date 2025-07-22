@@ -22,7 +22,7 @@ PrepareSharding <- function(
   meta$group <- as.integer(factor(meta$prefix))
   
   #Get all the TIRPs, sum up the reads  
-  inputFiles <- detect_shards_for_file(bascetRoot, inputName)
+  inputFiles <- detectShardsForFile(bascetRoot, inputName)
   inputFiles <- naturalsort::naturalsort(inputFiles)
   
   if(length(inputFiles)!=nrow(meta)){
@@ -210,22 +210,22 @@ BascetShardify2 <- function(
   
   
   
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
     stop("Found no input files")
   }
   
   #Figure out which cell goes into which shard
-  list_cell_for_shard <- shellscript_split_arr_into_list_randomly(includeCells, numOutputShards)
+  list_cell_for_shard <- shellscriptSplitArrayIntoListRandomly(includeCells, numOutputShards)
   
   #Figure out input and output file names  
   inputFiles <- file.path(bascetRoot, input_shards)
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "tirp.gz", numOutputShards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "tirp.gz", numOutputShards)
   
   
   
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -236,15 +236,15 @@ BascetShardify2 <- function(
         shellscript_make_bash_array("files_out", outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
-        shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+        shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin,
           "shardify", 
           "-t $BASCET_TEMPDIR",
-          "-i",shellscript_make_commalist(inputFiles), #Need to give all input files for each job
+          "-i",shellscriptMakeCommalist(inputFiles), #Need to give all input files for each job
           "-o ${files_out[$TASK_ID]}",                 #Each job produces a single output
           "--cells $CELLFILE"                          #Each job takes its own list of cells
         ),  

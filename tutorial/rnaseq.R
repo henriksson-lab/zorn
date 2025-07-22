@@ -17,11 +17,11 @@ if(FALSE){
 ################## Preprocessing with Bascet/Zorn ##############################
 ################################################################################
 
-inst <- LocalInstance(direct = TRUE, show_script=TRUE)
+inst <- LocalInstance(direct = TRUE, showScript=TRUE)
 bascetRoot = "/husky/henriksson/atrandi/rnaseq3/1/"
 rawmeta <- DetectRawFileMeta("/husky/fromsequencer/250108_joram_rnaseq3/raw/miseq_demul/1/")
 
-bascet_instance.default  #temp dir is here
+bascetInstance.default  #temp dir is here
 
 
 ### Debarcode the reads, then sort them.
@@ -97,14 +97,14 @@ library(ggplot2)
 gff <- rtracklayer::readGFF("/husky/fromsequencer/241210_joram_rnaseq/ref/all.gff3")
 gff_gene <- gff[gff$type=="gene",]
 gff_gene <- unique(gff_gene[,c("seqid","start","end","Name","gene_biotype")])
-grange_gene <- GenomicRanges::makeGRangesFromDataFrame(gff_gene)
-grange_gene$Name <- gff_gene$Name
-grange_gene$gene_biotype <- str_replace_all(gff_gene$gene_biotype,"_","-")
+grangeGene <- GenomicRanges::makeGRangesFromDataFrame(gff_gene)
+grangeGene$Name <- gff_gene$Name
+grangeGene$gene_biotype <- str_replace_all(gff_gene$gene_biotype,"_","-")
 
 
 ####### Perform counting
 adata <- LoadUncountedFragments("/husky/fromsequencer/241210_joram_rnaseq/trimmed/atac_fragments.tsv.gz")  ## TODO, support multiple fragment files
-adata[["RNA"]] <- CountGrangeFeatures(grange_gene)
+adata[["RNA"]] <- CountGrangeFeatures(grangeGene)
 
 
 ####### 

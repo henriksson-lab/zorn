@@ -28,16 +28,16 @@ BascetMapCell <- function(
 ){
   
   #Figure out input and output file names  
-  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
   
   if(num_shards==0){
     stop("No input files")
   }
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "zip", num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "zip", num_shards)
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Build the command - custom arguments
     cmd <- c()
     for(key in names(args)){
@@ -61,10 +61,10 @@ BascetMapCell <- function(
       shellscript_make_bash_array("files_out",outputFiles),
       
       ### Abort early if needed    
-      if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+      if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
 
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         bascetInstance@bin, 
         "mapcell",
         "-t $BASCET_TEMPDIR",
@@ -200,7 +200,7 @@ BascetAggregateMap <- function(
     bascetRoot, 
     bascetName, 
     aggrFunction,
-    include_cells=NULL,
+    includeCells=NULL,
     showProgress=TRUE,
     verbose=FALSE,
     bascetInstance=GetDefaultBascetInstance()
@@ -223,13 +223,13 @@ BascetAggregateMap <- function(
   }
   
   #Loop over all cells by default
-  if(is.null(include_cells)){
-    include_cells <- bascetFile@cellmeta$cell
+  if(is.null(includeCells)){
+    includeCells <- bascetFile@cellmeta$cell
   }
   
   #Loop over all files in the bascet
   output <- list()
-  for(cellname in include_cells){
+  for(cellname in includeCells){
     output[[cellname]] <- aggrFunction(bascetFile, cellname, bascetInstance)
     if(showProgress){
       pbar$tick()

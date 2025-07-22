@@ -30,7 +30,7 @@ BascetCellNames <- function(
     bascetName,
     bascetInstance
 ){
-  streamer <- extractstreamer_start(bascetInstance = bascetInstance)
+  streamer <- extractstreamerStart(bascetInstance = bascetInstance)
   
   ret <- BascetCellNames_withstreamer(
     bascetRoot,
@@ -38,7 +38,7 @@ BascetCellNames <- function(
     streamer
   )
   
-  extractstreamer_exit(streamer)
+  extractstreamerExit(streamer)
   
   ret
 }
@@ -58,7 +58,7 @@ BascetCellNames_withstreamer <- function(
 ){
   
   #Can support BAM later as well
-  shards <- detect_shards_for_file(bascetRoot,bascetName)
+  shards <- detectShardsForFile(bascetRoot,bascetName)
   if(length(shards)==0){
     stop(paste("Could not find file ",bascetName))
   }
@@ -68,7 +68,7 @@ BascetCellNames_withstreamer <- function(
     cur_file <- file.path(bascetRoot,shards[i])
     print(cur_file) 
     #print(streamer)
-    allfiles <- extractstreamer_listcellsanyfile(streamer, cur_file)
+    allfiles <- extractstreamerListCellsAnyFile(streamer, cur_file)
     
     df <- data.frame(
       cell=allfiles
@@ -83,8 +83,8 @@ BascetCellNames_withstreamer <- function(
 
 if(FALSE){
   
-  streamer <- extractstreamer_start(bascetInstance = bascetInstance.default)
-  extractstreamer_listcellsanyfile(streamer, "/pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/dataset/250611_scinfluenza/bascet/debarcoded.1.tirp.gz")#, super_verbose = TRUE)
+  streamer <- extractstreamerStart(bascetInstance = bascetInstance.default)
+  extractstreamerListCellsAnyFile(streamer, "/pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/dataset/250611_scinfluenza/bascet/debarcoded.1.tirp.gz")#, superVerbose = TRUE)
   
   cn <- BascetCellNames("/pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/dataset/250611_scinfluenza/bascet", "debarcoded", bascetInstance=bascetInstance.default)
 }
@@ -113,9 +113,9 @@ OpenBascet <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
 
-  streamer <- extractstreamer_start(bascetInstance = bascetInstance)
+  streamer <- extractstreamerStart(bascetInstance = bascetInstance)
   
-  shards <- detect_shards_for_file(bascetRoot,bascetName)
+  shards <- detectShardsForFile(bascetRoot,bascetName)
   num_shards <- length(shards)
 
   cellname_coord <- BascetCellNames_withstreamer(bascetRoot, bascetName, streamer)
@@ -143,7 +143,7 @@ OpenBascet <- function(
 CloseBascet <- function(
     bascetFile
 ){
-  extractstreamer_exit(bascetFile@streamer)
+  extractstreamerExit(bascetFile@streamer)
   invisible()
 }
 
@@ -184,8 +184,8 @@ BascetReadFile <- function(
   
   if(as=="text"){
     
-    if(extractstreamer_open(bascetFile@streamer, name_of_zip)==0) {
-      ret <- extractstreamer_showtext(bascetFile@streamer, extract_files, super_verbose = verbose)
+    if(extractstreamerOpen(bascetFile@streamer, name_of_zip)==0) {
+      ret <- extractstreamerShowtext(bascetFile@streamer, extract_files, superVerbose = verbose)
       return(ret)
     } else {
       print(paste("Could not open file",name_of_zip))
@@ -212,10 +212,10 @@ BascetReadFile <- function(
     ########### Use Bascet to unzip
     #cargo +nightly run extract -i /Users/mahogny/Desktop/rust/hack_robert/testdata/quast.zip  -o /Users/mahogny/Desktop/rust/hack_robert/testdata/out.temp -b a  -f report.txt
     
-    ret <- extractstreamer_open(bascetFile@streamer, name_of_zip)
+    ret <- extractstreamerOpen(bascetFile@streamer, name_of_zip)
     if(ret==0) {
       tname.out <- tempfile()
-      ret <- extractstreamer_extract_to(bascetFile@streamer, extract_files, tname.out)
+      ret <- extractstreamerExtractTo(bascetFile@streamer, extract_files, tname.out)
       if(ret==0) {
         #Return temp file location
         return(tname.out)
@@ -257,7 +257,7 @@ BascetListFilesForCell <- function(
     bascetFile, 
     cellID, 
     bascetInstance=GetDefaultBascetInstance(),
-    super_verbose=FALSE
+    superVerbose=FALSE
 ){
   
   ## Check if the cell is present at all
@@ -269,10 +269,10 @@ BascetListFilesForCell <- function(
   #Extract this zip file and then check that it worked
   name_of_zip <- bascetFile@files[cellmeta$shard+1]
 
-  ret <- extractstreamer_open(bascetFile@streamer, name_of_zip, super_verbose)  #is this ok? check return value TODO
+  ret <- extractstreamerOpen(bascetFile@streamer, name_of_zip, superVerbose)  #is this ok? check return value TODO
   if(ret==0){
-    if(super_verbose) print("Doing bascetfile ls")
-    res <- extractstreamer_ls(bascetFile@streamer)
+    if(superVerbose) print("Doing bascetfile ls")
+    res <- extractstreamerLs(bascetFile@streamer)
     
     print(res) #666
     
@@ -317,7 +317,7 @@ ReadHistogram <- function(
 ){
   
   #Get all the TIRPs, sum up the reads  
-  inputFiles <- detect_shards_for_file(bascetRoot, inputName)
+  inputFiles <- detectShardsForFile(bascetRoot, inputName)
   print(inputFiles)
   
   if(verbose) {
@@ -435,7 +435,7 @@ AtrandiBarcodeStats <- function(
 ###############################################
 #' Helper function: Figure out which shards belong together given root input name and extension
 #' i.e. root/name.##.ext
-detect_shards_for_file <- function(
+detectShardsForFile <- function(
     bascetRoot, 
     inputName
 ){
@@ -479,7 +479,7 @@ detect_shards_for_file <- function(
 ###############################################
 #' Helper function: Generate suitable output filenames according to shard system
 #' i.e. root/name.##.ext
-make_output_shard_names <- function(
+makeOutputShardNames <- function(
     bascetRoot, 
     outputName, 
     ext, 
@@ -490,8 +490,8 @@ make_output_shard_names <- function(
 
 
 if(FALSE){
-  #detect_shards_for_file("~/jupyter/zorn/test","fakein","zip")
-  #make_output_shard_names("/","bar","zip", 5)
+  #detectShardsForFile("~/jupyter/zorn/test","fakein","zip")
+  #makeOutputShardNames("/","bar","zip", 5)
 }
 
 
@@ -530,7 +530,7 @@ if(FALSE){
 #' extract streamer: create an instance
 #' 
 #' @return The process
-extractstreamer_start <- function(
+extractstreamerStart <- function(
     fname=NULL,
     verbose=FALSE,
     bascetInstance=GetDefaultBascetInstance()
@@ -538,7 +538,7 @@ extractstreamer_start <- function(
   
   #Assemble the command
   all_cmd <- stringr::str_trim(paste(
-    bascetInstance@prepend_cmd,
+    bascetInstance@prependCmd,
     bascetInstance@bin,
     "extract-stream",
     if(!is.null(fname)) c("-i",fname)
@@ -592,18 +592,18 @@ extractstreamer_start <- function(
 #' extract streamer: list all files in current zip-file
 #' 
 #' @return list of files
-extractstreamer_ls <- function(
+extractstreamerLs <- function(
     p, 
-    super_verbose=FALSE
+    superVerbose=FALSE
 ){
   p$write_input("ls\n")
   #Figure out how many lines to get
-  newlines <- extractstreamer_read_one_line(p)
+  newlines <- extractstreamerReadOneLine(p)
   if(stringr::str_starts(newlines,"error")) {
     stop(newlines)
   } else {
     n_lines <- as.integer(newlines)
-    extractstreamer_read_n_lines(p, n_lines, super_verbose)
+    extractstreamerReadNLines(p, n_lines, superVerbose)
   }
 }
 
@@ -613,22 +613,22 @@ extractstreamer_ls <- function(
 #' extract streamer: list all cells in a given file
 #' 
 #' @return list of cells
-extractstreamer_listcellsanyfile <- function(
+extractstreamerListCellsAnyFile <- function(
     p, 
     fname,
-    super_verbose=FALSE
+    superVerbose=FALSE
 ){
   p$write_input(paste0("listcellsanyfile ",fname,"\n"))
   #Figure out how many lines to get
-  newlines <- extractstreamer_read_one_line(p)
+  newlines <- extractstreamerReadOneLine(p)
   if(stringr::str_starts(newlines,"error")) {
     stop(newlines)
   } else {
     n_lines <- as.integer(newlines)
-    if(super_verbose){
+    if(superVerbose){
       print(paste("Number of cells in file",n_lines))
     }
-    extractstreamer_read_n_lines(p, n_lines, super_verbose)
+    extractstreamerReadNLines(p, n_lines, superVerbose)
   }
 }
 
@@ -639,7 +639,7 @@ extractstreamer_listcellsanyfile <- function(
 #' extract streamer: end an instance.
 #' the object should no longer be used after calling this function
 #' 
-extractstreamer_exit <- function(p){
+extractstreamerExit <- function(p){
   p$write_input("exit\n")
 }
 
@@ -648,14 +648,14 @@ extractstreamer_exit <- function(p){
 #' extract streamer: helper function to read one line
 #' 
 #' @return the line
-extractstreamer_read_one_line <- function(
+extractstreamerReadOneLine <- function(
     p,
-    super_verbose=FALSE
+    superVerbose=FALSE
 ){
   while(TRUE){
     newlines <- p$read_output_lines(n = 1)
     if(length(newlines)>0) {
-      if(super_verbose){
+      if(superVerbose){
         print(paste("superverbose, got line: ",newlines))
       }
       return(newlines)
@@ -668,10 +668,10 @@ extractstreamer_read_one_line <- function(
 #' extract streamer: helper function to read N lines
 #' 
 #' @return all the lines
-extractstreamer_read_n_lines <- function(
+extractstreamerReadNLines <- function(
     p, 
     n_lines, 
-    super_verbose=FALSE
+    superVerbose=FALSE
 ){
   all_out <- list()#c()
   i <- 1
@@ -683,7 +683,7 @@ extractstreamer_read_n_lines <- function(
     }
     newlines <- p$read_output_lines()
     sofar <- sofar + length(newlines)
-    if(super_verbose){
+    if(superVerbose){
       #print("got more lines:")
       #print(newlines)
       writeLines(paste("lines read so far:", length(all_out),"\ttot_lines:", n_lines))
@@ -693,8 +693,8 @@ extractstreamer_read_n_lines <- function(
     i <- i + 1
   }
   cat_all_out <- do.call(c, all_out)
-  if(super_verbose){
-    print("return from extractstreamer_read_n_lines")
+  if(superVerbose){
+    print("return from extractstreamerReadNLines")
   }
   cat_all_out
 }
@@ -703,15 +703,15 @@ extractstreamer_read_n_lines <- function(
 #' extract streamer: get content of file, assumed to be text (or this function crashes)
 #' 
 #' @return The text, divided by line
-extractstreamer_showtext <- function(
+extractstreamerShowtext <- function(
     p, 
     fname, 
-    super_verbose=FALSE
+    superVerbose=FALSE
 ) {
   p$write_input(paste0("showtext ",fname,"\n"))
 
   #Figure out how many lines to get, then get them
-  newlines <- extractstreamer_read_one_line(p, super_verbose)
+  newlines <- extractstreamerReadOneLine(p, superVerbose)
   if(stringr::str_starts(newlines, "error")){
     #print(newlines)
     #Return nothing
@@ -719,7 +719,7 @@ extractstreamer_showtext <- function(
   } else {
     #Get all the lines
     n_lines <- as.integer(newlines)
-    extractstreamer_read_n_lines(p, n_lines, super_verbose)
+    extractstreamerReadNLines(p, n_lines, superVerbose)
   }
 }
 
@@ -728,14 +728,14 @@ extractstreamer_showtext <- function(
 #' extract streamer: set which file is open
 #' 
 #' @return 0 if ok
-extractstreamer_open <- function(
+extractstreamerOpen <- function(
     p, 
     fname, 
-    super_verbose=FALSE
+    superVerbose=FALSE
 ) {
   p$write_input(paste0("open ",fname,"\n"))
   #Figure out how many lines to get, then get them
-  newlines <- extractstreamer_read_one_line(p,super_verbose)
+  newlines <- extractstreamerReadOneLine(p,superVerbose)
   if(newlines=="ok"){
     0
   } else {
@@ -748,13 +748,13 @@ extractstreamer_open <- function(
 ###############################################
 #' extract streamer: extract to external file
 #' @return 0 if ok
-extractstreamer_extract_to <- function(
+extractstreamerExtractTo <- function(
     p, 
     fname, 
     outpath
 ) {
   p$write_input(paste0("extract_to ",fname," ",outpath,"\n"))
-  newlines <- extractstreamer_read_one_line(p) #done or error
+  newlines <- extractstreamerReadOneLine(p) #done or error
   if(newlines=="ok"){
     0
   } else {
@@ -823,16 +823,16 @@ if(FALSE){
 
 
 if(FALSE){
-  #p <- extractstreamer_start("/home/mahogny/github/bascet/testdata/minhash.0.zip")
-  p <- extractstreamer_start()
-  extractstreamer_open(p, "/home/mahogny/foo/minhash.0.zip")
-  extractstreamer_ls(p)
-  extractstreamer_showtext(p,"C1_B4_B9_A12/cellmap.log")
+  #p <- extractstreamerStart("/home/mahogny/github/bascet/testdata/minhash.0.zip")
+  p <- extractstreamerStart()
+  extractstreamerOpen(p, "/home/mahogny/foo/minhash.0.zip")
+  extractstreamerLs(p)
+  extractstreamerShowtext(p,"C1_B4_B9_A12/cellmap.log")
   for(i in 1:100){
-    extractstreamer_showtext(p,"C1_B4_B9_A12/minhash.txt")
+    extractstreamerShowtext(p,"C1_B4_B9_A12/minhash.txt")
   }
   
-  extractstreamer_extract_to(p,"C1_B4_B9_A12/minhash.txt","/home/mahogny/temp.bar")
+  extractstreamerExtractTo(p,"C1_B4_B9_A12/minhash.txt","/home/mahogny/temp.bar")
   
 }
 

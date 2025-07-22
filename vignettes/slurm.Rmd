@@ -37,7 +37,7 @@ bascet_runner.default <- SlurmRunner(
 )
 
 ## get a Bascet instance as usual; this is a separate concern from the runner
-bascet_instance.default <- getBascetSingularityImage(store_at="~/")
+bascetInstance.default <- getBascetSingularityImage(storeAt="~/")
 ```
 
 
@@ -95,7 +95,7 @@ bascet_runner.default <- SlurmRunner(
 )
 
 ## get a Bascet instance as usual; this is a separate concern from the runner
-bascet_instance.default <- getBascetSingularityImage(store_at="~/")
+bascetInstance.default <- getBascetSingularityImage(storeAt="~/")
 ```
 
 Whenever you run a job, you now want to catch a handle to the job in a variable:

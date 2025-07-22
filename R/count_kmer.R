@@ -23,14 +23,14 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
   
   
   #Figure out input and output file names  
-  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
   
   if(num_shards==0){
     stop("No input files")
   }
 
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "kmcdb", num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "kmcdb", num_shards)
   
   #If cell list is provided, produce a file for input (not all transform calls can handle this, so optional)
   produce_cell_list <- !is.null(includeCells)
@@ -42,7 +42,7 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
     }
   }
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Run the job
     RunJob(
       runner = runner, 
@@ -50,15 +50,15 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+        if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
 
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin, 
           "featurise",
           if(produce_cell_list) "--cells $CELLFILE",
@@ -98,7 +98,7 @@ BascetQueryKMC <- function(
   
   
   #Figure out input and output file names  
-  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
   
   if(num_shards==0){
@@ -109,9 +109,9 @@ BascetQueryKMC <- function(
     stop("No KMERs")
   }
 
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "counts.hdf5", num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "counts.hdf5", num_shards)
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Run the job
     RunJob(
       runner = runner, 
@@ -123,11 +123,11 @@ BascetQueryKMC <- function(
         shellscript_make_bash_array("files_out",outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
 
-        shellscript_make_one_file_expander("KMERFILE", useKMERs), 
+        shellscriptMakeOneFileExpander("KMERFILE", useKMERs), 
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin, 
           "query",
           "-t $BASCET_TEMPDIR",
@@ -215,16 +215,16 @@ KmcGetKmers <- function(
 #' Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range
 #' 
 #' @param fname description
-#' @param num_pick description
-#' @param minfreq description
-#' @param maxfreq description
+#' @param numPick description
+#' @param minFreq description
+#' @param maxFreq description
 #' @return List of KMERs
 #' @export
 KmcChooseKmerFeatures <- function(
     fname, 
-    num_pick=1000, 
-    minfreq=0.01, 
-    maxfreq=0.10
+    numPick=1000, 
+    minFreq=0.01, 
+    maxFreq=0.10
 ) {
   
   ## Possibly expensive to get them all... is the total count stored somewhere? can we sample?
@@ -233,20 +233,20 @@ KmcChooseKmerFeatures <- function(
   #total_count <- sum(dat$freq)/nrow(dat) ##not sure if this is the best way
   num_kmer <- nrow(dat)
   
-  all_kmer <- dat$kmer[round(num_kmer*minfreq):round(num_kmer*maxfreq)]
+  all_kmer <- dat$kmer[round(num_kmer*minFreq):round(num_kmer*maxFreq)]
   
   
   #  
-  #mincount <- round(minfreq*total_count)
-  #maxcount <- round(maxfreq*total_count)
+  #mincount <- round(minFreq*total_count)
+  #maxcount <- round(maxFreq*total_count)
   #all_kmer <- dat$kmer[dat$freq>mincount & dat$freq<maxcount]
 
-  if(length(all_kmer)<num_pick){
-    stop(paste("Cannot pick",num_pick," KMERS; only",length(all_kmer),"pass frequency criteria"))  
+  if(length(all_kmer)<numPick){
+    stop(paste("Cannot pick",numPick," KMERS; only",length(all_kmer),"pass frequency criteria"))  
   }
     
   set.seed(0)
-  sample(all_kmer, num_pick)
+  sample(all_kmer, numPick)
   
   #use_kmers <- sample(KmcGetKmers("/home/mahogny/github/bascet/testdata/all_kmc", mincount = 5, maxcount = 10)$kmer, 1000)
 }
@@ -305,8 +305,8 @@ BascetComputeMinhash <- function(
     outputName="minhash", 
     #includeCells=NULL,
     overwrite=FALSE,
-    max_reads=100000,  #This is most likely enough to get an overall histogram
-    kmer_size=31,
+    maxReads=100000,  #This is most likely enough to get an overall histogram
+    kmerSize=31,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -317,8 +317,8 @@ BascetComputeMinhash <- function(
     outputName=outputName,
     #includeCells=includeCells
     args = list(
-      KMER_SIZE=format(kmer_size, scientific=FALSE),
-      MAX_READS=format(max_reads, scientific=FALSE)
+      KMER_SIZE=format(kmerSize, scientific=FALSE),
+      MAX_READS=format(maxReads, scientific=FALSE)
     ),
     overwrite=overwrite,
     runner=runner,
@@ -345,7 +345,7 @@ BascetMakeMinhashHistogram <- function(
 ){
 
   #Figure out input and output file names
-  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
   
   if(num_shards==0){
@@ -364,18 +364,18 @@ BascetMakeMinhashHistogram <- function(
     }
   }
 
-  if(bascet_check_overwrite_output(outputFile, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFile, overwrite)) {
     #Make the command
     cmd <- c(
       #shellscript_set_tempdir(bascetInstance),
-      if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+      if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         bascetInstance@bin, 
         "minhash-hist",
         if(produce_cell_list) "--cells $CELLFILE",
         "-t $BASCET_TEMPDIR",
-        "-i", shellscript_make_commalist(inputFiles),
+        "-i", shellscriptMakeCommalist(inputFiles),
         "-o", outputFile
       )
     )
@@ -412,7 +412,7 @@ BascetQueryFq <- function( #666
     inputName="filtered",
     outputName="kmer_counts", 
     useKMERs,
-    max_reads=1000000, 
+    maxReads=1000000, 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
@@ -420,7 +420,7 @@ BascetQueryFq <- function( #666
   
   
   #Figure out input and output file names  
-  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
   
   if(num_shards==0){
@@ -431,9 +431,9 @@ BascetQueryFq <- function( #666
     stop("No KMERs")
   }
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "h5", num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards)
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Run the job
     RunJob(
       runner = runner, 
@@ -445,15 +445,15 @@ BascetQueryFq <- function( #666
         shellscript_make_bash_array("files_out",outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
-        shellscript_make_one_file_expander("KMERFILE", useKMERs), 
+        shellscriptMakeOneFileExpander("KMERFILE", useKMERs), 
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin, 
           "query-fq",
           "-t $BASCET_TEMPDIR",
-          "-m ", format(max_reads, scientific=FALSE),
+          "-m ", format(maxReads, scientific=FALSE),
           "-f $KMERFILE",
           "-i ${files_in[$TASK_ID]}",
           "-o ${files_out[$TASK_ID]}"
@@ -500,46 +500,46 @@ BascetReadMinhashHistogram <- function(
 #' Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range
 #' 
 #' @param fname description
-#' @param num_pick description
-#' @param minfreq description
-#' @param maxfreq description
+#' @param numPick description
+#' @param minFreq description
+#' @param maxFreq description
 #' @return List of KMERs
 #' @export
 ChooseInformativeKMERs <- function(
-    kmer_hist,
-    #num_pick=1000, 
-    minfreq=0.005, 
-    maxfreq=1
+    kmerHist,
+    #numPick=1000, 
+    minFreq=0.005, 
+    maxFreq=1
 ) {
-  #maxfreq = 1
-  #minfreq = 0.02
+  #maxFreq = 1
+  #minFreq = 0.02
   
   ## Possibly expensive to get them all... is the total count stored somewhere? can we sample?
-  kmer_hist <- kmer_hist[order(kmer_hist$cnt),]
-  num_kmer <- nrow(kmer_hist)
+  kmerHist <- kmerHist[order(kmerHist$cnt),]
+  num_kmer <- nrow(kmerHist)
   
-  max_cnt <- max(kmer_hist$cnt)
+  max_cnt <- max(kmerHist$cnt)
   
-  #all_kmer <- kmer_hist$kmer[round(num_kmer*minfreq):round(num_kmer*maxfreq)]
-  sub_kmer_hist <- kmer_hist[kmer_hist$cnt>=max_cnt*minfreq & kmer_hist$cnt<=max_cnt*maxfreq,]
-  #[kmer_hist$cnt>max_cnt*minfreq & kmer_hist$cnt<max_cnt*maxfreq]
+  #all_kmer <- kmerHist$kmer[round(num_kmer*minFreq):round(num_kmer*maxFreq)]
+  sub_kmerHist <- kmerHist[kmerHist$cnt>=max_cnt*minFreq & kmerHist$cnt<=max_cnt*maxFreq,]
+  #[kmerHist$cnt>max_cnt*minFreq & kmerHist$cnt<max_cnt*maxFreq]
   
-  #count_range <- kmer_hist$cnt[c(round(num_kmer*minfreq),round(num_kmer*maxfreq))]
+  #count_range <- kmerHist$cnt[c(round(num_kmer*minFreq),round(num_kmer*maxFreq))]
   print(paste(
     "Counts will be in range ",
-    min(sub_kmer_hist$cnt), 
-    max(sub_kmer_hist$cnt),
-    "#kmers", nrow(sub_kmer_hist)))
+    min(sub_kmerHist$cnt), 
+    max(sub_kmerHist$cnt),
+    "#kmers", nrow(sub_kmerHist)))
 
-  all_kmer <- sub_kmer_hist$kmer
+  all_kmer <- sub_kmerHist$kmer
   
-  #if(length(all_kmer)<num_pick){
-  #  stop(paste("Cannot pick",num_pick," KMERS; only",length(all_kmer),"pass frequency criteria"))  
+  #if(length(all_kmer)<numPick){
+  #  stop(paste("Cannot pick",numPick," KMERS; only",length(all_kmer),"pass frequency criteria"))  
   #}
   
   all_kmer
   #set.seed(0)
-  #sample(all_kmer, num_pick)
+  #sample(all_kmer, numPick)
 }
 
 

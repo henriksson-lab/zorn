@@ -50,7 +50,7 @@ setGeneric(
 
 #' @export
 setClass("NoRunner", slots=list(
-  show_script="logical"
+  showScript="logical"
   )
 ) 
 
@@ -74,8 +74,8 @@ setMethod(
 #' 
 #' @return A NoRunner instance
 #' @export
-NoRunner <- function(show_script=TRUE){
-  new("NoRunner", show_script=show_script)
+NoRunner <- function(showScript=TRUE){
+  new("NoRunner", showScript=showScript)
 }
 
 

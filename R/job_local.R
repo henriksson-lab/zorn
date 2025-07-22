@@ -13,7 +13,7 @@
 setClass("LocalRunner", slots=list(
   maxcpu="character",
   direct="logical",
-  show_script="logical"
+  showScript="logical"
 )
 ) 
 
@@ -33,8 +33,8 @@ setClass("LocalJob", slots=list(
 #' 
 #' @return TODO
 #' @export
-LocalRunner <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
-  new("LocalRunner", maxcpu=maxcpu, direct=direct, show_script=show_script)
+LocalRunner <- function(maxcpu="10", direct=FALSE, showScript=FALSE){
+  new("LocalRunner", maxcpu=maxcpu, direct=direct, showScript=showScript)
 }
 
 
@@ -62,7 +62,7 @@ setMethod(
     ),"\n")
     
     print("----------- arg")
-    if(runner@show_script){
+    if(runner@showScript){
       print("=============== final local script start =================")
       writeLines(cmd)
       print("=============== final local script end =================")
@@ -78,7 +78,7 @@ setMethod(
     }
     
     
-    if(runner@show_script){
+    if(runner@showScript){
       print("=============== all script start =================")
       cat(all_cmd)
       print("=============== all script end =================")
@@ -170,7 +170,7 @@ setMethod(
 ########### Default runner #####################################################
 ################################################################################
 
-bascet_runner.default <- LocalRunner(direct = TRUE, show_script=FALSE)
+bascet_runner.default <- LocalRunner(direct = TRUE, showScript=FALSE)
 
 
 

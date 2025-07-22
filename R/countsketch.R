@@ -13,8 +13,8 @@ BascetComputeCountSketch <- function(
     outputName="countsketch", 
     #includeCells=NULL,
     overwrite=FALSE,
-    max_reads=100000,  #for 5M genome, 150x2 reads, this is 6x coverage
-    kmer_size=31,
+    maxReads=100000,  #for 5M genome, 150x2 reads, this is 6x coverage
+    kmerSize=31,
     sketch_size=5000,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
@@ -26,9 +26,9 @@ BascetComputeCountSketch <- function(
     outputName=outputName,
     #includeCells=includeCells
     args = list(
-      KMER_SIZE=format(kmer_size, scientific=FALSE),
+      KMER_SIZE=format(kmerSize, scientific=FALSE),
       SKETCH_SIZE=format(sketch_size, scientific=FALSE),
-      MAX_READS=format(max_reads, scientific=FALSE)
+      MAX_READS=format(maxReads, scientific=FALSE)
     ),
     overwrite=overwrite,
     runner=runner,
@@ -57,7 +57,7 @@ BascetGatherCountSketch <- function(
 ){
   
   #Figure out input and output file names
-  inputFiles <- file.path(bascetRoot, detect_shards_for_file(bascetRoot, inputName))
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
   
   if(num_shards==0){
@@ -76,18 +76,18 @@ BascetGatherCountSketch <- function(
     }
   }
   
-  if(bascet_check_overwrite_output(outputFile, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFile, overwrite)) {
     #Make the command
     cmd <- c(
       #shellscript_set_tempdir(bascetInstance),
-      if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
+      if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         bascetInstance@bin, 
         "countsketch",
         if(produce_cell_list) "--cells $CELLFILE",
         "-t $BASCET_TEMPDIR",
-        "-i", shellscript_make_commalist(inputFiles),
+        "-i", shellscriptMakeCommalist(inputFiles),
         "-o", outputFile
       )
     )

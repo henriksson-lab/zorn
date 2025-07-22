@@ -11,7 +11,7 @@
 #' @param fname Name of BAM-file
 #' 
 #' @export
-is_bam_paired_alignment <- function(
+isBamPairedAlignment <- function(
     fname,
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -24,11 +24,11 @@ is_bam_paired_alignment <- function(
   # @PG	ID:bwa	PN:bwa	VN:0.7.17-r1198-dirty	CL:bwa mem /husky/fromsequencer/241210_joram_rnaseq/ref/all.fa /husky/henriksson/atrandi/v2_rnaseq5//asfq.1.R1.fq.gz /husky/henriksson/atrandi/v2_rnaseq5/asfq.1.R2.fq.gz -t 20
   
   cmd <- paste(
-    bascetInstance@prepend_cmd, 
+    bascetInstance@prependCmd, 
     "samtools view",
     fname,
     "-h | head -n 10000 | ", #100 was not enough to be reliable
-    bascetInstance@prepend_cmd," samtools view -c -f 1"
+    bascetInstance@prependCmd," samtools view -c -f 1"
   )
   
   ret <- system(
@@ -62,7 +62,7 @@ BascetIndexGenomeBWA <- function(
     stop("Could not find genome FASTA file")
   }
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -71,7 +71,7 @@ BascetIndexGenomeBWA <- function(
       cmd = c(
         ### For sorting
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           "bwa index",
           genomeFile
         )
@@ -125,7 +125,7 @@ BascetIndexGenomeSTAR <- function(
         "mdkir -p", outDir
       ),
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "STAR --runThreadN", as.character(numThreads),
         "--runMode genomeGenerate",
         "--genomeDir",outDir,
@@ -147,7 +147,7 @@ BascetIndexGenomeSTAR <- function(
 #' 
 #' @param fname Path to file
 #' @return TRUE if the file is some type of FASTQ
-is_fastq <- function(fname) {
+isFastq <- function(fname) {
   stringr::str_ends(fname, stringr::fixed("fq.gz")) ||  
     stringr::str_ends(fname, stringr::fixed("fastq.gz"))
 }
@@ -159,8 +159,8 @@ is_fastq <- function(fname) {
 #' 
 #' @param fname Path to file
 #' @return TRUE if the file is a paired FASTQ
-is_paired_fastq <- function(fname) {
-  if(is_fastq(fname)){
+isPairedFastq <- function(fname) {
+  if(isFastq(fname)){
     stringr::str_ends(fname, stringr::fixed("R1.fq.gz")) ||  
       stringr::str_ends(fname, stringr::fixed("R1.fastq.gz")) ||
       stringr::str_ends(fname, stringr::fixed("R2.fq.gz")) ||  
@@ -177,7 +177,7 @@ is_paired_fastq <- function(fname) {
 #' 
 #' @param fname Path to file
 #' @return Path to R2 file
-get_fastq_R2_from_R1 <- function(fname) {
+getFastqR2fromR1 <- function(fname) {
 
   dir <- dirname(fname)
   bname <- basename(fname)
@@ -212,15 +212,15 @@ BascetAlignmentToBigwig <- function(
 ){
   
   #Figure out input and output file names
-  input_shards <- detect_shards_for_file(bascetRoot, inputName) 
+  input_shards <- detectShardsForFile(bascetRoot, inputName) 
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")
   }
   inputFiles <- file.path(bascetRoot, input_shards) 
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "bigwig", num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "bigwig", num_shards)
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     
     ### Build command
     cmd <- c(
@@ -230,7 +230,7 @@ BascetAlignmentToBigwig <- function(
       
       ### For sorting
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "bamCoverage",
         "-b ${files_in[$TASK_ID]}",     #Each job takes a single output
         "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
@@ -287,20 +287,20 @@ BascetFilterAlignment <- function(
   
   
   #Figure out input and output file names
-  input_shards <- detect_shards_for_file(bascetRoot, inputName) 
+  input_shards <- detectShardsForFile(bascetRoot, inputName) 
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")
   }
   inputFiles <- file.path(bascetRoot, input_shards) 
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "bam", num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "bam", num_shards)
 
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     
     ### Set flags for samtools. Depends on if paired alignment or not
     samtools_flags <- ""
-    is_paired_al <- is_bam_paired_alignment(inputFiles[1], bascetInstance)
+    is_paired_al <- isBamPairedAlignment(inputFiles[1], bascetInstance)
     print(paste("Detect paired alignment: ",is_paired_al))
     
     if(is_paired_al) {
@@ -325,7 +325,7 @@ BascetFilterAlignment <- function(
       
       ### For sorting
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "samtools view",
         samtools_flags, 
         "-@ ",numLocalThreads,          #Number of threads to use
@@ -385,15 +385,15 @@ BascetAlignToReference <- function(
 ){
   
   #Figure out input and output file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")
   }
   inputFiles_R1 <- file.path(bascetRoot, input_shards) 
   
-  outputFilesBAMunsorted <- make_output_shard_names(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
-  outputFilesBAMsorted   <- make_output_shard_names(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
+  outputFilesBAMunsorted <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
+  outputFilesBAMsorted   <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
   ### What files to look for if to avoid overwriting
   outputFilesFinal <- outputFilesBAMunsorted
@@ -402,17 +402,17 @@ BascetAlignToReference <- function(
   }
   
   ### Verify that the input is FASTQ. check what type
-  if(!is_fastq(inputFiles_R1[1])) {
+  if(!isFastq(inputFiles_R1[1])) {
     stop("Input files are not FASTQ")
   }
   
   ### Check if paired or not
-  is_paired <- is_paired_fastq(inputFiles_R1[1])
+  is_paired <- isPairedFastq(inputFiles_R1[1])
   print(paste("Detect paired FASTQ:",is_paired))
   
   ### Figure out R2 names
   if(is_paired){
-    inputFiles_R2 <- get_fastq_R2_from_R1(inputFiles_R1)
+    inputFiles_R2 <- getFastqR2fromR1(inputFiles_R1)
   } else {
     ### No R2
     inputFiles_R2 <- rep("",length(inputFiles_R1))
@@ -421,7 +421,7 @@ BascetAlignToReference <- function(
   
   if(aligner=="BWA"){
     cmd_align <- paste(
-      bascetInstance@prepend_cmd,
+      bascetInstance@prependCmd,
       "bash -c \"",
       "bwa mem", 
       useReference,
@@ -435,7 +435,7 @@ BascetAlignToReference <- function(
     )
   } else if(aligner=="STAR") {
     cmd_align <- paste(
-      bascetInstance@prepend_cmd,
+      bascetInstance@prependCmd,
       "bash -c \"",
       "STAR", 
       "--genomeDir", useReference,
@@ -465,7 +465,7 @@ BascetAlignToReference <- function(
     shellscript_make_bash_array("files_out_final", outputFilesFinal),
 
     ### Abort early if needed    
-    if(!overwrite) helper_cancel_job_if_file_exists("${files_out_final[$TASK_ID]}"),
+    if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_final[$TASK_ID]}"),
     
     ### For alignment
     cmd_align
@@ -480,7 +480,7 @@ BascetAlignToReference <- function(
       
       ### For sorting
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "samtools sort", 
         "-@ ",numLocalThreads,                 #Number of threads to use
         #        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
@@ -490,7 +490,7 @@ BascetAlignToReference <- function(
       
       ### For indexing
       paste(
-        bascetInstance@prepend_cmd,
+        bascetInstance@prependCmd,
         "samtools index", 
         "-@ ",numLocalThreads,                 #Number of threads to use
         "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
@@ -501,7 +501,7 @@ BascetAlignToReference <- function(
   
   print(cmd)
   
-  if(bascet_check_overwrite_output(final_outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(final_outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -545,7 +545,7 @@ BascetBam2Fragments <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
   
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
     stop("Found no input files")
   }
@@ -553,9 +553,9 @@ BascetBam2Fragments <- function(
   inputFiles <- file.path(bascetRoot, input_shards)
   
   #One output per input pair of reads  
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "tsv.gz", num_shards)  
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "tsv.gz", num_shards)  
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     RunJob(
       runner = runner, 
       jobname = "Z_bam2fragments",
@@ -566,10 +566,10 @@ BascetBam2Fragments <- function(
         shellscript_make_bash_array("files_out",outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin, 
           "bam2fragments",
           "-t $BASCET_TEMPDIR",
@@ -604,7 +604,7 @@ BascetCountChrom <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
   
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
     stop("Found no input files")
   }
@@ -612,9 +612,9 @@ BascetCountChrom <- function(
   inputFiles <- file.path(bascetRoot, input_shards)
   
   #One output per input alignment
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "h5", num_shards)  
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards)  
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     RunJob(
       runner = runner, 
       jobname = "Z_countchrom",
@@ -625,10 +625,10 @@ BascetCountChrom <- function(
         shellscript_make_bash_array("files_out",outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin, 
           "countchrom",
           "--min-matching ",min_matching,
@@ -660,7 +660,7 @@ TabixGetFragmentsSeqs <- function(
     fragpath,
     bascetInstance=GetDefaultBascetInstance()
 ) {
-  system(paste(bascetInstance@prepend_cmd,"tabix -l ", fragpath), intern = TRUE)
+  system(paste(bascetInstance@prependCmd,"tabix -l ", fragpath), intern = TRUE)
 }
 
 
@@ -771,9 +771,9 @@ FragmentCountsPerChromAssay <- function(
   chrom_assay <- FragmentCountsPerChrom(chrom_assay)
   
   #Subset; needed?
-  #include_cells <- sort(intersect(colnames(adata), colnames(chrom_assay)))
-  #chrom_assay <- chrom_assay[,include_cells]
-  #adata <- adata[,include_cells]
+  #includeCells <- sort(intersect(colnames(adata), colnames(chrom_assay)))
+  #chrom_assay <- chrom_assay[,includeCells]
+  #adata <- adata[,includeCells]
   
   chrom_assay_hack <- CreateAssay5Object(counts = chrom_assay)
   rownames(chrom_assay_hack) <- stringr::str_split_i(rownames(chrom_assay_hack),"-1-",1)  #evil hack, fragile
@@ -800,17 +800,17 @@ FragmentCountsPerChromAssay <- function(
 #' @export
 ChromToSpeciesCount <- function(
     adata, 
-    map_seq2strain
+    mapSeq2strain
 ){
   
   mat_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   
-  unique_strains <- unique(map_seq2strain$strain)
+  unique_strains <- unique(mapSeq2strain$strain)
   strain_cnt <- matrix(NA, ncol=ncol(mat_cnt), nrow=length(unique_strains))
   rownames(strain_cnt) <- unique_strains
   colnames(strain_cnt) <- colnames(mat_cnt)
   for(i in 1:nrow(strain_cnt)){
-    cur_cols <- map_seq2strain$id[map_seq2strain$strain %in% rownames(strain_cnt)[i]]
+    cur_cols <- mapSeq2strain$id[mapSeq2strain$strain %in% rownames(strain_cnt)[i]]
     print(cur_cols)
     strain_cnt[i,] <- colSums(mat_cnt[rownames(mat_cnt) %in% cur_cols,,drop=FALSE])
   }
@@ -832,21 +832,21 @@ ChromToSpeciesCount <- function(
 #' Obtain a feature matrix (as seurat object) given an seurat object having Fragments associated
 #' 
 #' @param adata Seurat object, with FeatureMatrix
-#' @param grange_gene A grange object telling where to count
+#' @param grangeGene A grange object telling where to count
 #' @return A Seurat AssayObject
 #' 
 #' @export
 CountGrangeFeatures <- function(
     adata, 
-    grange_gene
+    grangeGene
 ){
   
   gene_counts <- FeatureMatrix(
     fragments = Fragments(adata),
-    features = grange_gene,
+    features = grangeGene,
     cells = colnames(adata)
   )
-  rownames(gene_counts) <- grange_gene$Name ## paste(grange_gene$gene_biotype,grange_gene$Name) #Name in an easy manner
+  rownames(gene_counts) <- grangeGene$Name ## paste(grangeGene$gene_biotype,grangeGene$Name) #Name in an easy manner
   
   # create a new assay using the MACS2 peak set 
   CreateAssayObject(
@@ -910,17 +910,17 @@ BascetRunCellSNP <- function(
 ){
   
   #Figure out input and output file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")
   }
   inputFiles <- file.path(bascetRoot, input_shards) 
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "out", num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "out", num_shards)
   
-  listcellFiles <- make_output_shard_names(bascetRoot, outputName, "listcell", num_shards)
-  listchromFiles <- make_output_shard_names(bascetRoot, outputName, "listchrom", num_shards)
+  listcellFiles <- makeOutputShardNames(bascetRoot, outputName, "listcell", num_shards)
+  listchromFiles <- makeOutputShardNames(bascetRoot, outputName, "listchrom", num_shards)
   
   
 
@@ -934,12 +934,12 @@ BascetRunCellSNP <- function(
     shellscript_make_bash_array("files_listchrom", listchromFiles),
     
     ### Abort early if needed    
-    #if(!overwrite) helper_cancel_job_if_file_exists("${outputFiles[$TASK_ID]}"),  #does this work on dirs?
-    if(!overwrite) helper_cancel_job_if_file_exists("${files_listcell[$TASK_ID]}"),  
+    #if(!overwrite) shellscriptCancelJobIfFileExists("${outputFiles[$TASK_ID]}"),  #does this work on dirs?
+    if(!overwrite) shellscriptCancelJobIfFileExists("${files_listcell[$TASK_ID]}"),  
     
     ### To make list of chromosome IDs
     paste(
-      bascetInstance@prepend_cmd,
+      bascetInstance@prependCmd,
       "bash -c \"",
       "samtools idxstats ${files_in[$TASK_ID]} | head -n -1 | cut -f 1 > ${files_listchrom[$TASK_ID]}",
       "\""
@@ -948,7 +948,7 @@ BascetRunCellSNP <- function(
     
     ### To make list of cell IDs. could avoid if we write our own cellsnp-lite
     paste(
-      bascetInstance@prepend_cmd,
+      bascetInstance@prependCmd,
       "bash -c \"",
       "samtools view ${files_in[$TASK_ID]} | sed -e 's/^.*CB:Z://' | sed -e 's/\t.*//' | sort | uniq > ${files_listcell[$TASK_ID]}",
       "\""
@@ -956,7 +956,7 @@ BascetRunCellSNP <- function(
     
     ### For SNP-calling
     paste(
-      bascetInstance@prepend_cmd,
+      bascetInstance@prependCmd,
 
       "cellsnp-lite", 
       "-s ${files_in[$TASK_ID]}",        #Align BAM
@@ -975,7 +975,7 @@ BascetRunCellSNP <- function(
   
   print(cmd)
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -1044,7 +1044,7 @@ ReadCellSNPmatrix <- function(
   #inputName <- "cellsnp"
   
   #Figure out input file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")

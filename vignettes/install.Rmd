@@ -42,7 +42,7 @@ We recommend keeping it in a separate directory from your workspace, as
 multiple workspaces can share the same image
 
 ```{r, eval=F, echo=T}
-bascet_instance.default <- getBascetSingularityImage(store_at="/somewhere/on/your/disk/")
+bascetInstance.default <- getBascetSingularityImage(storeAt="/somewhere/on/your/disk/")
 ```
 
 
@@ -55,14 +55,14 @@ We recommend keeping it in a separate directory from your workspace, as
 multiple workspaces can share the same image
 
 ```{r, eval=F, echo=T}
-bascet_instance.default <- getBascetDockerImage(store_at="/somewhere/on/your/disk/")
+bascetInstance.default <- getBascetDockerImage(storeAt="/somewhere/on/your/disk/")
 ```
 
 ## Step 3: Test the installation
 
 Run the following and see if you get "ok" before proceeding:
 ```{r, eval=F, echo=T}
-TestBascetInstance(bascet_instance.default)
+TestBascetInstance(bascetInstance.default)
 ```
 
 ## Using the Bascet instance

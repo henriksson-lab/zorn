@@ -14,7 +14,7 @@ these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascet_runner.default <- LocalRunner(direct = TRUE, show_script=TRUE)
+bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
@@ -158,9 +158,9 @@ adata <- adata[,keep_cells]                  #Reduce to sensible number
 ```
 
 If you have a list of which chromosomes belong together, then you can furthermore
-sum them up to get species-level counts. map_seq2strain should contain two columns: (todo) (TODO filter after instead)
+sum them up to get species-level counts. mapSeq2strain should contain two columns: (todo) (TODO filter after instead)
 ```{r, eval=F, echo=T}
-adata[["species_cnt"]] <- ChromToSpeciesCount(adata, map_seq2strain)  
+adata[["species_cnt"]] <- ChromToSpeciesCount(adata, mapSeq2strain)  
 
 #Optional: Figure out which species has most reads in which cell
 cnt <- adata@assays$species_cnt$counts

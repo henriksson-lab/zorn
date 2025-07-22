@@ -3,7 +3,7 @@ library(ggplot2)
 
 
 ### Decide how to run Bascet. Currently it is set up to run locally, synchronized (easiest for beginners)
-inst <- LocalInstance(direct = TRUE, show_script=TRUE)
+inst <- LocalInstance(direct = TRUE, showScript=TRUE)
 
 
 ### Decide where to store all processed data. This directory must exist!

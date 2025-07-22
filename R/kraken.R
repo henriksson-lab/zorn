@@ -68,25 +68,25 @@ BascetRunKraken <- function(
 ){
 
   #Figure out input and output file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")
   }
   inputFiles_R1 <- file.path(bascetRoot, input_shards)
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "kraken_out", num_shards) 
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "kraken_out", num_shards) 
   
   ### Check if paired or not
-  is_paired <- is_paired_fastq(inputFiles_R1[1])
+  is_paired <- isPairedFastq(inputFiles_R1[1])
   print(paste("Detect paired FASTQ:",is_paired))
   
   ### Figure out R2 names
   if(is_paired){
-    inputFiles_R2 <- get_fastq_R2_from_R1(inputFiles_R1)
+    inputFiles_R2 <- getFastqR2fromR1(inputFiles_R1)
   }
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Run the job
     RunJob(
       runner = runner, 
@@ -99,10 +99,10 @@ BascetRunKraken <- function(
         shellscript_make_bash_array("files_out",outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           "kraken2",
           "--db", useKrakenDB,
           "--threads", numLocalThreads,
@@ -144,16 +144,16 @@ BascetMakeKrakenCountMatrix <- function(
 ){
   
   #Figure out input and output file names  
-  input_shards <- detect_shards_for_file(bascetRoot, inputName)
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
   if(num_shards==0){
     stop("No input files")
   }
   inputFiles <- file.path(bascetRoot, input_shards)
   
-  outputFiles <- make_output_shard_names(bascetRoot, outputName, "h5", num_shards) 
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards) 
   
-  if(bascet_check_overwrite_output(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Run the job
     RunJob(
       runner = runner, 
@@ -165,10 +165,10 @@ BascetMakeKrakenCountMatrix <- function(
         shellscript_make_bash_array("files_out",outputFiles),
         
         ### Abort early if needed    
-        if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
 
         paste(
-          bascetInstance@prepend_cmd,
+          bascetInstance@prependCmd,
           bascetInstance@bin, 
           "kraken",
           "-t $BASCET_TEMPDIR",
@@ -281,12 +281,12 @@ KrakenSpeciesDistribution <- function(
 #' TODO: should append the name on the axis
 #' 
 #' @param mat description
-#' @param keep_species_only description
+#' @param keepSpeciesOnly description
 #' @return A named count matrix
 #' @export
 SetTaxonomyNamesFeatures <- function(
     mat, 
-    keep_species_only=TRUE
+    keepSpeciesOnly=TRUE
 ){
   
   #TODO can check if taxid_ is present for this function
@@ -303,7 +303,7 @@ SetTaxonomyNamesFeatures <- function(
   ))
   taxid_class_per_cell$taxid <- paste0("taxid_", use_row)
 
-  if(keep_species_only) {
+  if(keepSpeciesOnly) {
     taxid_class_per_cell$use_row <- use_row
     taxid_class_per_cell <- taxid_class_per_cell[!is.na(taxid_class_per_cell$species),]
     
@@ -334,10 +334,10 @@ SetTaxonomyNamesFeatures <- function(
 #' Take a KRAKEN2 adata object and generate per-species kneeplots
 #' 
 #' @param groupby genus, phylum or species
-#' @param sortbyname Sort by name
+#' @param sortByName Sort by name
 #' @return A ggplot
 #' @export
-KrakenKneePlot <- function(adata, groupby="phylum", show_num_spec=15, sortbyname=FALSE) {
+KrakenKneePlot <- function(adata, groupby="phylum", showNumSpecies=15, sortByName=FALSE) {
   
   use_row <- as.integer(stringr::str_remove_all(adata$taxid, "taxid-"))   ##really needed??
   
@@ -385,8 +385,8 @@ KrakenKneePlot <- function(adata, groupby="phylum", show_num_spec=15, sortbyname
   #cnt_per_grp
   
   #Produce the plot
-  toplot_sub <- toplot[toplot$grp %in% cnt_per_grp$grp[1:show_num_spec],]
-  if(sortbyname){
+  toplot_sub <- toplot[toplot$grp %in% cnt_per_grp$grp[1:showNumSpecies],]
+  if(sortByName){
     toplot_sub$grp <- factor(toplot_sub$grp, levels = sort(unique(cnt_per_grp$grp)))
   } else {
     toplot_sub$grp <- factor(toplot_sub$grp, levels = cnt_per_grp$grp)

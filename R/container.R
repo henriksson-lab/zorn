@@ -10,7 +10,7 @@
 setClass("BascetInstance", slots=list(
   bin="character",
   tempdir="character",
-  prepend_cmd="character"
+  prependCmd="character"
 )
 ) 
 
@@ -24,13 +24,13 @@ setClass("BascetInstance", slots=list(
 #' 
 #' @param bin Name of the binary
 #' @param tempdir Directory where to store temporary files
-#' @param prepend_cmd Something to prepend to the command, to e.g. support container systems
+#' @param prependCmd Something to prepend to the command, to e.g. support container systems
 #' @return A Bascet instance
 #' @export
 BascetInstance <- function(
     bin, 
     tempdir, 
-    prepend_cmd=""
+    prependCmd=""
 ){
   if(!is.null(tempdir) & !file.exists(tempdir)){
     stop(sprintf("temp directory %s does not exist", tempdir))
@@ -39,7 +39,7 @@ BascetInstance <- function(
     "BascetInstance",
     bin=bin,
     tempdir=tempdir,
-    prepend_cmd=prepend_cmd
+    prependCmd=prependCmd
   )
 }
 
@@ -95,11 +95,11 @@ GetBascetTempDir <- function(
 #' @return A Bascet instance
 #' @export
 getBascetSingularityImage <- function(
-    store_at=getwd(), 
+    storeAt=getwd(), 
     tempdir=NULL
 ){
   
-  file_bascet_sif <- file.path(store_at, "bascet.sif")
+  file_bascet_sif <- file.path(storeAt, "bascet.sif")
   
   if(!file.exists(file_bascet_sif)) {
     print("No singularity image present; downloading")
@@ -118,7 +118,7 @@ getBascetSingularityImage <- function(
     print(paste("Found existing Bascet singularity image:", file_bascet_sif))
   }
   
-  prepend_cmd <- paste("singularity run", file_bascet_sif," ")
+  prependCmd <- paste("singularity run", file_bascet_sif," ")
   
   if(is.null(tempdir)){
     tempdir <- tempdir()
@@ -127,7 +127,7 @@ getBascetSingularityImage <- function(
   BascetInstance(
     bin="bascet",
     tempdir=tempdir,
-    prepend_cmd=prepend_cmd
+    prependCmd=prependCmd
   ) 
 }
 
@@ -140,7 +140,7 @@ getBascetSingularityImage <- function(
 #' @return A Bascet instance
 #' @export
 getBascetDockerImage <- function(
-    store_at=getwd(),
+    storeAt=getwd(),
     tempdir=NULL
 ){
   
@@ -157,7 +157,7 @@ getBascetDockerImage <- function(
       print("No docker image present; downloading")
       
       
-      file_bascet_image <- file.path(store_at, "bascet.tar")
+      file_bascet_image <- file.path(storeAt, "bascet.tar")
       
       options(timeout = 60*60*5) #timeout in seconds
       
@@ -173,7 +173,7 @@ getBascetDockerImage <- function(
       print(paste("Found existing Bascet Docker image"))
     }
     
-    prepend_cmd <- paste("docker run henriksson-lab/bascet ")
+    prependCmd <- paste("docker run henriksson-lab/bascet ")
     
     if(is.null(tempdir)){
       tempdir <- tempdir()
@@ -182,7 +182,7 @@ getBascetDockerImage <- function(
     BascetInstance(
       bin="bascet",
       tempdir=tempdir,
-      prepend_cmd=prepend_cmd
+      prependCmd=prependCmd
     ) 
     
   } else {
@@ -213,7 +213,7 @@ TestBascetInstance <- function(
 ) {
   
   cmd <- paste(
-    bascetInstance@prepend_cmd,
+    bascetInstance@prependCmd,
     bascetInstance@bin,
     "-V"
   )
