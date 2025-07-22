@@ -95,8 +95,8 @@ happy.</p>
 this is the approach to take.</p>
 <p>First load an instance, and ensure that it works:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bascet_instance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascet_instance</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">bascetInstance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascetInstance</span><span class="op">)</span></span></code></pre></div>
 <p>You can now open a file. Internally, this creates an instance of
 Bascet running in a separate thread, which R can send commands to. This
 design is necessary to avoid the startup cost of Docker and Singularity,
@@ -106,7 +106,7 @@ fast.</p>
 <code class="sourceCode R"><span><span class="va">skesa_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/OpenBascet.html">OpenBascet</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>, </span>
 <span>  <span class="st">"skesa"</span>, </span>
-<span>  <span class="va">bascet_instance</span></span>
+<span>  <span class="va">bascetInstance</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>You can obtain a list of files for a cell like this (see reference
 for more commands):</p>
@@ -114,7 +114,7 @@ for more commands):</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetListFilesForCell.html">BascetListFilesForCell</a></span><span class="op">(</span></span>
 <span>  <span class="va">skesa_file</span>, </span>
 <span>  <span class="st">"G1_E5_H7_E11"</span>, </span>
-<span>  bascet_instance <span class="op">=</span> <span class="va">bascet_instance</span></span>
+<span>  bascetInstance <span class="op">=</span> <span class="va">bascetInstance</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>A common scenario is that you want the assembled genome of a
 particular cell. It can be done like this:</p>

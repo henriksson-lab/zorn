@@ -89,7 +89,7 @@ wish to run these steps on a SLURM cluster, see separate vignette and
 adapt accordingly.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, show_script<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
@@ -161,7 +161,7 @@ investigate a kneeplot of each species. As different species are
 differently hard to lyse, you will likely have different kneeplot
 patterns.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/KrakenKneePlot.html">KrakenKneePlot</a></span><span class="op">(</span><span class="va">adata</span>, groupby <span class="op">=</span> <span class="st">"phylum"</span>, show_num_spec<span class="op">=</span><span class="va">show_num_spec</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/KrakenKneePlot.html">KrakenKneePlot</a></span><span class="op">(</span><span class="va">adata</span>, groupby <span class="op">=</span> <span class="st">"phylum"</span>, showNumSpecies<span class="op">=</span><span class="va">showNumSpecies</span><span class="op">)</span></span></code></pre></div>
 <p>You can then proceed to filter out cells with few reads. Note that
 the cutoff will induce biases if the cells have different DNA content;
 the best way to handle this is an open research question (e.g. you could

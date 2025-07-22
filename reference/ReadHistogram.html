@@ -69,7 +69,8 @@ Not all Bascets have one, but it is typically produced after debarcoding</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ReadHistogram</span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="va">inputName</span>,</span>
-<span>  bascet_instance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -77,8 +78,12 @@ Not all Bascets have one, but it is typically produced after debarcoding</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-bascet-instance">bascet_instance<a class="anchor" aria-label="anchor" href="#arg-bascet-instance"></a></dt>
+<dl><dt id="arg-bascetinstance">bascetInstance<a class="anchor" aria-label="anchor" href="#arg-bascetinstance"></a></dt>
 <dd><p>A Bascet instance</p></dd>
+
+
+<dt id="arg-mincount">minCount<a class="anchor" aria-label="anchor" href="#arg-mincount"></a></dt>
+<dd><p>Minimum count for a cell to be included. Setting this can have a great impact on speed</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -116,7 +116,7 @@ permissible default timeout time:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## get a Bascet instance as usual; this is a separate concern from the runner</span></span>
-<span><span class="va">bascet_instance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>store_at<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span></span></code></pre></div>
 <p>You then make calls to Bascet as in all other tutorials. The main
 script, in charge of the control flow, should be run in <a href="https://github.com/tmux/tmux/wiki" class="external-link">tmux</a> or <a href="https://linuxize.com/post/how-to-use-linux-screen/" class="external-link">screen</a>, on
 a login node of your cluster.</p>
@@ -165,7 +165,7 @@ differently:</p>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="do">## get a Bascet instance as usual; this is a separate concern from the runner</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>bascet_instance.default <span class="ot">&lt;-</span> <span class="fu">getBascetSingularityImage</span>(<span class="at">store_at=</span><span class="st">"~/"</span>)</span></code></pre></div>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>bascetInstance.default <span class="ot">&lt;-</span> <span class="fu">getBascetSingularityImage</span>(<span class="at">storeAt=</span><span class="st">"~/"</span>)</span></code></pre></div>
 <p>Whenever you run a job, you now want to catch a handle to the job in
 a variable:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">

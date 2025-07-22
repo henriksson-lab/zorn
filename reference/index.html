@@ -164,6 +164,12 @@
         <dd>Get list of cells in a Bascet</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetCellNames_withstreamer.html">BascetCellNames_withstreamer()</a></code>
+
+        </dt>
+        <dd>Get list of cells in a Bascet – streamer provided</dd>
+      </dl><dl><dt>
+
           <code><a href="BascetComputeCountSketch.html">BascetComputeCountSketch()</a></code>
 
         </dt>
@@ -356,6 +362,12 @@
         <dd>Take debarcoded reads and split them into suitable numbers of shards.</dd>
       </dl><dl><dt>
 
+          <code><a href="BascetShardify2.html">BascetShardify2()</a></code>
+
+        </dt>
+        <dd>Take debarcoded reads and split them into suitable numbers of shards.</dd>
+      </dl><dl><dt>
+
           <code><a href="ChooseInformativeKMERs.html">ChooseInformativeKMERs()</a></code>
 
         </dt>
@@ -390,6 +402,12 @@
 
         </dt>
         <dd>Create a seurat object from e.g. count sketch reduction</dd>
+      </dl><dl><dt>
+
+          <code><a href="DebarcodedKneePlot.html">DebarcodedKneePlot()</a></code>
+
+        </dt>
+        <dd>Produce summary kneeplot given debarcoded statistics</dd>
       </dl><dl><dt>
 
           <code><a href="DetectRawFileMeta.html">DetectRawFileMeta()</a></code>
@@ -560,6 +578,12 @@
         <dd>Plot minimum number of dimensions needed to retain distance between samples</dd>
       </dl><dl><dt>
 
+          <code><a href="PrepareSharding.html">PrepareSharding()</a></code>
+
+        </dt>
+        <dd>Prepare to shard reads by collecting statistics about each barcode, and filtering out cells with few reads</dd>
+      </dl><dl><dt>
+
           <code><a href="ReadBascetCountMatrix.html">ReadBascetCountMatrix()</a></code>
 
         </dt>
@@ -656,67 +680,73 @@
         <dd>Callback function for just getting raw file contents To be called from BascetAggregateMap</dd>
       </dl><dl><dt>
 
-          <code><a href="bascet_check_overwrite_output.html">bascet_check_overwrite_output()</a></code>
+          <code><a href="bascetCheckOverwriteOutput.html">bascetCheckOverwriteOutput()</a></code>
 
         </dt>
         <dd>Detect metadata for raw input FASTQ files</dd>
       </dl><dl><dt>
 
-          <code><a href="bascet_instance.default.html">bascet_instance.default</a></code>
+          <code><a href="bascetInstance.default.html">bascetInstance.default</a></code>
 
         </dt>
         <dd>The default Bascet installation settings</dd>
       </dl><dl><dt>
 
-          <code><a href="detect_shards_for_file.html">detect_shards_for_file()</a></code>
+          <code><a href="detectShardsForFile.html">detectShardsForFile()</a></code>
 
         </dt>
         <dd>Helper function: Figure out which shards belong together given root input name and extension i.e. root/name.##.ext</dd>
       </dl><dl><dt>
 
-          <code><a href="extractstreamer_exit.html">extractstreamer_exit()</a></code>
+          <code><a href="extractstreamerExit.html">extractstreamerExit()</a></code>
 
         </dt>
         <dd>extract streamer: end an instance. the object should no longer be used after calling this function</dd>
       </dl><dl><dt>
 
-          <code><a href="extractstreamer_extract_to.html">extractstreamer_extract_to()</a></code>
+          <code><a href="extractstreamerExtractTo.html">extractstreamerExtractTo()</a></code>
 
         </dt>
         <dd>extract streamer: extract to external file</dd>
       </dl><dl><dt>
 
-          <code><a href="extractstreamer_ls.html">extractstreamer_ls()</a></code>
+          <code><a href="extractstreamerListCellsAnyFile.html">extractstreamerListCellsAnyFile()</a></code>
+
+        </dt>
+        <dd>extract streamer: list all cells in a given file</dd>
+      </dl><dl><dt>
+
+          <code><a href="extractstreamerLs.html">extractstreamerLs()</a></code>
 
         </dt>
         <dd>extract streamer: list all files in current zip-file</dd>
       </dl><dl><dt>
 
-          <code><a href="extractstreamer_open.html">extractstreamer_open()</a></code>
+          <code><a href="extractstreamerOpen.html">extractstreamerOpen()</a></code>
 
         </dt>
         <dd>extract streamer: set which file is open</dd>
       </dl><dl><dt>
 
-          <code><a href="extractstreamer_read_n_lines.html">extractstreamer_read_n_lines()</a></code>
+          <code><a href="extractstreamerReadNLines.html">extractstreamerReadNLines()</a></code>
 
         </dt>
         <dd>extract streamer: helper function to read N lines</dd>
       </dl><dl><dt>
 
-          <code><a href="extractstreamer_read_one_line.html">extractstreamer_read_one_line()</a></code>
+          <code><a href="extractstreamerReadOneLine.html">extractstreamerReadOneLine()</a></code>
 
         </dt>
         <dd>extract streamer: helper function to read one line</dd>
       </dl><dl><dt>
 
-          <code><a href="extractstreamer_showtext.html">extractstreamer_showtext()</a></code>
+          <code><a href="extractstreamerShowtext.html">extractstreamerShowtext()</a></code>
 
         </dt>
         <dd>extract streamer: get content of file, assumed to be text (or this function crashes)</dd>
       </dl><dl><dt>
 
-          <code><a href="extractstreamer_start.html">extractstreamer_start()</a></code>
+          <code><a href="extractstreamerStart.html">extractstreamerStart()</a></code>
 
         </dt>
         <dd>extract streamer: create an instance</dd>
@@ -734,31 +764,25 @@
         <dd>Get a Bascet image (singularity or docker). It will be cached in the provided directory to avoid downloading it all the time</dd>
       </dl><dl><dt>
 
-          <code><a href="get_fastq_R2_from_R1.html">get_fastq_R2_from_R1()</a></code>
+          <code><a href="getFastqR2fromR1.html">getFastqR2fromR1()</a></code>
 
         </dt>
         <dd>Get corresponding R2 file. Assumes that the input file is R1</dd>
       </dl><dl><dt>
 
-          <code><a href="helper_cancel_job_if_file_exists.html">helper_cancel_job_if_file_exists()</a></code>
-
-        </dt>
-        <dd>Create a piece of script to exit a job early if file exists</dd>
-      </dl><dl><dt>
-
-          <code><a href="is_bam_paired_alignment.html">is_bam_paired_alignment()</a></code>
+          <code><a href="isBamPairedAlignment.html">isBamPairedAlignment()</a></code>
 
         </dt>
         <dd>Figure out if a BAM-file is a paired alignment or not</dd>
       </dl><dl><dt>
 
-          <code><a href="is_fastq.html">is_fastq()</a></code>
+          <code><a href="isFastq.html">isFastq()</a></code>
 
         </dt>
         <dd>Check if a file is a FASTQ file</dd>
       </dl><dl><dt>
 
-          <code><a href="is_paired_fastq.html">is_paired_fastq()</a></code>
+          <code><a href="isPairedFastq.html">isPairedFastq()</a></code>
 
         </dt>
         <dd>Check if a file is a paired FASTQ file</dd>
@@ -770,7 +794,7 @@
         <dd>logarithmic spaced sequence, from emdbook library</dd>
       </dl><dl><dt>
 
-          <code><a href="make_output_shard_names.html">make_output_shard_names()</a></code>
+          <code><a href="makeOutputShardNames.html">makeOutputShardNames()</a></code>
 
         </dt>
         <dd>Helper function: Generate suitable output filenames according to shard system i.e. root/name.##.ext</dd>
@@ -788,16 +812,22 @@
         <dd>Remove current Bascet docker image</dd>
       </dl><dl><dt>
 
+          <code><a href="shellscriptCancelJobIfFileExists.html">shellscriptCancelJobIfFileExists()</a></code>
+
+        </dt>
+        <dd>Create a piece of script to exit a job early if file exists</dd>
+      </dl><dl><dt>
+
+          <code><a href="shellscriptMakeCommalist.html">shellscriptMakeCommalist()</a></code>
+
+        </dt>
+        <dd>from a,b to "a,b"</dd>
+      </dl><dl><dt>
+
           <code><a href="shellscript_make_bash_array.html">shellscript_make_bash_array()</a></code>
 
         </dt>
         <dd>Helper function: Create array of values in bash scripts</dd>
-      </dl><dl><dt>
-
-          <code><a href="shellscript_make_commalist.html">shellscript_make_commalist()</a></code>
-
-        </dt>
-        <dd>from a,b to "a,b"</dd>
       </dl><dl><dt>
 
           <code><a href="template_BascetFunction.html">template_BascetFunction()</a></code>

@@ -89,7 +89,7 @@ run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, show_script<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="alignment">Alignment<a class="anchor" aria-label="anchor" href="#alignment"></a>
@@ -203,10 +203,10 @@ You can then apply the cutoff as follows:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">keep_cells</span><span class="op">)</span>                              <span class="co">#See how many cells pass this cutoff</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">[</span>,<span class="va">keep_cells</span><span class="op">]</span>                  <span class="co">#Reduce to sensible number</span></span></code></pre></div>
 <p>If you have a list of which chromosomes belong together, then you can
-furthermore sum them up to get species-level counts. map_seq2strain
+furthermore sum them up to get species-level counts. mapSeq2strain
 should contain two columns: (todo) (TODO filter after instead)</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">adata</span><span class="op">[[</span><span class="st">"species_cnt"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ChromToSpeciesCount.html">ChromToSpeciesCount</a></span><span class="op">(</span><span class="va">adata</span>, <span class="va">map_seq2strain</span><span class="op">)</span>  </span>
+<code class="sourceCode R"><span><span class="va">adata</span><span class="op">[[</span><span class="st">"species_cnt"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ChromToSpeciesCount.html">ChromToSpeciesCount</a></span><span class="op">(</span><span class="va">adata</span>, <span class="va">mapSeq2strain</span><span class="op">)</span>  </span>
 <span></span>
 <span><span class="co">#Optional: Figure out which species has most reads in which cell</span></span>
 <span><span class="va">cnt</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">species_cnt</span><span class="op">$</span><span class="va">counts</span></span>
