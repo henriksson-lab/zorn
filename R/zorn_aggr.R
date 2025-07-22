@@ -24,7 +24,7 @@ BascetMapCell <- function(
     args=list(),
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  
@@ -56,7 +56,7 @@ BascetMapCell <- function(
     #Build the command - the rest
     cmd <- c(
       cmd,
-      #shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascetInstance),
       shellscript_make_bash_array("files_in",inputFiles),
       shellscript_make_bash_array("files_out",outputFiles),
       
@@ -64,8 +64,8 @@ BascetMapCell <- function(
       if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
 
       paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
+        bascetInstance@prepend_cmd,
+        bascetInstance@bin, 
         "mapcell",
         "-t $BASCET_TEMPDIR",
         "-i ${files_in[$TASK_ID]}",
@@ -77,7 +77,7 @@ BascetMapCell <- function(
     RunJob(
       runner = runner, 
       jobname = paste0("Z_map_",withfunction),
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
     )      
@@ -203,11 +203,11 @@ BascetAggregateMap <- function(
     include_cells=NULL,
     showProgress=TRUE,
     verbose=FALSE,
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Get file coordinates of all objects in zip file
-  cellname_coord <- BascetCellNames(bascetRoot, bascetName)
+  cellname_coord <- BascetCellNames(bascetRoot, bascetName, bascetInstance)  ############## todo: avoid opening streamer twice
   
   #Open the file, prep for reading
   if(verbose){
@@ -230,7 +230,7 @@ BascetAggregateMap <- function(
   #Loop over all files in the bascet
   output <- list()
   for(cellname in include_cells){
-    output[[cellname]] <- aggrFunction(bascetFile, cellname, bascet_instance)
+    output[[cellname]] <- aggrFunction(bascetFile, cellname, bascetInstance)
     if(showProgress){
       pbar$tick()
     }

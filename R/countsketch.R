@@ -17,7 +17,7 @@ BascetComputeCountSketch <- function(
     kmer_size=31,
     sketch_size=5000,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -32,7 +32,7 @@ BascetComputeCountSketch <- function(
     ),
     overwrite=overwrite,
     runner=runner,
-    bascet_instance=bascet_instance)
+    bascetInstance=bascetInstance)
 }
 
 
@@ -53,7 +53,7 @@ BascetGatherCountSketch <- function(
     includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names
@@ -79,11 +79,11 @@ BascetGatherCountSketch <- function(
   if(bascet_check_overwrite_output(outputFile, overwrite)) {
     #Make the command
     cmd <- c(
-      #shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascetInstance),
       if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
       paste(
-        bascet_instance@prepend_cmd,
-        bascet_instance@bin, 
+        bascetInstance@prepend_cmd,
+        bascetInstance@bin, 
         "countsketch",
         if(produce_cell_list) "--cells $CELLFILE",
         "-t $BASCET_TEMPDIR",
@@ -96,7 +96,7 @@ BascetGatherCountSketch <- function(
     RunJob(
       runner = runner, 
       jobname = "bascet_get_countsketch",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = 1
     )  

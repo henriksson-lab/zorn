@@ -7,12 +7,12 @@
 aggr.example <- function(
     bascetFile, 
     cellID, 
-    bascet_instance
+    bascetInstance
 ){
   
   if(TRUE){
     ###### Option #1 -- Store the content in a temporary file that you have to remove once done
-    tmp <- BascetReadFile(bascetFile, cellID, "out.csv", as="tempfile", bascet_instance=bascet_instance)
+    tmp <- BascetReadFile(bascetFile, cellID, "out.csv", as="tempfile", bascetInstance=bascetInstance)
     my_df <- read.csv(tmp)
     file.remove(tmp)
     
@@ -55,9 +55,9 @@ aggr.example <- function(
 aggr.minhash <- function(
     bascetFile, 
     cellID, 
-    bascet_instance
+    bascetInstance
 ){
-  dat <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="text", bascet_instance=bascet_instance)
+  dat <- BascetReadFile(bascetFile, cellID, "minhash.txt", as="text", bascetInstance=bascetInstance)
 
   set_kmer <- stringr::str_split_i(dat,"\t",1)
   set_kmer
@@ -81,13 +81,13 @@ aggr.minhash <- function(
 AggregateMinhashes <- function(
     bascetRoot,
     inputName="minhash",
-    bascet_instance
+    bascetInstance
 ) {
   minhash_aggr <- BascetAggregateMap(
     bascetRoot,
     inputName,
     aggr.minhash,
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
 
   #Put KMERs into a data frame
@@ -119,7 +119,7 @@ AggregateMinhashes <- function(
 #' @return QUAST data for each cell
 #' @export
 aggr.rawtext <- function(fname){
-  function(bascetFile, cellID, bascet_instance){
+  function(bascetFile, cellID, bascetInstance){
     rawtext <- BascetReadFile(bascetFile, cellID, fname, as="text")  
     
     data.frame(

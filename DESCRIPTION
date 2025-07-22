@@ -33,6 +33,7 @@ Imports:
     cli,
     readr,
     data.table,
+    naturalsort,
     sparseMatrixStats (>= 1.10.0)
 Suggests: 
     rmarkdown
@@ -44,6 +45,7 @@ Collate:
   'job_slurm.R'
   'zorn.R'
   'bascet_file.R'
+  'debarcoding.R'
   'shell.R'
   'zorn_aggr.R'
   'aggr_functions.R'

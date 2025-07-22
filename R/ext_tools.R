@@ -20,7 +20,7 @@ BascetMapCellQUAST <- function(
     #includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -30,7 +30,7 @@ BascetMapCellQUAST <- function(
     #includeCells=includeCells
     overwrite=overwrite,
     runner=runner,
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
 }
 
@@ -43,7 +43,7 @@ BascetMapCellQUAST <- function(
 aggr.quast <- function(
     bascetFile, 
     cellID, 
-    bascet_instance
+    bascetInstance
 ){
   
   #print(cellID)
@@ -52,7 +52,7 @@ aggr.quast <- function(
     cellID, 
     "transposed_report.tsv", 
     as="text", 
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
   if(!is.null(fcont)){
     dat <- data.frame(
@@ -88,7 +88,7 @@ BascetAggregateQUAST <- function(
     include_cells=NULL,
     verbose=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetAggregateMap(
     bascetRoot,
@@ -107,7 +107,7 @@ BascetAggregateQUAST <- function(
 # aggr.quast_via_filesystem <- function(
     #     bascetFile, 
 #     cellID, 
-#     bascet_instance
+#     bascetInstance
 # ){
 #   
 #   #print(cellID)
@@ -116,7 +116,7 @@ BascetAggregateQUAST <- function(
 #     cellID, 
 #     "transposed_report.tsv", 
 #     as="tempfile", 
-#     bascet_instance=bascet_instance
+#     bascetInstance=bascetInstance
 #   )
 #   if(!is.null(tmp)){
 #     fcont <- readLines(tmp, n=2)
@@ -164,7 +164,7 @@ BascetMapCellFASTQC <- function(
     #includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -174,7 +174,7 @@ BascetMapCellFASTQC <- function(
     #includeCells=includeCells
     overwrite=overwrite,
     runner=runner,
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
 }
 
@@ -193,7 +193,7 @@ BascetAggregateFASTQC <- function(
     include_cells=NULL,
     verbose=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetAggregateMap(
     bascetRoot,
@@ -214,7 +214,7 @@ BascetAggregateFASTQC <- function(
 #' 
 #' @return TODO
 #' @export
-aggr.fastqc <- function(bascetFile, cellID, bascet_instance){
+aggr.fastqc <- function(bascetFile, cellID, bascetInstance){
   
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/stupid.tsv")
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/salmonella_SRR33219394_ncbi.tsv")
@@ -222,8 +222,8 @@ aggr.fastqc <- function(bascetFile, cellID, bascet_instance){
   #internal_parse_fastqc_data(lines)
   
   #Handle both R1 and R2
-  lines_r1 <- BascetReadFile(bascetFile, cellID, "r1_fastqc_data.txt", as="text", bascet_instance=bascet_instance)
-  lines_r2 <- BascetReadFile(bascetFile, cellID, "r2_fastqc_data.txt", as="text", bascet_instance=bascet_instance)
+  lines_r1 <- BascetReadFile(bascetFile, cellID, "r1_fastqc_data.txt", as="text", bascetInstance=bascetInstance)
+  lines_r2 <- BascetReadFile(bascetFile, cellID, "r2_fastqc_data.txt", as="text", bascetInstance=bascetInstance)
 
   
   #lines_r1 <- readLines("/home/mahogny/github/zorn/test_aggr/fastqc/new/r1_fastqc_data.txt")
@@ -329,7 +329,7 @@ ShowFASTQCforCell <- function(
   if(verbose){
     print("Extract streamer session ok")
   }
-  lines <- BascetReadFile(bascetFile, cellID, paste0("r",readnum,"_fastqc.html"), as="text", bascet_instance=bascet_instance)
+  lines <- BascetReadFile(bascetFile, cellID, paste0("r",readnum,"_fastqc.html"), as="text", bascetInstance=bascetInstance)
   #lines <- readLines("/home/mahogny/github/zorn/test_aggr/fastqc/new/r1_fastqc.html")
   CloseBascet(bascetFile)
   
@@ -504,8 +504,8 @@ if(FALSE){
 #' 
 #' @return TODO
 #' @export
-aggr.abricate <- function(bascetFile, cellID, bascet_instance){
-  tmp <- BascetReadFile(bascetFile, cellID, "abricate.tsv", as="text", bascet_instance=bascet_instance)
+aggr.abricate <- function(bascetFile, cellID, bascetInstance){
+  tmp <- BascetReadFile(bascetFile, cellID, "abricate.tsv", as="text", bascetInstance=bascetInstance)
   
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/stupid.tsv")
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/salmonella_SRR33219394_ncbi.tsv")
@@ -541,7 +541,7 @@ BascetMapCellAbricate <- function(
     #includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -552,7 +552,7 @@ BascetMapCellAbricate <- function(
     overwrite=overwrite,
     args = list(DATABASE_DIR=db),
     runner=runner,
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
 }
 
@@ -565,11 +565,11 @@ BascetMapCellAbricate <- function(
 #' @export
 ListDatabaseAbricate <- function(
     dbdir,
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ) {
   ret <- system(
     paste(
-      bascet_instance@prepend_cmd,
+      bascetInstance@prepend_cmd,
       "abricate --list"
     ),
     intern = TRUE
@@ -592,7 +592,7 @@ BascetAggregateAbricate <- function(
     include_cells=NULL,
     verbose=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   CountDataFrameToSparseMatrix(MapCellMultiListAsDataFrame(BascetAggregateMap(
     bascetRoot,
@@ -625,7 +625,7 @@ BascetMapCellBakta <- function(
     #includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -636,7 +636,7 @@ BascetMapCellBakta <- function(
     overwrite=overwrite,
     args = list(DATABASE_DIR=db),
     runner=runner,
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
 }
 
@@ -649,14 +649,14 @@ BascetMapCellBakta <- function(
 DownloadDatabaseBakta <- function(
     dbdir,
     dbtype=c("light","full"),  #todo look up how to handle documentation for this
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ) {
   if(file.exists(dbdir)) {
     print("Database already exists; skipping")
   } else {
     system(
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "bakta_db download --output",
         dbdir,
         "--type",dbtype
@@ -688,7 +688,7 @@ BascetMapCellAriba <- function(
     #includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -699,7 +699,7 @@ BascetMapCellAriba <- function(
     overwrite=overwrite,
     args = list(DATABASE_DIR=db),
     runner=runner,
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
 }
 
@@ -714,7 +714,7 @@ BascetMapCellAriba <- function(
 DownloadDatabaseAriba <- function(
     dbdir,
     ref="ncbi", #c("argannot", "card", "ncbi", "megares", "plasmidfinder", "resfinder", "srst2_argannot", "vfdb_core", "vfdb_full", "virulencefinder"),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ) {
   
   tmp <- tempfile()
@@ -735,7 +735,7 @@ DownloadDatabaseAriba <- function(
     ### Get ref
     system(
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "ariba getref ",ref, tmp, 
         dbdir
       )
@@ -744,7 +744,7 @@ DownloadDatabaseAriba <- function(
     ### prepare the database
     system(
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "ariba prepareref -f ",tmp.fa,
         "-m", tmp.tsv, out.prepareref
         #        dbdir
@@ -764,8 +764,8 @@ DownloadDatabaseAriba <- function(
 #' 
 #' @return TODO
 #' @export
-aggr.ariba <- function(bascetFile, cellID, bascet_instance){
-  tmp <- BascetReadFile(bascetFile, cellID, "report.tsv", as="text", bascet_instance=bascet_instance)
+aggr.ariba <- function(bascetFile, cellID, bascetInstance){
+  tmp <- BascetReadFile(bascetFile, cellID, "report.tsv", as="text", bascetInstance=bascetInstance)
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/ariba/report.tsv")
   zz <- textConnection(tmp)
   dat <- read.delim(zz)
@@ -786,7 +786,7 @@ BascetAggregateAriba <- function(
     #cacheFile=NULL, #option
     include_cells=NULL,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   CountDataFrameToSparseMatrix(MapCellMultiListAsDataFrame(BascetAggregateMap(
     bascetRoot,
@@ -821,7 +821,7 @@ BascetMapCellAMRfinder <- function(
     #includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -832,7 +832,7 @@ BascetMapCellAMRfinder <- function(
     overwrite=overwrite,
     args = list(DATABASE_DIR=db),
     runner=runner,
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
 }
 
@@ -844,14 +844,14 @@ BascetMapCellAMRfinder <- function(
 #' @export
 DownloadDatabaseAMRfinder <- function(
     dbdir,
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ) {
   if(file.exists(dbdir)) {
     print("Database already exists; skipping")
   } else {
     system(
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "amrfinder_update -d",
         dbdir
       )
@@ -871,8 +871,8 @@ DownloadDatabaseAMRfinder <- function(
 #' 
 #' @return TODO
 #' @export
-aggr.amrfinder <- function(bascetFile, cellID, bascet_instance){
-  tmp <- BascetReadFile(bascetFile, cellID, "amrfinder.tsv", as="text", bascet_instance=bascet_instance)
+aggr.amrfinder <- function(bascetFile, cellID, bascetInstance){
+  tmp <- BascetReadFile(bascetFile, cellID, "amrfinder.tsv", as="text", bascetInstance=bascetInstance)
   
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/amrfinder/salmonella_SRR33219394_amrfinder.tsv")
   zz <- textConnection(tmp)
@@ -899,7 +899,7 @@ BascetAggregateAMRfinder <- function(
     include_cells=NULL,
     get_column="Element.symbol",  #Element.name is an option, if one also want full name
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   CountDataFrameToSparseMatrix(MapCellMultiListAsDataFrame(BascetAggregateMap(
     bascetRoot,
@@ -933,7 +933,7 @@ BascetMapCellGECCO <- function(
     #includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot, 
@@ -943,7 +943,7 @@ BascetMapCellGECCO <- function(
     #includeCells=includeCells
     overwrite=overwrite,
     runner=runner,
-    bascet_instance=bascet_instance
+    bascetInstance=bascetInstance
   )
 }
 
@@ -954,9 +954,9 @@ BascetMapCellGECCO <- function(
 #' 
 #' @return TODO
 #' @export
-aggr.gecco <- function(bascetFile, cellID, bascet_instance){ 
+aggr.gecco <- function(bascetFile, cellID, bascetInstance){ 
   
-  tmp <- BascetReadFile(bascetFile, cellID, "gecco_out/clusters.tsv", as="text", bascet_instance=bascet_instance)
+  tmp <- BascetReadFile(bascetFile, cellID, "gecco_out/clusters.tsv", as="text", bascetInstance=bascetInstance)
   tmp <- readLines("/home/mahogny/github/zorn/test_aggr/gecco/salmonella_SRR33219394.clusters.tsv")
   zz <- textConnection(tmp)
   dat <- read.delim(zz)
@@ -978,7 +978,7 @@ BascetAggregateGECCO <- function(
     #cacheFile=NULL, #option
     include_cells=NULL,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetAggregateMap(
     bascetRoot,

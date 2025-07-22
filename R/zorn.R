@@ -5,7 +5,7 @@
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascet_instance Configuration for how to run the Bascet Rust API
+#' @param bascetInstance Configuration for how to run the Bascet Rust API
 #' @param num_output_shards Number of output shards, i.e., how many output files to split the data into? (>=1)
 #' @param includeCells List of cells to process
 #' @param bascetFile Handle for an opened Bascet file
@@ -16,7 +16,7 @@
 template_BascetFunction <- function(
     bascetRoot, 
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()){}
+    bascetInstance=GetDefaultBascetInstance()){}
 
 
 
@@ -188,7 +188,7 @@ BascetGetRaw <- function(
     barcodeTolerance=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
 
   #One output per input pair of reads  
@@ -201,14 +201,22 @@ BascetGetRaw <- function(
   
   #Check if libnames should be added
   add_libnames <- any(rawmeta$prefix!="")
+  
+  #Write a file describing the libraries
+  rawmeta$shard <- 1:num_shards
+  write.csv(
+    rawmeta,
+    file=file.path(bascetRoot, paste0(outputName, ".meta")),
+    row.names = FALSE
+  )
 
   if(bascet_check_overwrite_output(outputFilesComplete, overwrite)) {
     RunJob(
       runner = runner, 
       jobname = "Z_getraw",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascetInstance),
         shellscript_make_bash_array("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
         shellscript_make_bash_array("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
         shellscript_make_bash_array("libnames",rawmeta$prefix),
@@ -219,8 +227,8 @@ BascetGetRaw <- function(
         if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
         
         paste(
-          bascet_instance@prepend_cmd,
-          bascet_instance@bin, 
+          bascetInstance@prepend_cmd,
+          bascetInstance@bin, 
           "getraw",
           "-t $BASCET_TEMPDIR",
           "--chemistry",chemistry,  
@@ -286,7 +294,7 @@ BascetShardify <- function(
     outputName="filtered", 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
 
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
@@ -296,7 +304,7 @@ BascetShardify <- function(
 
   #Include all cells if nothing else provided
   if(is.null(includeCells)){
-    includeCells <- BascetCellNames(bascetRoot, inputName)
+    includeCells <- BascetCellNames(bascetRoot, inputName, bascetInstance=bascetInstance)
     includeCells <- unique(includeCells$cell) #when shardifying, we expect cells to appear more than once  -- could warn for other commands!
     print(paste("Including all the",length(includeCells), "cells"))
   }
@@ -313,9 +321,9 @@ BascetShardify <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_shardify",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascetInstance),
         shellscript_make_bash_array("files_out", outputFiles),
         
         ### Abort early if needed    
@@ -323,8 +331,8 @@ BascetShardify <- function(
         
         shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
         paste(
-          bascet_instance@prepend_cmd,
-          bascet_instance@bin,
+          bascetInstance@prepend_cmd,
+          bascetInstance@bin,
           "shardify", 
           "-t $BASCET_TEMPDIR",
           "-i",shellscript_make_commalist(inputFiles), #Need to give all input files for each job
@@ -367,7 +375,7 @@ BascetMapTransform <- function(
     includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   
@@ -410,9 +418,9 @@ BascetMapTransform <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_transform",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascetInstance),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
@@ -421,8 +429,8 @@ BascetMapTransform <- function(
         
         if(produce_cell_list) shellscript_make_files_expander("CELLFILE", list_cell_for_shard),
         paste(
-          bascet_instance@prepend_cmd,
-          bascet_instance@bin, 
+          bascetInstance@prepend_cmd,
+          bascetInstance@bin, 
           "transform",
           if(produce_cell_list) "--cells $CELLFILE",
           #"-t $BASCET_TEMPDIR",  ##not supported
@@ -558,7 +566,7 @@ BascetRunFASTP <- function(
     outputName="fastp",
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  
@@ -590,9 +598,9 @@ BascetRunFASTP <- function(
     RunJob(
       runner = runner, 
       jobname = paste0("Z_fastp"),
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascetInstance),
         shellscript_make_bash_array("files_html",outputFiles_report_json),
         shellscript_make_bash_array("files_json",outputFiles_report_html),
         shellscript_make_bash_array("files_in_R1",inputFiles_R1),
@@ -604,7 +612,7 @@ BascetRunFASTP <- function(
         if(!overwrite) helper_cancel_job_if_file_exists("${files_out_R1[$TASK_ID]}"),
         
         paste(
-          bascet_instance@prepend_cmd,
+          bascetInstance@prepend_cmd,
           "fastp",
           "--thread", numLocalThreads,
           "-h ${files_html[$TASK_ID]}",

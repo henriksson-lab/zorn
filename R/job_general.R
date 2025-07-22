@@ -9,7 +9,7 @@
 #' @export
 setGeneric(
   name = "RunJob",
-  def = function(runner, jobname, bascet_instance, cmd, arraysize) standardGeneric("RunJob")
+  def = function(runner, jobname, bascetInstance, cmd, arraysize) standardGeneric("RunJob")
 )
 
 ###############################################
@@ -61,7 +61,7 @@ setClass("NoRunner", slots=list(
 setMethod(
   f = "RunJob",
   signature ="NoRunner",
-  definition = function(runner, jobname, bascet_instance, cmd, arraysize) {  
+  definition = function(runner, jobname, bascetInstance, cmd, arraysize) {  
     print("This is an attempt to start a job (but will not run)")
     new_no_job()
   }

@@ -50,7 +50,7 @@ BascetInstance <- function(
 #' 
 #' @return A Bascet instance
 #' @export
-bascet_instance.default <- BascetInstance(
+bascetInstance.default <- BascetInstance(
   bin="/home/mahogny/jupyter/bascet/target/debug/bascet",
   tempdir="./"
 )
@@ -63,7 +63,7 @@ bascet_instance.default <- BascetInstance(
 #' @return A Bascet instance
 #' @export
 GetDefaultBascetInstance <- function(){
-  bascet_instance.default
+  bascetInstance.default
 }
 
 
@@ -71,16 +71,16 @@ GetDefaultBascetInstance <- function(){
 ###############################################
 #' Get a temp directory to use; need to be created
 #' 
-#' @param bascet_instance A Bascet instance
+#' @param bascetInstance A Bascet instance
 #' @return A path to a temp directory that can be created. Must be removed when done
 #' @export
 GetBascetTempDir <- function(
-    bascet_instance
+    bascetInstance
 ){
-  if(is.null(bascet_instance@tempdir)){
+  if(is.null(bascetInstance@tempdir)){
     tempfile()
   } else {
-    tempfile(tmpdir=file.path(bascet_instance@tempdir))
+    tempfile(tmpdir=file.path(bascetInstance@tempdir))
   }
 }
 
@@ -205,16 +205,16 @@ removeBascetDockerImage <- function(){
 ###############################################
 #' Check if a Bascet instance works
 #' 
-#' @param bascet_instance Bascet instance
+#' @param bascetInstance Bascet instance
 #' @return "ok" if the instance works; panic otherwise
 #' @export
 TestBascetInstance <- function(
-    bascet_instance
+    bascetInstance
 ) {
   
   cmd <- paste(
-    bascet_instance@prepend_cmd,
-    bascet_instance@bin,
+    bascetInstance@prepend_cmd,
+    bascetInstance@bin,
     "-V"
   )
 

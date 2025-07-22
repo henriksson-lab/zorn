@@ -128,7 +128,7 @@ SlurmRunner <- function(
 setMethod(
   f = "RunJob",
   signature ="SlurmRunner",
-  definition = function(runner, jobname, bascet_instance, cmd, arraysize) {
+  definition = function(runner, jobname, bascetInstance, cmd, arraysize) {
     
     print("Running job with slurm")
     
@@ -154,7 +154,7 @@ setMethod(
     ## Decide on a tempdir location; different for each job
     scriptcontent <- c(
       scriptcontent,
-      paste0("BASCET_TEMPDIR=",file.path(GetBascetTempDir(bascet_instance), "$SLURM_ARRAY_TASK_ID"))
+      paste0("BASCET_TEMPDIR=",file.path(GetBascetTempDir(bascetInstance), "$SLURM_ARRAY_TASK_ID"))
     )
     
     ## Add the command

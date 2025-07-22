@@ -13,7 +13,7 @@
 #' @export
 is_bam_paired_alignment <- function(
     fname,
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
 
   #example
@@ -24,11 +24,11 @@ is_bam_paired_alignment <- function(
   # @PG	ID:bwa	PN:bwa	VN:0.7.17-r1198-dirty	CL:bwa mem /husky/fromsequencer/241210_joram_rnaseq/ref/all.fa /husky/henriksson/atrandi/v2_rnaseq5//asfq.1.R1.fq.gz /husky/henriksson/atrandi/v2_rnaseq5/asfq.1.R2.fq.gz -t 20
   
   cmd <- paste(
-    bascet_instance@prepend_cmd, 
+    bascetInstance@prepend_cmd, 
     "samtools view",
     fname,
     "-h | head -n 10000 | ", #100 was not enough to be reliable
-    bascet_instance@prepend_cmd," samtools view -c -f 1"
+    bascetInstance@prepend_cmd," samtools view -c -f 1"
   )
   
   ret <- system(
@@ -55,7 +55,7 @@ BascetIndexGenomeBWA <- function(
     genomeFile, 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   if(!file.exists(genomeFile)){
@@ -67,11 +67,11 @@ BascetIndexGenomeBWA <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_bwa_index",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
         ### For sorting
         paste(
-          bascet_instance@prepend_cmd,
+          bascetInstance@prepend_cmd,
           "bwa index",
           genomeFile
         )
@@ -100,7 +100,7 @@ BascetIndexGenomeSTAR <- function(
     outDir,
     numLocalThreads=10,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   if(!file.exists(fastaFile)){
@@ -119,13 +119,13 @@ BascetIndexGenomeSTAR <- function(
   RunJob(
     runner = runner, 
     jobname = "Z_star_index",
-    bascet_instance = bascet_instance,
+    bascetInstance = bascetInstance,
     cmd = c(
       paste(
         "mdkir -p", outDir
       ),
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "STAR --runThreadN", as.character(numThreads),
         "--runMode genomeGenerate",
         "--genomeDir",outDir,
@@ -208,7 +208,7 @@ BascetAlignmentToBigwig <- function(
     outputName="pileup",
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names
@@ -224,13 +224,13 @@ BascetAlignmentToBigwig <- function(
     
     ### Build command
     cmd <- c(
-      #shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascetInstance),
       shellscript_make_bash_array("files_in", inputFiles),
       shellscript_make_bash_array("files_out", outputFiles),
       
       ### For sorting
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "bamCoverage",
         "-b ${files_in[$TASK_ID]}",     #Each job takes a single output
         "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
@@ -243,7 +243,7 @@ BascetAlignmentToBigwig <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_tobw",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
     )
@@ -282,7 +282,7 @@ BascetFilterAlignment <- function(
     keep_mapped=FALSE,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   
@@ -300,7 +300,7 @@ BascetFilterAlignment <- function(
     
     ### Set flags for samtools. Depends on if paired alignment or not
     samtools_flags <- ""
-    is_paired_al <- is_bam_paired_alignment(inputFiles[1], bascet_instance)
+    is_paired_al <- is_bam_paired_alignment(inputFiles[1], bascetInstance)
     print(paste("Detect paired alignment: ",is_paired_al))
     
     if(is_paired_al) {
@@ -319,13 +319,13 @@ BascetFilterAlignment <- function(
     
     ### Build command
     cmd <- c(
-      #shellscript_set_tempdir(bascet_instance),
+      #shellscript_set_tempdir(bascetInstance),
       shellscript_make_bash_array("files_in", inputFiles),
       shellscript_make_bash_array("files_out", outputFiles),
       
       ### For sorting
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "samtools view",
         samtools_flags, 
         "-@ ",numLocalThreads,          #Number of threads to use
@@ -341,7 +341,7 @@ BascetFilterAlignment <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_filteraln",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
     )
@@ -381,7 +381,7 @@ BascetAlignToReference <- function(
     overwrite=FALSE,
     aligner="BWA",
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  
@@ -421,21 +421,21 @@ BascetAlignToReference <- function(
   
   if(aligner=="BWA"){
     cmd_align <- paste(
-      bascet_instance@prepend_cmd,
+      bascetInstance@prepend_cmd,
       "bash -c \"",
       "bwa mem", 
       useReference,
       "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
       "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
       "-t", numLocalThreads,
-      "| ", bascet_instance@bin, "pipe-sam-add-tags",
+      "| ", bascetInstance@bin, "pipe-sam-add-tags",
       "| samtools view -b -o",
       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
       "\""
     )
   } else if(aligner=="STAR") {
     cmd_align <- paste(
-      bascet_instance@prepend_cmd,
+      bascetInstance@prepend_cmd,
       "bash -c \"",
       "STAR", 
       "--genomeDir", useReference,
@@ -444,7 +444,7 @@ BascetAlignToReference <- function(
       "--outSAMtype SAM Unsorted",
       "--outSAMunmapped Within",
       "--outSAMattributes Standard",
-      "| ", bascet_instance@bin, "pipe-sam-add-tags",
+      "| ", bascetInstance@bin, "pipe-sam-add-tags",
       "| samtools view -b -o",
       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
       "\""
@@ -457,7 +457,7 @@ BascetAlignToReference <- function(
   ### Build command: basic alignment
   final_outputFiles <- outputFilesBAMunsorted
   cmd <- c(
-    #shellscript_set_tempdir(bascet_instance),
+    #shellscript_set_tempdir(bascetInstance),
     shellscript_make_bash_array("files_in_r1", inputFiles_R1),
     shellscript_make_bash_array("files_in_r2", inputFiles_R2),
     shellscript_make_bash_array("files_out_unsorted", outputFilesBAMunsorted),
@@ -480,7 +480,7 @@ BascetAlignToReference <- function(
       
       ### For sorting
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "samtools sort", 
         "-@ ",numLocalThreads,                 #Number of threads to use
         #        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
@@ -490,7 +490,7 @@ BascetAlignToReference <- function(
       
       ### For indexing
       paste(
-        bascet_instance@prepend_cmd,
+        bascetInstance@prepend_cmd,
         "samtools index", 
         "-@ ",numLocalThreads,                 #Number of threads to use
         "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
@@ -506,7 +506,7 @@ BascetAlignToReference <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_aln",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
     )
@@ -542,7 +542,7 @@ BascetBam2Fragments <- function(
     outputName="fragments", 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
@@ -559,9 +559,9 @@ BascetBam2Fragments <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_bam2fragments",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascetInstance),
         shellscript_make_bash_array("files_in", inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
@@ -569,8 +569,8 @@ BascetBam2Fragments <- function(
         if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
         
         paste(
-          bascet_instance@prepend_cmd,
-          bascet_instance@bin, 
+          bascetInstance@prepend_cmd,
+          bascetInstance@bin, 
           "bam2fragments",
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",  
@@ -601,7 +601,7 @@ BascetCountChrom <- function(
     min_matching=0,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   input_shards <- detect_shards_for_file(bascetRoot, inputName)
@@ -618,9 +618,9 @@ BascetCountChrom <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_countchrom",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascetInstance),
         shellscript_make_bash_array("files_in", inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
@@ -628,8 +628,8 @@ BascetCountChrom <- function(
         if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
         
         paste(
-          bascet_instance@prepend_cmd,
-          bascet_instance@bin, 
+          bascetInstance@prepend_cmd,
+          bascetInstance@bin, 
           "countchrom",
           "--min-matching ",min_matching,
           "-t $BASCET_TEMPDIR",
@@ -658,9 +658,9 @@ BascetCountChrom <- function(
 #' @export
 TabixGetFragmentsSeqs <- function(
     fragpath,
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ) {
-  system(paste(bascet_instance@prepend_cmd,"tabix -l ", fragpath), intern = TRUE)
+  system(paste(bascetInstance@prepend_cmd,"tabix -l ", fragpath), intern = TRUE)
 }
 
 
@@ -726,7 +726,7 @@ FragmentsToSignac <- function(
 #' @export
 FragmentCountsPerChrom <- function(
     chrom_assay,
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out where the fragment file is
@@ -734,7 +734,7 @@ FragmentCountsPerChrom <- function(
   #fr@cells ## also possible!
   
   #Get the name of chromosomes
-  all_seqid <- TabixGetFragmentsSeqs(fr@path, bascet_instance)
+  all_seqid <- TabixGetFragmentsSeqs(fr@path, bascetInstance)
   grange <- GenomicRanges::makeGRangesFromDataFrame(data.frame(
     seqid=all_seqid,
     name=all_seqid,
@@ -906,7 +906,7 @@ BascetRunCellSNP <- function(
     outputName="cellsnp", 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  
@@ -927,7 +927,7 @@ BascetRunCellSNP <- function(
   
   ### Build command: basic alignment
   cmd <- c(
-    #shellscript_set_tempdir(bascet_instance),
+    #shellscript_set_tempdir(bascetInstance),
     shellscript_make_bash_array("files_in", inputFiles),
     shellscript_make_bash_array("files_out", outputFiles),
     shellscript_make_bash_array("files_listcell", listcellFiles),
@@ -939,7 +939,7 @@ BascetRunCellSNP <- function(
     
     ### To make list of chromosome IDs
     paste(
-      bascet_instance@prepend_cmd,
+      bascetInstance@prepend_cmd,
       "bash -c \"",
       "samtools idxstats ${files_in[$TASK_ID]} | head -n -1 | cut -f 1 > ${files_listchrom[$TASK_ID]}",
       "\""
@@ -948,7 +948,7 @@ BascetRunCellSNP <- function(
     
     ### To make list of cell IDs. could avoid if we write our own cellsnp-lite
     paste(
-      bascet_instance@prepend_cmd,
+      bascetInstance@prepend_cmd,
       "bash -c \"",
       "samtools view ${files_in[$TASK_ID]} | sed -e 's/^.*CB:Z://' | sed -e 's/\t.*//' | sort | uniq > ${files_listcell[$TASK_ID]}",
       "\""
@@ -956,7 +956,7 @@ BascetRunCellSNP <- function(
     
     ### For SNP-calling
     paste(
-      bascet_instance@prepend_cmd,
+      bascetInstance@prepend_cmd,
 
       "cellsnp-lite", 
       "-s ${files_in[$TASK_ID]}",        #Align BAM
@@ -980,7 +980,7 @@ BascetRunCellSNP <- function(
     RunJob(
       runner = runner, 
       jobname = "Z_cellsnp",
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
     )

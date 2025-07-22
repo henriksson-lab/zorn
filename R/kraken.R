@@ -64,7 +64,7 @@ BascetRunKraken <- function(
     outputName="kraken_out",
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
 
   #Figure out input and output file names  
@@ -91,9 +91,9 @@ BascetRunKraken <- function(
     RunJob(
       runner = runner, 
       jobname = paste0("Z_kraken_fq"),
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascetInstance),
         shellscript_make_bash_array("files_in_R1",inputFiles_R1),
         if(is_paired) shellscript_make_bash_array("files_in_R2",inputFiles_R2),
         shellscript_make_bash_array("files_out",outputFiles),
@@ -102,7 +102,7 @@ BascetRunKraken <- function(
         if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
         
         paste(
-          bascet_instance@prepend_cmd,
+          bascetInstance@prepend_cmd,
           "kraken2",
           "--db", useKrakenDB,
           "--threads", numLocalThreads,
@@ -140,7 +140,7 @@ BascetMakeKrakenCountMatrix <- function(
     outputName="kraken", 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out input and output file names  
@@ -158,9 +158,9 @@ BascetMakeKrakenCountMatrix <- function(
     RunJob(
       runner = runner, 
       jobname = paste0("Z_kraken_mat"),
-      bascet_instance = bascet_instance,
+      bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascet_instance),
+        #shellscript_set_tempdir(bascetInstance),
         shellscript_make_bash_array("files_in",inputFiles),
         shellscript_make_bash_array("files_out",outputFiles),
         
@@ -168,8 +168,8 @@ BascetMakeKrakenCountMatrix <- function(
         if(!overwrite) helper_cancel_job_if_file_exists("${files_out[$TASK_ID]}"),
 
         paste(
-          bascet_instance@prepend_cmd,
-          bascet_instance@bin, 
+          bascetInstance@prepend_cmd,
+          bascetInstance@bin, 
           "kraken",
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",

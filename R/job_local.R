@@ -45,12 +45,12 @@ LocalRunner <- function(maxcpu="10", direct=FALSE, show_script=FALSE){
 setMethod(
   f = "RunJob",
   signature ="LocalRunner",
-  definition = function(runner, jobname, bascet_instance, cmd, arraysize) { 
+  definition = function(runner, jobname, bascetInstance, cmd, arraysize) { 
     
     
     ## Decide on a tempdir location; different for each job
     cmd <- c(
-      paste0("BASCET_TEMPDIR=",file.path(GetBascetTempDir(bascet_instance), "$TASK_ID")),
+      paste0("BASCET_TEMPDIR=",file.path(GetBascetTempDir(bascetInstance), "$TASK_ID")),
       cmd
     )
     

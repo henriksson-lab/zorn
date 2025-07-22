@@ -28,10 +28,34 @@ setClass("Bascet", slots=list(
 BascetCellNames <- function(
     bascetRoot, 
     bascetName,
-    bascet_instance
+    bascetInstance
 ){
+  streamer <- extractstreamer_start(bascetInstance = bascetInstance)
   
-  streamer <- extractstreamer_start(bascet_instance = bascet_instance)
+  ret <- BascetCellNames_withstreamer(
+    bascetRoot,
+    bascetName,
+    streamer
+  )
+  
+  extractstreamer_exit(streamer)
+  
+  ret
+}
+
+
+
+###############################################
+#' Get list of cells in a Bascet -- streamer provided
+#' 
+#' @inheritParams template_BascetFunction
+#' @param bascetName Name of the bascet
+#' @return Vector of cell names as strings
+BascetCellNames_withstreamer <- function(
+    bascetRoot, 
+    bascetName,
+    streamer
+){
   
   #Can support BAM later as well
   shards <- detect_shards_for_file(bascetRoot,bascetName)
@@ -42,18 +66,14 @@ BascetCellNames <- function(
   cellnames <- list()
   for(i in seq_along(shards)){
     cur_file <- file.path(bascetRoot,shards[i])
-    if(stringr::str_ends(cur_file, stringr::fixed(".zip"))) {
-      allfiles <- unzip(cur_file,list = TRUE)$Name
-    } else if(stringr::str_ends(cur_file, stringr::fixed(".tirp.gz"))) {
-      
-      
-      allfiles <- system(paste("tabix","--list-chroms", cur_file),intern=TRUE)
-      
-      
-    } else {
-      stop(paste("Cannot list cells for"),cur_file)
-    }
-    df <- data.frame(cell=unique(stringr::str_split_i(allfiles,"/",1)))   
+    print(cur_file) 
+    #print(streamer)
+    allfiles <- extractstreamer_listcellsanyfile(streamer, cur_file)
+    
+    df <- data.frame(
+      cell=allfiles
+    )
+    #df <- data.frame(cell=unique(stringr::str_split_i(allfiles,"/",1)))   
     df$shard <- i - 1
     cellnames[[i]] <- df
   }
@@ -61,12 +81,17 @@ BascetCellNames <- function(
 }
 
 
-
-
+if(FALSE){
+  
+  streamer <- extractstreamer_start(bascetInstance = bascetInstance.default)
+  extractstreamer_listcellsanyfile(streamer, "/pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/dataset/250611_scinfluenza/bascet/debarcoded.1.tirp.gz")#, super_verbose = TRUE)
+  
+  cn <- BascetCellNames("/pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/dataset/250611_scinfluenza/bascet", "debarcoded", bascetInstance=bascetInstance.default)
+}
 
 if(FALSE){
-  system(paste("tabix","--list-chroms", "/home/mahogny/github/bascet/testdata/filtered.0.tirp.gz"),intern=TRUE)
-  BascetCellNames("/home/mahogny/jupyter/zorn/test/data", "shard", bascet_instance.default)
+  #system(paste("tabix","--list-chroms", "/home/mahogny/github/bascet/testdata/filtered.0.tirp.gz"),intern=TRUE)
+  BascetCellNames("/home/mahogny/jupyter/zorn/test/data", "shard", bascetInstance.default)
 }
 
 
@@ -85,19 +110,20 @@ if(FALSE){
 OpenBascet <- function(
     bascetRoot, 
     bascetName,
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
+
+  streamer <- extractstreamer_start(bascetInstance = bascetInstance)
   
   shards <- detect_shards_for_file(bascetRoot,bascetName)
   num_shards <- length(shards)
-  cellname_coord <- BascetCellNames(bascetRoot, bascetName, bascet_instance=bascet_instance) ####### TODO: opening bascet streamer twice here. avoid!
-  
-  streamer <- extractstreamer_start(bascet_instance = bascet_instance)
-  
+
+  cellname_coord <- BascetCellNames_withstreamer(bascetRoot, bascetName, streamer)
+
   new("Bascet", 
       num_shards=num_shards, 
       files=file.path(bascetRoot, shards), 
-      cellmeta=cellname_coord, #BascetCellNames(bascetRoot, bascetName), ######################### TODO fix
+      cellmeta=cellname_coord, #BascetCellNames(bascetRoot, bascetName),
       streamer=streamer
   )
 }
@@ -141,7 +167,7 @@ BascetReadFile <- function(
     cellID, 
     filename, 
     as=c("tempfile"), 
-    bascet_instance=GetDefaultBascetInstance(), 
+    bascetInstance=GetDefaultBascetInstance(), 
     verbose=FALSE
 ){
   
@@ -224,13 +250,13 @@ BascetReadFile <- function(
 #' 
 #' @param bascetFile Bascet file object
 #' @param cellID Name of the cell
-#' @param bascet_instance A Bascet instance
+#' @param bascetInstance A Bascet instance
 #' @return A data.frame with list of all the files
 #' @export
 BascetListFilesForCell <- function(
     bascetFile, 
     cellID, 
-    bascet_instance=GetDefaultBascetInstance(),
+    bascetInstance=GetDefaultBascetInstance(),
     super_verbose=FALSE
 ){
   
@@ -275,18 +301,17 @@ BascetListFilesForCell <- function(
 
 
 ###############################################
-#' 
 #' Read the count histogram associated with a Bascet.
 #' Not all Bascets have one, but it is typically produced after debarcoding
 #' 
-#' @param bascet_instance A Bascet instance
+#' @param bascetInstance A Bascet instance
 #' @param minCount Minimum count for a cell to be included. Setting this can have a great impact on speed
 #' @return Histogram as a data.frame
 #' @export
 ReadHistogram <- function(
     bascetRoot, 
     inputName, 
-    bascet_instance=GetDefaultBascetInstance(),
+    bascetInstance=GetDefaultBascetInstance(),
     verbose=TRUE#,
 #    minCount=10 
 ){
@@ -385,11 +410,11 @@ if(FALSE){
 AtrandiBarcodeStats <- function(
     bascetRoot, 
     inputName="debarcoded", 
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ){
 
   #Get frequency of each barcode  
-  cb <- as.data.frame(stringr::str_split_fixed(BascetCellNames(bascetRoot, inputName, bascet_instance=bascet_instance)$cell,"_",4))
+  cb <- as.data.frame(stringr::str_split_fixed(BascetCellNames(bascetRoot, inputName, bascetInstance=bascetInstance)$cell,"_",4))
   df <- as.data.frame(table(unlist(cb)))
   colnames(df) <- c("well","cnt")
   
@@ -508,13 +533,13 @@ if(FALSE){
 extractstreamer_start <- function(
     fname=NULL,
     verbose=FALSE,
-    bascet_instance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance()
 ) {
   
   #Assemble the command
   all_cmd <- stringr::str_trim(paste(
-    bascet_instance@prepend_cmd,
-    bascet_instance@bin,
+    bascetInstance@prepend_cmd,
+    bascetInstance@bin,
     "extract-stream",
     if(!is.null(fname)) c("-i",fname)
   ))
@@ -585,21 +610,24 @@ extractstreamer_ls <- function(
 
 
 ###############################################
-#' extract streamer: list all cells in a tabix-file
+#' extract streamer: list all cells in a given file
 #' 
 #' @return list of cells
-extractstreamer_lstabix <- function(
+extractstreamer_listcellsanyfile <- function(
     p, 
     fname,
     super_verbose=FALSE
 ){
-  p$write_input(paste0("lstabix ",fname,"\n"))
+  p$write_input(paste0("listcellsanyfile ",fname,"\n"))
   #Figure out how many lines to get
   newlines <- extractstreamer_read_one_line(p)
   if(stringr::str_starts(newlines,"error")) {
     stop(newlines)
   } else {
     n_lines <- as.integer(newlines)
+    if(super_verbose){
+      print(paste("Number of cells in file",n_lines))
+    }
     extractstreamer_read_n_lines(p, n_lines, super_verbose)
   }
 }
@@ -645,25 +673,30 @@ extractstreamer_read_n_lines <- function(
     n_lines, 
     super_verbose=FALSE
 ){
-  all_out <- c()
-  while(length(all_out) < n_lines){
+  all_out <- list()#c()
+  i <- 1
+  sofar <- 0
+  while(sofar < n_lines){
     if(!p$is_alive()){
       print(p$read_all_error())
       stop("process unexpectedly died")
     }
     newlines <- p$read_output_lines()
+    sofar <- sofar + length(newlines)
     if(super_verbose){
-      print("got more lines:")
-      print(newlines)
-      print(paste("len all out", length(all_out)))
-      print(paste("n_lines", n_lines))
+      #print("got more lines:")
+      #print(newlines)
+      writeLines(paste("lines read so far:", length(all_out),"\ttot_lines:", n_lines))
     }
-    all_out <- c(all_out, newlines)
+    #all_out <- c(all_out, newlines)
+    all_out[[i]] <- newlines
+    i <- i + 1
   }
+  cat_all_out <- do.call(c, all_out)
   if(super_verbose){
     print("return from extractstreamer_read_n_lines")
   }
-  all_out
+  cat_all_out
 }
 
 ###############################################
@@ -744,7 +777,7 @@ extractstreamer_extract_to <- function(
 #' 
 #' Store all contigs in an output directory, as cell_id.fa
 #' 
-#' @param bascet_instance A Bascet instance
+#' @param bascetInstance A Bascet instance
 #' @param inputName Name of input shard
 #' @param outputDir Directory to store FASTA in
 #' @param listCells List of cells to extract
@@ -754,9 +787,9 @@ BascetDumpContigs <- function(
     inputName="skesa",
     listCells,
     outputDir,
-    bascet_instance
+    bascetInstance
 ){
-  skesa_file <- OpenBascet(bascetRoot, inputName, bascet_instance)
+  skesa_file <- OpenBascet(bascetRoot, inputName, bascetInstance)
   
   for(cellid in listCells) {
     #Read contig
