@@ -9,7 +9,7 @@ BascetDumpContigs(
   inputName = "skesa",
   listCells,
   outputDir,
-  bascet_instance
+  bascetInstance
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ BascetDumpContigs(
 
 \item{outputDir}{Directory to store FASTA in}
 
-\item{bascet_instance}{A Bascet instance}
+\item{bascetInstance}{A Bascet instance}
 }
 \description{
 Store all contigs in an output directory, as cell_id.fa

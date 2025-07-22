@@ -4,12 +4,12 @@
 \alias{CountGrangeFeatures}
 \title{Obtain a feature matrix (as seurat object) given an seurat object having Fragments associated}
 \usage{
-CountGrangeFeatures(adata, grange_gene)
+CountGrangeFeatures(adata, grangeGene)
 }
 \arguments{
 \item{adata}{Seurat object, with FeatureMatrix}
 
-\item{grange_gene}{A grange object telling where to count}
+\item{grangeGene}{A grange object telling where to count}
 }
 \value{
 A Seurat AssayObject

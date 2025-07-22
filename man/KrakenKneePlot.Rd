@@ -7,14 +7,14 @@
 KrakenKneePlot(
   adata,
   groupby = "phylum",
-  show_num_spec = 15,
-  sortbyname = FALSE
+  showNumSpecies = 15,
+  sortByName = FALSE
 )
 }
 \arguments{
 \item{groupby}{genus, phylum or species}
 
-\item{sortbyname}{Sort by name}
+\item{sortByName}{Sort by name}
 }
 \value{
 A ggplot

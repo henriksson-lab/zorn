@@ -8,10 +8,10 @@ This is a thin wrapper around BascetAggregateMap}
 BascetAggregateFASTQC(
   bascetRoot,
   inputName = "fastqc",
-  include_cells = NULL,
+  includeCells = NULL,
   verbose = FALSE,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \description{

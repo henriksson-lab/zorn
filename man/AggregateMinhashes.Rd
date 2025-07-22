@@ -4,14 +4,14 @@
 \alias{AggregateMinhashes}
 \title{Aggregate frequency of minhashes across cells}
 \usage{
-AggregateMinhashes(bascetRoot, inputName = "minhash", bascet_instance)
+AggregateMinhashes(bascetRoot, inputName = "minhash", bascetInstance)
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
 \item{inputName}{description}
 
-\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
 }
 \value{
 TODO

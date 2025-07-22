@@ -7,8 +7,8 @@
 BascetListFilesForCell(
   bascetFile,
   cellID,
-  bascet_instance = GetDefaultBascetInstance(),
-  super_verbose = FALSE
+  bascetInstance = GetDefaultBascetInstance(),
+  superVerbose = FALSE
 )
 }
 \arguments{
@@ -16,7 +16,7 @@ BascetListFilesForCell(
 
 \item{cellID}{Name of the cell}
 
-\item{bascet_instance}{A Bascet instance}
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A data.frame with list of all the files

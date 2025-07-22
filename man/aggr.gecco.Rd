@@ -5,7 +5,7 @@
 \title{Callback function for aggregating GECCO data for each cell.
 To be called from BascetAggregateMap}
 \usage{
-aggr.gecco(bascetFile, cellID, bascet_instance)
+aggr.gecco(bascetFile, cellID, bascetInstance)
 }
 \value{
 TODO

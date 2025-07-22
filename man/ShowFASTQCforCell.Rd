@@ -8,14 +8,14 @@ ShowFASTQCforCell(
   bascetFile,
   cellID,
   readnum = "1",
-  use_browser = FALSE,
+  useBrowser = FALSE,
   verbose = FALSE
 )
 }
 \arguments{
 \item{readnum}{1 or 2, for R1 and R2}
 
-\item{use_browser}{Use operating system browser to open file}
+\item{useBrowser}{Use operating system browser to open file}
 }
 \value{
 TODO

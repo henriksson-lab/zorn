@@ -4,16 +4,16 @@
 \alias{ChooseInformativeKMERs}
 \title{Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range}
 \usage{
-ChooseInformativeKMERs(kmer_hist, minfreq = 0.005, maxfreq = 1)
+ChooseInformativeKMERs(kmerHist, minFreq = 0.005, maxFreq = 1)
 }
 \arguments{
-\item{minfreq}{description}
+\item{minFreq}{description}
 
-\item{maxfreq}{description}
+\item{maxFreq}{description}
 
 \item{fname}{description}
 
-\item{num_pick}{description}
+\item{numPick}{description}
 }
 \value{
 List of KMERs

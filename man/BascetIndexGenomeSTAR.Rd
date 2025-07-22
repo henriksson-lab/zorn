@@ -11,7 +11,7 @@ BascetIndexGenomeSTAR(
   outDir,
   numLocalThreads = 10,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{

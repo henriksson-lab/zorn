@@ -4,16 +4,12 @@
 \alias{OpenBascet}
 \title{Open a Bascet, prepare it for reading individual files}
 \usage{
-OpenBascet(
-  bascetRoot,
-  bascetName,
-  bascet_instance = GetDefaultBascetInstance()
-)
+OpenBascet(bascetRoot, bascetName, bascetInstance = GetDefaultBascetInstance())
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
 }
 \value{
 A handle to a Bascet

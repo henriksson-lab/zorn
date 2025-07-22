@@ -8,10 +8,10 @@ This is a thin wrapper around BascetAggregateMap}
 BascetAggregateAMRfinder(
   bascetRoot,
   inputName = "AMRfinder",
-  include_cells = NULL,
-  get_column = "Element.symbol",
+  includeCells = NULL,
+  getColumn = "Element.symbol",
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \description{

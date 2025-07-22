@@ -5,7 +5,7 @@
 \title{Callback function for aggregating ARIBA data for each cell.
 To be called from BascetAggregateMap}
 \usage{
-aggr.ariba(bascetFile, cellID, bascet_instance)
+aggr.ariba(bascetFile, cellID, bascetInstance)
 }
 \value{
 TODO

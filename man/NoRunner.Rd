@@ -4,7 +4,7 @@
 \alias{NoRunner}
 \title{Create new no-runner instance, used for debugging}
 \usage{
-NoRunner(show_script = TRUE)
+NoRunner(showScript = TRUE)
 }
 \value{
 A NoRunner instance

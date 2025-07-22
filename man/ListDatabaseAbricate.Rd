@@ -4,7 +4,7 @@
 \alias{ListDatabaseAbricate}
 \title{List installed databases available for Abricate}
 \usage{
-ListDatabaseAbricate(dbdir, bascet_instance = GetDefaultBascetInstance())
+ListDatabaseAbricate(dbdir, bascetInstance = GetDefaultBascetInstance())
 }
 \value{
 List of database names

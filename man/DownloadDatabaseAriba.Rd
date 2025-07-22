@@ -7,7 +7,7 @@
 DownloadDatabaseAriba(
   dbdir,
   ref = "ncbi",
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \description{

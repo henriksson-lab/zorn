@@ -4,7 +4,7 @@
 \alias{LocalRunner}
 \title{Create new local runner instance}
 \usage{
-LocalRunner(maxcpu = "10", direct = FALSE, show_script = FALSE)
+LocalRunner(maxcpu = "10", direct = FALSE, showScript = FALSE)
 }
 \value{
 TODO

@@ -8,9 +8,9 @@ This is a thin wrapper around BascetAggregateMap}
 BascetAggregateGECCO(
   bascetRoot,
   inputName = "gecco",
-  include_cells = NULL,
+  includeCells = NULL,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \description{

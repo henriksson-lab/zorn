@@ -4,7 +4,7 @@
 \alias{TabixGetFragmentsSeqs}
 \title{Using Tabix, get list of sequences in a fragment file}
 \usage{
-TabixGetFragmentsSeqs(fragpath, bascet_instance = GetDefaultBascetInstance())
+TabixGetFragmentsSeqs(fragpath, bascetInstance = GetDefaultBascetInstance())
 }
 \value{
 The raw result of tabix

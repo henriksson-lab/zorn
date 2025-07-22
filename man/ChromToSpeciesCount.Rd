@@ -4,7 +4,7 @@
 \alias{ChromToSpeciesCount}
 \title{Produce a count matrix on strain level}
 \usage{
-ChromToSpeciesCount(adata, map_seq2strain)
+ChromToSpeciesCount(adata, mapSeq2strain)
 }
 \value{
 TODO

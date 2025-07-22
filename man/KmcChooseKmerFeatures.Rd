@@ -4,16 +4,16 @@
 \alias{KmcChooseKmerFeatures}
 \title{Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range}
 \usage{
-KmcChooseKmerFeatures(fname, num_pick = 1000, minfreq = 0.01, maxfreq = 0.1)
+KmcChooseKmerFeatures(fname, numPick = 1000, minFreq = 0.01, maxFreq = 0.1)
 }
 \arguments{
 \item{fname}{description}
 
-\item{num_pick}{description}
+\item{numPick}{description}
 
-\item{minfreq}{description}
+\item{minFreq}{description}
 
-\item{maxfreq}{description}
+\item{maxFreq}{description}
 }
 \value{
 List of KMERs

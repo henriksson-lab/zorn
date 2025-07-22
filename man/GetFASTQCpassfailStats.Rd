@@ -4,7 +4,7 @@
 \alias{GetFASTQCpassfailStats}
 \title{From aggregated FASTQC data, get overall pass-fail statistics for overlay on UMAP etc}
 \usage{
-GetFASTQCpassfailStats(aggr_fastq_data, readnum)
+GetFASTQCpassfailStats(aggrFastqData, readnum)
 }
 \arguments{
 \item{readnum}{1 or 2, for R1 or R2}

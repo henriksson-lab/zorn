@@ -6,7 +6,7 @@
 \usage{
 FragmentCountsPerChrom(
   chrom_assay,
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \value{

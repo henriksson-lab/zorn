@@ -10,7 +10,7 @@ BascetBam2Fragments(
   outputName = "fragments",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \value{

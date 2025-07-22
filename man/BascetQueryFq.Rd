@@ -9,10 +9,10 @@ BascetQueryFq(
   inputName = "filtered",
   outputName = "kmer_counts",
   useKMERs,
-  max_reads = 1e+06,
+  maxReads = 1e+06,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ BascetQueryFq(
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
 }
 \value{
 TODO

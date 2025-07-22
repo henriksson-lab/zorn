@@ -10,10 +10,10 @@ BascetComputeMinhash(
   inputName = "filtered",
   outputName = "minhash",
   overwrite = FALSE,
-  max_reads = 1e+05,
-  kmer_size = 31,
+  maxReads = 1e+05,
+  kmerSize = 31,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ BascetComputeMinhash(
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
 }
 \value{
 TODO

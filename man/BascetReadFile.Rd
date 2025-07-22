@@ -9,7 +9,7 @@ BascetReadFile(
   cellID,
   filename,
   as = c("tempfile"),
-  bascet_instance = GetDefaultBascetInstance(),
+  bascetInstance = GetDefaultBascetInstance(),
   verbose = FALSE
 )
 }
@@ -22,7 +22,7 @@ BascetReadFile(
 
 \item{as}{description}
 
-\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
 
 \item{verbose}{description}
 }

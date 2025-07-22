@@ -5,7 +5,7 @@
 \title{Get a Bascet image (singularity or docker).
 It will be cached in the provided directory to avoid downloading it all the time}
 \usage{
-getBascetSingularityImage(store_at = getwd(), tempdir = NULL)
+getBascetSingularityImage(storeAt = getwd(), tempdir = NULL)
 }
 \value{
 A Bascet instance

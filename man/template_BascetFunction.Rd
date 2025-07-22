@@ -7,7 +7,7 @@
 template_BascetFunction(
   bascetRoot,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ template_BascetFunction(
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascet_instance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
 
 \item{num_output_shards}{Number of output shards, i.e., how many output files to split the data into? (>=1)}
 

@@ -6,12 +6,12 @@
 Convert to a matrix where the columns instead are the names of each taxonomy.
 Unused taxonomyID columns will not be kept}
 \usage{
-SetTaxonomyNamesFeatures(mat, keep_species_only = TRUE)
+SetTaxonomyNamesFeatures(mat, keepSpeciesOnly = TRUE)
 }
 \arguments{
 \item{mat}{description}
 
-\item{keep_species_only}{description}
+\item{keepSpeciesOnly}{description}
 }
 \value{
 A named count matrix

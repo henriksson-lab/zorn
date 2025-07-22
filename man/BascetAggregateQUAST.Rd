@@ -8,10 +8,10 @@ This is a thin wrapper around BascetAggregateMap}
 BascetAggregateQUAST(
   bascetRoot,
   inputName = "quast",
-  include_cells = NULL,
+  includeCells = NULL,
   verbose = FALSE,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \description{

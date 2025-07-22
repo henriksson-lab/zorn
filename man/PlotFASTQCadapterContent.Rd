@@ -4,7 +4,7 @@
 \alias{PlotFASTQCadapterContent}
 \title{From aggregated FASTQC data, plot adapter content}
 \usage{
-PlotFASTQCadapterContent(aggr_fastq_data, readnum)
+PlotFASTQCadapterContent(aggrFastqData, readnum)
 }
 \arguments{
 \item{readnum}{1 or 2, for R1 or R2}

@@ -7,7 +7,7 @@
 DownloadDatabaseBakta(
   dbdir,
   dbtype = c("light", "full"),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \description{

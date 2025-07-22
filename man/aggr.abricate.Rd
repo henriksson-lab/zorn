@@ -5,7 +5,7 @@
 \title{Callback function for aggregating ABRicate data for each cell.
 To be called from BascetAggregateMap}
 \usage{
-aggr.abricate(bascetFile, cellID, bascet_instance)
+aggr.abricate(bascetFile, cellID, bascetInstance)
 }
 \value{
 TODO

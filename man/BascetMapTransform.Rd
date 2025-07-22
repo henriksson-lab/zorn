@@ -14,7 +14,7 @@ BascetMapTransform(
   includeCells = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{

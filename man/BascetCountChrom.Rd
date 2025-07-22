@@ -11,7 +11,7 @@ BascetCountChrom(
   min_matching = 0,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \value{

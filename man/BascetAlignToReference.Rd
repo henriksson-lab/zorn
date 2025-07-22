@@ -15,7 +15,7 @@ BascetAlignToReference(
   overwrite = FALSE,
   aligner = "BWA",
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{

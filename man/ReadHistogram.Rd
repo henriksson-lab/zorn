@@ -8,11 +8,14 @@ Not all Bascets have one, but it is typically produced after debarcoding}
 ReadHistogram(
   bascetRoot,
   inputName,
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance(),
+  verbose = TRUE
 )
 }
 \arguments{
-\item{bascet_instance}{A Bascet instance}
+\item{bascetInstance}{A Bascet instance}
+
+\item{minCount}{Minimum count for a cell to be included. Setting this can have a great impact on speed}
 }
 \value{
 Histogram as a data.frame

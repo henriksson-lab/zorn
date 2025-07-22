@@ -4,7 +4,7 @@
 \alias{getBascetDockerImage}
 \title{Get and install a Bascet docker image.}
 \usage{
-getBascetDockerImage(store_at = getwd(), tempdir = NULL)
+getBascetDockerImage(storeAt = getwd(), tempdir = NULL)
 }
 \value{
 A Bascet instance

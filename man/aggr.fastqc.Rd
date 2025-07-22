@@ -5,7 +5,7 @@
 \title{Callback function for aggregating FASTQC data for each cell.
 To be called from BascetAggregateMap}
 \usage{
-aggr.fastqc(bascetFile, cellID, bascet_instance)
+aggr.fastqc(bascetFile, cellID, bascetInstance)
 }
 \value{
 TODO

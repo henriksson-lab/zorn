@@ -4,10 +4,10 @@
 \alias{TestBascetInstance}
 \title{Check if a Bascet instance works}
 \usage{
-TestBascetInstance(bascet_instance)
+TestBascetInstance(bascetInstance)
 }
 \arguments{
-\item{bascet_instance}{Bascet instance}
+\item{bascetInstance}{Bascet instance}
 }
 \value{
 "ok" if the instance works; panic otherwise

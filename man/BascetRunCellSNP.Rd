@@ -11,7 +11,7 @@ BascetRunCellSNP(
   outputName = "cellsnp",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
-  bascet_instance = GetDefaultBascetInstance()
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
