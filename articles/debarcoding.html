@@ -171,12 +171,12 @@ using the following command:</p>
 <span>  inputName<span class="op">=</span><span class="st">"debarcoded"</span>,</span>
 <span>  bascetInstance<span class="op">=</span><span class="va">bascet_instance.default</span>,</span>
 <span>  minQuantile<span class="op">=</span><span class="fl">0.99</span></span>
-<span><span class="op">)</span>  </span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Before you proceed, you should perform a kneeplot analysis to see
 which cells you keep:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/DebarcodedKneePlot.html">DebarcodedKneePlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">debstat</span>, </span>
+<span>  <span class="va">debstat</span>,</span>
 <span>  filename <span class="op">=</span> <span class="st">"kneeplot.pdf"</span> <span class="co">#optional</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>This is just a histogram of reads per barcode. (downsampling for
@@ -191,10 +191,8 @@ and you may want a fair bit more to account for lysis differences (see
 our manuscript). Including too many cells will slow down later steps but
 you can reduce the number of cells at any point. Adjust the cutoff using
 the previously set minQuantile parameter.</p>
-<div class="figure">
-<embed src="debarcoding_kneeplot.pdf" title="desc" width="400px" height="300px" type="application/pdf"></embed><p class="caption">
-desc
-</p>
+<div class="float">
+<img src="debarcoding_kneeplot.png" alt="Kneeplot"><div class="figcaption">Kneeplot</div>
 </div>
 <p>Once you have a plan you are happy with, you can proceed with
 shardification. At this step you can also choose to create multiple
@@ -208,7 +206,7 @@ it is more likely to cause mistakes.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
 <span>  <span class="va">debstat</span>,</span>
 <span>  numOutputShards <span class="op">=</span> <span class="fl">1</span>, <span class="co">#shards per library; increase to spread the workload over more computers</span></span>
-<span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span><span class="va">bascet_runner.default</span>, ncpu<span class="op">=</span><span class="st">"4"</span><span class="op">)</span>  </span>
+<span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span><span class="va">bascet_runner.default</span>, ncpu<span class="op">=</span><span class="st">"4"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="additional-trimming">Additional trimming<a class="anchor" aria-label="anchor" href="#additional-trimming"></a>
@@ -220,7 +218,7 @@ reads further. To do this, first convert your data to FASTQ format:</p>
 <span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,   <span class="co">#default; can omit</span></span>
-<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,  </span>
+<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
 <span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Now use FASTP to perform the trimming:</p>
