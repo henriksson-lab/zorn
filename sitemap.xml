@@ -74,7 +74,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunFASTP.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunKraken.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetShardify.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetShardify2.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetShardifyOld.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ChooseInformativeKMERs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ChromToSpeciesCount.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CloseBascet.html</loc></url>
@@ -151,8 +151,9 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/new_no_job.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptCancelJobIfFileExists.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeBashArray.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeCommalist.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/shellscript_make_bash_array.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeFilesExpander.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/template_BascetFunction.html</loc></url>
 </urlset>
 

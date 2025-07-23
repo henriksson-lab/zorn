@@ -96,7 +96,58 @@ identify which read belongs to which cell. Zorn can automatically figure
 out which files to use for what:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rawmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DetectRawFileMeta.html">DetectRawFileMeta</a></span><span class="op">(</span><span class="st">"/home/yours/directory_with_raw_fastq"</span><span class="op">)</span></span></code></pre></div>
-<p>TODO explain this data frame</p>
+<p>Depending on your input data, rawmeta might look like this:</p>
+<table class="table">
+<caption>Example input file metadata</caption>
+<colgroup>
+<col width="11%">
+<col width="28%">
+<col width="28%">
+<col width="31%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">prefix</th>
+<th align="left">r1</th>
+<th align="left">r2</th>
+<th align="left">dir</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">UDI_Plate_WT_29</td>
+<td align="left">UDI_Plate_WT_29_S43_L007_R1_001.fastq.gz</td>
+<td align="left">UDI_Plate_WT_29_S43_L007_R2_001.fastq.gz</td>
+<td align="left">/home/m/mahogny/mystore/dataset/250611/fastq</td>
+</tr>
+<tr class="even">
+<td align="left">UDI_Plate_WT_29</td>
+<td align="left">UDI_Plate_WT_29_S43_L008_R1_001.fastq.gz</td>
+<td align="left">UDI_Plate_WT_29_S43_L008_R2_001.fastq.gz</td>
+<td align="left">/home/m/mahogny/mystore/dataset/250611/fastq</td>
+</tr>
+<tr class="odd">
+<td align="left">UDI_Plate_WT_30</td>
+<td align="left">UDI_Plate_WT_30_S44_L007_R1_001.fastq.gz</td>
+<td align="left">UDI_Plate_WT_30_S44_L007_R2_001.fastq.gz</td>
+<td align="left">/home/m/mahogny/mystore/dataset/250611/fastq</td>
+</tr>
+<tr class="even">
+<td align="left">UDI_Plate_WT_30</td>
+<td align="left">UDI_Plate_WT_30_S44_L008_R1_001.fastq.gz</td>
+<td align="left">UDI_Plate_WT_30_S44_L008_R2_001.fastq.gz</td>
+<td align="left">/home/m/mahogny/mystore/dataset/250611/fastq</td>
+</tr>
+</tbody>
+</table>
+<p>Prefix is the name of the library, of which there are two here. Note
+the paired input FASTQ files R1 and R2. Zorn has here detected that the
+libraries were sequenced on two separate lanes; by using the same
+prefix, these will be merged during the later sharding stage. Keeping
+input files from different lanes separate enables each FASTQ file to be
+processed on a separate computer and can thus be advantageous if you
+have large amounts of data.</p>
+<p>If you have files that are awkwardly named for some reason, simply
+produce a data frame with the columns above, and provide as input for
+the next stage.</p>
 <p>You can now parse the reads the figure out which cell they belong to,
 and any UMI information. The only thing you additionally need to specify
 is what type of data you have, where “atrandi_wgs” is for the Atrandi
@@ -108,43 +159,56 @@ SPC-based MDA protocol for WGS.</p>
 <span>    <span class="va">rawmeta</span>,</span>
 <span>    chemistry<span class="op">=</span><span class="st">"atrandi_wgs"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Once barcodes have been processed, you can perform knee plot
-analysis, which is the first important quality control.</p>
+<p>After debarcoding, you now need to (1) merge files belong to the same
+library, and (2) remove reads belonging to empty droplets. Furthermore,
+at this step you can also decide to split the cells across multiple
+“shards”, enabling parallel processing the data in later steps. This
+done in two steps, in which you first set up a “plan”. This is done
+using the following command:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Decide cells to include</span></span>
-<span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadHistogram.html">ReadHistogram</a></span><span class="op">(</span><span class="va">bascetRoot</span>,<span class="st">"debarcoded"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/PlotHistogram.html">PlotHistogram</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span></span></code></pre></div>
-<p>This is just a histogram of reads per barcode. It however tells you *
-how many cells you have * how much free-floating RNA/DNA you have in
-your background (empty droplets/SPCs) * how distinct cells are from
-background</p>
-<p>It makes sense to exclude barcodes if the number of counts are too
-low. You can exclude them also at a later stage, but removing the worst
-offenders already will speed up computation. Here is one example for
-getting the names and number of cells having at least 100 reads:</p>
+<code class="sourceCode R"><span><span class="va">debstat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PrepareSharding.html">PrepareSharding</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  inputName<span class="op">=</span><span class="st">"debarcoded"</span>,</span>
+<span>  bascetInstance<span class="op">=</span><span class="va">bascet_instance.default</span>,</span>
+<span>  minQuantile<span class="op">=</span><span class="fl">0.99</span></span>
+<span><span class="op">)</span>  </span></code></pre></div>
+<p>Before you proceed, you should perform a kneeplot analysis to see
+which cells you keep:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">includeCells</span> <span class="op">&lt;-</span> <span class="va">h</span><span class="op">$</span><span class="va">cellid</span><span class="op">[</span><span class="va">h</span><span class="op">$</span><span class="va">count</span><span class="op">&gt;</span><span class="fl">100</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">includeCells</span><span class="op">)</span></span></code></pre></div>
-<p>Finally, before you are ready to run all other commands, you need to
-make sure that cells are sharded. This is primarily relevant if you have
-multiple FASTQ-files for your library (i.e. you sequenced your library
-on multiple lanes). Sharding sorts cells such that the reads for one
-cell are in one single shard. This is essential for parallel
-processing.</p>
-<p>At this step you can also choose to create multiple shards. This is
-only relevant if you wish to parallelize the workflow using SLURM, as
-the number of shards decides how many nodes you can use in parallel. If
-you run everything on your own computer then we advise only creating one
-shard, as there is no benefit to having multiple and it is more likely
-to cause mistakes.</p>
-<p>In this step we also filter out barcodes with too low read counts
-(optional).</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/DebarcodedKneePlot.html">DebarcodedKneePlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">debstat</span>, </span>
+<span>  filename <span class="op">=</span> <span class="st">"kneeplot.pdf"</span> <span class="co">#optional</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>This is just a histogram of reads per barcode. (downsampling for
+speed causes cells of low indices to not be shown, worry not!) The
+didagram however tells you * how many cells you have * how much
+free-floating RNA/DNA you have in your background (empty droplets/SPCs)
+* how distinct cells are from background</p>
+<p>An example kneeplot for Parse biosciences RNA-seq data is shown
+below. You want to to include slightly more cells than the knee
+indicates. For Atrandi microbial WGS data, knee plots cannot be trusted,
+and you may want a fair bit more to account for lysis differences (see
+our manuscript). Including too many cells will slow down later steps but
+you can reduce the number of cells at any point. Adjust the cutoff using
+the previously set minQuantile parameter.</p>
+<div class="figure">
+<embed src="debarcoding_kneeplot.pdf" title="desc" width="400px" height="300px" type="application/pdf"></embed><p class="caption">
+desc
+</p>
+</div>
+<p>Once you have a plan you are happy with, you can proceed with
+shardification. At this step you can also choose to create multiple
+shards. This is only relevant if you wish to parallelize the workflow
+using SLURM, as the number of shards decides how many nodes you can use
+in parallel. If you run everything on your own computer then we advise
+only creating one shard, as there is no benefit to having multiple and
+it is more likely to cause mistakes.</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  includeCells <span class="op">=</span> <span class="va">includeCells</span>,</span>
-<span>  num_output_shards <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="va">debstat</span>,</span>
+<span>  numOutputShards <span class="op">=</span> <span class="fl">1</span>, <span class="co">#shards per library; increase to spread the workload over more computers</span></span>
+<span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span><span class="va">bascet_runner.default</span>, ncpu<span class="op">=</span><span class="st">"4"</span><span class="op">)</span>  </span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="additional-trimming">Additional trimming<a class="anchor" aria-label="anchor" href="#additional-trimming"></a>
