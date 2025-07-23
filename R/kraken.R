@@ -94,9 +94,9 @@ BascetRunKraken <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_in_R1",inputFiles_R1),
-        if(is_paired) shellscript_make_bash_array("files_in_R2",inputFiles_R2),
-        shellscript_make_bash_array("files_out",outputFiles),
+        shellscriptMakeBashArray("files_in_R1",inputFiles_R1),
+        if(is_paired) shellscriptMakeBashArray("files_in_R2",inputFiles_R2),
+        shellscriptMakeBashArray("files_out",outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
@@ -161,8 +161,8 @@ BascetMakeKrakenCountMatrix <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_in",inputFiles),
-        shellscript_make_bash_array("files_out",outputFiles),
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),

@@ -19,7 +19,11 @@ PrepareSharding <- function(
   #This speeds up the process
   fstats <- file.path(bascetRoot, paste0(inputName,".meta"))
   meta <- read.csv(fstats)
-  meta$group <- as.integer(factor(meta$prefix))
+  meta$prefix <- as.factor(meta$prefix)
+  meta$group <- as.integer(meta$prefix)
+  group_prefix <- levels(meta$prefix)
+  numgroup <- max(as.integer(meta$prefix))
+  #print(group_prefix)
   
   #Get all the TIRPs, sum up the reads  
   inputFiles <- detectShardsForFile(bascetRoot, inputName)
@@ -31,9 +35,10 @@ PrepareSharding <- function(
   
   if(verbose) {
     print("Loading barcode counts")
+    pb <- txtProgressBar(min = 0, max = length(inputFiles), initial = 0) 
   }
   
-  #Read BC info for each file
+  ### Read BC info for each file
   list_hist <- list()
   for(cur_i in 1:length(inputFiles)) {
     hist_f <- paste0(file.path(bascetRoot, inputFiles[cur_i]),".hist") ## only support TIRP for now
@@ -46,17 +51,23 @@ PrepareSharding <- function(
       progress=FALSE
     )
     list_hist[[cur_i]] <- dat
+    
+    if(verbose){
+      setTxtProgressBar(pb,cur_i)
+    }
   }
+  if(verbose) {
+    close(pb)
+  }  
   
+  ### Perform barcode merging
   if(verbose) {
     print("Merging barcode lists for each library")
+    pb <- txtProgressBar(min = 0, max = numgroup, initial = 0) 
   }
   list_group_bc_count <- list()
-  for(g in unique(meta$group)) {
-    if(verbose) {
-      print(g)
-    }
-    
+  for(g in 1:numgroup) {
+
     #Gather counts for cells across files for each library (e.g. multiple lanes)
     dat <- data.table::rbindlist(list_hist[meta$shard[meta$group==g]])
     colnames(dat) <- c("cellid","onecount")
@@ -65,17 +76,27 @@ PrepareSharding <- function(
     sumdat <- dat[ ,list(count=sum(onecount)), by=cellid]
     
     list_group_bc_count[[g]] <- sumdat[order(count,decreasing=TRUE)]
+    
+    if(verbose){
+      setTxtProgressBar(pb,g) ### or?
+    }
   }
+  if(verbose) {
+    close(pb)
+  }  
   
+  
+  ### Kneeplot analysis for each library
   if(verbose) {
     print("Kneeplot analysis for each library")
+    pb <- txtProgressBar(min = 0, max = numgroup, initial = 0) 
   }
   list_knee <- list()
   list_picked_cells <- list()
-  for(g in unique(meta$group)) {
-    if(verbose) {
-      print(g)
-    }
+  for(g in 1:numgroup) {
+    #if(verbose) {
+    #  print(g)
+    #}
     
     #Produce a knee plot. Subsample to keep the speed high
     knee <- list_group_bc_count[[g]]
@@ -88,16 +109,22 @@ PrepareSharding <- function(
     sub_knee$group <- g
     
     #min_quantile <- 0.99
-    read_cutoff <- quantile(sub_knee$count, min_quantile)
+    read_cutoff <- quantile(sub_knee$count, minQuantile)
     sub_knee$picked <- sub_knee$count > read_cutoff
     
     list_knee[[g]] <- sub_knee
     list_picked_cells[[g]] <- knee$cellid[knee$count > read_cutoff]
+    
+    if(verbose){
+      setTxtProgressBar(pb,g) ### or?
+    }
   }
+  if(verbose) {
+    close(pb)
+  }  
   
-  #Aggregate data
+  ### Aggregate data
   all_knee <- data.table::rbindlist(list_knee)
-  all_knee$group <- as.character(all_knee$group)
   all_picked_cells <- do.call(c,list_picked_cells)
   
   print(paste(
@@ -112,23 +139,12 @@ PrepareSharding <- function(
     inputFiles=inputFiles,
     list_group_bc_count=list_group_bc_count,
     list_picked_cells=list_picked_cells,
-    all_knee=all_knee
+    all_knee=all_knee,
+    group_prefix=group_prefix,
+    numgroup=numgroup
   )
 }
 
-
-if(FALSE){
-  
-  #~/mystore/dataset/250611_scinfluenza/merge
-  bascetRoot <- "/home/m/mahogny/mystore/dataset/250611_scinfluenza/bascet"
-  
-  debstat <- PrepareSharding(
-    bascetRoot,
-    inputName="debarcoded",
-    bascetInstance=bascetInstance.default,
-    min_quantile=0.99
-  )  
-}
 
 
 
@@ -145,10 +161,14 @@ DebarcodedKneePlot <- function(
     filename=NULL
 ){
   
+  #should possibly show all points in kneeplot. currently cut off at low index, which is weird TODO
+  
   #Set line aesthetics
   debstat$all_knee$picked <- factor(as.character(debstat$all_knee$picked), levels = c("TRUE","FALSE"))
   
-  p <- ggplot2::ggplot(debstat$all_knee, ggplot2::aes(index,count, color=group, linetype=picked)) + 
+  debstat$all_knee$prefix <- debstat$group_prefix[debstat$all_knee$group]
+  
+  p <- ggplot2::ggplot(debstat$all_knee, ggplot2::aes(index,count, color=prefix, linetype=picked)) + 
     ggplot2::geom_line() +
     ggplot2::theme_bw() +
     ggplot2::scale_x_log10() +
@@ -160,10 +180,8 @@ DebarcodedKneePlot <- function(
   p
 }
 
+#  DebarcodedKneePlot(debstat, filename = "kneeplot.pdf")
 
-if(FALSE){
-  DebarcodedKneePlot(bcstat, filename = "kneeplot.pdf")
-}
 
 
 
@@ -171,86 +189,76 @@ if(FALSE){
 
 
 ###############################################
-#' Take debarcoded reads and split them into suitable numbers of shards.
+#' Take debarcoded reads, merge them, and split them into suitable numbers of shards.
 #' 
 #' The reads from one cell is guaranteed to only be present in a single shard.
 #' This makes parallel processing simple as each shard can be processed on
-#' a separate computer. Using more shards means that more computers can be used.
-#' 
-#' If you perform all the calculations on a single computer, having more
+#' a separate computer. Using more shards means that more computers can process the data in parallel.
+#' However, if you perform all the calculations on a single computer, having more
 #' than one shard will not result in a speedup. This option is only relevant
 #' when using a cluster of compute nodes.
 #' 
-#' 
-#' 
-#' TODO if we have multiple input samples, is there a way to group them?
-#' otherwise we will be reading more input files than needed. that said,
-#' if we got an index, so if list of cells specified, it is possible to quickly figure out
-#' out if a file is needed at all for a merge
-#' 
-#' TODO Figuring out if a file is needed can be done at "planning" (Zorn) stage
-#' 
-#' TODO seems faster to have a single merger that writes multiple output files if
-#' cell list is not provided. if the overhead is accepted then read all input files and
-#' discard cells on the fly
-#' 
-#' @param inputName Name of input file: Debarcoded reads
-#' @param outputName Name of the output file: Properly sharded debarcoded reads
+#' @param debstat Plan for sharding provided by PrepareSharding
 #' @param numOutputShards How many shards to generate /for each input library/
-#' 
+#' @param outputName Name of the output file: Properly sharded debarcoded reads
 #' @export
-BascetShardify2 <- function(
-    useStats,
-    numOutputShards=1, ### for each input library
+BascetShardify <- function(
+    debstat,
+    numOutputShards=1,
     outputName="filtered", 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
-  
-  
-  input_shards <- detectShardsForFile(bascetRoot, inputName)
-  if(length(input_shards)==0){
-    stop("Found no input files")
+  #Figure out mapping input vs output shards
+  totalNumOutputShards <- numOutputShards*debstat$numgroup
+  dfListOutputs <- data.frame(
+    group=rep(1:debstat$numgroup, numOutputShards),
+    outputFile=makeOutputShardNames(bascetRoot, outputName, "tirp.gz", totalNumOutputShards)
+  )
+
+  dfListInputs <- data.frame(
+    group=debstat$meta$group,
+    inputFile=debstat$inputFiles
+  )
+
+  dfListIO <- merge(dfListOutputs, dfListInputs)
+
+  #Turn I/O-mapping into one list per job
+  inputFiles <- list()
+  outputFiles <- list()
+  for(g in 1:debstat$numgroup){
+    inputFiles[[g]] <- shellscriptMakeCommalist(unique(dfListIO$inputFile[dfListIO$group==g]))
+    outputFiles[[g]] <- shellscriptMakeCommalist(unique(dfListIO$outputFile[dfListIO$group==g]))
   }
+
+  all_outputFiles <- do.call(c, outputFiles)
   
-  #Figure out which cell goes into which shard
-  list_cell_for_shard <- shellscriptSplitArrayIntoListRandomly(includeCells, numOutputShards)
-  
-  #Figure out input and output file names  
-  inputFiles <- file.path(bascetRoot, input_shards)
-  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "tirp.gz", numOutputShards)
-  
-  
-  
-  
-  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(all_outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
       jobname = "Z_shardify",
       bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_out", outputFiles),
+        shellscriptMakeBashArray("files_in", inputFiles),
+        shellscriptMakeBashArray("files_out", outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
-        shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
+        shellscriptMakeFilesExpander("CELLFILE", debstat$list_picked_cells),
         paste(
           bascetInstance@prependCmd,
           bascetInstance@bin,
           "shardify", 
           "-t $BASCET_TEMPDIR",
-          "-i",shellscriptMakeCommalist(inputFiles), #Need to give all input files for each job
-          "-o ${files_out[$TASK_ID]}",                 #Each job produces a single output
-          "--cells $CELLFILE"                          #Each job takes its own list of cells
-        ),  
-        "rm $CELLFILE"
+          "-i ${files_in[$TASK_ID]}",   
+          "-o ${files_out[$TASK_ID]}",  
+          "--cells ${CELLFILE[$TASK_ID]}"           
+        )  
       ), 
-      arraysize = num_output_shards
+      arraysize = debstat$numgroup
     )
   } else {
     new_no_job()
@@ -265,27 +273,24 @@ BascetShardify2 <- function(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if(FALSE) {
-  BascetShardify2(
+if(FALSE){
+  
+  #~/mystore/dataset/250611_scinfluenza/merge
+  bascetRoot <- "/home/m/mahogny/mystore/dataset/250611_scinfluenza/bascet"
+  
+  debstat <- PrepareSharding(
     bascetRoot,
-    useStats = bcstat,
-    num_output_shards = 20,
+    inputName="debarcoded",
+    bascetInstance=bascetInstance.default,
+    minQuantile=0.99
+  )  
+  
+  DebarcodedKneePlot(debstat, filename = "kneeplot.pdf")
+
+
+  BascetShardify2(
+    debstat = debstat,
+    numOutputShards = 1,
     runner=SlurmRunner(bascet_runner.default, ncpu="4")  #not much CPU needed. increased for memory demands
   )
 }

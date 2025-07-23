@@ -225,8 +225,8 @@ BascetAlignmentToBigwig <- function(
     ### Build command
     cmd <- c(
       #shellscript_set_tempdir(bascetInstance),
-      shellscript_make_bash_array("files_in", inputFiles),
-      shellscript_make_bash_array("files_out", outputFiles),
+      shellscriptMakeBashArray("files_in", inputFiles),
+      shellscriptMakeBashArray("files_out", outputFiles),
       
       ### For sorting
       paste(
@@ -320,8 +320,8 @@ BascetFilterAlignment <- function(
     ### Build command
     cmd <- c(
       #shellscript_set_tempdir(bascetInstance),
-      shellscript_make_bash_array("files_in", inputFiles),
-      shellscript_make_bash_array("files_out", outputFiles),
+      shellscriptMakeBashArray("files_in", inputFiles),
+      shellscriptMakeBashArray("files_out", outputFiles),
       
       ### For sorting
       paste(
@@ -458,11 +458,11 @@ BascetAlignToReference <- function(
   final_outputFiles <- outputFilesBAMunsorted
   cmd <- c(
     #shellscript_set_tempdir(bascetInstance),
-    shellscript_make_bash_array("files_in_r1", inputFiles_R1),
-    shellscript_make_bash_array("files_in_r2", inputFiles_R2),
-    shellscript_make_bash_array("files_out_unsorted", outputFilesBAMunsorted),
-    shellscript_make_bash_array("files_out_sorted", outputFilesBAMsorted),
-    shellscript_make_bash_array("files_out_final", outputFilesFinal),
+    shellscriptMakeBashArray("files_in_r1", inputFiles_R1),
+    shellscriptMakeBashArray("files_in_r2", inputFiles_R2),
+    shellscriptMakeBashArray("files_out_unsorted", outputFilesBAMunsorted),
+    shellscriptMakeBashArray("files_out_sorted", outputFilesBAMsorted),
+    shellscriptMakeBashArray("files_out_final", outputFilesFinal),
 
     ### Abort early if needed    
     if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_final[$TASK_ID]}"),
@@ -562,8 +562,8 @@ BascetBam2Fragments <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_in", inputFiles),
-        shellscript_make_bash_array("files_out",outputFiles),
+        shellscriptMakeBashArray("files_in", inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
@@ -621,8 +621,8 @@ BascetCountChrom <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_in", inputFiles),
-        shellscript_make_bash_array("files_out",outputFiles),
+        shellscriptMakeBashArray("files_in", inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
@@ -928,10 +928,10 @@ BascetRunCellSNP <- function(
   ### Build command: basic alignment
   cmd <- c(
     #shellscript_set_tempdir(bascetInstance),
-    shellscript_make_bash_array("files_in", inputFiles),
-    shellscript_make_bash_array("files_out", outputFiles),
-    shellscript_make_bash_array("files_listcell", listcellFiles),
-    shellscript_make_bash_array("files_listchrom", listchromFiles),
+    shellscriptMakeBashArray("files_in", inputFiles),
+    shellscriptMakeBashArray("files_out", outputFiles),
+    shellscriptMakeBashArray("files_listcell", listcellFiles),
+    shellscriptMakeBashArray("files_listchrom", listchromFiles),
     
     ### Abort early if needed    
     #if(!overwrite) shellscriptCancelJobIfFileExists("${outputFiles[$TASK_ID]}"),  #does this work on dirs?

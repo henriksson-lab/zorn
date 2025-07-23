@@ -51,8 +51,8 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
         if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
-        shellscript_make_bash_array("files_in",inputFiles),
-        shellscript_make_bash_array("files_out",outputFiles),
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
@@ -61,7 +61,7 @@ BascetFeaturiseKMC <- function( ########### need a better name; KMC something?
           bascetInstance@prependCmd,
           bascetInstance@bin, 
           "featurise",
-          if(produce_cell_list) "--cells $CELLFILE",
+          if(produce_cell_list) "--cells ${CELLFILE[$TASK_ID]}",
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",
           "-o ${files_out[$TASK_ID]}"
@@ -119,8 +119,8 @@ BascetQueryKMC <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_in",inputFiles),
-        shellscript_make_bash_array("files_out",outputFiles),
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
@@ -373,7 +373,7 @@ BascetMakeMinhashHistogram <- function(
         bascetInstance@prependCmd,
         bascetInstance@bin, 
         "minhash-hist",
-        if(produce_cell_list) "--cells $CELLFILE",
+        if(produce_cell_list) "--cells ${CELLFILE[$TASK_ID]}",
         "-t $BASCET_TEMPDIR",
         "-i", shellscriptMakeCommalist(inputFiles),
         "-o", outputFile
@@ -441,8 +441,8 @@ BascetQueryFq <- function( #666
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_in",inputFiles),
-        shellscript_make_bash_array("files_out",outputFiles),
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),

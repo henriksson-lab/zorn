@@ -57,8 +57,8 @@ BascetMapCell <- function(
     cmd <- c(
       cmd,
       #shellscript_set_tempdir(bascetInstance),
-      shellscript_make_bash_array("files_in",inputFiles),
-      shellscript_make_bash_array("files_out",outputFiles),
+      shellscriptMakeBashArray("files_in",inputFiles),
+      shellscriptMakeBashArray("files_out",outputFiles),
       
       ### Abort early if needed    
       if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),

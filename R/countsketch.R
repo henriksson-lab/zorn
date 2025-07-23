@@ -85,7 +85,7 @@ BascetGatherCountSketch <- function(
         bascetInstance@prependCmd,
         bascetInstance@bin, 
         "countsketch",
-        if(produce_cell_list) "--cells $CELLFILE",
+        if(produce_cell_list) "--cells ${CELLFILE[$TASK_ID]}",
         "-t $BASCET_TEMPDIR",
         "-i", shellscriptMakeCommalist(inputFiles),
         "-o", outputFile

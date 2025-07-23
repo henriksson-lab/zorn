@@ -217,11 +217,11 @@ BascetGetRaw <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
-        shellscript_make_bash_array("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
-        shellscript_make_bash_array("libnames",rawmeta$prefix),
-        shellscript_make_bash_array("files_out",outputFilesComplete),
-        shellscript_make_bash_array("files_out_incomplete",outputFilesIncomplete),
+        shellscriptMakeBashArray("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
+        shellscriptMakeBashArray("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
+        shellscriptMakeBashArray("libnames",rawmeta$prefix),
+        shellscriptMakeBashArray("files_out",outputFilesComplete),
+        shellscriptMakeBashArray("files_out_incomplete",outputFilesIncomplete),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
@@ -286,7 +286,7 @@ BascetGetRaw <- function(
 #' @param outputName Name of the output file: Properly sharded debarcoded reads
 #' 
 #' @export
-BascetShardify <- function(
+BascetShardifyOld <- function(
     bascetRoot, 
     inputName="debarcoded", 
     includeCells=NULL, ############# TODO: get rid of this parameter; only support direct merging
@@ -324,7 +324,7 @@ BascetShardify <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_out", outputFiles),
+        shellscriptMakeBashArray("files_out", outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
@@ -421,8 +421,8 @@ BascetMapTransform <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_in",inputFiles),
-        shellscript_make_bash_array("files_out",outputFiles),
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
@@ -432,7 +432,7 @@ BascetMapTransform <- function(
           bascetInstance@prependCmd,
           bascetInstance@bin, 
           "transform",
-          if(produce_cell_list) "--cells $CELLFILE",
+          if(produce_cell_list) "--cells ${CELLFILE[$TASK_ID]}",
           #"-t $BASCET_TEMPDIR",  ##not supported
           "-i ${files_in[$TASK_ID]}",
           "-o ${files_out[$TASK_ID]}"
@@ -601,12 +601,12 @@ BascetRunFASTP <- function(
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
-        shellscript_make_bash_array("files_html",outputFiles_report_json),
-        shellscript_make_bash_array("files_json",outputFiles_report_html),
-        shellscript_make_bash_array("files_in_R1",inputFiles_R1),
-        if(is_paired) shellscript_make_bash_array("files_in_R2",inputFiles_R2),
-        shellscript_make_bash_array("files_out_R1",outputFiles_R1),
-        if(is_paired) shellscript_make_bash_array("files_out_R2",outputFiles_R2),
+        shellscriptMakeBashArray("files_html",outputFiles_report_json),
+        shellscriptMakeBashArray("files_json",outputFiles_report_html),
+        shellscriptMakeBashArray("files_in_R1",inputFiles_R1),
+        if(is_paired) shellscriptMakeBashArray("files_in_R2",inputFiles_R2),
+        shellscriptMakeBashArray("files_out_R1",outputFiles_R1),
+        if(is_paired) shellscriptMakeBashArray("files_out_R2",outputFiles_R2),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_R1[$TASK_ID]}"),
