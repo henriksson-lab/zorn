@@ -68,7 +68,7 @@ debstat <- PrepareSharding(
   inputName="debarcoded",
   bascetInstance=bascet_instance.default,
   minQuantile=0.99
-)  
+)
 ```
 
 Before you proceed, you should perform a kneeplot analysis to see which cells
@@ -76,7 +76,7 @@ you keep:
 
 ```{r, eval=F, echo=T}
 DebarcodedKneePlot(
-  debstat, 
+  debstat,
   filename = "kneeplot.pdf" #optional
 )
 ```
@@ -87,16 +87,14 @@ The didagram however tells you
 * how much free-floating RNA/DNA you have in your background (empty droplets/SPCs)
 * how distinct cells are from background
 
-An example kneeplot for Parse biosciences RNA-seq data is shown below. You want to 
+An example kneeplot for Parse biosciences RNA-seq data is shown below. You want to
 to include slightly more cells than the knee indicates. For Atrandi microbial WGS data,
 knee plots cannot be trusted, and you may want a fair bit more to account for lysis
 differences (see our manuscript). Including too many cells will slow down later steps
 but you can reduce the number of cells at any point. Adjust the cutoff using the
 previously set minQuantile parameter.
 
-```{r fig2, fig.cap="desc", echo=F, out.width="400px", out.height="300px", fig.retina = 1}
-knitr::include_graphics("debarcoding_kneeplot.pdf")
-```
+![Kneeplot](debarcoding_kneeplot.png)
 
 Once you have a plan you are happy with, you can proceed with shardification.
 At this step you can also choose to create multiple shards. This is only relevant
@@ -111,7 +109,7 @@ and it is more likely to cause mistakes.
 BascetShardify(
   debstat,
   numOutputShards = 1, #shards per library; increase to spread the workload over more computers
-  runner=SlurmRunner(bascet_runner.default, ncpu="4")  
+  runner=SlurmRunner(bascet_runner.default, ncpu="4")
 )
 ```
 
@@ -127,7 +125,7 @@ To do this, first convert your data to FASTQ format:
 BascetMapTransform(
   bascetRoot,
   inputName="filtered",   #default; can omit
-  outputName="asfq",  
+  outputName="asfq",
   out_format="R1.fq.gz"
 )
 ```
