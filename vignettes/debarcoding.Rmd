@@ -26,8 +26,21 @@ for what:
 rawmeta <- DetectRawFileMeta("/home/yours/directory_with_raw_fastq")
 ```
 
+Depending on your input data, rawmeta might look like this:
 
-TODO explain this data frame
+```{r, echo=FALSE, results='asis'}
+exdata <- read.csv("debarcoding_meta.csv",sep="\t")
+knitr::kable(exdata, caption="Example input file metadata")
+```
+
+Prefix is the name of the library, of which there are two here. Note the paired input FASTQ files R1 and R2.
+Zorn has here detected that the libraries were sequenced on two separate lanes; by using the same
+prefix, these will be merged during the later sharding stage. Keeping input files from different lanes separate
+enables each FASTQ file to be processed on a separate computer and can thus be advantageous if you
+have large amounts of data.
+
+If you have files that are awkwardly named for some reason, simply produce a data frame
+with the columns above, and provide as input for the next stage.
 
 You can now parse the reads the figure out which cell they belong to, and any UMI
 information. The only thing you additionally need to specify is what type of data
@@ -43,55 +56,65 @@ BascetGetRaw(
 )
 ```
 
-
-Once barcodes have been processed, you can perform knee plot analysis, which
-is the first important quality control.
+After debarcoding, you now need to (1) merge files belong to the same library,
+and (2) remove reads belonging to empty droplets. Furthermore, at this step
+you can also decide to split the cells across multiple "shards", enabling parallel
+processing the data in later steps. This done in two steps, in which you first
+set up a "plan". This is done using the following command:
 
 ```{r, eval=F, echo=T}
-### Decide cells to include
-h <- ReadHistogram(bascetRoot,"debarcoded")
-PlotHistogram(h)
+debstat <- PrepareSharding(
+  bascetRoot,
+  inputName="debarcoded",
+  bascetInstance=bascet_instance.default,
+  minQuantile=0.99
+)  
 ```
 
-This is just a histogram of reads per barcode. It however tells you
+Before you proceed, you should perform a kneeplot analysis to see which cells
+you keep:
+
+```{r, eval=F, echo=T}
+DebarcodedKneePlot(
+  debstat, 
+  filename = "kneeplot.pdf" #optional
+)
+```
+
+This is just a histogram of reads per barcode. (downsampling for speed causes cells of low indices to not be shown, worry not!)
+The didagram however tells you
 * how many cells you have
 * how much free-floating RNA/DNA you have in your background (empty droplets/SPCs)
 * how distinct cells are from background
 
-It makes sense to exclude barcodes if the number of counts are too low. You can
-exclude them also at a later stage, but removing the worst offenders already
-will speed up computation. Here is one example for getting the names and number
-of cells having at least 100 reads:
+An example kneeplot for Parse biosciences RNA-seq data is shown below. You want to 
+to include slightly more cells than the knee indicates. For Atrandi microbial WGS data,
+knee plots cannot be trusted, and you may want a fair bit more to account for lysis
+differences (see our manuscript). Including too many cells will slow down later steps
+but you can reduce the number of cells at any point. Adjust the cutoff using the
+previously set minQuantile parameter.
 
-```{r, eval=F, echo=T}
-includeCells <- h$cellid[h$count>100]
-length(includeCells)
+```{r fig2, fig.cap="desc", echo=F, out.width="400px", out.height="300px", fig.retina = 1}
+knitr::include_graphics("debarcoding_kneeplot.pdf")
 ```
 
-
-Finally, before you are ready to run all other commands, you need to make
-sure that cells are sharded. This is primarily relevant if you have multiple
-FASTQ-files for your library (i.e. you sequenced your library on multiple lanes).
-Sharding sorts cells such that the reads for one cell are in one single shard.
-This is essential for parallel processing.
-
+Once you have a plan you are happy with, you can proceed with shardification.
 At this step you can also choose to create multiple shards. This is only relevant
 if you wish to parallelize the workflow using SLURM, as the number of shards decides
 how many nodes you can use in parallel. If you run everything on your own computer
 then we advise only creating one shard, as there is no benefit to having multiple
 and it is more likely to cause mistakes.
 
-In this step we also filter out barcodes with too low read counts (optional).
-
 [(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
 BascetShardify(
-  bascetRoot,
-  includeCells = includeCells,
-  num_output_shards = 1
+  debstat,
+  numOutputShards = 1, #shards per library; increase to spread the workload over more computers
+  runner=SlurmRunner(bascet_runner.default, ncpu="4")  
 )
 ```
+
 
 
 # Additional trimming
