@@ -1,0 +1,5 @@
+prefix	r1	r2	dir
+UDI_Plate_WT_29	UDI_Plate_WT_29_S43_L007_R1_001.fastq.gz	UDI_Plate_WT_29_S43_L007_R2_001.fastq.gz	/home/m/mahogny/mystore/dataset/250611/fastq
+UDI_Plate_WT_29	UDI_Plate_WT_29_S43_L008_R1_001.fastq.gz	UDI_Plate_WT_29_S43_L008_R2_001.fastq.gz	/home/m/mahogny/mystore/dataset/250611/fastq
+UDI_Plate_WT_30	UDI_Plate_WT_30_S44_L007_R1_001.fastq.gz	UDI_Plate_WT_30_S44_L007_R2_001.fastq.gz	/home/m/mahogny/mystore/dataset/250611/fastq
+UDI_Plate_WT_30	UDI_Plate_WT_30_S44_L008_R1_001.fastq.gz	UDI_Plate_WT_30_S44_L008_R2_001.fastq.gz	/home/m/mahogny/mystore/dataset/250611/fastq
