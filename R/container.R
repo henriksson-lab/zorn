@@ -104,16 +104,8 @@ getBascetSingularityImage <- function(
   if(!file.exists(file_bascet_sif)) {
     print("No singularity image present; downloading")
  
-    if(download.file("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif,cacheOK = FALSE, mode = "wb")!=0){
-      stop("Failed to download singularity image")      
-    }
-    
-#    ret <- system("singularity pull --arch amd64 library://lmc297/bascet/bascet:0.01")
-#    if(ret==127){
-#      #TODO: check for errors
-#      stop("Failed to download singularity")      
-#    }
-    
+    safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif)
+
   } else {
     print(paste("Found existing Bascet singularity image:", file_bascet_sif))
   }
@@ -131,7 +123,10 @@ getBascetSingularityImage <- function(
   ) 
 }
 
-
+if(FALSE){
+  getBascetDockerImage(storeAt = "~/mystore/temp")
+  getBascetSingularityImage(storeAt = "~/mystore/temp")
+}
 
 
 ###############################################
@@ -141,34 +136,28 @@ getBascetSingularityImage <- function(
 #' @export
 getBascetDockerImage <- function(
     storeAt=getwd(),
-    tempdir=NULL
+    tempdir=NULL,
+    forceInstall=FALSE,
+    verbose=FALSE
 ){
   
   # docker image inspect busybox:latest >/dev/null 2>&1 && echo yes || echo no
-
+  
   #check if docker is installed
-  ret <- system("docker ps")
+  ret <- system("docker ps", ignore.stdout = !verbose, ignore.stderr = !verbose)
   if(ret==0) {
-    
-    
     ret <- system("docker image inspect henriksson-lab/bascet:latest")
     
-    if(ret!=0) {
+    if(ret!=0 || forceInstall, ignore.stdout = !verbose, ignore.stderr = !verbose) {
       print("No docker image present; downloading")
       
-      
       file_bascet_image <- file.path(storeAt, "bascet.tar")
-      
-      options(timeout = 60*60*5) #timeout in seconds
-      
-      if(download.file("http://beagle.henlab.org/public/bascet/bascet.tar",file_bascet_image, cacheOK = FALSE, mode = "wb")!=0){
-        stop("Failed to download docker image")      
-      }
-      
+      safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.tar",file_bascet_image)
+
+      print("Loading image into Docker")
       system(paste("docker load -i ", file_bascet_image))
       
-      print(paste("The huge image at",file_bascet_image,"can now be removed if the installation worked. You can otherwise try to install it manually using Docker"))
-      
+      print(paste("The large image at",file_bascet_image,"can now be removed if the installation worked. You can otherwise try to install it manually using Docker"))
     } else {
       print(paste("Found existing Bascet Docker image"))
     }
@@ -239,6 +228,56 @@ if(FALSE){
   
   #singularity run bascet_0.01.sif skesa
   #singularity exec lolcow_latest.sif cowsay moo
+}
+
+
+
+###############################################
+#' Download a file, check MD5 to ensure success
+#' 
+#' @return nothing; panics if the download fails
+safeDownloadMD5 <- function(url, file){
+  url_md5 <- paste0(url,".md5")
+  file_md5 <- paste0(file,".md5")
+  
+  f <- RCurl::CFILE(file_md5, mode="wb")
+  a <- RCurl::curlPerform(url = url_md5, writedata = f@ref, noprogress=FALSE)
+  RCurl::close(f)
+  
+  line_md5 <- readLines(file_md5)
+  
+  if(file.exists(file_md5)){
+    file.remove(file_md5)
+  }
+  
+  if(length(line_md5)>1) {
+    print(line_md5)
+    stop("Error in reading the MD5 file")
+  }
+  
+  prev_md5 <- stringr::str_split_fixed(line_md5, " ",2)[1]
+  print(paste("Got previous MD5 value to compare against:", prev_md5))
+  #return(a)
+  
+  
+  
+  f <- RCurl::CFILE(file, mode="wb")
+  a <- RCurl::curlPerform(url = url, writedata = f@ref, noprogress=FALSE)
+  RCurl::close(f)
+  
+  print("Computing MD5 for downloaded file")
+  new_md5 <- unname(tools::md5sum(file))
+  print(paste("MD5 is:", new_md5))
+  
+  if(new_md5==prev_md5) {
+    print("MD5 matches")
+  } else {
+    if(file.exists(file)){
+      file.remove(file)
+    }
+    stop("MD5 does not match")
+  }
+  #return(TRUE)
 }
 
 
