@@ -146,9 +146,9 @@ getBascetDockerImage <- function(
   #check if docker is installed
   ret <- system("docker ps", ignore.stdout = !verbose, ignore.stderr = !verbose)
   if(ret==0) {
-    ret <- system("docker image inspect henriksson-lab/bascet:latest")
+    ret <- system("docker image inspect henriksson-lab/bascet:latest", ignore.stdout = !verbose, ignore.stderr = !verbose)
     
-    if(ret!=0 || forceInstall, ignore.stdout = !verbose, ignore.stderr = !verbose) {
+    if(ret!=0 || forceInstall) {
       print("No docker image present; downloading")
       
       file_bascet_image <- file.path(storeAt, "bascet.tar")

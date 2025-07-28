@@ -574,9 +574,18 @@ extractstreamerStart <- function(
       print(newlines)
     }
     
+    
+    
     if(length(all_out)>0) {
       last_line <- all_out[length(all_out)] 
       if(last_line=="ready"){
+        
+        #TODO: would be great to capture Bascet version here, to be able to check in the future
+        #bascet_version <- ""
+        #lines_bascet_version <- all_out[stringr::str_starts(all_out, "bascet_version")]
+        #terminal_version:xxx
+        #bascet_version:xxx
+        
         return(p)
       } else if(stringr::str_starts(last_line,"error")) {
         print(paste("error from extract streamer start:",last_line))
