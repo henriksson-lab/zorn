@@ -441,9 +441,11 @@ BascetAlignToReference <- function(
       "--genomeDir", useReference,
       "--readFilesIn ${files_in_r1[$TASK_ID]} ${files_in_r2[$TASK_ID]}",                #Align R1 and R2 FASTQ
       "--runThreadN", numLocalThreads,
-      "--outSAMtype SAM Unsorted",
+      "--outSAMtype SAM",  #this implies Unsorted
       "--outSAMunmapped Within",
       "--outSAMattributes Standard",
+      "--outStd SAM",
+      "--readFilesCommand zcat",
       "| ", bascetInstance@bin, "pipe-sam-add-tags",
       "| samtools view -b -o",
       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
@@ -515,6 +517,12 @@ BascetAlignToReference <- function(
   }
 }
 
+
+#STAR on parse Could not parse UMI from read name
+
+#
+# singularity run ~/mystore//bascet.sif   bash -c " STAR --genomeDir /home/m/mahogny/mystore/dataset/ref_human_virusas/GRCh38 --readFilesIn ${files_in_r1[$TASK_ID]} ${files_in_r2[$TASK_ID]} --runThreadN 10 --outSAMtype SAM --outSAMunmapped Within --outSAMattributes Standard |  bascet pipe-sam-add-tags | samtools view -b -o ${files_out_unsorted[$TASK_ID]} "
+# singularity run ~/mystore//bascet.sif   bash -c " STAR --genomeDir /home/m/mahogny/mystore/dataset/ref_human_virusas/GRCh38 --readFilesIn fastp.1.R1.fq.gz fastp.1.R2.fq.gz --runThreadN 10 --outSAMtype SAM --outSAMunmapped Within --outSAMattributes Standard --outStd SAM > foo.sam "
 
 
 

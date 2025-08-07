@@ -156,6 +156,6 @@ setMethod(
 ###############################################
 #' @export
 GetDefaultBascetRunner <- function() {
-  bascet_runner.default
+  bascetRunner.default
 }
 
