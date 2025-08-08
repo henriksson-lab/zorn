@@ -11,7 +11,7 @@ install: build
 
 gitaddall:
 	git add man
-	git add R
+	git add R/*R
 	git add vignettes
 
 loc:
