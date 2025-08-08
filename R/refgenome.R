@@ -461,7 +461,7 @@ BascetAlignToReference <- function(
       "--outSAMunmapped Within",
       "--outSAMattributes Standard",
       paste("--outTmpDir",star_temp_dir), 
-      "--outFileNamePrefix ./STARlog/${TASK_ID]}_"
+      "--outFileNamePrefix ./STARlog/${TASK_ID]}_",
       "--outStd SAM",
       "--readFilesCommand zcat",
       "| ", bascetInstance@bin, "pipe-sam-add-tags",
