@@ -291,7 +291,7 @@ if(FALSE){
   BascetShardify2(
     debstat = debstat,
     numOutputShards = 1,
-    runner=SlurmRunner(bascet_runner.default, ncpu="4")  #not much CPU needed. increased for memory demands
+    runner=SlurmRunner(bascetRunner.default, ncpu="4")  #not much CPU needed. increased for memory demands
   )
 }
 

@@ -434,22 +434,39 @@ BascetAlignToReference <- function(
       "\""
     )
   } else if(aligner=="STAR") {
-    cmd_align <- paste(
+    
+    #### STAR needs its own tempdir. Make sure they don't collide.
+    #TODO Should we rather put in subdir of user request?
+    star_temp_dir <- "_STARtmp.$TASK_ID"
+    
+    #ensure any old STAR temp directory is removed.
+    #the naming should make this command safe
+    cmd_delete_temp <- paste(
+      paste("rm -Rf",star_temp_dir)
+    )
+    
+    cmd_star <- paste(
       bascetInstance@prependCmd,
       "bash -c \"",
       "STAR", 
       "--genomeDir", useReference,
-      "--readFilesIn ${files_in_r1[$TASK_ID]} ${files_in_r2[$TASK_ID]}",                #Align R1 and R2 FASTQ
+      "--readFilesIn ${files_in_r1[$TASK_ID]} ${files_in_r2[$TASK_ID]}",  #Align R1 and R2 FASTQ
       "--runThreadN", numLocalThreads,
       "--outSAMtype SAM",  #this implies Unsorted
       "--outSAMunmapped Within",
       "--outSAMattributes Standard",
+      paste("--outTmpDir",star_temp_dir), 
       "--outStd SAM",
       "--readFilesCommand zcat",
       "| ", bascetInstance@bin, "pipe-sam-add-tags",
       "| samtools view -b -o",
       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
       "\""
+    )
+    
+    cmd_align <- c(
+      cmd_delete_temp,
+      cmd_star
     )
   } else {
     stop(paste("Unknown aligner: ", aligner))
@@ -867,6 +884,77 @@ CountGrangeFeatures <- function(
 
 
 
+
+
+
+
+
+
+
+
+
+###############################################
+#' From aligned BAM file, compute counts per feature
+#' 
+#' 
+#' 
+#' @return A job, executing the counting 
+#' 
+#' @export
+BascetCountFeature <- function(
+    bascetRoot,
+    inputName="aligned",
+    outputName="featurecount", 
+    gffFile,
+    useFeature="gene",
+    attrGeneId="gene_id",  #"ID" for yersinia
+    attrGeneName="name",
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(), 
+    bascetInstance=GetDefaultBascetInstance()
+){
+  
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
+  if(length(input_shards)==0){
+    stop("Found no input files")
+  }
+  num_shards <- length(input_shards)
+  inputFiles <- file.path(bascetRoot, input_shards)
+  
+  #One output per input alignment
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards)  
+  
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
+    RunJob(
+      runner = runner, 
+      jobname = "Z_countf",
+      bascetInstance = bascetInstance,
+      cmd = c(
+        shellscriptMakeBashArray("files_in", inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
+        
+        ### Abort early if needed    
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
+        
+        paste(
+          bascetInstance@prependCmd,
+          bascetInstance@bin, 
+          "countfeature",
+          paste("-g", gffFile),
+          paste("--use-feature", useFeature),
+          paste("--attr-id", attrGeneId),
+          paste("--attr-name", attrGeneName),
+          "-t $BASCET_TEMPDIR",
+          "-i ${files_in[$TASK_ID]}",  
+          "-o ${files_out[$TASK_ID]}"
+        )
+      ),
+      arraysize = length(inputFiles)
+    )
+  } else {
+    new_no_job()
+  }
+}
 
 
 

@@ -46,14 +46,12 @@ BascetInstance <- function(
 
 
 ###############################################
-#' The default Bascet installation settings
-#' 
-#' @return A Bascet instance
-#' @export
-bascetInstance.default <- BascetInstance(
-  bin="/home/mahogny/jupyter/bascet/target/debug/bascet",
-  tempdir="./"
-)
+# The default Bascet installation settings
+# 
+#bascetInstance.default <- BascetInstance(
+#  bin="/home/mahogny/jupyter/bascet/target/debug/bascet",
+#  tempdir="./"
+#)
 
 
 
