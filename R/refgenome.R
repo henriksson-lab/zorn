@@ -442,7 +442,7 @@ BascetAlignToReference <- function(
     
     #### STAR needs its own tempdir. Make sure they don't collide.
     #TODO Should we rather put in subdir of user request?
-    star_temp_dir <- "STARlog/_STARtmp.$TASK_ID"
+    star_temp_dir <- "STARlog/_STARtmp.${TASK_ID}"
     
     #ensure any old STAR temp directory is removed.
     #the naming should make this command safe
@@ -461,7 +461,7 @@ BascetAlignToReference <- function(
       "--outSAMunmapped Within",
       "--outSAMattributes Standard",
       paste("--outTmpDir",star_temp_dir), 
-      "--outFileNamePrefix ./STARlog/${TASK_ID]}_",
+      "--outFileNamePrefix ./STARlog/${TASK_ID}_",
       "--outStd SAM",
       "--readFilesCommand zcat",
       "| ", bascetInstance@bin, "pipe-sam-add-tags",
