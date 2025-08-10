@@ -33,7 +33,7 @@ setClass("LocalJob", slots=list(
 #' 
 #' @return TODO
 #' @export
-LocalRunner <- function(maxcpu="10", direct=FALSE, showScript=FALSE){
+LocalRunner <- function(maxcpu="10", direct=TRUE, showScript=FALSE){
   new("LocalRunner", maxcpu=maxcpu, direct=direct, showScript=showScript)
 }
 
@@ -73,19 +73,29 @@ setMethod(
     all_cmd <- c()
     for(i in seq_len(arraysize)){
       this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),i-1)  #0... TASK_ID -1
-    ##  onep <- processx::process$new(this_cmd)
+      this_cmd <- stringr::str_replace_all(this_cmd,stringr::fixed("${TASK_ID}"),i-1)  #0... TASK_ID -1
+      ##  onep <- processx::process$new(this_cmd)
       all_cmd <- c(all_cmd,this_cmd)
     }
     
     
     if(runner@showScript){
       print("=============== all script start =================")
-      cat(all_cmd)
+      writeLines(all_cmd)
       print("=============== all script end =================")
     }
     
-    
+    #Figure out name of file to store in
     tfile <- tempfile(pattern = jobname, fileext=".sh") #putting jobname here helps it show up in "ps"; but may cause issues if bad jobname given
+    
+    #Delete the file upon exit
+    all_cmd <- c(
+      "trap \"rm -rf ${",for_variable,"[$TASK_ID]}\" EXIT",
+      all_cmd
+    )
+    
+    
+    #Write script file
     writeLines(con=tfile,c(
       "#!/bin/bash",
       stringr::str_flatten(all_cmd,"\n")
@@ -95,13 +105,14 @@ setMethod(
       print("Running directly")  
       system(paste("bash", tfile))
       #print(tfile)
-      file.remove(tfile) #assumes process has started. can we do better? check https://www.linuxjournal.com/content/bash-trap-command 
+      #file.remove(tfile) #assumes process has started. can we do better? check https://www.linuxjournal.com/content/bash-trap-command 
       
       #Return no job, as it is done already
       new_no_job()
     } else {
       print("Using separate process")
-      write(tfile,paste("\n", "rm", tfile), append=TRUE)  ##this will make the script delete itself at the end ; or put command first?
+      
+      #write(tfile,paste("\n", "rm", tfile), append=TRUE)  ##this will make the script delete itself at the end ; or put command first? ---- can also 
       job <- new(
         "LocalJob",
         cmd=cmd,

@@ -14,7 +14,9 @@ setClass("SlurmRunner", slots=list(
   prepend="character",
   mem="character",
   direct="logical",
-  verbose="logical"
+  verbose="logical",
+  deleteScript="logical",
+  benchmark="logical"
 )
 ) 
 
@@ -51,13 +53,16 @@ setClass("SlurmJob", slots=list(
 #' Create a runner that submits jobs to SLURM
 #' 
 #' @param settings Default settings to override; can be NULL
-#' @param ncpu description
-#' @param partition description
-#' @param account description
-#' @param time The time the job is allowed to run, e.g. "0-72:00:00"
-#' @param prepend description
-#' @param mem description
+#' @param ncpu Number of cores requested (SLURM -c)
+#' @param partition Which partition to run the job on (SLURM -p)
+#' @param account Which account to run the job on (SLURM -A)
+#' @param time The time the job is allowed to run, e.g. "0-72:00:00" (SLURM -t)
+#' @param prepend Something to prepend to the command. TODO seems not used. present in instance instead!!
+#' @param mem Amount of main memory to reserve (SLURM --mem)
+#' @param deleteScript Delete job script after execution. Set to FALSE if you want to dissect it for debugging purposes
 #' @param direct Run and get the result directly. FALSE implies asynchronous execution
+#' @param benchmark Enable logging of final CPU and memory usage
+#' @param verbose Enable additional debug output
 #' 
 #' @return A SLURM runner
 #' @export
@@ -69,7 +74,9 @@ SlurmRunner <- function(
     time=NULL, 
     prepend=NULL, 
     mem=NULL,
-    direct=TRUE,
+    direct=NULL,
+    deleteScript=NULL,
+    benchmark=NULL,
     verbose=NULL
 ){
   
@@ -83,7 +90,9 @@ SlurmRunner <- function(
       time="0-72:00:00",
       prepend="",
       mem="",
-      direct=direct,
+      direct=TRUE,
+      deleteScript=TRUE,
+      benchmark=FALSE,
       verbose=FALSE
     )
   }
@@ -112,6 +121,19 @@ SlurmRunner <- function(
   if(!is.null(mem)){
     settings@mem <- mem
     #mem can have "g" at end. need to parse to integer  TODO
+  }
+
+  
+  if(!is.null(direct)){
+    settings@direct <- direct
+  }
+  
+  if(!is.null(deleteScript)){
+    settings@deleteScript <- deleteScript
+  }
+
+  if(!is.null(benchmark)){
+    settings@benchmark <- benchmark
   }
   
   if(!is.null(verbose)){
@@ -159,13 +181,19 @@ setMethod(
     
     ## Add the command
     this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),"$SLURM_ARRAY_TASK_ID")
+    this_cmd <- stringr::str_replace_all(this_cmd,stringr::fixed("${TASK_ID}"),"${SLURM_ARRAY_TASK_ID}")
     scriptcontent <- c(scriptcontent, this_cmd)
     
     scriptcontent <- c(scriptcontent, "echo \"End of SLURM script\"")
     
     
     ## Write the script to a temporary file
-    slurm_script <- tempfile(fileext = ".sh")
+    if(runner@deleteScript) {
+      slurm_script <- tempfile(fileext = ".sh")
+    } else {
+      slurm_script <- "bascet_last_slurm_script.sh"
+    }
+    
     #print(slurm_script)    
     writeLines(con=slurm_script, scriptcontent)
     
@@ -191,7 +219,9 @@ setMethod(
     if(stringr::str_starts(ret, "Submitted batch job ")){
       
       ## Remove the temporary file. Worst case, done at the end of the R session, but better done earlier
-      file.remove(slurm_script)
+      if(runner@deleteScript) {
+        file.remove(slurm_script)
+      }
       
       pid <- stringr::str_remove(ret, stringr::fixed("Submitted batch job "))
       
@@ -250,13 +280,17 @@ setMethod(
         } else {
           #print(info$status)
           
+          #TODO: list only jobs starting with #_#" "  ; no . in it!   then no need for /2 below
+          
+          
           num_total <- job@arraysize
           num_running <- floor(sum(info$status=="RUNNING")/2)
           num_completed <- floor(sum(info$status=="COMPLETED")/2)  ### for some reason, these are reported twice.. ish
           num_failed <- floor(sum(info$status=="FAILED")/2)  ### for some reason, these are reported twice.. ish ?
           num_outofmem <- floor(sum(stringr::str_starts(info$status,"OUT_OF_ME"))/2)  ### for some reason, these are reported twice.. ish ?
+          num_cancelled <- floor(sum(info$status=="CANCELLED")/2)  ### for some reason, these are reported twice.. ish ?
           
-          
+
           cur_summary <- paste0(
             job@pid," ",
             job@jobname,"   ",
@@ -264,6 +298,7 @@ setMethod(
             "Total completed: ",num_completed,"   ",
             "Total running: ",num_running,"   ",
             "Total failed: ", num_failed,"   ",
+            "Total cancelled: ", num_cancelled,"   ",
             "Total out-of-mem: ", num_outofmem
           )
           cli::cli_progress_update(set = num_completed)
