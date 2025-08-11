@@ -733,10 +733,14 @@ ReadBascetCountMatrix <- function(
   
   #Find union of features  
   all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
-  print(all_colnames)
+  if(verbose){
+    print(all_colnames)
+  }
   num_col <- length(all_colnames)
   map_name_to_i <- data.frame(row.names = all_colnames, ind=1:length(all_colnames))
-  print(map_name_to_i)
+  if(verbose){
+    print(map_name_to_i)
+  }
   
   #Make sizes compatible
   list_resized_mat <- list()

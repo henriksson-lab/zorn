@@ -90,7 +90,7 @@ setMethod(
     
     #Delete the file upon exit
     all_cmd <- c(
-      "trap \"rm -rf ${",for_variable,"[$TASK_ID]}\" EXIT",
+      paste("trap \"rm -rf ",tfile,"\" EXIT"),
       all_cmd
     )
     
