@@ -705,7 +705,7 @@ ReadBascetCountMatrix <- function(
     inputName,
     verbose=FALSE
 ){
-  print("Loading HDF5 file")
+  print("Loading HDF5 files")
   
   #Figure out input file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
@@ -717,6 +717,10 @@ ReadBascetCountMatrix <- function(
   if(tools::file_ext(inputFiles[1])!="h5"){
     stop("Wrong input format. should be hd5")
   }
+
+  #Show a progress bar  
+  pbar <- progress::progress_bar$new(total = length(inputFiles)*2)
+  pbar$tick(0)
   
   #Load individual matrices. Sizes may not match
   list_mat <- list()
@@ -729,6 +733,7 @@ ReadBascetCountMatrix <- function(
     }
     list_mat[[f]] <- list_one$X
     list_obs[[f]] <- list_one$obs
+    pbar$tick()
   }
   
   #Find union of features  
@@ -752,6 +757,7 @@ ReadBascetCountMatrix <- function(
     colnames(new_mat) <- all_colnames
     # print(dim(new_mat))
     list_resized_mat[[f]] <- new_mat
+    pbar$tick()
   }
   
   #Concatenate matrices

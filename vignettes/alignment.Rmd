@@ -143,8 +143,8 @@ library(Seurat)
 cnt <- ReadBascetCountMatrix(bascetRoot,"chromcount", verbose=FALSE)
 
 adata <- CreateSeuratObject(
-  counts = CreateAssayObject(t(cnt)), ## according to anndata standard, there should be a transpose here
-  project = "proj", min.cells = 0, min.features = 0, assay = "chrom_cnt"
+  counts = CreateAssayObject(t(cnt$X)), ## according to anndata standard, there should be a transpose here
+  assay = "chrom_cnt"
 ) 
 ```
 
@@ -211,8 +211,59 @@ DimPlot(object = adata, label = TRUE, group.by = "species_aln") +
 
 
 
-# Option #3: Counting features (genes etc)
+# Option #3: RNA-seq analysis (feature counting)
 
-documentation TODO (count-feature in bascet)
+For protocols such as RNA-seq, the aim is to get the number of reads per gene, per cell.
+After alignment and sorting of reads based on genome coordinate (default setting),
+you can overlay the reads with gene coordinates from a GTF or GFF file (both are supported).
+The following command performs this operation:
+
+```{r, eval=F, echo=T}
+BascetCountFeature(
+  bascetRoot,
+  gffFile = "/my/genome.gtf.gz",
+  useFeature = "gene",     #Default
+  attrGeneId = "gene_id",  #Default
+  attrGeneName = "name"    #Default
+)
+```
+
+The ID and name of genes are extracted from the GFF attributes column. Not all files
+have both name and ID; the ID will be used as name if nothing specified. By default,
+the rows having "gene" as the feature description will 
+
+
+After the features (genes) have been counted, you can load them into Seurat:
+
+```{r, eval=F, echo=T}
+library(Seurat)
+
+cnt <- ReadBascetCountMatrix(bascetRoot,"featurecount", verbose=FALSE)
+
+adata <- CreateSeuratObject(
+  counts = CreateAssayObject(t(cnt$X)) ## according to anndata standard, there should be a transpose here
+) 
+```
+
+
+From here, you can follow an 
+[RNA-seq tutorial for Seurat](https://satijalab.org/seurat/articles/pbmc3k_tutorial).
+But for the impatient, this is some minimal example code to get your first UMAP:
+
+```{r, eval=F, echo=T}
+adata <- NormalizeData(adata)
+adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = nrow(adata))
+adata <- ScaleData(adata, features = rownames(adata))
+adata <- RunPCA(adata, features = VariableFeatures(object = adata))
+
+adata <- FindNeighbors(adata, dims = 1:20)
+adata <- FindClusters(adata, resolution = 0.5)
+
+adata <- RunUMAP(adata, dims=1:10)
+```
+
+
+
+
 
 
