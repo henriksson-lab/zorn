@@ -111,9 +111,9 @@ getBascetSingularityImage <- function(
   prependCmd <- paste("singularity run", file_bascet_sif," ")
   
   if(is.null(tempdir)){
-    tempdir <- tempdir()
+    tempdir <- "./"
   }
-  
+
   BascetInstance(
     bin="bascet",
     tempdir=tempdir,
@@ -163,7 +163,7 @@ getBascetDockerImage <- function(
     prependCmd <- paste("docker run henriksson-lab/bascet ")
     
     if(is.null(tempdir)){
-      tempdir <- tempdir()
+      tempdir <- "./"
     }
     
     BascetInstance(
