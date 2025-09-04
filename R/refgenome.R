@@ -436,7 +436,7 @@ BascetAlignToReference <- function(
   } else if(aligner=="STAR") {
     
 
-    cmd_mkdir_starlog <- paste(
+    cmd_mkdir_starlog <- paste(  ########## TODO delete all of this directory?
       paste("mkdir -p STARlog")
     )
     
