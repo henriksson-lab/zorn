@@ -82,7 +82,7 @@ adata <- RunUMAP(
 
 The result can be visualized:
 ```{r, eval=F, echo=T}
-DimPlot(pbmc)
+DimPlot(adata)
 ```
 
 

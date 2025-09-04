@@ -252,8 +252,8 @@ But for the impatient, this is some minimal example code to get your first UMAP:
 
 ```{r, eval=F, echo=T}
 adata <- NormalizeData(adata)
-adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = nrow(adata))
-adata <- ScaleData(adata, features = rownames(adata))
+adata <- FindVariableFeatures(adata, selection.method = "vst")
+adata <- ScaleData(adata)
 adata <- RunPCA(adata, features = VariableFeatures(object = adata))
 
 adata <- FindNeighbors(adata, dims = 1:20)
