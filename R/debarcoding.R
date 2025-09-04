@@ -9,7 +9,7 @@
 #' @export
 PrepareSharding <- function(
     bascetRoot, 
-    inputName, 
+    inputName="debarcoded", 
     minQuantile=0.9,
     bascetInstance=GetDefaultBascetInstance(),
     verbose=TRUE
@@ -19,10 +19,14 @@ PrepareSharding <- function(
   #This speeds up the process
   fstats <- file.path(bascetRoot, paste0(inputName,".meta"))
   meta <- read.csv(fstats)
+  meta[is.na(meta)] <- ""
+  #print(meta)
   meta$prefix <- as.factor(meta$prefix)
   meta$group <- as.integer(meta$prefix)
   group_prefix <- levels(meta$prefix)
   numgroup <- max(as.integer(meta$prefix))
+  
+  #print(meta)
   #print(group_prefix)
   
   #Get all the TIRPs, sum up the reads  
@@ -252,10 +256,11 @@ BascetShardify <- function(
           bascetInstance@prependCmd,
           bascetInstance@bin,
           "shardify", 
-          "-t $BASCET_TEMPDIR",
+          ### "-t $BASCET_TEMPDIR", #no longer part
+          ### "-@ numthreads",  #should autodetect
           "-i ${files_in[$TASK_ID]}",   
           "-o ${files_out[$TASK_ID]}",  
-          "--cells ${CELLFILE[$TASK_ID]}"           
+          "--include ${CELLFILE[$TASK_ID]}"           
         )  
       ), 
       arraysize = debstat$numgroup
