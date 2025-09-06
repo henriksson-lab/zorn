@@ -7,7 +7,7 @@ each barcode, and filtering out cells with few reads}
 \usage{
 PrepareSharding(
   bascetRoot,
-  inputName,
+  inputName = "debarcoded",
   minQuantile = 0.9,
   bascetInstance = GetDefaultBascetInstance(),
   verbose = TRUE

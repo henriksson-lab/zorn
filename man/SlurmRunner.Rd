@@ -12,26 +12,34 @@ SlurmRunner(
   time = NULL,
   prepend = NULL,
   mem = NULL,
-  direct = TRUE,
+  direct = NULL,
+  deleteScript = NULL,
+  benchmark = NULL,
   verbose = NULL
 )
 }
 \arguments{
 \item{settings}{Default settings to override; can be NULL}
 
-\item{ncpu}{description}
+\item{ncpu}{Number of cores requested (SLURM -c)}
 
-\item{partition}{description}
+\item{partition}{Which partition to run the job on (SLURM -p)}
 
-\item{account}{description}
+\item{account}{Which account to run the job on (SLURM -A)}
 
-\item{time}{The time the job is allowed to run, e.g. "0-72:00:00"}
+\item{time}{The time the job is allowed to run, e.g. "0-72:00:00" (SLURM -t)}
 
-\item{prepend}{description}
+\item{prepend}{Something to prepend to the command. TODO seems not used. present in instance instead!!}
 
-\item{mem}{description}
+\item{mem}{Amount of main memory to reserve (SLURM --mem)}
 
 \item{direct}{Run and get the result directly. FALSE implies asynchronous execution}
+
+\item{deleteScript}{Delete job script after execution. Set to FALSE if you want to dissect it for debugging purposes}
+
+\item{benchmark}{Enable logging of final CPU and memory usage}
+
+\item{verbose}{Enable additional debug output}
 }
 \value{
 A SLURM runner

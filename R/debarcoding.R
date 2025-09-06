@@ -239,6 +239,9 @@ BascetShardify <- function(
   }
 
   all_outputFiles <- do.call(c, outputFiles)
+
+  print("outputs===")
+  print(all_outputFiles)
   
   if(bascetCheckOverwriteOutput(all_outputFiles, overwrite)) {
     #Produce the script and run the job

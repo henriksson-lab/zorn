@@ -420,6 +420,7 @@ BascetAlignToReference <- function(
 
   
   if(aligner=="BWA"){
+    
     cmd_align <- paste(
       bascetInstance@prependCmd,
       "bash -c \"",
@@ -429,10 +430,13 @@ BascetAlignToReference <- function(
       "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
       "-t", numLocalThreads,
       "| ", bascetInstance@bin, "pipe-sam-add-tags",
-      "| samtools view -b -o",
+      "| samtools view - -S -b -o",
       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
       "\""
     )
+    
+    print(cmd_align)
+    
   } else if(aligner=="STAR") {
     
 
@@ -465,7 +469,7 @@ BascetAlignToReference <- function(
       "--outStd SAM",
       "--readFilesCommand zcat",
       "| ", bascetInstance@bin, "pipe-sam-add-tags",
-      "| samtools view -b -o",
+      "| samtools view - -S -b -o",
       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
       "\""
     )
