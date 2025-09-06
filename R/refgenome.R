@@ -634,7 +634,7 @@ BascetCountChrom <- function(
     bascetRoot,
     inputName="aligned",
     outputName="chromcount", 
-    min_matching=0,
+    minMatching=0,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -667,7 +667,7 @@ BascetCountChrom <- function(
           bascetInstance@prependCmd,
           bascetInstance@bin, 
           "countchrom",
-          "--min-matching ",min_matching,
+          "--min-matching ",minMatching,
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",  
           "-o ${files_out[$TASK_ID]}"
