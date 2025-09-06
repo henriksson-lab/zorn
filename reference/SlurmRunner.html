@@ -71,7 +71,9 @@
 <span>  time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prepend <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  mem <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  direct <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  direct <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  deleteScript <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  benchmark <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -85,31 +87,43 @@
 
 
 <dt id="arg-ncpu">ncpu<a class="anchor" aria-label="anchor" href="#arg-ncpu"></a></dt>
-<dd><p>description</p></dd>
+<dd><p>Number of cores requested (SLURM -c)</p></dd>
 
 
 <dt id="arg-partition">partition<a class="anchor" aria-label="anchor" href="#arg-partition"></a></dt>
-<dd><p>description</p></dd>
+<dd><p>Which partition to run the job on (SLURM -p)</p></dd>
 
 
 <dt id="arg-account">account<a class="anchor" aria-label="anchor" href="#arg-account"></a></dt>
-<dd><p>description</p></dd>
+<dd><p>Which account to run the job on (SLURM -A)</p></dd>
 
 
 <dt id="arg-time">time<a class="anchor" aria-label="anchor" href="#arg-time"></a></dt>
-<dd><p>The time the job is allowed to run, e.g. "0-72:00:00"</p></dd>
+<dd><p>The time the job is allowed to run, e.g. "0-72:00:00" (SLURM -t)</p></dd>
 
 
 <dt id="arg-prepend">prepend<a class="anchor" aria-label="anchor" href="#arg-prepend"></a></dt>
-<dd><p>description</p></dd>
+<dd><p>Something to prepend to the command. TODO seems not used. present in instance instead!!</p></dd>
 
 
 <dt id="arg-mem">mem<a class="anchor" aria-label="anchor" href="#arg-mem"></a></dt>
-<dd><p>description</p></dd>
+<dd><p>Amount of main memory to reserve (SLURM –mem)</p></dd>
 
 
 <dt id="arg-direct">direct<a class="anchor" aria-label="anchor" href="#arg-direct"></a></dt>
 <dd><p>Run and get the result directly. FALSE implies asynchronous execution</p></dd>
+
+
+<dt id="arg-deletescript">deleteScript<a class="anchor" aria-label="anchor" href="#arg-deletescript"></a></dt>
+<dd><p>Delete job script after execution. Set to FALSE if you want to dissect it for debugging purposes</p></dd>
+
+
+<dt id="arg-benchmark">benchmark<a class="anchor" aria-label="anchor" href="#arg-benchmark"></a></dt>
+<dd><p>Enable logging of final CPU and memory usage</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Enable additional debug output</p></dd>
 
 </dl></div>
     <div class="section level2">
