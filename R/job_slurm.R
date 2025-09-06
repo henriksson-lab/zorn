@@ -295,11 +295,11 @@ setMethod(
             job@pid," ",
             job@jobname,"   ",
             "Total to run: ",num_total,"   ",
-            "Total completed: ",num_completed,"   ",
-            "Total running: ",num_running,"   ",
-            "Total failed: ", num_failed,"   ",
-            "Total cancelled: ", num_cancelled,"   ",
-            "Total out-of-mem: ", num_outofmem
+            "Completed: ",num_completed,"   ",
+            "Running: ",num_running,"   ",
+            "Failed: ", num_failed,"   ",
+            "Cancelled: ", num_cancelled,"   ",
+            "Out-of-mem: ", num_outofmem
           )
           cli::cli_progress_update(set = num_completed)
 
