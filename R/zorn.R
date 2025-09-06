@@ -360,18 +360,18 @@ BascetShardifyOld <- function(
 #' * merging shards
 #' * dividing shards
 #' 
-#' @param num_divide description
-#' @param num_merge description
-#' @param out_format description
+#' @param numDivide description
+#' @param numMerge description
+#' @param outFormat description
 #' 
 #' @export
 BascetMapTransform <- function(
     bascetRoot, 
     inputName, 
     outputName,
-    num_divide=1,
-    num_merge=1,
-    out_format="tirp.gz", ### not really!
+    numDivide=1,
+    numMerge=1,
+    outFormat="tirp.gz", ### not really!
     includeCells=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
@@ -384,10 +384,10 @@ BascetMapTransform <- function(
   }
   
   #Verify input
-  if(!(num_divide==1 || num_merge==1)){
+  if(!(numDivide==1 || numMerge==1)){
     stop("Either divide or merge must be set to 1")
   }
-  if(!is.integer.overequal1(num_divide) || !is.integer.overequal1(num_merge)){
+  if(!is.integer.overequal1(numDivide) || !is.integer.overequal1(numMerge)){
     stop("Number of divisions and merges must be an integer >= 1")
   }
   
@@ -401,7 +401,7 @@ BascetMapTransform <- function(
     stop("No input files")
   }
   
-  outputFiles <- makeOutputShardNames(bascetRoot, outputName, out_format, num_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, outFormat, num_shards)
 
   #If cell list is provided, produce a file for input (not all transform calls can handle this, so optional)
   produce_cell_list <- !is.null(includeCells)

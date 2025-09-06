@@ -265,7 +265,9 @@ BascetShardify <- function(
           ### "-@ numthreads",  #should autodetect
           "-i ${files_in[$TASK_ID]}",   
           "-o ${files_out[$TASK_ID]}",  
-          "--include ${CELLFILE[$TASK_ID]}"           
+          "--include ${CELLFILE[$TASK_ID]}",
+          "--buffer-size 16000",
+          "--page-size 32"
         )  
       ), 
       arraysize = debstat$numgroup
