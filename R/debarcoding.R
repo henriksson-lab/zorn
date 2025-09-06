@@ -238,11 +238,8 @@ BascetShardify <- function(
     outputFiles[[g]] <- shellscriptMakeCommalist(unique(dfListIO$outputFile[dfListIO$group==g]))
   }
 
-  all_outputFiles <- unique(dfListIO$outputFile) #do.call(c, outputFiles)
+  all_outputFiles <- unique(dfListIO$outputFile)
 
-  print("outputs===")
-  print(all_outputFiles)
-  
   if(bascetCheckOverwriteOutput(all_outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
