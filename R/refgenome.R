@@ -392,8 +392,9 @@ BascetAlignToReference <- function(
   }
   inputFiles_R1 <- file.path(bascetRoot, input_shards) 
   
-  outputFilesBAMunsorted <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
-  outputFilesBAMsorted   <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
+  outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
+  outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
+  outputFilesBAMsortedPRE <- stringr::str_remove(outputFilesBAMsorted, "\\.bam$")
   
   ### What files to look for if to avoid overwriting
   outputFilesFinal <- outputFilesBAMunsorted
@@ -492,12 +493,14 @@ BascetAlignToReference <- function(
     shellscriptMakeBashArray("files_in_r2", inputFiles_R2),
     shellscriptMakeBashArray("files_out_unsorted", outputFilesBAMunsorted),
     shellscriptMakeBashArray("files_out_sorted", outputFilesBAMsorted),
+    shellscriptMakeBashArray("files_out_sorted_pre", outputFilesBAMsortedPRE),
     shellscriptMakeBashArray("files_out_final", outputFilesFinal),
 
     ### Abort early if needed    
     if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_final[$TASK_ID]}"),
     
     ### For alignment
+    "echo Aligning ${files_in_r1[$TASK_ID]} + ${files_in_r2[$TASK_ID]} ==> ${files_out_unsorted[$TASK_ID]}",
     cmd_align
   )
   
@@ -509,16 +512,19 @@ BascetAlignToReference <- function(
       cmd,
       
       ### For sorting
+      "echo Sorting ${files_out_unsorted[$TASK_ID]}  ==>  ${files_out_sorted[$TASK_ID]}",
       paste(
         bascetInstance@prependCmd,
         "samtools sort", 
-        "-f",                                 #Output file name is given as a whole (not prefix)
+#        "-f",                                 #Output file name is given as a whole (not prefix)
         "-@",numLocalThreads,                 #Number of threads to use
         "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
-        "${files_out_sorted[$TASK_ID]}"     #Each job produces a single output
+        "${files_out_sorted_pre[$TASK_ID]}"       #Each job produces a single output
+#        "${files_out_sorted[$TASK_ID]}"       #Each job produces a single output
       ),
       
       ### For indexing
+      "echo Indexing ${files_out_sorted[$TASK_ID]}",
       paste(
         bascetInstance@prependCmd,
         "samtools index", 
