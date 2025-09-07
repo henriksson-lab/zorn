@@ -323,13 +323,13 @@ BascetFilterAlignment <- function(
       shellscriptMakeBashArray("files_in", inputFiles),
       shellscriptMakeBashArray("files_out", outputFiles),
       
-      ### For sorting
       paste(
         bascetInstance@prependCmd,
         "samtools view",
         samtools_flags, 
         "-@",numLocalThreads,           #Number of threads to use
         "${files_in[$TASK_ID]}",        #Each job takes a single output
+        "-b",                           #Output binary
         "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
       )
     )
