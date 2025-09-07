@@ -515,7 +515,7 @@ BascetAlignToReference <- function(
         "-@ ",numLocalThreads,                 #Number of threads to use
         #        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
         "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
-        "-o ${files_out_sorted[$TASK_ID]}"     #Each job produces a single output
+        "${files_out_sorted[$TASK_ID]}"     #Each job produces a single output
       ),
       
       ### For indexing
