@@ -512,8 +512,8 @@ BascetAlignToReference <- function(
       paste(
         bascetInstance@prependCmd,
         "samtools sort", 
-        "-@ ",numLocalThreads,                 #Number of threads to use
-        #        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
+        "-f",                                 #Output file name is given as a whole (not prefix)
+        "-@",numLocalThreads,                 #Number of threads to use
         "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
         "${files_out_sorted[$TASK_ID]}"     #Each job produces a single output
       ),
@@ -522,7 +522,6 @@ BascetAlignToReference <- function(
       paste(
         bascetInstance@prependCmd,
         "samtools index", 
-        "-@ ",numLocalThreads,                 #Number of threads to use
         "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
       )      
     )
