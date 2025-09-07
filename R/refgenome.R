@@ -28,7 +28,7 @@ isBamPairedAlignment <- function(
     "samtools view",
     fname,
     "-h | head -n 10000 | ", #100 was not enough to be reliable
-    bascetInstance@prependCmd," samtools view -c -f 1"
+    bascetInstance@prependCmd," samtools view - -S -c -f 1"
   )
   
   ret <- system(
@@ -328,7 +328,7 @@ BascetFilterAlignment <- function(
         bascetInstance@prependCmd,
         "samtools view",
         samtools_flags, 
-        "-@ ",numLocalThreads,          #Number of threads to use
+        "-@",numLocalThreads,           #Number of threads to use
         "${files_in[$TASK_ID]}",        #Each job takes a single output
         "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
       )
@@ -397,9 +397,10 @@ BascetAlignToReference <- function(
   outputFilesBAMsortedPRE <- stringr::str_remove(outputFilesBAMsorted, "\\.bam$")
   
   ### What files to look for if to avoid overwriting
-  outputFilesFinal <- outputFilesBAMunsorted
-  if(do_sort){
+  if(do_sort) {
     outputFilesFinal <- outputFilesBAMsorted
+  } else {
+    outputFilesFinal <- outputFilesBAMunsorted
   }
   
   ### Verify that the input is FASTQ. check what type
@@ -436,7 +437,7 @@ BascetAlignToReference <- function(
       "\""
     )
     
-    print(cmd_align)
+    #print(cmd_align)
     
   } else if(aligner=="STAR") {
     
@@ -486,7 +487,7 @@ BascetAlignToReference <- function(
   
   
   ### Build command: basic alignment
-  final_outputFiles <- outputFilesBAMunsorted
+  #final_outputFiles <- outputFilesBAMunsorted
   cmd <- c(
     #shellscript_set_tempdir(bascetInstance),
     shellscriptMakeBashArray("files_in_r1", inputFiles_R1),
@@ -507,7 +508,7 @@ BascetAlignToReference <- function(
   
   ### Build command: sorting and indexing
   if(do_sort){
-    final_outputFiles <- outputFilesBAMsorted
+    #final_outputFiles <- outputFilesBAMsorted
     cmd <- c(
       cmd,
       
@@ -534,9 +535,9 @@ BascetAlignToReference <- function(
   }
   
   
-  print(cmd)
   
-  if(bascetCheckOverwriteOutput(final_outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFilesFinal, overwrite)) {
+  #if(bascetCheckOverwriteOutput(final_outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
