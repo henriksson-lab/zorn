@@ -271,7 +271,7 @@ BascetAlignmentToBigwig <- function(
 #' 
 #' @param outputName Name of output file (BAM-file)
 #' @param numLocalThreads Number of threads to use for each runner
-#' @param keep_mapped Keep the mapped reads (TRUE) or unmapped (FALSE)
+#' @param keepMapped Keep the mapped reads (TRUE) or unmapped (FALSE)
 #' 
 #' @export
 BascetFilterAlignment <- function(  
@@ -279,7 +279,7 @@ BascetFilterAlignment <- function(
     numLocalThreads=1,
     inputName, 
     outputName,
-    keep_mapped=FALSE,
+    keepMapped=FALSE,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -304,13 +304,13 @@ BascetFilterAlignment <- function(
     print(paste("Detect paired alignment: ",is_paired_al))
     
     if(is_paired_al) {
-      if(keep_mapped){
+      if(keepMapped){
         samtools_flags <- paste(samtools_flags, "-F2")
       } else {
         samtools_flags <- paste(samtools_flags, "-f2")
       }
     } else {
-      if(keep_mapped){
+      if(keepMapped){
         samtools_flags <- paste(samtools_flags, "-F4")
       } else {
         samtools_flags <- paste(samtools_flags, "-f4")
