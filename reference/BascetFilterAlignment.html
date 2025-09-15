@@ -68,7 +68,7 @@
 <span>  numLocalThreads <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  <span class="va">inputName</span>,</span>
 <span>  <span class="va">outputName</span>,</span>
-<span>  keep_mapped <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  keepMapped <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu">GetDefaultBascetRunner</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -79,15 +79,23 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-numlocalthreads">numLocalThreads<a class="anchor" aria-label="anchor" href="#arg-numlocalthreads"></a></dt>
-<dd><p>Number of threads to use for each runner</p></dd>
+<dl><dt id="arg-bascetroot">bascetRoot<a class="anchor" aria-label="anchor" href="#arg-bascetroot"></a></dt>
+<dd><p>The root folder where all Bascets are stored</p></dd>
+
+
+<dt id="arg-numlocalthreads">numLocalThreads<a class="anchor" aria-label="anchor" href="#arg-numlocalthreads"></a></dt>
+<dd><p>Number of threads to use for each runner (TODO: get default from runner settings?)</p></dd>
+
+
+<dt id="arg-inputname">inputName<a class="anchor" aria-label="anchor" href="#arg-inputname"></a></dt>
+<dd><p>Name of input shards (BAM-file format)</p></dd>
 
 
 <dt id="arg-outputname">outputName<a class="anchor" aria-label="anchor" href="#arg-outputname"></a></dt>
-<dd><p>Name of output file (BAM-file)</p></dd>
+<dd><p>Name of output shards (BAM-file format)</p></dd>
 
 
-<dt id="arg-keep-mapped">keep_mapped<a class="anchor" aria-label="anchor" href="#arg-keep-mapped"></a></dt>
+<dt id="arg-keepmapped">keepMapped<a class="anchor" aria-label="anchor" href="#arg-keepmapped"></a></dt>
 <dd><p>Keep the mapped reads (TRUE) or unmapped (FALSE)</p></dd>
 
 </dl></div>

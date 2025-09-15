@@ -47,7 +47,6 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountChrom.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFeaturiseKMC.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGatherCountSketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.html</loc></url>
@@ -68,7 +67,6 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryKMC.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadFile.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadMinhashHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.html</loc></url>
@@ -95,9 +93,6 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCassembledDF.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCbasicStats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCpassfailStats.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/KmcChooseKmerFeatures.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/KmcGetHistogram.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/KmcGetKmers.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KneeplotPerSpecies.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KrakenFindConsensusTaxonomy.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KrakenKneePlot.html</loc></url>

@@ -200,12 +200,6 @@
         <dd>Store all contigs in an output directory, as cell_id.fa</dd>
       </dl><dl><dt>
 
-          <code><a href="BascetFeaturiseKMC.html">BascetFeaturiseKMC()</a></code>
-
-        </dt>
-        <dd>Select kmers that appear useful for clustering</dd>
-      </dl><dl><dt>
-
           <code><a href="BascetFilterAlignment.html">BascetFilterAlignment()</a></code>
 
         </dt>
@@ -324,12 +318,6 @@
 
         </dt>
         <dd>Build count table from FASTQ reads and a list of selected kmers</dd>
-      </dl><dl><dt>
-
-          <code><a href="BascetQueryKMC.html">BascetQueryKMC()</a></code>
-
-        </dt>
-        <dd>Build count table from kmer table and a list of selected kmers</dd>
       </dl><dl><dt>
 
           <code><a href="BascetReadFile.html">BascetReadFile()</a></code>
@@ -467,7 +455,7 @@
           <code><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance()</a></code>
 
         </dt>
-        <dd>Get Bascet instance from global variable</dd>
+        <dd>Get default Bascet instance from global variable (bascetInstance.default)</dd>
       </dl><dl><dt>
 
           <code><a href="GetFASTQCassembledDF.html">GetFASTQCassembledDF()</a></code>
@@ -486,24 +474,6 @@
 
         </dt>
         <dd>From aggregated FASTQC data, get overall pass-fail statistics for overlay on UMAP etc</dd>
-      </dl><dl><dt>
-
-          <code><a href="KmcChooseKmerFeatures.html">KmcChooseKmerFeatures()</a></code>
-
-        </dt>
-        <dd>Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range</dd>
-      </dl><dl><dt>
-
-          <code><a href="KmcGetHistogram.html">KmcGetHistogram()</a></code>
-
-        </dt>
-        <dd>Generate a histogram from a KMC3 database</dd>
-      </dl><dl><dt>
-
-          <code><a href="KmcGetKmers.html">KmcGetKmers()</a></code>
-
-        </dt>
-        <dd>Get KMERs from a KMC3 database</dd>
       </dl><dl><dt>
 
           <code><a href="KneeplotPerSpecies.html">KneeplotPerSpecies()</a></code>
@@ -755,13 +725,13 @@
           <code><a href="getBascetDockerImage.html">getBascetDockerImage()</a></code>
 
         </dt>
-        <dd>Get and install a Bascet docker image.</dd>
+        <dd>Get and install a Bascet docker image. It will be cached to avoid downloading it each the time the function is called</dd>
       </dl><dl><dt>
 
           <code><a href="getBascetSingularityImage.html">getBascetSingularityImage()</a></code>
 
         </dt>
-        <dd>Get a Bascet image (singularity or docker). It will be cached in the provided directory to avoid downloading it all the time</dd>
+        <dd>Get a Bascet image (singularity or docker). It will be cached in the provided directory to avoid downloading it each the time the function is called</dd>
       </dl><dl><dt>
 
           <code><a href="getFastqR2fromR1.html">getFastqR2fromR1()</a></code>
@@ -815,7 +785,7 @@
           <code><a href="safeDownloadMD5.html">safeDownloadMD5()</a></code>
 
         </dt>
-        <dd>Download a file, check MD5 to ensure success</dd>
+        <dd>Download a file, check MD5 to ensure success. This assumes a file.md5 is stored on the server</dd>
       </dl><dl><dt>
 
           <code><a href="shellscriptCancelJobIfFileExists.html">shellscriptCancelJobIfFileExists()</a></code>

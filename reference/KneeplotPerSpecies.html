@@ -63,7 +63,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">KneeplotPerSpecies</span><span class="op">(</span><span class="va">adata</span>, max_species <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">KneeplotPerSpecies</span><span class="op">(</span><span class="va">adata</span>, maxSpecies <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,11 +71,11 @@
 
 
 <dl><dt id="arg-adata">adata<a class="anchor" aria-label="anchor" href="#arg-adata"></a></dt>
-<dd><p>description</p></dd>
+<dd><p>A Seurat object with the DefaultAssay having counts per species (or similar)</p></dd>
 
 
-<dt id="arg-max-species">max_species<a class="anchor" aria-label="anchor" href="#arg-max-species"></a></dt>
-<dd><p>description</p></dd>
+<dt id="arg-maxspecies">maxSpecies<a class="anchor" aria-label="anchor" href="#arg-maxspecies"></a></dt>
+<dd><p>Maximum number of species to show. The most abundant species will be shown first</p></dd>
 
 </dl></div>
     <div class="section level2">
