@@ -15,7 +15,18 @@ BascetAlignmentToBigwig(
 )
 }
 \arguments{
-\item{outputName}{Name of output file (BIGWIG-file)}
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{outputName}{Name of output shard (BIGWIG-file)}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+A runner job (details depends on runner)
 }
 \description{
 This function is mainly for QC purposes. It uses bamCoverage from deepTools

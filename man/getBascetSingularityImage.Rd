@@ -3,14 +3,19 @@
 \name{getBascetSingularityImage}
 \alias{getBascetSingularityImage}
 \title{Get a Bascet image (singularity or docker).
-It will be cached in the provided directory to avoid downloading it all the time}
+It will be cached in the provided directory to avoid downloading it each the time the function is called}
 \usage{
 getBascetSingularityImage(storeAt = getwd(), tempdir = NULL)
+}
+\arguments{
+\item{storeAt}{Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory}
+
+\item{tempdir}{Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible}
 }
 \value{
 A Bascet instance
 }
 \description{
 Get a Bascet image (singularity or docker).
-It will be cached in the provided directory to avoid downloading it all the time
+It will be cached in the provided directory to avoid downloading it each the time the function is called
 }

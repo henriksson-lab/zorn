@@ -5,16 +5,18 @@
 \title{Index a genome using BWA such that it can be used for alignment}
 \usage{
 BascetIndexGenomeBWA(
-  bascetRoot,
   genomeFile,
-  overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
-\item{genomeFile}{Name of FASTA file}
+\item{genomeFile}{Name of FASTA file holding genome sequence}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \description{
-Index a genome using BWA such that it can be used for alignment
+TODO: could check if genome is indexed already
 }

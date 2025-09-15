@@ -2,13 +2,18 @@
 % Please edit documentation in R/container.R
 \name{safeDownloadMD5}
 \alias{safeDownloadMD5}
-\title{Download a file, check MD5 to ensure success}
+\title{Download a file, check MD5 to ensure success. This assumes a file.md5 is stored on the server}
 \usage{
 safeDownloadMD5(url, file)
+}
+\arguments{
+\item{url}{URL to the file to download}
+
+\item{file}{Name of the file to download content to}
 }
 \value{
 nothing; panics if the download fails
 }
 \description{
-Download a file, check MD5 to ensure success
+Download a file, check MD5 to ensure success. This assumes a file.md5 is stored on the server
 }

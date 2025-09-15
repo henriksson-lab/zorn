@@ -4,7 +4,14 @@
 \alias{extractstreamerListCellsAnyFile}
 \title{extract streamer: list all cells in a given file}
 \usage{
-extractstreamerListCellsAnyFile(p, fname, superVerbose = FALSE)
+extractstreamerListCellsAnyFile(p, fname, verbose = FALSE)
+}
+\arguments{
+\item{p}{Streamer process}
+
+\item{fname}{Name of file}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
 list of cells

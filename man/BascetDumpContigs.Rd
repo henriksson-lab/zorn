@@ -13,13 +13,18 @@ BascetDumpContigs(
 )
 }
 \arguments{
-\item{inputName}{Name of input shard}
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard (should hold contigs)}
 
 \item{listCells}{List of cells to extract}
 
 \item{outputDir}{Directory to store FASTA in}
 
 \item{bascetInstance}{A Bascet instance}
+}
+\value{
+Nothing
 }
 \description{
 Store all contigs in an output directory, as cell_id.fa

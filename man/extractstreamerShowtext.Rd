@@ -4,7 +4,14 @@
 \alias{extractstreamerShowtext}
 \title{extract streamer: get content of file, assumed to be text (or this function crashes)}
 \usage{
-extractstreamerShowtext(p, fname, superVerbose = FALSE)
+extractstreamerShowtext(p, fname, verbose = FALSE)
+}
+\arguments{
+\item{p}{Streamer process}
+
+\item{fname}{Name of file}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
 The text, divided by line

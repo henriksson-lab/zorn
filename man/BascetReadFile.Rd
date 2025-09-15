@@ -14,17 +14,11 @@ BascetReadFile(
 )
 }
 \arguments{
-\item{bascetFile}{Handle for an opened Bascet file}
-
-\item{cellID}{ID of the cell (string)}
+\item{bascetFile}{Bascet file instance}
 
 \item{filename}{description}
 
 \item{as}{description}
-
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
-
-\item{verbose}{description}
 }
 \value{
 Name of a temporary file where the read content is stored

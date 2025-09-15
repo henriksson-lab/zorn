@@ -11,8 +11,15 @@ AtrandiBarcodeStats(
   bascetInstance = GetDefaultBascetInstance()
 )
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard (should be debarcoded reads)}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
-TODO
+Matrix showing coverage of each barcode
 }
 \description{
 This command assumes that cells are named as follows: well1_well2_well3_well4,

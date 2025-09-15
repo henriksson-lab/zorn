@@ -1,6 +1,3 @@
- 
-
-
 ################################################################################
 ################ Settings for the underlying Bascet installation ###############
 ################################################################################
@@ -25,6 +22,7 @@ setClass("BascetInstance", slots=list(
 #' @param bin Name of the binary
 #' @param tempdir Directory where to store temporary files
 #' @param prependCmd Something to prepend to the command, to e.g. support container systems
+#' 
 #' @return A Bascet instance
 #' @export
 BascetInstance <- function(
@@ -56,7 +54,7 @@ BascetInstance <- function(
 
 
 ###############################################
-#' Get Bascet instance from global variable
+#' Get default Bascet instance from global variable (bascetInstance.default)
 #' 
 #' @return A Bascet instance
 #' @export
@@ -70,6 +68,7 @@ GetDefaultBascetInstance <- function(){
 #' Get a temp directory to use; need to be created
 #' 
 #' @param bascetInstance A Bascet instance
+#' 
 #' @return A path to a temp directory that can be created. Must be removed when done
 #' @export
 GetBascetTempDir <- function(
@@ -88,7 +87,10 @@ GetBascetTempDir <- function(
 
 ###############################################
 #' Get a Bascet image (singularity or docker). 
-#' It will be cached in the provided directory to avoid downloading it all the time
+#' It will be cached in the provided directory to avoid downloading it each the time the function is called
+#' 
+#' @param storeAt Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory
+#' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
 #' 
 #' @return A Bascet instance
 #' @export
@@ -129,7 +131,13 @@ if(FALSE){
 
 
 ###############################################
-#' Get and install a Bascet docker image.
+#' Get and install a Bascet docker image. 
+#' It will be cached to avoid downloading it each the time the function is called
+#' 
+#' @param storeAt Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory
+#' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
+#' @param forceInstall Set to true to overwrite any existing Docker image
+#' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return A Bascet instance
 #' @export
@@ -195,6 +203,7 @@ removeBascetDockerImage <- function(){
 #' Check if a Bascet instance works
 #' 
 #' @param bascetInstance Bascet instance
+#' 
 #' @return "ok" if the instance works; panic otherwise
 #' @export
 TestBascetInstance <- function(
@@ -233,10 +242,16 @@ if(FALSE){
 
 
 ###############################################
-#' Download a file, check MD5 to ensure success
+#' Download a file, check MD5 to ensure success. This assumes a file.md5 is stored on the server
+#' 
+#' @param url URL to the file to download
+#' @param file Name of the file to download content to
 #' 
 #' @return nothing; panics if the download fails
-safeDownloadMD5 <- function(url, file){
+safeDownloadMD5 <- function(
+    url, 
+    file
+){
   url_md5 <- paste0(url,".md5")
   file_md5 <- paste0(file,".md5")
   
@@ -257,9 +272,6 @@ safeDownloadMD5 <- function(url, file){
   
   prev_md5 <- stringr::str_split_fixed(line_md5, " ",2)[1]
   print(paste("Got previous MD5 value to compare against:", prev_md5))
-  #return(a)
-  
-  
   
   f <- RCurl::CFILE(file, mode="wb")
   a <- RCurl::curlPerform(url = url, writedata = f@ref, noprogress=FALSE)
@@ -275,9 +287,8 @@ safeDownloadMD5 <- function(url, file){
     if(file.exists(file)){
       file.remove(file)
     }
-    stop("MD5 does not match")
+    stop("MD5 does not match the downloaded file")
   }
-  #return(TRUE)
 }
 
 

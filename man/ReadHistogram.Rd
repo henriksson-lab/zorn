@@ -13,9 +13,13 @@ ReadHistogram(
 )
 }
 \arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
 \item{bascetInstance}{A Bascet instance}
 
-\item{minCount}{Minimum count for a cell to be included. Setting this can have a great impact on speed}
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
 Histogram as a data.frame

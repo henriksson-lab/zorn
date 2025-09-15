@@ -8,7 +8,7 @@ for all combinations of species.}
 BarnyardPlotMatrix(adata)
 }
 \arguments{
-\item{adata}{A Seurat object with the DefaultAssay set to species count}
+\item{adata}{A Seurat object with the DefaultAssay holding counts per species (or similar)}
 }
 \value{
 a ggarranged set of ggplots

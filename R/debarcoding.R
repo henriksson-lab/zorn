@@ -3,8 +3,12 @@
 #' Prepare to shard reads by collecting statistics about
 #' each barcode, and filtering out cells with few reads
 #' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
 #' @param minQuantile Read count-based cutoff for inclusion in final shards
 #' @param bascetInstance A Bascet instance
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
 #' @return Statistics about the debarcoded reads
 #' @export
 PrepareSharding <- function(
@@ -160,6 +164,7 @@ PrepareSharding <- function(
 #' 
 #' @param debstat Statistics produced about debarcoded files
 #' @param filename Optional file to store kneeplot in
+#' 
 #' @return A ggplot object
 #' @export
 DebarcodedKneePlot <- function( 
@@ -207,6 +212,11 @@ DebarcodedKneePlot <- function(
 #' @param debstat Plan for sharding provided by PrepareSharding
 #' @param numOutputShards How many shards to generate /for each input library/
 #' @param outputName Name of the output file: Properly sharded debarcoded reads
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A runner job (details depends on runner)
 #' @export
 BascetShardify <- function(
     debstat,

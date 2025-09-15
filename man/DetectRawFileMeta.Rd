@@ -8,6 +8,8 @@ DetectRawFileMeta(rawRoot, verbose = FALSE)
 }
 \arguments{
 \item{rawRoot}{Path to folder with FASTQ files}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
 A data frame with metadata for the raw input files

@@ -7,7 +7,7 @@
 CloseBascet(bascetFile)
 }
 \arguments{
-\item{bascetFile}{Handle for an opened Bascet file}
+\item{bascetFile}{Bascet file instance}
 }
 \value{
 A handle to a Bascet

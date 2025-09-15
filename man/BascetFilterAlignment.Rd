@@ -9,18 +9,22 @@ BascetFilterAlignment(
   numLocalThreads = 1,
   inputName,
   outputName,
-  keep_mapped = FALSE,
+  keepMapped = FALSE,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
-\item{numLocalThreads}{Number of threads to use for each runner}
+\item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{outputName}{Name of output file (BAM-file)}
+\item{numLocalThreads}{Number of threads to use for each runner (TODO: get default from runner settings?)}
 
-\item{keep_mapped}{Keep the mapped reads (TRUE) or unmapped (FALSE)}
+\item{inputName}{Name of input shards (BAM-file format)}
+
+\item{outputName}{Name of output shards (BAM-file format)}
+
+\item{keepMapped}{Keep the mapped reads (TRUE) or unmapped (FALSE)}
 }
 \description{
 This is typically used to either remove host DNA, or keep reads mapping to a known reference

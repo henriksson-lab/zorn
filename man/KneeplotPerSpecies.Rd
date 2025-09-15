@@ -4,12 +4,12 @@
 \alias{KneeplotPerSpecies}
 \title{Produce a kneeplot}
 \usage{
-KneeplotPerSpecies(adata, max_species = NULL)
+KneeplotPerSpecies(adata, maxSpecies = NULL)
 }
 \arguments{
-\item{adata}{description}
+\item{adata}{A Seurat object with the DefaultAssay having counts per species (or similar)}
 
-\item{max_species}{description}
+\item{maxSpecies}{Maximum number of species to show. The most abundant species will be shown first}
 }
 \value{
 A ggplot object

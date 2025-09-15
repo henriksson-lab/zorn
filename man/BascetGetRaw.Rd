@@ -29,11 +29,9 @@ BascetGetRaw(
 
 \item{barcodeTolerance}{Optional: Number of mismatches allowed in the barcode for it to still be considered valid}
 
-\item{overwrite}{description}
-
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{A Bascet instance}
 }
 \description{
 Generate BAM with barcodes from input raw FASTQ

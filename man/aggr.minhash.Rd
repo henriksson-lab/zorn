@@ -7,6 +7,13 @@ To be called from BascetAggregateMap}
 \usage{
 aggr.minhash(bascetFile, cellID, bascetInstance)
 }
+\arguments{
+\item{bascetFile}{Bascet file handle}
+
+\item{cellID}{ID of cell to process}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
 Minhash data (minhash.txt) for each cell
 }

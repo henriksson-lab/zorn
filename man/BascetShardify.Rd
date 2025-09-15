@@ -19,6 +19,15 @@ BascetShardify(
 \item{numOutputShards}{How many shards to generate /for each input library/}
 
 \item{outputName}{Name of the output file: Properly sharded debarcoded reads}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+A runner job (details depends on runner)
 }
 \description{
 The reads from one cell is guaranteed to only be present in a single shard.

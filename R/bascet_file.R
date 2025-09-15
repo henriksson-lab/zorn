@@ -21,13 +21,15 @@ setClass("Bascet", slots=list(
 ###############################################
 #' Get list of cells in a Bascet 
 #' 
-#' @inheritParams template_BascetFunction
+#' @param bascetRoot The root folder where all Bascets are stored
 #' @param bascetName Name of the bascet
+#' @param bascetInstance A Bascet instance
+#' 
 #' @return Vector of cell names as strings
 #' @export
 BascetCellNames <- function(
     bascetRoot, 
-    bascetName,
+    bascetName,  #rather inputName?
     bascetInstance
 ){
   streamer <- extractstreamerStart(bascetInstance = bascetInstance)
@@ -48,8 +50,10 @@ BascetCellNames <- function(
 ###############################################
 #' Get list of cells in a Bascet -- streamer provided
 #' 
-#' @inheritParams template_BascetFunction
+#' @param bascetRoot The root folder where all Bascets are stored
 #' @param bascetName Name of the bascet
+#' @param streamer Bascet streamer instance
+#' 
 #' @return Vector of cell names as strings
 BascetCellNames_withstreamer <- function(
     bascetRoot, 
@@ -104,7 +108,10 @@ if(FALSE){
 #' in the future. We thus advise against direct zip-file manipulation and
 #' do not guarantee future support for this
 #' 
-#' @inheritParams template_BascetFunction
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param bascetName Name of the bascet
+#' @param bascetInstance A Bascet instance
+#' 
 #' @return A handle to a Bascet
 #' @export
 OpenBascet <- function(
@@ -137,7 +144,8 @@ OpenBascet <- function(
 #' 
 #' This should always be performed to avoid memory leaks
 #' 
-#' @inheritParams template_BascetFunction
+#' @param bascetFile Bascet file instance
+#' 
 #' @return A handle to a Bascet
 #' @export
 CloseBascet <- function(
@@ -157,7 +165,8 @@ CloseBascet <- function(
 #' TODO This can be made faster by, e.g., once and for all reading the location of
 #' all objects in the file
 #' 
-#' @inheritParams template_BascetFunction
+#' @param bascetFile Bascet file instance
+#' 
 #' @param filename description
 #' @param as description
 #' @return Name of a temporary file where the read content is stored
@@ -304,16 +313,18 @@ BascetListFilesForCell <- function(
 #' Read the count histogram associated with a Bascet.
 #' Not all Bascets have one, but it is typically produced after debarcoding
 #' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
 #' @param bascetInstance A Bascet instance
-#' @param minCount Minimum count for a cell to be included. Setting this can have a great impact on speed
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
 #' @return Histogram as a data.frame
 #' @export
 ReadHistogram <- function(
     bascetRoot, 
     inputName, 
     bascetInstance=GetDefaultBascetInstance(),
-    verbose=TRUE#,
-#    minCount=10 
+    verbose=TRUE 
 ){
   
   #Get all the TIRPs, sum up the reads  
@@ -365,9 +376,13 @@ ReadHistogram <- function(
 ###############################################
 #' Plot a histogram, loaded by ReadHistogram
 #' 
+#' @param dat Histogram object from ReadHistogram   
+#' 
 #' @return A ggplot object
 #' @export
-PlotHistogram <- function(dat){
+PlotHistogram <- function(
+    dat
+){
   dat <- dat[order(dat$count, decreasing=TRUE),]
   dat$index <- 1:nrow(dat)
   
@@ -405,7 +420,11 @@ if(FALSE){
 #' This command assumes that cells are named as follows: well1_well2_well3_well4,
 #' where e.g. well1 is in format G12
 #' 
-#' @return TODO
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard (should be debarcoded reads)
+#' @param bascetInstance A Bascet instance 
+#' 
+#' @return Matrix showing coverage of each barcode
 #' @export
 AtrandiBarcodeStats <- function(
     bascetRoot, 
@@ -506,23 +525,6 @@ if(FALSE){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ################################################################################
 ################ Extract Streamer API ##########################################
 ################################################################################
@@ -531,6 +533,10 @@ if(FALSE){
 
 ###############################################
 #' extract streamer: create an instance
+#' 
+#' @param fname File to stream (can be NULL if set later)
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' @param bascetInstance A Bascet instance
 #' 
 #' @return The process
 extractstreamerStart <- function(
@@ -603,10 +609,13 @@ extractstreamerStart <- function(
 ###############################################
 #' extract streamer: list all files in current zip-file
 #' 
+#' @param p Streamer process
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
 #' @return list of files
 extractstreamerLs <- function(
     p, 
-    superVerbose=FALSE
+    verbose=FALSE
 ){
   p$write_input("ls\n")
   #Figure out how many lines to get
@@ -615,7 +624,7 @@ extractstreamerLs <- function(
     stop(newlines)
   } else {
     n_lines <- as.integer(newlines)
-    extractstreamerReadNLines(p, n_lines, superVerbose)
+    extractstreamerReadNLines(p, n_lines, verbose)
   }
 }
 
@@ -624,11 +633,15 @@ extractstreamerLs <- function(
 ###############################################
 #' extract streamer: list all cells in a given file
 #' 
+#' @param p Streamer process
+#' @param fname Name of file
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
 #' @return list of cells
 extractstreamerListCellsAnyFile <- function(
     p, 
     fname,
-    superVerbose=FALSE
+    verbose=FALSE
 ){
   p$write_input(paste0("listcellsanyfile ",fname,"\n"))
   #Figure out how many lines to get
@@ -637,10 +650,10 @@ extractstreamerListCellsAnyFile <- function(
     stop(newlines)
   } else {
     n_lines <- as.integer(newlines)
-    if(superVerbose){
+    if(verbose){
       print(paste("Number of cells in file",n_lines))
     }
-    extractstreamerReadNLines(p, n_lines, superVerbose)
+    extractstreamerReadNLines(p, n_lines, verbose)
   }
 }
 
@@ -651,6 +664,8 @@ extractstreamerListCellsAnyFile <- function(
 #' extract streamer: end an instance.
 #' the object should no longer be used after calling this function
 #' 
+#' @param p Streamer process
+#' 
 extractstreamerExit <- function(p){
   p$write_input("exit\n")
 }
@@ -659,15 +674,18 @@ extractstreamerExit <- function(p){
 ###############################################
 #' extract streamer: helper function to read one line
 #' 
-#' @return the line
+#' @param p Streamer process
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
+#' @return The line that was read
 extractstreamerReadOneLine <- function(
     p,
-    superVerbose=FALSE
+    verbose=FALSE
 ){
   while(TRUE){
     newlines <- p$read_output_lines(n = 1)
     if(length(newlines)>0) {
-      if(superVerbose){
+      if(verbose){
         print(paste("superverbose, got line: ",newlines))
       }
       return(newlines)
@@ -679,11 +697,14 @@ extractstreamerReadOneLine <- function(
 ###############################################
 #' extract streamer: helper function to read N lines
 #' 
+#' @param p Streamer process
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
 #' @return all the lines
 extractstreamerReadNLines <- function(
     p, 
     n_lines, 
-    superVerbose=FALSE
+    verbose=FALSE
 ){
   all_out <- list()#c()
   i <- 1
@@ -695,7 +716,7 @@ extractstreamerReadNLines <- function(
     }
     newlines <- p$read_output_lines()
     sofar <- sofar + length(newlines)
-    if(superVerbose){
+    if(verbose){
       #print("got more lines:")
       #print(newlines)
       writeLines(paste("lines read so far:", length(all_out),"\ttot_lines:", n_lines))
@@ -705,7 +726,7 @@ extractstreamerReadNLines <- function(
     i <- i + 1
   }
   cat_all_out <- do.call(c, all_out)
-  if(superVerbose){
+  if(verbose){
     print("return from extractstreamerReadNLines")
   }
   cat_all_out
@@ -714,16 +735,20 @@ extractstreamerReadNLines <- function(
 ###############################################
 #' extract streamer: get content of file, assumed to be text (or this function crashes)
 #' 
+#' @param p Streamer process
+#' @param fname Name of file
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
 #' @return The text, divided by line
 extractstreamerShowtext <- function(
     p, 
     fname, 
-    superVerbose=FALSE
+    verbose=FALSE
 ) {
   p$write_input(paste0("showtext ",fname,"\n"))
 
   #Figure out how many lines to get, then get them
-  newlines <- extractstreamerReadOneLine(p, superVerbose)
+  newlines <- extractstreamerReadOneLine(p, verbose)
   if(stringr::str_starts(newlines, "error")){
     #print(newlines)
     #Return nothing
@@ -731,7 +756,7 @@ extractstreamerShowtext <- function(
   } else {
     #Get all the lines
     n_lines <- as.integer(newlines)
-    extractstreamerReadNLines(p, n_lines, superVerbose)
+    extractstreamerReadNLines(p, n_lines, verbose)
   }
 }
 
@@ -743,11 +768,11 @@ extractstreamerShowtext <- function(
 extractstreamerOpen <- function(
     p, 
     fname, 
-    superVerbose=FALSE
+    verbose=FALSE
 ) {
   p$write_input(paste0("open ",fname,"\n"))
   #Figure out how many lines to get, then get them
-  newlines <- extractstreamerReadOneLine(p,superVerbose)
+  newlines <- extractstreamerReadOneLine(p,verbose)
   if(newlines=="ok"){
     0
   } else {
@@ -759,6 +784,11 @@ extractstreamerOpen <- function(
 
 ###############################################
 #' extract streamer: extract to external file
+#' 
+#' @param p Streamer process
+#' @param fname Name of file
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
 #' @return 0 if ok
 extractstreamerExtractTo <- function(
     p, 
@@ -789,10 +819,13 @@ extractstreamerExtractTo <- function(
 #' 
 #' Store all contigs in an output directory, as cell_id.fa
 #' 
-#' @param bascetInstance A Bascet instance
-#' @param inputName Name of input shard
-#' @param outputDir Directory to store FASTA in
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard (should hold contigs)
 #' @param listCells List of cells to extract
+#' @param outputDir Directory to store FASTA in
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return Nothing
 #' @export
 BascetDumpContigs <- function(
     bascetRoot,

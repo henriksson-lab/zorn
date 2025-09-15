@@ -6,7 +6,7 @@
 \usage{
 BascetRunFASTP(
   bascetRoot,
-  numLocalThreads = 1,
+  numLocalThreads,
   inputName = "asfq",
   outputName = "fastp",
   overwrite = FALSE,
@@ -15,7 +15,22 @@ BascetRunFASTP(
 )
 }
 \arguments{
-\item{useKrakenDB}{Path to KRAKEN2 database}
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{numLocalThreads}{Number of threads to use for FASTP. TODO: autodetect? take from runner? (fastp has no good defaults)}
+
+\item{inputName}{Name of input shard}
+
+\item{outputName}{Name of output shard}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
 Run FASTP for each cell. Input must be in FASTQ file format

@@ -4,10 +4,15 @@
 \alias{extractstreamerReadOneLine}
 \title{extract streamer: helper function to read one line}
 \usage{
-extractstreamerReadOneLine(p, superVerbose = FALSE)
+extractstreamerReadOneLine(p, verbose = FALSE)
+}
+\arguments{
+\item{p}{Streamer process}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
-the line
+The line that was read
 }
 \description{
 extract streamer: helper function to read one line
