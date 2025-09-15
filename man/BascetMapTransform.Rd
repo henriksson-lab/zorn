@@ -8,9 +8,9 @@ BascetMapTransform(
   bascetRoot,
   inputName,
   outputName,
-  num_divide = 1,
-  num_merge = 1,
-  out_format = "tirp.gz",
+  numDivide = 1,
+  numMerge = 1,
+  outFormat = "tirp.gz",
   includeCells = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
@@ -18,11 +18,28 @@ BascetMapTransform(
 )
 }
 \arguments{
-\item{num_divide}{description}
+\item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{num_merge}{description}
+\item{inputName}{Name of input shard}
 
-\item{out_format}{description}
+\item{outputName}{Name of output shard}
+
+\item{numDivide}{Must be >=1; if more than 1, divide each input shard into number of outputs given here}
+
+\item{numMerge}{Must be >=1; if more than 1, merge this number of input shards into one}
+
+\item{outFormat}{Extension for the output files}
+
+\item{includeCells}{List of cells to include, or NULL if to include all}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
 This command enables

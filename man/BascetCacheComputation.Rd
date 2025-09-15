@@ -9,10 +9,14 @@ it will not be run again}
 BascetCacheComputation(bascetRoot, fname, value)
 }
 \arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
 \item{fname}{Name of the file to store the cache in. The extension .RDS is added automatically}
+
+\item{value}{The value to be cached}
 }
 \value{
-The value
+The cached value
 }
 \description{
 A wrapper to cache a computation. Put your function in as an argument,

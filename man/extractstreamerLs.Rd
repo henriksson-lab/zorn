@@ -4,7 +4,12 @@
 \alias{extractstreamerLs}
 \title{extract streamer: list all files in current zip-file}
 \usage{
-extractstreamerLs(p, superVerbose = FALSE)
+extractstreamerLs(p, verbose = FALSE)
+}
+\arguments{
+\item{p}{Streamer process}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
 list of files

@@ -10,6 +10,8 @@ BascetCellNames_withstreamer(bascetRoot, bascetName, streamer)
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
 \item{bascetName}{Name of the bascet}
+
+\item{streamer}{Bascet streamer instance}
 }
 \value{
 Vector of cell names as strings

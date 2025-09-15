@@ -9,6 +9,7 @@
 #' Figure out if a BAM-file is a paired alignment or not
 #' 
 #' @param fname Name of BAM-file
+#' @param bascetInstance A Bascet instance
 #' 
 #' @export
 isBamPairedAlignment <- function(
@@ -47,13 +48,15 @@ isBamPairedAlignment <- function(
 ###############################################
 #' Index a genome using BWA such that it can be used for alignment
 #' 
-#' @param genomeFile Name of FASTA file
+#' TODO: could check if genome is indexed already
+#' 
+#' @param genomeFile Name of FASTA file holding genome sequence
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
 #' @export
 BascetIndexGenomeBWA <- function(  
-    bascetRoot, 
     genomeFile, 
-    overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -62,7 +65,7 @@ BascetIndexGenomeBWA <- function(
     stop("Could not find genome FASTA file")
   }
   
-  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
+  #if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -78,9 +81,9 @@ BascetIndexGenomeBWA <- function(
       ),
       arraysize = 1
     )
-  } else {
-    new_no_job()
-  }
+#  } else {
+#    new_no_job()
+#  }
 }
 
 
@@ -88,13 +91,15 @@ BascetIndexGenomeBWA <- function(
 ###############################################
 #' Index a genome using STAR such that it can be used for alignment
 #' 
-#' @param genomeFile Name of FASTA file
-#' @param gtfFile description
-#' @param outDir A directory in which to store the output genome. This directory will be created
+#' @param genomeFile Name of FASTA file holding genome sequence
+#' @param gtfFile GFF file holding genome annotation
+#' @param outDir A directory in which to store the index. This directory will be created
+#' @param numLocalThreads The number of threads to use for the STAR index. Default is 10. TODO could get from runner
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
 #' @export
 BascetIndexGenomeSTAR <- function(  
-    bascetRoot, 
     fastaFile, 
     gtfFile,
     outDir,
@@ -146,8 +151,11 @@ BascetIndexGenomeSTAR <- function(
 #' Check if a file is a FASTQ file
 #' 
 #' @param fname Path to file
+#' 
 #' @return TRUE if the file is some type of FASTQ
-isFastq <- function(fname) {
+isFastq <- function(
+    fname
+) {
   stringr::str_ends(fname, stringr::fixed("fq.gz")) ||  
     stringr::str_ends(fname, stringr::fixed("fastq.gz"))
 }
@@ -158,8 +166,11 @@ isFastq <- function(fname) {
 #' Panics if the file is not a FASTQ at all
 #' 
 #' @param fname Path to file
+#' 
 #' @return TRUE if the file is a paired FASTQ
-isPairedFastq <- function(fname) {
+isPairedFastq <- function(
+    fname
+) {
   if(isFastq(fname)){
     stringr::str_ends(fname, stringr::fixed("R1.fq.gz")) ||  
       stringr::str_ends(fname, stringr::fixed("R1.fastq.gz")) ||
@@ -176,8 +187,11 @@ isPairedFastq <- function(fname) {
 #' Get corresponding R2 file. Assumes that the input file is R1
 #' 
 #' @param fname Path to file
+#' 
 #' @return Path to R2 file
-getFastqR2fromR1 <- function(fname) {
+getFastqR2fromR1 <- function(
+    fname
+) {
 
   dir <- dirname(fname)
   bname <- basename(fname)
@@ -199,8 +213,14 @@ getFastqR2fromR1 <- function(fname) {
 #' This function is mainly for QC purposes. It uses bamCoverage from deepTools
 #' apt install python3-deeptools
 #' 
-#' @param outputName Name of output file (BIGWIG-file)
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param outputName Name of input shard (BAM-file)
+#' @param outputName Name of output shard (BIGWIG-file)
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
+#' @return A runner job (details depends on runner)
 #' @export
 BascetAlignmentToBigwig <- function(  
     bascetRoot, 
@@ -269,9 +289,11 @@ BascetAlignmentToBigwig <- function(
 #' If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); otherwise (flag 0x4)
 #' 
 #' 
-#' @param outputName Name of output file (BAM-file)
-#' @param numLocalThreads Number of threads to use for each runner
-#' @param keep_mapped Keep the mapped reads (TRUE) or unmapped (FALSE)
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param numLocalThreads Number of threads to use for each runner (TODO: get default from runner settings?)
+#' @param inputName Name of input shards (BAM-file format)
+#' @param outputName Name of output shards (BAM-file format)
+#' @param keepMapped Keep the mapped reads (TRUE) or unmapped (FALSE)
 #' 
 #' @export
 BascetFilterAlignment <- function(  
@@ -279,7 +301,7 @@ BascetFilterAlignment <- function(
     numLocalThreads=1,
     inputName, 
     outputName,
-    keep_mapped=FALSE,
+    keepMapped=FALSE,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -304,13 +326,13 @@ BascetFilterAlignment <- function(
     print(paste("Detect paired alignment: ",is_paired_al))
     
     if(is_paired_al) {
-      if(keep_mapped){
+      if(keepMapped){
         samtools_flags <- paste(samtools_flags, "-F2")
       } else {
         samtools_flags <- paste(samtools_flags, "-f2")
       }
     } else {
-      if(keep_mapped){
+      if(keepMapped){
         samtools_flags <- paste(samtools_flags, "-F4")
       } else {
         samtools_flags <- paste(samtools_flags, "-f4")
@@ -429,6 +451,7 @@ BascetAlignToReference <- function(
       "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
       "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
       "-t", numLocalThreads,
+      "-c 1", #only keep unique mappers
       "| ", bascetInstance@bin, "pipe-sam-add-tags",
       "| samtools view - -S -b -o",
       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output

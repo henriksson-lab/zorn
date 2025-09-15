@@ -17,8 +17,6 @@ template_BascetFunction(
 
 \item{bascetInstance}{Configuration for how to run the Bascet Rust API}
 
-\item{num_output_shards}{Number of output shards, i.e., how many output files to split the data into? (>=1)}
-
 \item{includeCells}{List of cells to process}
 
 \item{bascetFile}{Handle for an opened Bascet file}
@@ -28,7 +26,7 @@ template_BascetFunction(
 \item{verbose}{description}
 }
 \value{
-A job to be executed
+A runner job (details depends on runner)
 }
 \description{
 Function template, where basic parameter documentation can be obtained from

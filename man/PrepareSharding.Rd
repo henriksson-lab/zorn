@@ -14,9 +14,15 @@ PrepareSharding(
 )
 }
 \arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
 \item{minQuantile}{Read count-based cutoff for inclusion in final shards}
 
 \item{bascetInstance}{A Bascet instance}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
 Statistics about the debarcoded reads

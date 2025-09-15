@@ -11,7 +11,7 @@ BascetCellNames(bascetRoot, bascetName, bascetInstance)
 
 \item{bascetName}{Name of the bascet}
 
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 Vector of cell names as strings

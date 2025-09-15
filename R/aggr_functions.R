@@ -50,6 +50,10 @@ aggr.example <- function(
 #' Callback function for aggregating min-hashes for each cell.
 #' To be called from BascetAggregateMap
 #' 
+#' @param bascetFile Bascet file handle
+#' @param cellID ID of cell to process
+#' @param bascetInstance A Bascet instance
+#' 
 #' @return Minhash data (minhash.txt) for each cell
 #' @export
 aggr.minhash <- function(
@@ -74,9 +78,11 @@ aggr.minhash <- function(
 ###############################################
 #' Aggregate frequency of minhashes across cells
 #' 
-#' @inheritParams template_BascetFunction
-#' @param inputName description
-#' @return TODO
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard (Container of minhashes)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return Data.frame of KMERs and frequencies
 #' @export
 AggregateMinhashes <- function(
     bascetRoot,
@@ -116,9 +122,12 @@ AggregateMinhashes <- function(
 #' To be called from BascetAggregateMap
 #' 
 #' @param fname Name of output filename to get for each cell
+#' 
 #' @return QUAST data for each cell
 #' @export
-aggr.rawtext <- function(fname){
+aggr.rawtext <- function(
+    fname
+){
   function(bascetFile, cellID, bascetInstance){
     rawtext <- BascetReadFile(bascetFile, cellID, fname, as="text")  
     

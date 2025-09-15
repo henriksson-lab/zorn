@@ -2,7 +2,8 @@
 % Please edit documentation in R/container.R
 \name{getBascetDockerImage}
 \alias{getBascetDockerImage}
-\title{Get and install a Bascet docker image.}
+\title{Get and install a Bascet docker image.
+It will be cached to avoid downloading it each the time the function is called}
 \usage{
 getBascetDockerImage(
   storeAt = getwd(),
@@ -11,9 +12,19 @@ getBascetDockerImage(
   verbose = FALSE
 )
 }
+\arguments{
+\item{storeAt}{Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory}
+
+\item{tempdir}{Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible}
+
+\item{forceInstall}{Set to true to overwrite any existing Docker image}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
+}
 \value{
 A Bascet instance
 }
 \description{
 Get and install a Bascet docker image.
+It will be cached to avoid downloading it each the time the function is called
 }

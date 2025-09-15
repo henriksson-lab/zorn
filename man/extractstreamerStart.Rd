@@ -10,6 +10,13 @@ extractstreamerStart(
   bascetInstance = GetDefaultBascetInstance()
 )
 }
+\arguments{
+\item{fname}{File to stream (can be NULL if set later)}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
 The process
 }

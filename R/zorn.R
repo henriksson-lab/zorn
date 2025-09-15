@@ -6,13 +6,12 @@
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance Configuration for how to run the Bascet Rust API
-#' @param num_output_shards Number of output shards, i.e., how many output files to split the data into? (>=1)
 #' @param includeCells List of cells to process
 #' @param bascetFile Handle for an opened Bascet file
 #' @param cellID ID of the cell (string)
 #' @param verbose description
 #' 
-#' @return A job to be executed
+#' @return A runner job (details depends on runner)
 template_BascetFunction <- function(
     bascetRoot, 
     runner=GetDefaultBascetRunner(), 
@@ -25,9 +24,17 @@ template_BascetFunction <- function(
 #' as R will only compute its value if needed. If the cache file exist,
 #' it will not be run again
 #' 
+#' @param bascetRoot The root folder where all Bascets are stored
 #' @param fname Name of the file to store the cache in. The extension .RDS is added automatically
-#' @return The value
-BascetCacheComputation <- function(bascetRoot, fname, value){
+#' @param value The value to be cached
+#' 
+#' @return The cached value
+#' @export
+BascetCacheComputation <- function(
+    bascetRoot, 
+    fname, 
+    value
+){
   fname <- file.path(bascetRoot,paste0(fname,".RDS"))
   if(file.exists(fname)){
     print("Found previously cached value")
@@ -56,6 +63,7 @@ BascetCacheComputation <- function(bascetRoot, fname, value){
 #' 
 #' @param outputFiles Files that we expect to exist
 #' @param overwrite Files that we expect to exist
+#' 
 #' @return TRUE if ok to proceed
 bascetCheckOverwriteOutput <- function(
   outputFiles, 
@@ -92,9 +100,14 @@ bascetCheckOverwriteOutput <- function(
 #' 
 #' 
 #' @param rawRoot Path to folder with FASTQ files
-#' @export
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
 #' @return A data frame with metadata for the raw input files
-DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
+#' @export
+DetectRawFileMeta <- function(
+    rawRoot, 
+    verbose=FALSE
+){
   #rawRoot <- "/husky/fromsequencer/241206_novaseq_wgs3/raw"
   allfiles <- list.files(rawRoot)
   
@@ -171,13 +184,14 @@ DetectRawFileMeta <- function(rawRoot, verbose=FALSE){
 ###############################################
 #' Generate BAM with barcodes from input raw FASTQ
 #' 
-#' @inheritParams template_BascetFunction
+#' @param bascetRoot The root folder where all Bascets are stored
 #' @param rawmeta Metadata for the raw FASTQ input files. See DetectRawFileMeta
 #' @param outputName Name output files: Debarcoded reads
 #' @param outputNameIncomplete Name of output files: Reads that could not be parsed
 #' @param chemistry The type of data to be parsed
 #' @param barcodeTolerance Optional: Number of mismatches allowed in the barcode for it to still be considered valid
-#' @param overwrite description
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' @export
 BascetGetRaw <- function(
     bascetRoot, 
@@ -290,7 +304,7 @@ BascetShardifyOld <- function(
     bascetRoot, 
     inputName="debarcoded", 
     includeCells=NULL, ############# TODO: get rid of this parameter; only support direct merging
-    num_output_shards=1,
+    numOutputShards=1,
     outputName="filtered", 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
@@ -310,11 +324,11 @@ BascetShardifyOld <- function(
   }
 
   #Figure out which cell goes into which shard
-  list_cell_for_shard <- shellscriptSplitArrayIntoListRandomly(includeCells, num_output_shards)
+  list_cell_for_shard <- shellscriptSplitArrayIntoListRandomly(includeCells, numOutputShards)
   
   #Figure out input and output file names  
   inputFiles <- file.path(bascetRoot, input_shards)
-  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "tirp.gz", num_output_shards)
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "tirp.gz", numOutputShards)
 
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job
@@ -341,7 +355,7 @@ BascetShardifyOld <- function(
         ),  
         "rm $CELLFILE"
       ), 
-      arraysize = num_output_shards
+      arraysize = numOutputShards
     )
   } else {
     new_no_job()
@@ -360,10 +374,20 @@ BascetShardifyOld <- function(
 #' * merging shards
 #' * dividing shards
 #' 
-#' @param numDivide description
-#' @param numMerge description
-#' @param outFormat description
 #' 
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param numDivide Must be >=1; if more than 1, divide each input shard into number of outputs given here
+#' @param numMerge Must be >=1; if more than 1, merge this number of input shards into one
+#' @param outFormat Extension for the output files
+#' @param includeCells List of cells to include, or NULL if to include all
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetMapTransform <- function(
     bascetRoot, 
@@ -460,20 +484,20 @@ BascetMapTransform <- function(
 #' 
 #' Produce a kneeplot
 #' 
-#' @param adata description
-#' @param max_species description
+#' @param adata A Seurat object with the DefaultAssay having counts per species (or similar)
+#' @param maxSpecies Maximum number of species to show. The most abundant species will be shown first
 #' 
 #' @return A ggplot object
 #' @export
 KneeplotPerSpecies <- function(
     adata, 
-    max_species=NULL
+    maxSpecies=NULL
 ) {
   strain_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   
-  if(!is.null(max_species)){
+  if(!is.null(maxSpecies)){
     strain_cnt <- strain_cnt[order(rowSums(strain_cnt), decreasing = TRUE),]
-    strain_cnt <- strain_cnt[1:min(nrow(strain_cnt), max_species),]
+    strain_cnt <- strain_cnt[1:min(nrow(strain_cnt), maxSpecies),]
   }
   
   allknee <- list()
@@ -507,10 +531,8 @@ KneeplotPerSpecies <- function(
 #' Produce a matrix of Barnyard plots, i.e., counts for one species vs another, 
 #' for all combinations of species.
 #' 
+#' @param adata A Seurat object with the DefaultAssay holding counts per species (or similar)
 #' 
-#' 
-#' 
-#' @param adata A Seurat object with the DefaultAssay set to species count
 #' @return a ggarranged set of ggplots
 #' @export
 BarnyardPlotMatrix <- function(
@@ -556,12 +578,21 @@ BarnyardPlotMatrix <- function(
 ###############################################
 #' Run FASTP for each cell. Input must be in FASTQ file format
 #'
-#' @param useKrakenDB Path to KRAKEN2 database
+#'
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param numLocalThreads Number of threads to use for FASTP. TODO: autodetect? take from runner? (fastp has no good defaults)
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 #' 
 BascetRunFASTP <- function(
     bascetRoot,
-    numLocalThreads=1,
+    numLocalThreads,
     inputName="asfq", ######### should be able to take filtered and pipe to if needed  "filtered"  TODO
     outputName="fastp",
     overwrite=FALSE,
@@ -697,6 +728,10 @@ ReadBascetCountMatrix_one <- function(
 ###############################################
 #' Read a count matrix as produced by Bascet (hdf5 format).
 #' This can be output from both BascetQueryFq and BascetCountChrom
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return Count matrix as sparseMatrix
 #' @export

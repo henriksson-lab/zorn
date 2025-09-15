@@ -6,6 +6,9 @@
 \usage{
 PlotHistogram(dat)
 }
+\arguments{
+\item{dat}{Histogram object from ReadHistogram}
+}
 \value{
 A ggplot object
 }

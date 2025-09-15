@@ -4,7 +4,12 @@
 \alias{extractstreamerReadNLines}
 \title{extract streamer: helper function to read N lines}
 \usage{
-extractstreamerReadNLines(p, n_lines, superVerbose = FALSE)
+extractstreamerReadNLines(p, n_lines, verbose = FALSE)
+}
+\arguments{
+\item{p}{Streamer process}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
 all the lines

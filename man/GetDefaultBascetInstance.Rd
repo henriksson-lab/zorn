@@ -2,7 +2,7 @@
 % Please edit documentation in R/container.R
 \name{GetDefaultBascetInstance}
 \alias{GetDefaultBascetInstance}
-\title{Get Bascet instance from global variable}
+\title{Get default Bascet instance from global variable (bascetInstance.default)}
 \usage{
 GetDefaultBascetInstance()
 }
@@ -10,5 +10,5 @@ GetDefaultBascetInstance()
 A Bascet instance
 }
 \description{
-Get Bascet instance from global variable
+Get default Bascet instance from global variable (bascetInstance.default)
 }

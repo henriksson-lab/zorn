@@ -9,12 +9,12 @@ AggregateMinhashes(bascetRoot, inputName = "minhash", bascetInstance)
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{inputName}{description}
+\item{inputName}{Name of input shard (Container of minhashes)}
 
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
-TODO
+Data.frame of KMERs and frequencies
 }
 \description{
 Aggregate frequency of minhashes across cells

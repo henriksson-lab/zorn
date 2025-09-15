@@ -5,7 +5,6 @@
 \title{Index a genome using STAR such that it can be used for alignment}
 \usage{
 BascetIndexGenomeSTAR(
-  bascetRoot,
   fastaFile,
   gtfFile,
   outDir,
@@ -15,11 +14,17 @@ BascetIndexGenomeSTAR(
 )
 }
 \arguments{
-\item{gtfFile}{description}
+\item{gtfFile}{GFF file holding genome annotation}
 
-\item{outDir}{A directory in which to store the output genome. This directory will be created}
+\item{outDir}{A directory in which to store the index. This directory will be created}
 
-\item{genomeFile}{Name of FASTA file}
+\item{numLocalThreads}{The number of threads to use for the STAR index. Default is 10. TODO could get from runner}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+
+\item{genomeFile}{Name of FASTA file holding genome sequence}
 }
 \description{
 Index a genome using STAR such that it can be used for alignment

@@ -7,6 +7,13 @@ This can be output from both BascetQueryFq and BascetCountChrom}
 \usage{
 ReadBascetCountMatrix(bascetRoot, inputName, verbose = FALSE)
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
+}
 \value{
 Count matrix as sparseMatrix
 }

@@ -9,7 +9,9 @@ OpenBascet(bascetRoot, bascetName, bascetInstance = GetDefaultBascetInstance())
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
+\item{bascetName}{Name of the bascet}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A handle to a Bascet

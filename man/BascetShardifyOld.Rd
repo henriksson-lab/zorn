@@ -8,7 +8,7 @@ BascetShardifyOld(
   bascetRoot,
   inputName = "debarcoded",
   includeCells = NULL,
-  num_output_shards = 1,
+  numOutputShards = 1,
   outputName = "filtered",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
