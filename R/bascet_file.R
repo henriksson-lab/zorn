@@ -480,7 +480,7 @@ detectShardsForFile <- function(
   allfq <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","fq\\.gz", "$"))
   allfq_r1 <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","R1\\.fq.gz", "$"))
 
-  allfiles[
+  ret_files <- allfiles[
     allzip |
     alltirp |
     allbam |
@@ -492,6 +492,9 @@ detectShardsForFile <- function(
     all_kraken |
     all_out
   ]
+
+  #Return natural order; this usually lines up inputs and outputs better, although zorn does not guarantee this
+  stringr::str_sort(ret_files, numeric = TRUE)
 }
 
 

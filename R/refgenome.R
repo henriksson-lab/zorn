@@ -29,7 +29,7 @@ isBamPairedAlignment <- function(
     "samtools view",
     fname,
     "-h | head -n 10000 | ", #100 was not enough to be reliable
-    bascetInstance@prependCmd," samtools view -c -f 1"
+    bascetInstance@prependCmd," samtools view - -S -c -f 1"
   )
   
   ret <- system(
@@ -345,13 +345,13 @@ BascetFilterAlignment <- function(
       shellscriptMakeBashArray("files_in", inputFiles),
       shellscriptMakeBashArray("files_out", outputFiles),
       
-      ### For sorting
       paste(
         bascetInstance@prependCmd,
         "samtools view",
         samtools_flags, 
-        "-@ ",numLocalThreads,          #Number of threads to use
+        "-@",numLocalThreads,           #Number of threads to use
         "${files_in[$TASK_ID]}",        #Each job takes a single output
+        "-b",                           #Output binary
         "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
       )
     )
@@ -414,13 +414,15 @@ BascetAlignToReference <- function(
   }
   inputFiles_R1 <- file.path(bascetRoot, input_shards) 
   
-  outputFilesBAMunsorted <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
-  outputFilesBAMsorted   <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
+  outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
+  outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
+  outputFilesBAMsortedPRE <- stringr::str_remove(outputFilesBAMsorted, "\\.bam$")
   
   ### What files to look for if to avoid overwriting
-  outputFilesFinal <- outputFilesBAMunsorted
-  if(do_sort){
+  if(do_sort) {
     outputFilesFinal <- outputFilesBAMsorted
+  } else {
+    outputFilesFinal <- outputFilesBAMunsorted
   }
   
   ### Verify that the input is FASTQ. check what type
@@ -458,7 +460,7 @@ BascetAlignToReference <- function(
       "\""
     )
     
-    print(cmd_align)
+    #print(cmd_align)
     
   } else if(aligner=="STAR") {
     
@@ -508,53 +510,57 @@ BascetAlignToReference <- function(
   
   
   ### Build command: basic alignment
-  final_outputFiles <- outputFilesBAMunsorted
+  #final_outputFiles <- outputFilesBAMunsorted
   cmd <- c(
     #shellscript_set_tempdir(bascetInstance),
     shellscriptMakeBashArray("files_in_r1", inputFiles_R1),
     shellscriptMakeBashArray("files_in_r2", inputFiles_R2),
     shellscriptMakeBashArray("files_out_unsorted", outputFilesBAMunsorted),
     shellscriptMakeBashArray("files_out_sorted", outputFilesBAMsorted),
+    shellscriptMakeBashArray("files_out_sorted_pre", outputFilesBAMsortedPRE),
     shellscriptMakeBashArray("files_out_final", outputFilesFinal),
 
     ### Abort early if needed    
     if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_final[$TASK_ID]}"),
     
     ### For alignment
+    "echo Aligning ${files_in_r1[$TASK_ID]} + ${files_in_r2[$TASK_ID]} ==> ${files_out_unsorted[$TASK_ID]}",
     cmd_align
   )
   
   
   ### Build command: sorting and indexing
   if(do_sort){
-    final_outputFiles <- outputFilesBAMsorted
+    #final_outputFiles <- outputFilesBAMsorted
     cmd <- c(
       cmd,
       
       ### For sorting
+      "echo Sorting ${files_out_unsorted[$TASK_ID]}  ==>  ${files_out_sorted[$TASK_ID]}",
       paste(
         bascetInstance@prependCmd,
         "samtools sort", 
-        "-@ ",numLocalThreads,                 #Number of threads to use
-        #        "-T $BASCET_TEMPDIR",                          #temporary FILE. we only got directory... TODO
+#        "-f",                                 #Output file name is given as a whole (not prefix)
+        "-@",numLocalThreads,                 #Number of threads to use
         "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
-        "-o ${files_out_sorted[$TASK_ID]}"     #Each job produces a single output
+        "${files_out_sorted_pre[$TASK_ID]}"       #Each job produces a single output
+#        "${files_out_sorted[$TASK_ID]}"       #Each job produces a single output
       ),
       
       ### For indexing
+      "echo Indexing ${files_out_sorted[$TASK_ID]}",
       paste(
         bascetInstance@prependCmd,
         "samtools index", 
-        "-@ ",numLocalThreads,                 #Number of threads to use
         "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
       )      
     )
   }
   
   
-  print(cmd)
   
-  if(bascetCheckOverwriteOutput(final_outputFiles, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFilesFinal, overwrite)) {
+  #if(bascetCheckOverwriteOutput(final_outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -657,7 +663,7 @@ BascetCountChrom <- function(
     bascetRoot,
     inputName="aligned",
     outputName="chromcount", 
-    min_matching=0,
+    minMatching=0,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -690,7 +696,7 @@ BascetCountChrom <- function(
           bascetInstance@prependCmd,
           bascetInstance@bin, 
           "countchrom",
-          "--min-matching ",min_matching,
+          "--min-matching ",minMatching,
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",  
           "-o ${files_out[$TASK_ID]}"
