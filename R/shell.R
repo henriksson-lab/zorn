@@ -160,7 +160,7 @@ shellscriptSplitArrayIntoListRandomly <- function(
 
 
 ###############################################
-#' Helper function that takes content of a list and generatas a BASH script 
+#' Helper function that takes content of a list and generates a BASH script 
 #' that stores the content in a temporary file during execution
 #' 
 #' @param tmpname Name of environment variable in which the name of the file will be stored
