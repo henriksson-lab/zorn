@@ -63,17 +63,29 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PlotJohnsonLindenstraussMinDim</span><span class="op">(</span><span class="va">list_eps</span>, min_cells <span class="op">=</span> <span class="fl">10</span>, max_cells <span class="op">=</span> <span class="fl">1e+06</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PlotJohnsonLindenstraussMinDim</span><span class="op">(</span><span class="va">listEps</span>, minCells <span class="op">=</span> <span class="fl">10</span>, maxCells <span class="op">=</span> <span class="fl">1e+06</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-list-eps">list_eps<a class="anchor" aria-label="anchor" href="#arg-list-eps"></a></dt>
+<dl><dt id="arg-listeps">listEps<a class="anchor" aria-label="anchor" href="#arg-listeps"></a></dt>
 <dd><p>List of eps to plot for</p></dd>
 
+
+<dt id="arg-mincells">minCells<a class="anchor" aria-label="anchor" href="#arg-mincells"></a></dt>
+<dd><p>Plot range min cells to consider</p></dd>
+
+
+<dt id="arg-maxcells">maxCells<a class="anchor" aria-label="anchor" href="#arg-maxcells"></a></dt>
+<dd><p>Plot range max cells to consider</p></dd>
+
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A ggplot object</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>(1 - eps) ||u - v||^2 &lt; ||p(u) - p(v)||^2 &lt; (1 + eps) ||u - v||^2</p>

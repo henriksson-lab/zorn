@@ -90,6 +90,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/FragmentsToSignac.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetBascetTempDir.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetDefaultBascetInstance.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/GetDefaultBascetRunner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCassembledDF.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCbasicStats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCpassfailStats.html</loc></url>
@@ -150,6 +151,8 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeBashArray.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeCommalist.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeFilesExpander.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeOneFileExpander.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptSplitArrayIntoListRandomly.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/template_BascetFunction.html</loc></url>
 </urlset>
 
