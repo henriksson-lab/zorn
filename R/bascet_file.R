@@ -166,10 +166,13 @@ CloseBascet <- function(
 #' all objects in the file
 #' 
 #' @param bascetFile Bascet file instance
+#' @param cellID Name of the cell
+#' @param filename Name of the file
+#' @param as Format requested; affects return value
+#' @param bascetInstance A Bascet instance
+#' @param verbose Print additional information, primarily to help troubleshooting
 #' 
-#' @param filename description
-#' @param as description
-#' @return Name of a temporary file where the read content is stored
+#' @return If as="tempfile": Name of a temporary file where the read content is stored
 #' @export
 BascetReadFile <- function(
     bascetFile, 
@@ -260,6 +263,7 @@ BascetReadFile <- function(
 #' @param bascetFile Bascet file object
 #' @param cellID Name of the cell
 #' @param bascetInstance A Bascet instance
+#' 
 #' @return A data.frame with list of all the files
 #' @export
 BascetListFilesForCell <- function(
@@ -278,8 +282,8 @@ BascetListFilesForCell <- function(
   #Extract this zip file and then check that it worked
   name_of_zip <- bascetFile@files[cellmeta$shard+1]
 
-  ret <- extractstreamerOpen(bascetFile@streamer, name_of_zip, superVerbose)  #is this ok? check return value TODO
-  if(ret==0){
+  ret <- extractstreamerOpen(bascetFile@streamer, name_of_zip, superVerbose)
+  if(ret==0) {
     if(superVerbose) print("Doing bascetfile ls")
     res <- extractstreamerLs(bascetFile@streamer)
     
@@ -763,6 +767,10 @@ extractstreamerShowtext <- function(
 
 ###############################################
 #' extract streamer: set which file is open
+#' 
+#' @param p Streamer process
+#' @param fname Name of file
+#' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return 0 if ok
 extractstreamerOpen <- function(

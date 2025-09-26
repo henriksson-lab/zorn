@@ -6,6 +6,9 @@
 \usage{
 NoRunner(showScript = TRUE)
 }
+\arguments{
+\item{showScript}{For debugging: print script to run}
+}
 \value{
 A NoRunner instance
 }

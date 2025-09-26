@@ -97,50 +97,10 @@ BascetAggregateQUAST <- function(
     verbose=verbose,
     includeCells=includeCells
   )
-  #print(666)
-  #CountDataFrameToSparseMatrix(m)
 }
 
 
 
-
-# aggr.quast_via_filesystem <- function(
-    #     bascetFile, 
-#     cellID, 
-#     bascetInstance
-# ){
-#   
-#   #print(cellID)
-#   tmp <- BascetReadFile(
-#     bascetFile, 
-#     cellID, 
-#     "transposed_report.tsv", 
-#     as="tempfile", 
-#     bascetInstance=bascetInstance
-#   )
-#   if(!is.null(tmp)){
-#     fcont <- readLines(tmp, n=2)
-#     #dat <- read.table(tmp)
-#     file.remove(tmp)
-#     
-#     dat <- data.frame(
-#       row.names=stringr::str_split(fcont[1],"\t")[[1]],
-#       value=stringr::str_split(fcont[2],"\t")[[1]]
-#     )
-#     dat <- dat[-1,,drop=FALSE]
-#     
-#     rownames(dat) <- stringr::str_replace_all(rownames(dat), stringr::fixed("#"),"Number of")
-#     
-#     #Arrange in the right format
-#     dat <- t(dat)
-#     
-#     #TODO set data types to double whenever possible
-#     
-#     dat    
-#   } else {
-#     data.frame()
-#   }
-# }
 
 
 
@@ -214,7 +174,11 @@ BascetAggregateFASTQC <- function(
 #' 
 #' @return TODO
 #' @export
-aggr.fastqc <- function(bascetFile, cellID, bascetInstance){
+aggr.fastqc <- function(
+    bascetFile, 
+    cellID, 
+    bascetInstance
+){
   
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/stupid.tsv")
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/salmonella_SRR33219394_ncbi.tsv")
@@ -312,6 +276,7 @@ internal_parse_fastqc_data <- function(lines){
 #' 
 #' @param readnum 1 or 2, for R1 and R2
 #' @param useBrowser Use operating system browser to open file
+#' 
 #' @return TODO
 #' @export
 ShowFASTQCforCell <- function(
@@ -356,6 +321,7 @@ ShowFASTQCforCell <- function(
 #' Get a data frame for one type of FASTQ statistics across across all cells
 #' 
 #' @param readnum 1 or 2, for R1 and R2
+#' 
 #' @return TODO
 #' @export
 GetFASTQCassembledDF <- function(
@@ -396,6 +362,8 @@ GetFASTQCassembledDF <- function(
 #' TODO if giving many cells
 #' 
 #' @param readnum 1 or 2, for R1 or R2
+#' 
+#' @return A ggplot object
 #' @export
 PlotFASTQCadapterContent <- function(
     aggrFastqData,
@@ -426,8 +394,13 @@ PlotFASTQCadapterContent <- function(
 #' From aggregated FASTQC data, get basic statistics for overlay on UMAP etc
 #' 
 #' @param readnum 1 or 2, for R1 or R2
+#' 
+#' @return A data.frame
 #' @export
-GetFASTQCbasicStats <- function(aggr_fastqc, readnum) {
+GetFASTQCbasicStats <- function(
+    aggr_fastqc, 
+    readnum
+) {
   df <- GetFASTQCassembledDF(aggr_fastqc,"Basic Statistics",readnum)
   df <- df[df$X.Measure %in% c("Sequence length","%GC","Sequences flagged as poor quality"),]
   df.mat <- as.data.frame(reshape2::acast(df, cellID ~ X.Measure, value.var = "Value"))
@@ -448,6 +421,8 @@ GetFASTQCbasicStats <- function(aggr_fastqc, readnum) {
 #' From aggregated FASTQC data, get overall pass-fail statistics for overlay on UMAP etc
 #' 
 #' @param readnum 1 or 2, for R1 or R2
+#' 
+#' @return A data.frame
 #' @export
 GetFASTQCpassfailStats <- function(
     aggrFastqData,
@@ -504,7 +479,11 @@ if(FALSE){
 #' 
 #' @return TODO
 #' @export
-aggr.abricate <- function(bascetFile, cellID, bascetInstance){
+aggr.abricate <- function(
+    bascetFile, 
+    cellID, 
+    bascetInstance
+){
   tmp <- BascetReadFile(bascetFile, cellID, "abricate.tsv", as="text", bascetInstance=bascetInstance)
   
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/stupid.tsv")
@@ -860,8 +839,6 @@ DownloadDatabaseAMRfinder <- function(
 }
 
 
-###
-
 
 
 
@@ -871,7 +848,11 @@ DownloadDatabaseAMRfinder <- function(
 #' 
 #' @return TODO
 #' @export
-aggr.amrfinder <- function(bascetFile, cellID, bascetInstance){
+aggr.amrfinder <- function(
+    bascetFile, 
+    cellID, 
+    bascetInstance
+){
   tmp <- BascetReadFile(bascetFile, cellID, "amrfinder.tsv", as="text", bascetInstance=bascetInstance)
   
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/amrfinder/salmonella_SRR33219394_amrfinder.tsv")
@@ -954,7 +935,11 @@ BascetMapCellGECCO <- function(
 #' 
 #' @return TODO
 #' @export
-aggr.gecco <- function(bascetFile, cellID, bascetInstance){ 
+aggr.gecco <- function(
+    bascetFile, 
+    cellID, 
+    bascetInstance
+){ 
   
   tmp <- BascetReadFile(bascetFile, cellID, "gecco_out/clusters.tsv", as="text", bascetInstance=bascetInstance)
   tmp <- readLines("/home/mahogny/github/zorn/test_aggr/gecco/salmonella_SRR33219394.clusters.tsv")
@@ -962,7 +947,6 @@ aggr.gecco <- function(bascetFile, cellID, bascetInstance){
   dat <- read.delim(zz)
   close(zz)
   dat
-  
 }
 
 

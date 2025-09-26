@@ -7,13 +7,11 @@
 ChooseInformativeKMERs(kmerHist, minFreq = 0.005, maxFreq = 1)
 }
 \arguments{
-\item{minFreq}{description}
+\item{kmerHist}{Data.frame with KMER frequency}
 
-\item{maxFreq}{description}
+\item{minFreq}{Pick KMERs having minimum frequency}
 
-\item{fname}{description}
-
-\item{numPick}{description}
+\item{maxFreq}{Pick KMERs having maxiumum frequency}
 }
 \value{
 List of KMERs

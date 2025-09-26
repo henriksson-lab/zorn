@@ -4,10 +4,17 @@
 \alias{PlotJohnsonLindenstraussMinDim}
 \title{Plot minimum number of dimensions needed to retain distance between samples}
 \usage{
-PlotJohnsonLindenstraussMinDim(list_eps, min_cells = 10, max_cells = 1e+06)
+PlotJohnsonLindenstraussMinDim(listEps, minCells = 10, maxCells = 1e+06)
 }
 \arguments{
-\item{list_eps}{List of eps to plot for}
+\item{listEps}{List of eps to plot for}
+
+\item{minCells}{Plot range min cells to consider}
+
+\item{maxCells}{Plot range max cells to consider}
+}
+\value{
+A ggplot object
 }
 \description{
 https://en.wikipedia.org/wiki/Johnson–Lindenstrauss_lemma

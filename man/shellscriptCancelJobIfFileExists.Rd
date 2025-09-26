@@ -6,8 +6,11 @@
 \usage{
 shellscriptCancelJobIfFileExists(fvar)
 }
+\arguments{
+\item{fvar}{Name of file}
+}
 \value{
-script
+BASH script content
 }
 \description{
 Create a piece of script to exit a job early if file exists

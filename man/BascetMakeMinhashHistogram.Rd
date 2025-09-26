@@ -17,14 +17,20 @@ BascetMakeMinhashHistogram(
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{includeCells}{List of cells to process}
+\item{inputName}{Name of input shard (should contain minhashes)}
+
+\item{outputName}{Name of output file}
+
+\item{includeCells}{List of cells to include, or NULL for all cells}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
-A job
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
 Gather all minhashes into a single histogram file

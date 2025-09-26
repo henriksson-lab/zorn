@@ -8,8 +8,16 @@
 #' Compute minhashes for each cell.
 #' This is a thin wrapper around BascetMapCell
 #' 
-#' @inheritParams template_BascetFunction
-#' @return TODO
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param maxReads The maximum number of reads per cell to sample
+#' @param kmerSize The KMER size for the hashing
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetComputeMinhash <- function( 
     bascetRoot, 
@@ -42,8 +50,15 @@ BascetComputeMinhash <- function(
 ###############################################
 #' Gather all minhashes into a single histogram file
 #' 
-#' @inheritParams template_BascetFunction
-#' @return A job
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard (should contain minhashes)
+#' @param outputName Name of output file
+#' @param includeCells List of cells to include, or NULL for all cells
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetMakeMinhashHistogram <- function( 
   bascetRoot, 
@@ -114,9 +129,16 @@ BascetMakeMinhashHistogram <- function(
 ###############################################
 #' Build count table from FASTQ reads and a list of selected kmers
 #' 
-#' @inheritParams template_BascetFunction
-#' @param useKMERs description
-#' @return TODO
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param useKMERs List of KMERs to query
+#' @param maxReads The maximum number of reads per cell to sample
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetQueryFq <- function( #666
     bascetRoot, 
@@ -183,6 +205,9 @@ BascetQueryFq <- function( #666
 ###############################################
 #' Read histogram of KMERs, the output of BascetMakeMinhashHistogram
 #' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' 
 #' @return KMER histogram
 #' @export
 BascetReadMinhashHistogram <- function(
@@ -210,10 +235,10 @@ BascetReadMinhashHistogram <- function(
 ###############################################
 #' Pick random KMERs from KMC3 database. The choice is among KMERs within a frequency range
 #' 
-#' @param fname description
-#' @param numPick description
-#' @param minFreq description
-#' @param maxFreq description
+#' @param kmerHist Data.frame with KMER frequency
+#' @param minFreq Pick KMERs having minimum frequency
+#' @param maxFreq Pick KMERs having maxiumum frequency
+#' 
 #' @return List of KMERs
 #' @export
 ChooseInformativeKMERs <- function(
@@ -252,14 +277,4 @@ ChooseInformativeKMERs <- function(
   #set.seed(0)
   #sample(all_kmer, numPick)
 }
-
-
-
-
-
-
-
-
-
-
 

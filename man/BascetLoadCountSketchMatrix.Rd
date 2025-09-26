@@ -6,8 +6,13 @@
 \usage{
 BascetLoadCountSketchMatrix(bascetRoot, inputName = "countsketch_mat.csv")
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of countsketch matrix file}
+}
 \value{
-A seurat object
+A Seurat object holding the sketch as a reduction
 }
 \description{
 Load count sketch matrix as Seurat object

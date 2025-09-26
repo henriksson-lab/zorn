@@ -199,6 +199,7 @@ BascetGetRaw <- function(
     outputName="debarcoded", 
     outputNameIncomplete="incomplete_reads", 
     chemistry="atrandi_wgs",  #or atrandi_rnaseq; any way to get list from software?
+    subchemistry=NULL,
     barcodeTolerance=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
@@ -242,16 +243,17 @@ BascetGetRaw <- function(
         
         paste(
           bascetInstance@prependCmd,
-          bascetInstance@bin, 
+          bascetInstance@bin,
           "getraw",
           "-t $BASCET_TEMPDIR",
-          "--chemistry",chemistry,  
-          if(!is.null(barcodeTolerance)) c("barcode-tol", barcodeTolerance),
-          "--r1 ${files_r1[$TASK_ID]}",  
+          "--chemistry",chemistry,
+          if(!is.null(subchemistry)) paste("--subchemistry",subchemistry),
+          if(!is.null(barcodeTolerance)) c("--barcode-tol", barcodeTolerance),
+          "--r1 ${files_r1[$TASK_ID]}",
           "--r2 ${files_r2[$TASK_ID]}",
           if(add_libnames) "--libname ${libnames[$TASK_ID]}",
           "--out-complete   ${files_out[$TASK_ID]}",                 #Each job produces a single output
-          "--out-incomplete ${files_out_incomplete[$TASK_ID]}"                 #Each job produces a single output
+          "--out-incomplete ${files_out_incomplete[$TASK_ID]}"       #Each job produces a single output
         )
       ),
       arraysize = nrow(rawmeta)

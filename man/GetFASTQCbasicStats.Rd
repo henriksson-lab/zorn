@@ -9,6 +9,9 @@ GetFASTQCbasicStats(aggr_fastqc, readnum)
 \arguments{
 \item{readnum}{1 or 2, for R1 or R2}
 }
+\value{
+A data.frame
+}
 \description{
 From aggregated FASTQC data, get basic statistics for overlay on UMAP etc
 }

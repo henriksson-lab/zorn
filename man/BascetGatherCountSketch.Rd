@@ -17,15 +17,20 @@ BascetGatherCountSketch(
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
+\item{inputName}{Name of input shard}
+
+\item{outputName}{Name of output file}
+
 \item{includeCells}{List of cells to process}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
-}
-\value{
-A job
+\item{bascetInstance}{A Bascet instance
+
+TODO binary file format}
 }
 \description{
-TODO binary file format
+Gather all count sketches into a single count sketch matrix
 }

@@ -2,10 +2,20 @@
 % Please edit documentation in R/shell.R
 \name{shellscriptMakeBashArray}
 \alias{shellscriptMakeBashArray}
-\title{Helper function: Create array of values in bash scripts}
+\title{Helper function: Create array of values in bash scripts
+example: myArray=("cat" "dog" "mouse" "frog")}
 \usage{
 shellscriptMakeBashArray(variable, vals)
 }
+\arguments{
+\item{variable}{Environment variable to store the list in}
+
+\item{vals}{Array of strings to store into the environment variable}
+}
+\value{
+A string similar to: myArray=("cat" "dog" "mouse" "frog")
+}
 \description{
 Helper function: Create array of values in bash scripts
+example: myArray=("cat" "dog" "mouse" "frog")
 }

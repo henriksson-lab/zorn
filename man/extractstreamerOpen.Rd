@@ -6,6 +6,13 @@
 \usage{
 extractstreamerOpen(p, fname, verbose = FALSE)
 }
+\arguments{
+\item{p}{Streamer process}
+
+\item{fname}{Name of file}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
+}
 \value{
 0 if ok
 }

@@ -9,6 +9,9 @@ PlotFASTQCadapterContent(aggrFastqData, readnum)
 \arguments{
 \item{readnum}{1 or 2, for R1 or R2}
 }
+\value{
+A ggplot object
+}
 \description{
 TODO if giving many cells
 }

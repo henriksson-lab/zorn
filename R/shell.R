@@ -20,72 +20,6 @@
 # cat ${TMPFILE}/cells.0.txt
 
 
-###############################################
-#' Generate a shell script command to produce a file of list of strings
-#' 
-#' OSX limit for command line is 1048576 characters. limit to about 200k to be on the safe side
-#' 
-#' Possible to check limit by: getconf ARG_MAX
-#' 
-#' Note that the list need to start from [[1]]
-#' 
-#' This system only works for smaller lists; slurm complains if too large .sh-files are submitted
-#' 
-# shellscriptMakeFilesExpander <- function(tmpname, list_content, compare_to_var="TASK_ID") {
-#   script_lines <- list()
-#   script_lines[[1]] <- paste0(tmpname,"=$(mktemp)")
-#   j <- 2
-#   
-#   rowlen <- 20000000 #temporarily disabled. this approach to making files is dangerous 
-#   
-#   for(i in 1:length(list_content)){
-#     
-#     this_str <- stringr::str_flatten(list_content[[i]], collapse = "\\n")
-#     #this_str <- "123456789abcdefghijklmnopqrst123456789abcdefghijklmnopqrst123456789abcdefghijklmnopqrst123456789abcdefghijklmnopqrst123456789abcdefghijklmnopqrst"
-#     
-#     #Find borders for dividing the string
-#     all_starts <- seq(1, stringr::str_length(this_str), by=rowlen)
-#     itvs <- c(all_starts, stringr::str_length(this_str)+1)
-#     all_ends <- itvs[-1] - 1
-# 
-#     
-#     ##### bug!!! might split on a \??
-#     
-#     #Divide the string accordingly    
-#     divided_str <- stringr::str_sub(this_str, start = all_starts, end = all_ends)
-# 
-#     #Produce an if-statement to generate a file based on TASK_ID or similar
-#     script_lines[[j]] <- paste0("if test $",compare_to_var," -eq ",i-1,"; then")   #note, bash is indexing from 0
-#     j <- j+1
-# 
-#     #For this list item, generate the echo statements for each text fragment
-#     for(k in 1:length(divided_str)){
-#       if(k==1) {
-#         script_lines[[j]] <-  paste0(
-#           "echo -e ",
-#           "\"",divided_str[k], "\"",
-#           " > ${",tmpname,"}")
-#       } else {
-#         script_lines[[j]] <-  paste0(
-#           "echo -e ",
-#           "\"",divided_str[k], "\"",
-#           " >> ${",tmpname,"}")
-#       }
-#       j <- j+1
-#     }
-# 
-#     script_lines[[j]] <- "fi"
-#     j <- j+1
-#     
-#   }
-#   
-#   script_lines[[j]] <- "\n"
-# 
-#   tot <- stringr::str_flatten(script_lines, collapse = "\n")
-#   tot
-# }
-
-
 
 
 
@@ -98,8 +32,14 @@
 #' 
 #' Note that there must be one file per task, or each task deletes its own file. This will result in race conditions
 #' 
+#' @param name description
+#' @param name description
+#' @return description
 #' 
-shellscriptMakeFilesExpander <- function(for_variable, list_content) {
+shellscriptMakeFilesExpander <- function(
+    for_variable, 
+    list_content
+) {
   
   #Figure out the name of a tempfile to use.
   #Note that we cannot use the regular tempfile() call as these files would be deleted
@@ -152,16 +92,32 @@ shellscriptMakeFilesExpander <- function(for_variable, list_content) {
 
 
 ###############################################
-#' from [a,b] to "a,b"
-shellscriptMakeCommalist <- function(f) {
+#' Helper function, taking a list of elements such as [a,b], and returning "a,b"
+#' 
+#' @param f List of elements
+#' 
+#' @return Formatted list
+#' 
+shellscriptMakeCommalist <- function(
+    f
+) {
   stringr::str_flatten(f, collapse = ",")
 }
 
 
-###
+###############################################
 #' Helper function: Create array of values in bash scripts
-# example: myArray=("cat" "dog" "mouse" "frog")
-shellscriptMakeBashArray <- function(variable, vals){
+#' example: myArray=("cat" "dog" "mouse" "frog")
+#' 
+#' @param variable Environment variable to store the list in
+#' @param vals Array of strings to store into the environment variable
+#' 
+#' @return A string similar to: myArray=("cat" "dog" "mouse" "frog")
+#' 
+shellscriptMakeBashArray <- function(
+    variable, 
+    vals
+){
   paste0(
     variable,
     "=(",
@@ -176,9 +132,18 @@ if(FALSE){
 
 
 ###############################################
+#' Helper function to take an array of elements and split it randomly into a number
+#' of subset lists
 #' 
+#' @param arr Array of elements to subdivide
+#' @param num_divide Number of subdivions
 #' 
-shellscriptSplitArrayIntoListRandomly <- function(arr, num_divide){
+#' @return List of arrays
+#' 
+shellscriptSplitArrayIntoListRandomly <- function(
+    arr, 
+    num_divide
+){
   set.seed(666)
   shard_assignment_for_cell <- sample(1:num_divide, length(arr), replace = TRUE)
   outlist <- list()
@@ -192,22 +157,21 @@ shellscriptSplitArrayIntoListRandomly <- function(arr, num_divide){
 
 
 
-###############################################
-#' 
-#' 
-#shellscript_set_tempdir <- function(bascetInstance){
-#  paste0("BASCET_TEMPDIR=",GetBascetTempDir(bascetInstance))
-#}
-
-
-
-
 
 
 ###############################################
+#' Helper function that takes content of a list and generatas a BASH script 
+#' that stores the content in a temporary file during execution
 #' 
+#' @param tmpname Name of environment variable in which the name of the file will be stored
+#' @param list_lines Content to write to the file
 #' 
-shellscriptMakeOneFileExpander <- function(tmpname, list_lines) {
+#' @return BASH script content for the expander
+#' 
+shellscriptMakeOneFileExpander <- function(
+    tmpname, 
+    list_lines
+) {
   script_lines <- c(
     paste0(tmpname,"=$(mktemp)"),
     paste0(
@@ -227,8 +191,13 @@ shellscriptMakeOneFileExpander <- function(tmpname, list_lines) {
 ###############################################
 #' Create a piece of script to exit a job early if file exists
 #' 
-#' @return script 
-shellscriptCancelJobIfFileExists <- function(fvar) {
+#' @param fvar Name of file
+#' 
+#' @return BASH script content 
+#' 
+shellscriptCancelJobIfFileExists <- function(
+    fvar
+) {
   c(
     paste0(
       "if [ -f ",fvar," ]; then"),

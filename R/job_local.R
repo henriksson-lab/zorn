@@ -5,9 +5,6 @@
 ################################################################################
 
 
-#library(processx) ##### 
-
-
 ###############################################
 #' @export
 setClass("LocalRunner", slots=list(
@@ -31,9 +28,17 @@ setClass("LocalJob", slots=list(
 ###############################################
 #' Create new local runner instance
 #' 
-#' @return TODO
+#' @param maxcpu description
+#' @param direct description
+#' @param showScript description -------------
+#' 
+#' @return A runner instance
 #' @export
-LocalRunner <- function(maxcpu="10", direct=TRUE, showScript=FALSE){
+LocalRunner <- function(
+    maxcpu="10", 
+    direct=TRUE, 
+    showScript=FALSE
+){
   new("LocalRunner", maxcpu=maxcpu, direct=direct, showScript=showScript)
 }
 

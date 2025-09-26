@@ -80,7 +80,11 @@ PrepareSharding <- function(
     dat <- data.table::rbindlist(list_hist[meta$shard[meta$group==g]])
     colnames(dat) <- c("cellid","onecount")
     
-    print(head(dat))
+    if(verbose){
+      #TODO ensure data.table subsetting is ok in library
+      print("Example counts")
+      print(head(dat))
+    }
 
     #Add up cells across barcodes
     sumdat <- dat[ ,list(count=sum(onecount)), by=cellid]

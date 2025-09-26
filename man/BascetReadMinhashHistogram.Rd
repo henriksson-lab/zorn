@@ -6,6 +6,11 @@
 \usage{
 BascetReadMinhashHistogram(bascetRoot, inputName = "minhash_hist.csv")
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+}
 \value{
 KMER histogram
 }

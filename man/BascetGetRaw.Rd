@@ -10,6 +10,7 @@ BascetGetRaw(
   outputName = "debarcoded",
   outputNameIncomplete = "incomplete_reads",
   chemistry = "atrandi_wgs",
+  subchemistry = NULL,
   barcodeTolerance = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),

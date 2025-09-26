@@ -2,10 +2,20 @@
 % Please edit documentation in R/countsketch.R
 \name{lseq}
 \alias{lseq}
-\title{logarithmic spaced sequence, from emdbook library}
+\title{logarithmic spaced sequence; taken from emdbook library}
 \usage{
 lseq(from = 1, to = 1e+05, length.out = 6)
 }
+\arguments{
+\item{from}{First value}
+
+\item{to}{Last value}
+
+\item{length.out}{Length of list}
+}
+\value{
+List of values
+}
 \description{
-logarithmic spaced sequence, from emdbook library
+logarithmic spaced sequence; taken from emdbook library
 }

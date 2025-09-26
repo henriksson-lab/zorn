@@ -4,8 +4,17 @@
 #' Compute count sketch for each cell.
 #' This is a thin wrapper around BascetMapCell
 #' 
-#' @inheritParams template_BascetFunction
-#' @return TODO
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param maxReads Max number of reads to sample per cell
+#' @param kmerSize Size of the KMER to hash
+#' @param sketchSize Number of dimensions to reduce to
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetComputeCountSketch <- function( 
     bascetRoot, 
@@ -15,7 +24,7 @@ BascetComputeCountSketch <- function(
     overwrite=FALSE,
     maxReads=100000,  #for 5M genome, 150x2 reads, this is 6x coverage
     kmerSize=31,
-    sketch_size=5000,
+    sketchSize=5000,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -27,7 +36,7 @@ BascetComputeCountSketch <- function(
     #includeCells=includeCells
     args = list(
       KMER_SIZE=format(kmerSize, scientific=FALSE),
-      SKETCH_SIZE=format(sketch_size, scientific=FALSE),
+      sketchSize=format(sketchSize, scientific=FALSE),
       MAX_READS=format(maxReads, scientific=FALSE)
     ),
     overwrite=overwrite,
@@ -41,10 +50,16 @@ BascetComputeCountSketch <- function(
 ###############################################
 #' Gather all count sketches into a single count sketch matrix
 #' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output file
+#' @param includeCells List of cells to process
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
 #' TODO binary file format
 #' 
-#' @inheritParams template_BascetFunction
-#' @return A job
 #' @export
 BascetGatherCountSketch <- function( 
     bascetRoot, 
@@ -115,13 +130,15 @@ BascetGatherCountSketch <- function(
 ###############################################
 #' Load count sketch matrix as Seurat object
 #' 
-#' @return A seurat object
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of countsketch matrix file
+#' 
+#' @return A Seurat object holding the sketch as a reduction
 #' @export
 BascetLoadCountSketchMatrix <- function(
     bascetRoot,
     inputName="countsketch_mat.csv"
 ) {
-  #"/husky/henriksson/atrandi/v2_wgs_novaseq1/countsketch_mat.csv"
   fname <- file.path(bascetRoot, inputName)
   mat <- as.data.frame(data.table::fread(fname))
   
@@ -144,9 +161,17 @@ BascetLoadCountSketchMatrix <- function(
 ###############################################
 #' Create a seurat object from e.g. count sketch reduction
 #' 
-#' @return Seurat object; make an assay?
+#' @param Q Countsketch matrix
+#' @param reductionName Name of reduction to store Q into
+#' @param assay Name of assay to put into reduction
+#' 
+#' @return Seurat object holding Q as a reduction
 #' @export
-CreateSeuratObjectWithReduction <- function(Q, reduction_name="kmersketch", assay="RNA"){
+CreateSeuratObjectWithReduction <- function(
+    Q, 
+    reductionName="kmersketch", 
+    assay="RNA"
+){
   
   m <- matrix(nrow=2, ncol=ncol(Q))  
   colnames(m) <- colnames(Q)
@@ -154,9 +179,9 @@ CreateSeuratObjectWithReduction <- function(Q, reduction_name="kmersketch", assa
   # as dgCMatrix 
   
   pbmc <- CreateSeuratObject(counts = m, project = "a", min.cells = 0, min.features = 0)
-  pbmc@reductions[[reduction_name]] <- CreateDimReducObject(
+  pbmc@reductions[[reductionName]] <- CreateDimReducObject(
     embeddings = sign(t(Q)),  ####################################### postpone??
-    key = reduction_name,
+    key = reductionName,
     assay = assay
   )
   pbmc
@@ -165,8 +190,19 @@ CreateSeuratObjectWithReduction <- function(Q, reduction_name="kmersketch", assa
 
 
 ###############################################
-#' logarithmic spaced sequence, from emdbook library
-lseq <- function(from=1, to=100000, length.out=6) {
+#' logarithmic spaced sequence; taken from emdbook library
+#' 
+#' @param from First value
+#' @param to Last value
+#' @param length.out Length of list
+#' 
+#' @return List of values
+#' @export
+lseq <- function(
+    from=1, 
+    to=100000, 
+    length.out=6
+) {
   exp(seq(log(from), log(to), length.out = length.out))
 }
 
@@ -177,16 +213,24 @@ lseq <- function(from=1, to=100000, length.out=6) {
 #' 
 #' (1 - eps) ||u - v||^2 < ||p(u) - p(v)||^2 < (1 + eps) ||u - v||^2
 #' 
-#' @param list_eps List of eps to plot for
+#' @param listEps List of eps to plot for
+#' @param minCells Plot range min cells to consider
+#' @param maxCells Plot range max cells to consider
+#' 
+#' @return A ggplot object
 #' @export
-PlotJohnsonLindenstraussMinDim <- function(list_eps, min_cells=10, max_cells=1000000){
+PlotJohnsonLindenstraussMinDim <- function(
+    listEps, 
+    minCells=10, 
+    maxCells=1000000
+){
   
   one_df <- data.frame(
-    n_samples = lseq(min_cells, max_cells, length.out=100)
+    n_samples = lseq(minCells, maxCells, length.out=100)
   )
   
   all_df <- list()
-  for(eps in list_eps){
+  for(eps in listEps){
     df1 <- one_df
     df1$for_eps <- eps
     all_df[[paste(eps)]] <- df1
@@ -225,11 +269,11 @@ if(FALSE){
   
   pbmc <- CreateSeuratObjectWithReduction(Q[,1:1000])
   pbmc
-  reduction_name <- "kmersketch"
+  reductionName <- "kmersketch"
   pbmc <- RunUMAP(
     pbmc, 
-    dims = 1:ncol(pbmc@reductions[[reduction_name]]@cell.embeddings), 
-    reduction = reduction_name,
+    dims = 1:ncol(pbmc@reductions[[reductionName]]@cell.embeddings), 
+    reduction = reductionName,
     metric = "cosine"
   )  
   

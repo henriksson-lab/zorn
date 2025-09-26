@@ -16,7 +16,24 @@ BascetRunKraken(
 )
 }
 \arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
 \item{useKrakenDB}{Path to KRAKEN2 database}
+
+\item{numLocalThreads}{Number of threads for one KRAKEN instance}
+
+\item{inputName}{Name of input shard (FASTQ)}
+
+\item{outputName}{Name of output shard (kraken data)}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+A runner job (details depends on runner)
 }
 \description{
 Run KRAKEN2 for each cell

@@ -6,8 +6,15 @@
 \usage{
 LocalRunner(maxcpu = "10", direct = TRUE, showScript = FALSE)
 }
+\arguments{
+\item{maxcpu}{description}
+
+\item{direct}{description}
+
+\item{showScript}{description -------------}
+}
 \value{
-TODO
+A runner instance
 }
 \description{
 Create new local runner instance

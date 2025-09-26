@@ -53,7 +53,16 @@ SpeciesCorrMatrix <- function(
 ###############################################
 #' Run KRAKEN2 for each cell
 #'
+#' @param bascetRoot The root folder where all Bascets are stored
 #' @param useKrakenDB Path to KRAKEN2 database
+#' @param numLocalThreads Number of threads for one KRAKEN instance
+#' @param inputName Name of input shard (FASTQ)
+#' @param outputName Name of output shard (kraken data)
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A runner job (details depends on runner)
 #' @export
 #' 
 BascetRunKraken <- function(

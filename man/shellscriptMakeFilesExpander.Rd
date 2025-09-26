@@ -6,19 +6,15 @@
 \usage{
 shellscriptMakeFilesExpander(for_variable, list_content)
 }
+\arguments{
+\item{name}{description}
+}
+\value{
+description
+}
 \description{
-OSX limit for command line is 1048576 characters. limit to about 200k to be on the safe side
+The name of each file will be in VARIABLE\link{TASK_ID} where TASK_ID starts from 0
 }
 \details{
-Possible to check limit by: getconf ARG_MAX
-
-Note that the list need to start from [\link{1}]
-
-This system only works for smaller lists; slurm complains if too large .sh-files are submitted
-
-Generate a shell script command to produce a file of list of strings
-
-The name of each file will be in VARIABLE\link{TASK_ID} where TASK_ID starts from 0
-
 Note that there must be one file per task, or each task deletes its own file. This will result in race conditions
 }

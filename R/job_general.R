@@ -48,6 +48,7 @@ setGeneric(
 ################################################################################
 
 
+###############################################
 #' @export
 setClass("NoRunner", slots=list(
   showScript="logical"
@@ -71,6 +72,8 @@ setMethod(
 
 ###############################################
 #' Create new no-runner instance, used for debugging
+#' 
+#' @param showScript For debugging: print script to run
 #' 
 #' @return A NoRunner instance
 #' @export
@@ -154,6 +157,9 @@ setMethod(
 
 
 ###############################################
+#' Get the current default runner
+#' 
+#' @return The current default runner
 #' @export
 GetDefaultBascetRunner <- function() {
   bascetRunner.default

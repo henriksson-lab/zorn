@@ -4,14 +4,17 @@
 \alias{CreateSeuratObjectWithReduction}
 \title{Create a seurat object from e.g. count sketch reduction}
 \usage{
-CreateSeuratObjectWithReduction(
-  Q,
-  reduction_name = "kmersketch",
-  assay = "RNA"
-)
+CreateSeuratObjectWithReduction(Q, reductionName = "kmersketch", assay = "RNA")
+}
+\arguments{
+\item{Q}{Countsketch matrix}
+
+\item{reductionName}{Name of reduction to store Q into}
+
+\item{assay}{Name of assay to put into reduction}
 }
 \value{
-Seurat object; make an assay?
+Seurat object holding Q as a reduction
 }
 \description{
 Create a seurat object from e.g. count sketch reduction

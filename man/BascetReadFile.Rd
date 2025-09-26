@@ -16,12 +16,18 @@ BascetReadFile(
 \arguments{
 \item{bascetFile}{Bascet file instance}
 
-\item{filename}{description}
+\item{cellID}{Name of the cell}
 
-\item{as}{description}
+\item{filename}{Name of the file}
+
+\item{as}{Format requested; affects return value}
+
+\item{bascetInstance}{A Bascet instance}
+
+\item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
-Name of a temporary file where the read content is stored
+If as="tempfile": Name of a temporary file where the read content is stored
 }
 \description{
 TODO This can be made faster by, e.g., once and for all reading the location of
