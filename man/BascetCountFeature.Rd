@@ -17,6 +17,27 @@ BascetCountFeature(
   bascetInstance = GetDefaultBascetInstance()
 )
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
+\item{outputName}{Name of output shard}
+
+\item{gffFile}{GFF-like file to use for feature annotation}
+
+\item{useFeature}{Feature type in the file to count}
+
+\item{attrGeneId}{Attribute field to use this on for gene ID}
+
+\item{attrGeneName}{Attribute field to use this on for gene name}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
 A job, executing the counting
 }

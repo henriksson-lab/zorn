@@ -13,5 +13,5 @@ TODO
 This one puts cellID as a new column
 }
 \details{
-make this the new MapListAsDataFrame ?
+FUTURE possible make this the new MapListAsDataFrame
 }

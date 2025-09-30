@@ -7,11 +7,11 @@
 LocalRunner(maxcpu = "10", direct = TRUE, showScript = FALSE)
 }
 \arguments{
-\item{maxcpu}{description}
+\item{maxcpu}{Number of CPUs to use (max)}
 
-\item{direct}{description}
+\item{direct}{Run jobs synchronously}
 
-\item{showScript}{description -------------}
+\item{showScript}{Show the script to run, for debugging purposes}
 }
 \value{
 A runner instance

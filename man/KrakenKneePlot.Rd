@@ -12,12 +12,12 @@ KrakenKneePlot(
 )
 }
 \arguments{
-\item{groupby}{genus, phylum or species}
+\item{groupby}{Valid options are: Genus, phylum or species}
 
 \item{sortByName}{Sort by name}
 }
 \value{
-A ggplot
+A ggplot object
 }
 \description{
 Take a KRAKEN2 adata object and generate per-species kneeplots

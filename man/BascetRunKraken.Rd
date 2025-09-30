@@ -33,7 +33,7 @@ BascetRunKraken(
 \item{bascetInstance}{A Bascet instance}
 }
 \value{
-A runner job (details depends on runner)
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
 Run KRAKEN2 for each cell

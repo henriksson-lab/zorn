@@ -28,8 +28,6 @@ aggr.example <- function(
     close(zz)    
   }  
 
-  
-  
   ###### Do something with the data and return ideally as a one-line data.frame (multiple lines if multiple outputs).
   ###### Note #1: there is no notion of cellIDs here. this is handled on a higher abstraction level
   ###### Note #2: you can return the data in any shape you want. just be prepared to handle it after aggregation!

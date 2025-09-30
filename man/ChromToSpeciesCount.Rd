@@ -6,9 +6,14 @@
 \usage{
 ChromToSpeciesCount(adata, mapSeq2strain)
 }
+\arguments{
+\item{adata}{A Seurat object}
+
+\item{mapSeq2strain}{A mapping from sequence to strain}
+}
 \value{
-TODO
+...
 }
 \description{
-TODO too specific?
+This function will likely be depreciated in the future, as it is a bit too specific to keep in the library
 }

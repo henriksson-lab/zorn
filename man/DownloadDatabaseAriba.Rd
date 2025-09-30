@@ -10,6 +10,13 @@ DownloadDatabaseAriba(
   bascetInstance = GetDefaultBascetInstance()
 )
 }
+\arguments{
+\item{dbdir}{Directory in which to download database}
+
+\item{ref}{Which reference to download}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \description{
 Download database for Ariba
 }

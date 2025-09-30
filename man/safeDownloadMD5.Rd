@@ -12,7 +12,7 @@ safeDownloadMD5(url, file)
 \item{file}{Name of the file to download content to}
 }
 \value{
-nothing; panics if the download fails
+Nothing; panics if the download fails
 }
 \description{
 Download a file, check MD5 to ensure success. This assumes a file.md5 is stored on the server

@@ -11,7 +11,7 @@ BascetAlignToReference(
   inputName = "asfq",
   outputNameBAMunsorted = "unsorted_aligned",
   outputNameBAMsorted = "aligned",
-  do_sort = TRUE,
+  doSort = TRUE,
   overwrite = FALSE,
   aligner = "BWA",
   runner = GetDefaultBascetRunner(),
@@ -19,16 +19,26 @@ BascetAlignToReference(
 )
 }
 \arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
 \item{useReference}{Name of the BWA reference to use}
 
 \item{numLocalThreads}{Number of threads to use for each runner}
+
+\item{inputName}{Name of input shard}
 
 \item{outputNameBAMunsorted}{Name of unsorted BAMs}
 
 \item{outputNameBAMsorted}{Name of sorted BAMs (if generated)}
 
-\item{do_sort}{Whether to sort the output or not}
+\item{doSort}{Whether to sort the output or not}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \description{
-TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed
+Align from FASTQ, generate sorted and indexed BAM file
 }

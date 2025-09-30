@@ -25,10 +25,17 @@ BascetFilterAlignment(
 \item{outputName}{Name of output shards (BAM-file format)}
 
 \item{keepMapped}{Keep the mapped reads (TRUE) or unmapped (FALSE)}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
-This is typically used to either remove host DNA, or keep reads mapping to a known reference
-}
-\details{
+This is typically used to either remove host DNA, or keep reads mapping to a known reference.
 If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); otherwise (flag 0x4)
 }

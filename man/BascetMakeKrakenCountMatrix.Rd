@@ -17,18 +17,21 @@ BascetMakeKrakenCountMatrix(
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{numLocalThreads}{description}
+\item{numLocalThreads}{Number of threads for KRAKEN to use}
 
-\item{inputName}{description}
+\item{inputName}{Name of input shard (KRAKEN output)}
 
-\item{outputName}{description}
+\item{outputName}{Name of output shard (h5 count matrix)}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
-
-\item{useKrakenDB}{description}
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
-TODO: should run kraken in the same run
+Produce a count matrix of taxonomy IDs from KRAKEN output
 }

@@ -18,5 +18,5 @@ BascetIndexGenomeBWA(
 \item{bascetInstance}{A Bascet instance}
 }
 \description{
-TODO: could check if genome is indexed already
+FUTURE: could check if genome is indexed already
 }

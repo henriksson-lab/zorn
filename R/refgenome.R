@@ -11,6 +11,7 @@
 #' @param fname Name of BAM-file
 #' @param bascetInstance A Bascet instance
 #' 
+#' @return TRUE if the BAM-file is a paired alignment
 #' @export
 isBamPairedAlignment <- function(
     fname,
@@ -48,7 +49,7 @@ isBamPairedAlignment <- function(
 ###############################################
 #' Index a genome using BWA such that it can be used for alignment
 #' 
-#' TODO: could check if genome is indexed already
+#' FUTURE: could check if genome is indexed already
 #' 
 #' @param genomeFile Name of FASTA file holding genome sequence
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
@@ -91,13 +92,14 @@ BascetIndexGenomeBWA <- function(
 ###############################################
 #' Index a genome using STAR such that it can be used for alignment
 #' 
-#' @param genomeFile Name of FASTA file holding genome sequence
+#' @param fastaFile Name of FASTA file holding genome sequence
 #' @param gtfFile GFF file holding genome annotation
 #' @param outDir A directory in which to store the index. This directory will be created
 #' @param numLocalThreads The number of threads to use for the STAR index. Default is 10. TODO could get from runner
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetIndexGenomeSTAR <- function(  
     fastaFile, 
@@ -161,8 +163,7 @@ isFastq <- function(
 }
 
 ###############################################
-#' Check if a file is a paired FASTQ file
-#' 
+#' Check if a file is a paired FASTQ file.
 #' Panics if the file is not a FASTQ at all
 #' 
 #' @param fname Path to file
@@ -256,9 +257,7 @@ BascetAlignmentToBigwig <- function(
         "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
       )
     )
-    
-    
-    
+
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -284,17 +283,19 @@ BascetAlignmentToBigwig <- function(
 ###############################################
 #' Filter an alignment (BAM-file).
 #' 
-#' This is typically used to either remove host DNA, or keep reads mapping to a known reference
-#' 
+#' This is typically used to either remove host DNA, or keep reads mapping to a known reference.
 #' If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); otherwise (flag 0x4)
-#' 
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param numLocalThreads Number of threads to use for each runner (TODO: get default from runner settings?)
 #' @param inputName Name of input shards (BAM-file format)
 #' @param outputName Name of output shards (BAM-file format)
 #' @param keepMapped Keep the mapped reads (TRUE) or unmapped (FALSE)
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetFilterAlignment <- function(  
     bascetRoot, 
@@ -374,22 +375,19 @@ BascetFilterAlignment <- function(
 
 
 
-
-
-
-## override template for docs
-
-
 ###############################################
 #' Align from FASTQ, generate sorted and indexed BAM file
 #' 
-#' TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed
-#' 
+#' @param bascetRoot The root folder where all Bascets are stored
 #' @param useReference Name of the BWA reference to use
+#' @param numLocalThreads Number of threads to use for each runner
+#' @param inputName Name of input shard
 #' @param outputNameBAMunsorted Name of unsorted BAMs
 #' @param outputNameBAMsorted Name of sorted BAMs (if generated)
-#' @param numLocalThreads Number of threads to use for each runner
-#' @param do_sort Whether to sort the output or not
+#' @param doSort Whether to sort the output or not
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
 #' @export
 BascetAlignToReference <- function(
@@ -399,7 +397,7 @@ BascetAlignToReference <- function(
     inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputNameBAMunsorted="unsorted_aligned", 
     outputNameBAMsorted="aligned", 
-    do_sort=TRUE,
+    doSort=TRUE,
     overwrite=FALSE,
     aligner="BWA",
     runner=GetDefaultBascetRunner(), 
@@ -419,7 +417,7 @@ BascetAlignToReference <- function(
   outputFilesBAMsortedPRE <- stringr::str_remove(outputFilesBAMsorted, "\\.bam$")
   
   ### What files to look for if to avoid overwriting
-  if(do_sort) {
+  if(doSort) {
     outputFilesFinal <- outputFilesBAMsorted
   } else {
     outputFilesFinal <- outputFilesBAMunsorted
@@ -530,7 +528,7 @@ BascetAlignToReference <- function(
   
   
   ### Build command: sorting and indexing
-  if(do_sort){
+  if(doSort){
     #final_outputFiles <- outputFilesBAMsorted
     cmd <- c(
       cmd,
@@ -540,11 +538,11 @@ BascetAlignToReference <- function(
       paste(
         bascetInstance@prependCmd,
         "samtools sort", 
-#        "-f",                                 #Output file name is given as a whole (not prefix)
+#        "-f",                                 #Output file name is given as a whole (not prefix) -- other samtools version
         "-@",numLocalThreads,                 #Number of threads to use
         "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
         "${files_out_sorted_pre[$TASK_ID]}"       #Each job produces a single output
-#        "${files_out_sorted[$TASK_ID]}"       #Each job produces a single output
+#        "${files_out_sorted[$TASK_ID]}"       #Each job produces a single output -- other samtools version
       ),
       
       ### For indexing
@@ -560,7 +558,6 @@ BascetAlignToReference <- function(
   
   
   if(bascetCheckOverwriteOutput(outputFilesFinal, overwrite)) {
-  #if(bascetCheckOverwriteOutput(final_outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -586,20 +583,17 @@ BascetAlignToReference <- function(
 
 
 
-
-
-
-
-
-
-
-
-
 ###############################################
 #' Take aligned BAM file and produce Fragments.tsv.gz, compatible with Signac ATAC-seq style analysis
 #' 
-#' @return A job, producing a type of Fragments.tsv.gz
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
+#' @return A job, producing a type of Fragments.tsv.gz
 #' @export
 BascetBam2Fragments <- function(
     bascetRoot, 
@@ -656,8 +650,16 @@ BascetBam2Fragments <- function(
 ###############################################
 #' From aligned BAM file, compute counts per chromosome
 #' 
-#' @return A job, executing the counting 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param minMatching Disregard reads having fewer than specified matches, based on CIGAR string
+#' @param removeDuplicates Deduplicate reads
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetCountChrom <- function(
     bascetRoot,
@@ -718,10 +720,10 @@ BascetCountChrom <- function(
 ###############################################
 #' Using Tabix, get list of sequences in a fragment file
 #' 
-#' TODO too raw? wrap in bascet?
+#' @param fragpath List to fragment file
+#' @param bascetInstance A Bascet instance
 #' 
 #' @return The raw result of tabix
-#' 
 #' @export
 TabixGetFragmentsSeqs <- function(
     fragpath,
@@ -732,13 +734,14 @@ TabixGetFragmentsSeqs <- function(
 
 
 ###############################################
-#' From a fragments file, get a chromatin assay for Signac  .......................... signac is dirt slow at counting! only 1 cpu used. take over the whole process
+#' From a fragments file, get a chromatin assay for Signac.
 #' 
-#' Case: tabix from command line uses 100% cpu only. likely not designed for large queries
+#' Note: signac is dirt slow at counting as of writing. It might be scalable enough
+#' for certain inputs and tasks, but we still provide the option of using it.
 #' 
+#' @param fragpath List to fragment file
 #' 
 #' @return A ChromatinAssay
-#' 
 #' @export
 FragmentsToSignac <- function(
     fragpath
@@ -748,7 +751,7 @@ FragmentsToSignac <- function(
   fragpath_index <- paste(fragpath,".tbi",sep="")
   if(!file.exists(fragpath_index)){
     print("Indexing fragment file")
-    system(paste("tabix -p bed ",fragpath))
+    system(paste("tabix -p bed ",fragpath))  ########### TODO: use singularity container?
   }
   
   #### Count fragments / see which cells are present. Possible to add a cutoff here if we wish
@@ -766,21 +769,21 @@ FragmentsToSignac <- function(
       scale_y_log10()
   }
   
-  keep_cells <- counts$cb #[log10(counts$reads_count)>0]
+  keep_cells <- counts$cb
   
   #### Create a dummy assay
   stupidmat <- matrix(0, nrow = 2, ncol=length(keep_cells))
   rownames(stupidmat) <- c("chr1:1-100", "chr1:200-300")
   colnames(stupidmat) <- keep_cells
   
-  chrom_assay <- CreateChromatinAssay(
+  chromAssay <- CreateChromatinAssay(
     counts = as.sparse(stupidmat),
     sep = c(":", "-"),
     fragments = fragpath,
     min.cells = 0,
     min.features = 0
   )  
-  chrom_assay
+  chromAssay
 }
 
 
@@ -788,16 +791,18 @@ FragmentsToSignac <- function(
 ###############################################
 #' From a Signac chromatin assay with fragments, for each cell, count how many reads per chromosome
 #' 
-#' @return a FeatureMatrix 
+#' @param chromAssay A ChromatinAssay
+#' @param bascetInstance A Bascet instance
 #' 
+#' @return a FeatureMatrix 
 #' @export
 FragmentCountsPerChrom <- function(
-    chrom_assay,
+    chromAssay,
     bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Figure out where the fragment file is
-  fr <- Fragments(chrom_assay)[[1]]
+  fr <- Fragments(chromAssay)[[1]]
   #fr@cells ## also possible!
   
   #Get the name of chromosomes
@@ -811,7 +816,7 @@ FragmentCountsPerChrom <- function(
   
   # Quantify counts over each chromosome
   reg_counts <- FeatureMatrix(
-    fragments = Fragments(chrom_assay),
+    fragments = Fragments(chromAssay),
     features = grange,
     cells = colnames(fr@cells)
   )  
@@ -826,30 +831,32 @@ FragmentCountsPerChrom <- function(
 #' From a Signac chromatin assay with fragments, for each cell, count how many reads per chromosome.
 #' This function directly returns an assay that can be added to a Seurat multimodal object
 #' 
-#' @return A seurat object holding the counts
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
 #' 
+#' @return A seurat object holding the counts
 #' @export
 FragmentCountsPerChromAssay <- function(
     bascetRoot,
     inputName="fragments.1.tsv.gz" ### TODO, detect, merge all of them
 ) {
   fragpath <- file.path(bascetRoot,inputName)
-  chrom_assay <- FragmentsToSignac(fragpath)
-  chrom_assay <- FragmentCountsPerChrom(chrom_assay)
+  chromAssay <- FragmentsToSignac(fragpath)
+  chromAssay <- FragmentCountsPerChrom(chromAssay)
   
   #Subset; needed?
-  #includeCells <- sort(intersect(colnames(adata), colnames(chrom_assay)))
-  #chrom_assay <- chrom_assay[,includeCells]
+  #includeCells <- sort(intersect(colnames(adata), colnames(chromAssay)))
+  #chromAssay <- chromAssay[,includeCells]
   #adata <- adata[,includeCells]
   
-  chrom_assay_hack <- CreateAssay5Object(counts = chrom_assay)
-  rownames(chrom_assay_hack) <- stringr::str_split_i(rownames(chrom_assay_hack),"-1-",1)  #evil hack, fragile
+  chromAssay_hack <- CreateAssay5Object(counts = chromAssay)
+  rownames(chromAssay_hack) <- stringr::str_split_i(rownames(chromAssay_hack),"-1-",1)  #evil hack, fragile
 
   #Figure out which chromosome dominates  
-  #chrom_assay_hack@meta.data$max_chrom <- rownames(chrom_assay_hack$counts)[apply(chrom_assay_hack$counts, 2, which.max)]
+  #chromAssay_hack@meta.data$max_chrom <- rownames(chromAssay_hack$counts)[apply(chromAssay_hack$counts, 2, which.max)]
   
-  chrom_assay_hack
-  #obj <- CreateAssay5Object(counts = chrom_assay_hack)
+  chromAssay_hack
+  #obj <- CreateAssay5Object(counts = chromAssay_hack)
   #obj$max_chrom <- max_chrom
   #obj
 }
@@ -860,10 +867,12 @@ FragmentCountsPerChromAssay <- function(
 ###############################################
 #' Produce a count matrix on strain level
 #' 
-#' TODO too specific?
+#' This function will likely be depreciated in the future, as it is a bit too specific to keep in the library
 #' 
-#' @return TODO
+#' @param adata A Seurat object
+#' @param mapSeq2strain A mapping from sequence to strain
 #' 
+#' @return ...
 #' @export
 ChromToSpeciesCount <- function(
     adata, 
@@ -938,10 +947,18 @@ CountGrangeFeatures <- function(
 ###############################################
 #' From aligned BAM file, compute counts per feature
 #' 
-#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param gffFile GFF-like file to use for feature annotation
+#' @param useFeature Feature type in the file to count
+#' @param attrGeneId Attribute field to use this on for gene ID
+#' @param attrGeneName Attribute field to use this on for gene name
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
 #' @return A job, executing the counting 
-#' 
 #' @export
 BascetCountFeature <- function(
     bascetRoot,
@@ -1031,17 +1048,20 @@ BascetCountFeature <- function(
 #' 
 #' TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed
 #' 
-#' @param useReference Name of the BWA reference to use
-#' @param inputName xx
-#' @param outputName xx
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
 #' @param numLocalThreads Number of threads to use for each runner
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
 #' @export
 BascetRunCellSNP <- function(  
     bascetRoot, 
-    numLocalThreads=1,
     inputName="aligned", 
     outputName="cellsnp", 
+    numLocalThreads=1,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -1059,10 +1079,7 @@ BascetRunCellSNP <- function(
   
   listcellFiles <- makeOutputShardNames(bascetRoot, outputName, "listcell", num_shards)
   listchromFiles <- makeOutputShardNames(bascetRoot, outputName, "listchrom", num_shards)
-  
-  
 
-  
   ### Build command: basic alignment
   cmd <- c(
     #shellscript_set_tempdir(bascetInstance),
@@ -1132,7 +1149,8 @@ BascetRunCellSNP <- function(
 
 
 
-
+###############################################
+### Helper function
 ReadCellSNPmatrix_one <- function(basedir) {
   
   #cellSNP.base.vcf  one line per feature
@@ -1167,6 +1185,11 @@ ReadCellSNPmatrix_one <- function(basedir) {
 
 ###############################################
 #' Read a count matrix as produced by CellSNP, but as shards
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param listCells Optional list of cells to extract
+#' @param verbose Show process status for debugging purposes
 #' 
 #' @return Count matrix as sparseMatrix
 #' @export

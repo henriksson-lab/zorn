@@ -17,14 +17,18 @@ BascetMapCellGECCO(
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
+\item{inputName}{Name of input shard}
+
+\item{outputName}{Name of output shard}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascetInstance}{Configuration for how to run the Bascet Rust API}
-
-\item{db}{description}
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
-TODO
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
 Run GEECCO on contigs of all cells.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/bascet_file.R
 \name{extractstreamerLs}
 \alias{extractstreamerLs}
-\title{extract streamer: list all files in current zip-file}
+\title{extract streamer: list all files in current Bascet zip-file}
 \usage{
 extractstreamerLs(p, verbose = FALSE)
 }
@@ -12,8 +12,8 @@ extractstreamerLs(p, verbose = FALSE)
 \item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
-list of files
+List of files
 }
 \description{
-extract streamer: list all files in current zip-file
+extract streamer: list all files in current Bascet zip-file
 }

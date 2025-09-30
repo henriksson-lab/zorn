@@ -2,13 +2,17 @@
 % Please edit documentation in R/refgenome.R
 \name{FragmentsToSignac}
 \alias{FragmentsToSignac}
-\title{From a fragments file, get a chromatin assay for Signac  .......................... signac is dirt slow at counting! only 1 cpu used. take over the whole process}
+\title{From a fragments file, get a chromatin assay for Signac.}
 \usage{
 FragmentsToSignac(fragpath)
+}
+\arguments{
+\item{fragpath}{List to fragment file}
 }
 \value{
 A ChromatinAssay
 }
 \description{
-Case: tabix from command line uses 100\% cpu only. likely not designed for large queries
+Note: signac is dirt slow at counting as of writing. It might be scalable enough
+for certain inputs and tasks, but we still provide the option of using it.
 }

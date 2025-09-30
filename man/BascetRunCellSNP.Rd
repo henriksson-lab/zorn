@@ -6,22 +6,28 @@
 \usage{
 BascetRunCellSNP(
   bascetRoot,
-  numLocalThreads = 1,
   inputName = "aligned",
   outputName = "cellsnp",
+  numLocalThreads = 1,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
+\item{outputName}{Name of output shard}
+
 \item{numLocalThreads}{Number of threads to use for each runner}
 
-\item{inputName}{xx}
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
-\item{outputName}{xx}
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{useReference}{Name of the BWA reference to use}
+\item{bascetInstance}{A Bascet instance}
 }
 \description{
 TODO Should be managed by Bascet mapshard system, with automatic input conversion. unaligned file should be made temp and removed

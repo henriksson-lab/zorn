@@ -6,9 +6,14 @@
 \usage{
 TabixGetFragmentsSeqs(fragpath, bascetInstance = GetDefaultBascetInstance())
 }
+\arguments{
+\item{fragpath}{List to fragment file}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
 The raw result of tabix
 }
 \description{
-TODO too raw? wrap in bascet?
+Using Tabix, get list of sequences in a fragment file
 }

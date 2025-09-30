@@ -2,7 +2,7 @@
 % Please edit documentation in R/shell.R
 \name{shellscriptMakeOneFileExpander}
 \alias{shellscriptMakeOneFileExpander}
-\title{Helper function that takes content of a list and generatas a BASH script
+\title{Helper function that takes content of a list and generates a BASH script
 that stores the content in a temporary file during execution}
 \usage{
 shellscriptMakeOneFileExpander(tmpname, list_lines)
@@ -16,6 +16,6 @@ shellscriptMakeOneFileExpander(tmpname, list_lines)
 BASH script content for the expander
 }
 \description{
-Helper function that takes content of a list and generatas a BASH script
+Helper function that takes content of a list and generates a BASH script
 that stores the content in a temporary file during execution
 }

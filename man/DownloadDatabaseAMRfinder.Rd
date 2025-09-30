@@ -6,6 +6,11 @@
 \usage{
 DownloadDatabaseAMRfinder(dbdir, bascetInstance = GetDefaultBascetInstance())
 }
+\arguments{
+\item{dbdir}{Directory to download database to}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \description{
 Download a database for AMRfinder
 }

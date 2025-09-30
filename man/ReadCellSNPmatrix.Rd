@@ -6,6 +6,15 @@
 \usage{
 ReadCellSNPmatrix(bascetRoot, inputName, listCells = NULL, verbose = FALSE)
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
+\item{listCells}{Optional list of cells to extract}
+
+\item{verbose}{Show process status for debugging purposes}
+}
 \value{
 Count matrix as sparseMatrix
 }

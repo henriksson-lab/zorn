@@ -14,6 +14,8 @@ BascetIndexGenomeSTAR(
 )
 }
 \arguments{
+\item{fastaFile}{Name of FASTA file holding genome sequence}
+
 \item{gtfFile}{GFF file holding genome annotation}
 
 \item{outDir}{A directory in which to store the index. This directory will be created}
@@ -23,8 +25,9 @@ BascetIndexGenomeSTAR(
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
 \item{bascetInstance}{A Bascet instance}
-
-\item{genomeFile}{Name of FASTA file holding genome sequence}
+}
+\value{
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
 Index a genome using STAR such that it can be used for alignment

@@ -20,7 +20,6 @@ BascetComputeCountSketch <- function(
     bascetRoot, 
     inputName="filtered", 
     outputName="countsketch", 
-    #includeCells=NULL,
     overwrite=FALSE,
     maxReads=100000,  #for 5M genome, 150x2 reads, this is 6x coverage
     kmerSize=31,
@@ -58,8 +57,9 @@ BascetComputeCountSketch <- function(
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
-#' TODO binary file format
+#' TODO produce a binary file format instead; gather files upon loading?
 #' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetGatherCountSketch <- function( 
     bascetRoot, 
@@ -276,10 +276,6 @@ if(FALSE){
     reduction = reductionName,
     metric = "cosine"
   )  
-  
-  
   #todo cosine distance??
-  
   ##pbmc <- FindNeighbors(pbmc, reduction = "kmersketch", annoy.metric = "cosine")
-  
 }

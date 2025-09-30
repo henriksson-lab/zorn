@@ -2,13 +2,16 @@
 % Please edit documentation in R/zorn_aggr.R
 \name{MapListAsDataFrame}
 \alias{MapListAsDataFrame}
-\title{Convenience function; alternative is to somehow implement as.data.frame}
+\title{Convenience function; alternative is to somehow implement as.data.frame.}
 \usage{
 MapListAsDataFrame(mylist)
 }
+\arguments{
+\item{mylist}{TODO}
+}
 \value{
-TODO
+A data.frame
 }
 \description{
-Convenience function; alternative is to somehow implement as.data.frame
+Convenience function; alternative is to somehow implement as.data.frame.
 }

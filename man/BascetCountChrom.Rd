@@ -9,13 +9,31 @@ BascetCountChrom(
   inputName = "aligned",
   outputName = "chromcount",
   minMatching = 0,
+  removeDuplicates = TRUE,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
+\item{outputName}{Name of output shard}
+
+\item{minMatching}{Disregard reads having fewer than specified matches, based on CIGAR string}
+
+\item{removeDuplicates}{Deduplicate reads}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
-A job, executing the counting
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
 From aligned BAM file, compute counts per chromosome

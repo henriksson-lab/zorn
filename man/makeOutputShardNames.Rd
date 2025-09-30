@@ -7,6 +7,18 @@ i.e. root/name.##.ext}
 \usage{
 makeOutputShardNames(bascetRoot, outputName, ext, num_shards)
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{outputName}{Name of output shard}
+
+\item{ext}{File extension, not including the .}
+
+\item{num_shards}{Number of output shards}
+}
+\value{
+List of files to write shards to
+}
 \description{
 Helper function: Generate suitable output filenames according to shard system
 i.e. root/name.##.ext

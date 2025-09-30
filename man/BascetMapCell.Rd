@@ -16,9 +16,25 @@ BascetMapCell(
 )
 }
 \arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{withfunction}{Function to apply}
+
+\item{inputName}{Name of input shard}
+
+\item{outputName}{Name of output shard}
+
 \item{args}{List of arguments (key,value) to provide to the script}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{TODO override args docs
-}\if{html}{\out{</div>}}
+Call a MAP function for all cells
 }

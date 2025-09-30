@@ -12,7 +12,7 @@ extractstreamerReadNLines(p, n_lines, verbose = FALSE)
 \item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
-all the lines
+All the lines
 }
 \description{
 extract streamer: helper function to read N lines

@@ -19,3 +19,6 @@ A named count matrix
 \description{
 TODO: should append the name on the axis
 }
+\details{
+TODO is this used
+}

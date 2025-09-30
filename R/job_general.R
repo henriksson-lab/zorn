@@ -77,7 +77,9 @@ setMethod(
 #' 
 #' @return A NoRunner instance
 #' @export
-NoRunner <- function(showScript=TRUE){
+NoRunner <- function(
+    showScript=TRUE
+){
   new("NoRunner", showScript=showScript)
 }
 

@@ -14,10 +14,22 @@ BascetAggregateMap(
   bascetInstance = GetDefaultBascetInstance()
 )
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{bascetName}{Name of input shard}
+
+\item{aggrFunction}{Function to use for extracting simplified data for cell}
+
+\item{includeCells}{Cells to aggregate}
+
+\item{showProgress}{Show progress bar}
+
+\item{verbose}{Show debug output}
+}
 \value{
-TODO
+Aggregated data
 }
 \description{
-todo: allow multi-cpu support? parallel library
-todo note, this is effectively a pure-R map function. different name?
+Aggregate data from previous Map call
 }

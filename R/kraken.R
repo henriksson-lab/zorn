@@ -1,7 +1,12 @@
 
 
 ###############################################
-# TODO finish properly
+#'
+#' TODO is this function used? export
+#'
+#' @param adata description 
+#' 
+#' @return A ggplot object
 SpeciesCorrMatrix <- function(
     adata
 ){
@@ -62,9 +67,8 @@ SpeciesCorrMatrix <- function(
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
-#' @return A runner job (details depends on runner)
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
-#' 
 BascetRunKraken <- function(
     bascetRoot,
     useKrakenDB="/data/henlab/kraken/standard-8",
@@ -134,13 +138,15 @@ BascetRunKraken <- function(
 ###############################################
 #' Produce a count matrix of taxonomy IDs from KRAKEN output
 #' 
-#' TODO: should run kraken in the same run
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param numLocalThreads Number of threads for KRAKEN to use
+#' @param inputName Name of input shard (KRAKEN output)
+#' @param outputName Name of output shard (h5 count matrix)
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
-#' @inheritParams template_BascetFunction
-#' @param useKrakenDB description
-#' @param numLocalThreads description
-#' @param inputName description
-#' @param outputName description
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetMakeKrakenCountMatrix <- function(
     bascetRoot,
@@ -200,6 +206,7 @@ BascetMakeKrakenCountMatrix <- function(
 #' For a KRAKEN2 count matrix, return consensus taxID for each cell as metadata
 #' 
 #' @param mat A count matrix, typically in sparse format
+#' 
 #' @return A data.frame holding cellID and consensus taxID
 #' @export
 KrakenFindConsensusTaxonomy <- function(
@@ -258,6 +265,7 @@ KrakenFindConsensusTaxonomy <- function(
 #' Using a KRAKEN2 count matrix, produce a "kneeplot" of species
 #' 
 #' @param adata A Seurat object
+#' 
 #' @return A ggplot object
 #' @export
 KrakenSpeciesDistribution <- function(
@@ -289,8 +297,11 @@ KrakenSpeciesDistribution <- function(
 #' 
 #' TODO: should append the name on the axis
 #' 
+#' TODO is this used
+#' 
 #' @param mat description
 #' @param keepSpeciesOnly description
+#' 
 #' @return A named count matrix
 #' @export
 SetTaxonomyNamesFeatures <- function(
@@ -301,10 +312,7 @@ SetTaxonomyNamesFeatures <- function(
   #TODO can check if taxid_ is present for this function
   
   use_row <- as.integer(stringr::str_remove_all(colnames(mat), "taxid_"))
-  #colnames(mat)
-  #use_row <- which(Matrix::rowSums(mat)>0)
-  
-  
+
   taxonomizr::prepareDatabase(getAccessions=FALSE)
   taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(
     use_row,
@@ -342,9 +350,10 @@ SetTaxonomyNamesFeatures <- function(
 ###############################################
 #' Take a KRAKEN2 adata object and generate per-species kneeplots
 #' 
-#' @param groupby genus, phylum or species
+#' @param groupby Valid options are: Genus, phylum or species
 #' @param sortByName Sort by name
-#' @return A ggplot
+#' 
+#' @return A ggplot object
 #' @export
 KrakenKneePlot <- function(adata, groupby="phylum", showNumSpecies=15, sortByName=FALSE) {
   
@@ -422,8 +431,4 @@ if(FALSE){
     desiredTaxa = c(
       "phylum", "class", "order", "family", "genus","species")
   )
-  
-    
 }
-
-

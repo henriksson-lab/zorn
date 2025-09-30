@@ -7,8 +7,15 @@ To be called from BascetAggregateMap}
 \usage{
 aggr.quast(bascetFile, cellID, bascetInstance)
 }
+\arguments{
+\item{bascetFile}{An opened Bascet file}
+
+\item{cellID}{Cell ID}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
-QUAST data for each cell
+Data for one cell
 }
 \description{
 Callback function for aggregating QUAST data.

@@ -32,10 +32,10 @@
 #' 
 #' Note that there must be one file per task, or each task deletes its own file. This will result in race conditions
 #' 
-#' @param name description
-#' @param name description
-#' @return description
+#' @param for_variable Environment variable with array of files having the content
+#' @param list_content Content for each file
 #' 
+#' @return Part of a shell script
 shellscriptMakeFilesExpander <- function(
     for_variable, 
     list_content
@@ -97,7 +97,6 @@ shellscriptMakeFilesExpander <- function(
 #' @param f List of elements
 #' 
 #' @return Formatted list
-#' 
 shellscriptMakeCommalist <- function(
     f
 ) {
@@ -113,7 +112,6 @@ shellscriptMakeCommalist <- function(
 #' @param vals Array of strings to store into the environment variable
 #' 
 #' @return A string similar to: myArray=("cat" "dog" "mouse" "frog")
-#' 
 shellscriptMakeBashArray <- function(
     variable, 
     vals
@@ -139,7 +137,6 @@ if(FALSE){
 #' @param num_divide Number of subdivions
 #' 
 #' @return List of arrays
-#' 
 shellscriptSplitArrayIntoListRandomly <- function(
     arr, 
     num_divide
@@ -167,7 +164,6 @@ shellscriptSplitArrayIntoListRandomly <- function(
 #' @param list_lines Content to write to the file
 #' 
 #' @return BASH script content for the expander
-#' 
 shellscriptMakeOneFileExpander <- function(
     tmpname, 
     list_lines
@@ -194,7 +190,6 @@ shellscriptMakeOneFileExpander <- function(
 #' @param fvar Name of file
 #' 
 #' @return BASH script content 
-#' 
 shellscriptCancelJobIfFileExists <- function(
     fvar
 ) {
@@ -218,8 +213,5 @@ if(FALSE){
   tmpname <- "TMPFILE"
   
   cat(helper_makescript_files_expander(list_content, "TMPFILE"))
-  
   cat(tot)
-  
-  
 }

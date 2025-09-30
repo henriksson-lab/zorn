@@ -13,6 +13,18 @@ BascetAggregateGECCO(
   bascetInstance = GetDefaultBascetInstance()
 )
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
+}
+\value{
+Aggregated data
+}
 \description{
 Aggregate data from GECCO
 This is a thin wrapper around BascetAggregateMap

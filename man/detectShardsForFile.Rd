@@ -7,6 +7,14 @@ i.e. root/name.##.ext}
 \usage{
 detectShardsForFile(bascetRoot, inputName)
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+}
+\value{
+List of files that correspond to the shard
+}
 \description{
 Helper function: Figure out which shards belong together given root input name and extension
 i.e. root/name.##.ext

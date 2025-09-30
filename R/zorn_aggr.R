@@ -1,20 +1,20 @@
-
-
-
 ################################################################################
 ################ The map system ################################################
 ################################################################################
 
-
-#had a copy in zorn.R; check there if there are issues
-
 ###############################################
 #' Call a MAP function for all cells
 #' 
-#'     TODO override args docs
-#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param withfunction Function to apply
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
 #' @param args List of arguments (key,value) to provide to the script
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetMapCell <- function(
     bascetRoot, 
@@ -90,10 +90,15 @@ BascetMapCell <- function(
 
 
 ###############################################
-#' Convenience function; alternative is to somehow implement as.data.frame
-#' @return TODO
+#' Convenience function; alternative is to somehow implement as.data.frame.
+#' 
+#' @param mylist TODO
+#' 
+#' @return A data.frame
 #' @export
-MapListAsDataFrame <- function(mylist){
+MapListAsDataFrame <- function(
+    mylist
+){
   
   if(FALSE){
     mylist <- list()
@@ -116,7 +121,8 @@ MapListAsDataFrame <- function(mylist){
   }
   
   #Set row names based on index
-  rownames(out) <- names(mylist)[final_row_name]    #names(mylist)[!is.null(mylist)]
+  rownames(out) <- names(mylist)[final_row_name]
+  #names(mylist)[!is.null(mylist)]
   out
 }
 
@@ -130,7 +136,7 @@ MapListAsDataFrame <- function(mylist){
 #' 
 #' This one puts cellID as a new column
 #' 
-#' make this the new MapListAsDataFrame ?
+#' FUTURE possible make this the new MapListAsDataFrame
 #' 
 #' @return TODO
 #' @export
@@ -152,9 +158,7 @@ MapCellMultiListAsDataFrame <- function(mylist){
     }
   }
   
-  out <- do.call(rbind, newlist)
-  
-  out
+  do.call(rbind, newlist)
 }
 
 
@@ -165,6 +169,7 @@ MapCellMultiListAsDataFrame <- function(mylist){
 #' @param dat A data.frame
 #' @param rowname Column to use as matrix row name
 #' @param colname Column to use as matrix column name
+#' 
 #' @return A dgCMatrix sparse matrix
 #' @export
 CountDataFrameToSparseMatrix <- function(dat, rowname, colname) {
@@ -191,10 +196,14 @@ CountDataFrameToSparseMatrix <- function(dat, rowname, colname) {
 ###############################################
 #' Aggregate data from previous Map call
 #' 
-#' todo: allow multi-cpu support? parallel library
-#
-#' todo note, this is effectively a pure-R map function. different name?
-#' @return TODO
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param bascetName Name of input shard
+#' @param aggrFunction Function to use for extracting simplified data for cell
+#' @param includeCells Cells to aggregate
+#' @param showProgress Show progress bar
+#' @param verbose Show debug output
+#' 
+#' @return Aggregated data
 #' @export
 BascetAggregateMap <- function(
     bascetRoot, 
@@ -248,17 +257,6 @@ BascetAggregateMap <- function(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 ################################################################################
 ########### Testing ############################################################
 ################################################################################
@@ -272,9 +270,6 @@ if(FALSE){
   
   #tmp <- BascetReadMapFile(bascetFile, cellID, "out.csv", as="tempfile")
 
-  
-  
-  
   fquast <- OpenBascet(bascetRoot, "quast")
   allf <- BascetListFilesForCell(fquast, "D1_B4_F7_B12")               ## todo for all cells, and one cell!
   allf
@@ -283,13 +278,4 @@ if(FALSE){
 
   tfile <- BascetReadFile(fskesa, "E2_B4_E9_E11", "transposed_report.tsv", as="tempfile")
   readLines(tfile)
-  
-  
 }
-
-
-
-
-
-
-

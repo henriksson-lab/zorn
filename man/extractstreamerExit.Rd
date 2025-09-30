@@ -10,6 +10,9 @@ extractstreamerExit(p)
 \arguments{
 \item{p}{Streamer process}
 }
+\value{
+Nothing
+}
 \description{
 extract streamer: end an instance.
 the object should no longer be used after calling this function

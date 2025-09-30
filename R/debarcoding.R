@@ -294,8 +294,6 @@ BascetShardify <- function(
 
 
 
-
-
 if(FALSE){
   
   #~/mystore/dataset/250611_scinfluenza/merge
@@ -317,6 +315,3 @@ if(FALSE){
     runner=SlurmRunner(bascetRunner.default, ncpu="4")  #not much CPU needed. increased for memory demands
   )
 }
-
-
-

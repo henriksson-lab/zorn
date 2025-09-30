@@ -1,24 +1,4 @@
 
-
-###############################################
-#' Function template, where basic parameter documentation can be obtained from
-#' 
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance Configuration for how to run the Bascet Rust API
-#' @param includeCells List of cells to process
-#' @param bascetFile Handle for an opened Bascet file
-#' @param cellID ID of the cell (string)
-#' @param verbose description
-#' 
-#' @return A runner job (details depends on runner)
-template_BascetFunction <- function(
-    bascetRoot, 
-    runner=GetDefaultBascetRunner(), 
-    bascetInstance=GetDefaultBascetInstance()){}
-
-
-
 ###############################################
 #' A wrapper to cache a computation. Put your function in as an argument,
 #' as R will only compute its value if needed. If the cache file exist,
@@ -192,6 +172,8 @@ DetectRawFileMeta <- function(
 #' @param barcodeTolerance Optional: Number of mismatches allowed in the barcode for it to still be considered valid
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetGetRaw <- function(
     bascetRoot, 
@@ -301,6 +283,7 @@ BascetGetRaw <- function(
 #' @param inputName Name of input file: Debarcoded reads
 #' @param outputName Name of the output file: Properly sharded debarcoded reads
 #' 
+#' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetShardifyOld <- function(
     bascetRoot, 
@@ -591,7 +574,6 @@ BarnyardPlotMatrix <- function(
 #' 
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @export
-#' 
 BascetRunFASTP <- function(
     bascetRoot,
     numLocalThreads,
@@ -675,7 +657,7 @@ BascetRunFASTP <- function(
 
 
 
-
+### Internal helper function
 ReadBascetCountMatrix_one <- function(
     fname,
     verbose=FALSE
@@ -809,7 +791,4 @@ ReadBascetCountMatrix <- function(
   ) 
   #allmat
 }
-
-
-
 

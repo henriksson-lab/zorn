@@ -17,7 +17,7 @@ OpenBascet(bascetRoot, bascetName, bascetInstance = GetDefaultBascetInstance())
 A handle to a Bascet
 }
 \description{
-TODO The current code is based on pure R, but more efficient calls can be made
+Note, the current code is based on pure R, but more efficient calls can be made
 in the future. We thus advise against direct zip-file manipulation and
 do not guarantee future support for this
 }

@@ -33,7 +33,8 @@ setClass("SlurmJob", slots=list(
 ) 
 
 
-###################################################### TODO this causes errors in devtools::document() ; why?
+######################################################
+#this causes errors in devtools::document() ; why?
 #Caused by error in `current@target`:
 #  ! no applicable method for `@` applied to an object of class "environment"
 
@@ -336,7 +337,6 @@ setMethod(
     
 #    ret <- system(paste("sacct -j",job@pid), intern = TRUE)
 #    print(ret)
-        
     
     ret <- system(paste("sacct -j",job@pid, "-o state"), intern = TRUE)
     ret <- ret[-c(1:2)]  #This is " state " and "-----"
@@ -367,8 +367,6 @@ if(FALSE){
   
   JobStatus(job)
   CancelJob(job)
-  
-  
   
   ret <- system(paste("sacct -j",job@pid, "-o jobid,submit,start,end,state"), intern = TRUE)
   ret <- system(paste("sacct -j",job@pid, "-o jobid,state"), intern = TRUE)[3]

@@ -14,7 +14,7 @@ extractstreamerListCellsAnyFile(p, fname, verbose = FALSE)
 \item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{
-list of cells
+List of cells
 }
 \description{
 extract streamer: list all cells in a given file

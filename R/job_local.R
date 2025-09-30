@@ -28,9 +28,9 @@ setClass("LocalJob", slots=list(
 ###############################################
 #' Create new local runner instance
 #' 
-#' @param maxcpu description
-#' @param direct description
-#' @param showScript description -------------
+#' @param maxcpu Number of CPUs to use (max)
+#' @param direct Run jobs synchronously
+#' @param showScript Show the script to run, for debugging purposes
 #' 
 #' @return A runner instance
 #' @export
@@ -195,17 +195,10 @@ bascetRunner.default <- LocalRunner(direct = TRUE, showScript=FALSE)
 ################################################################################
 
 if(FALSE){
-  
   inst <- LocalRunner(direct=TRUE)
-  
 #  thejob <- RunJob(LocalRunner(),"ls",1)
   thejob <- RunJob(LocalRunner(),"ls",c(),"ls",1)
   
   CancelJob(thejob)
-  
-  
   JobStatus(thejob)
-  
-  
 }
-

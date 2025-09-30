@@ -11,6 +11,9 @@ isBamPairedAlignment(fname, bascetInstance = GetDefaultBascetInstance())
 
 \item{bascetInstance}{A Bascet instance}
 }
+\value{
+TRUE if the BAM-file is a paired alignment
+}
 \description{
 Figure out if a BAM-file is a paired alignment or not
 }

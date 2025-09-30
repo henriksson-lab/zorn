@@ -2,7 +2,8 @@
 % Please edit documentation in R/refgenome.R
 \name{isPairedFastq}
 \alias{isPairedFastq}
-\title{Check if a file is a paired FASTQ file}
+\title{Check if a file is a paired FASTQ file.
+Panics if the file is not a FASTQ at all}
 \usage{
 isPairedFastq(fname)
 }
@@ -13,5 +14,6 @@ isPairedFastq(fname)
 TRUE if the file is a paired FASTQ
 }
 \description{
+Check if a file is a paired FASTQ file.
 Panics if the file is not a FASTQ at all
 }

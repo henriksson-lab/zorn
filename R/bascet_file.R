@@ -8,6 +8,7 @@
 
 ###############################################
 #' A bascet, along with all the shards
+#' 
 #' @export
 setClass("Bascet", slots=list(
   num_shards="numeric",
@@ -103,8 +104,7 @@ if(FALSE){
 ###############################################
 #' Open a Bascet, prepare it for reading individual files
 #' 
-#' 
-#' TODO The current code is based on pure R, but more efficient calls can be made
+#' Note, the current code is based on pure R, but more efficient calls can be made
 #' in the future. We thus advise against direct zip-file manipulation and
 #' do not guarantee future support for this
 #' 
@@ -130,7 +130,7 @@ OpenBascet <- function(
   new("Bascet", 
       num_shards=num_shards, 
       files=file.path(bascetRoot, shards), 
-      cellmeta=cellname_coord, #BascetCellNames(bascetRoot, bascetName),
+      cellmeta=cellname_coord, 
       streamer=streamer
   )
 }
@@ -189,12 +189,11 @@ BascetReadFile <- function(
     stop("Cell not present in file")
   }
   
-  
   name_of_zip <- bascetFile@files[cellmeta$shard+1]
   extract_files <- file.path(cellID,filename)
   
-  
   if(as=="text"){
+    #### Open file and return as text
     
     if(extractstreamerOpen(bascetFile@streamer, name_of_zip)==0) {
       ret <- extractstreamerShowtext(bascetFile@streamer, extract_files, superVerbose = verbose)
@@ -205,6 +204,7 @@ BascetReadFile <- function(
     }  #is this ok? check return value TODO
     
   } else if(as=="tempfile"){
+    #### Open file and write to a tempfile. Return name of tempfile
     
     #Need a directory to unzip to
     tname.dir <- tempfile()
@@ -216,10 +216,6 @@ BascetReadFile <- function(
       print(extract_files)
       print(tname.dir)
     }
-    
-    
-    ### TODO use new API
-    
     
     ########### Use Bascet to unzip
     #cargo +nightly run extract -i /Users/mahogny/Desktop/rust/hack_robert/testdata/quast.zip  -o /Users/mahogny/Desktop/rust/hack_robert/testdata/out.temp -b a  -f report.txt
@@ -458,6 +454,11 @@ AtrandiBarcodeStats <- function(
 ###############################################
 #' Helper function: Figure out which shards belong together given root input name and extension
 #' i.e. root/name.##.ext
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' 
+#' @return List of files that correspond to the shard
 detectShardsForFile <- function(
     bascetRoot, 
     inputName
@@ -505,6 +506,13 @@ detectShardsForFile <- function(
 ###############################################
 #' Helper function: Generate suitable output filenames according to shard system
 #' i.e. root/name.##.ext
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param outputName Name of output shard
+#' @param ext File extension, not including the .
+#' @param num_shards Number of output shards
+#' 
+#' @return List of files to write shards to
 makeOutputShardNames <- function(
     bascetRoot, 
     outputName, 
@@ -611,12 +619,12 @@ extractstreamerStart <- function(
 
 
 ###############################################
-#' extract streamer: list all files in current zip-file
+#' extract streamer: list all files in current Bascet zip-file
 #' 
 #' @param p Streamer process
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
-#' @return list of files
+#' @return List of files
 extractstreamerLs <- function(
     p, 
     verbose=FALSE
@@ -641,7 +649,7 @@ extractstreamerLs <- function(
 #' @param fname Name of file
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
-#' @return list of cells
+#' @return List of cells
 extractstreamerListCellsAnyFile <- function(
     p, 
     fname,
@@ -670,6 +678,7 @@ extractstreamerListCellsAnyFile <- function(
 #' 
 #' @param p Streamer process
 #' 
+#' @return Nothing
 extractstreamerExit <- function(p){
   p$write_input("exit\n")
 }
@@ -704,7 +713,7 @@ extractstreamerReadOneLine <- function(
 #' @param p Streamer process
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
-#' @return all the lines
+#' @return All the lines
 extractstreamerReadNLines <- function(
     p, 
     n_lines, 
@@ -824,7 +833,6 @@ extractstreamerExtractTo <- function(
 
 
 ###############################################
-#' 
 #' Store all contigs in an output directory, as cell_id.fa
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
@@ -888,9 +896,3 @@ if(FALSE){
   extractstreamerExtractTo(p,"C1_B4_B9_A12/minhash.txt","/home/mahogny/temp.bar")
   
 }
-
-
-
-
-
-

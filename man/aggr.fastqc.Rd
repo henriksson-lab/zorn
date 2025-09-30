@@ -7,8 +7,15 @@ To be called from BascetAggregateMap}
 \usage{
 aggr.fastqc(bascetFile, cellID, bascetInstance)
 }
+\arguments{
+\item{bascetFile}{An opened Bascet file}
+
+\item{cellID}{Cell ID}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
-TODO
+Data for one cell
 }
 \description{
 Callback function for aggregating FASTQC data for each cell.

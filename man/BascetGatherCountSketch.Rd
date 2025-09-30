@@ -29,7 +29,10 @@ BascetGatherCountSketch(
 
 \item{bascetInstance}{A Bascet instance
 
-TODO binary file format}
+TODO produce a binary file format instead; gather files upon loading?}
+}
+\value{
+A job to be executed, or being executed, depending on runner settings
 }
 \description{
 Gather all count sketches into a single count sketch matrix

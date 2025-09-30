@@ -20,6 +20,9 @@ BascetShardifyOld(
 
 \item{outputName}{Name of the output file: Properly sharded debarcoded reads}
 }
+\value{
+A job to be executed, or being executed, depending on runner settings
+}
 \description{
 The reads from one cell is guaranteed to only be present in a single shard.
 This makes parallel processing simple as each shard can be processed on

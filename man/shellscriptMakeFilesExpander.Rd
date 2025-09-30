@@ -7,10 +7,12 @@
 shellscriptMakeFilesExpander(for_variable, list_content)
 }
 \arguments{
-\item{name}{description}
+\item{for_variable}{Environment variable with array of files having the content}
+
+\item{list_content}{Content for each file}
 }
 \value{
-description
+Part of a shell script
 }
 \description{
 The name of each file will be in VARIABLE\link{TASK_ID} where TASK_ID starts from 0

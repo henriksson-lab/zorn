@@ -7,6 +7,11 @@ This function directly returns an assay that can be added to a Seurat multimodal
 \usage{
 FragmentCountsPerChromAssay(bascetRoot, inputName = "fragments.1.tsv.gz")
 }
+\arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+}
 \value{
 A seurat object holding the counts
 }

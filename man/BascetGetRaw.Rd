@@ -34,6 +34,9 @@ BascetGetRaw(
 
 \item{bascetInstance}{A Bascet instance}
 }
+\value{
+A job to be executed, or being executed, depending on runner settings
+}
 \description{
 Generate BAM with barcodes from input raw FASTQ
 }

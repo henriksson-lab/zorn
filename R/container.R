@@ -247,7 +247,7 @@ if(FALSE){
 #' @param url URL to the file to download
 #' @param file Name of the file to download content to
 #' 
-#' @return nothing; panics if the download fails
+#' @return Nothing; panics if the download fails
 safeDownloadMD5 <- function(
     url, 
     file
