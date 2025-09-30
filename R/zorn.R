@@ -274,7 +274,7 @@ BascetGetRaw <- function(
   stopifnot(is.numeric(barcodeTolerance) || is.null(barcodeTolerance))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)  
+  stopifnot(is.bascet.instance(bascetInstance))
 
   #One output per input pair of reads  
   num_shards <- nrow(rawmeta)
@@ -486,8 +486,8 @@ BascetMapTransform <- function(
   stopifnot(is.valid.listcells(includeCells))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)    
-
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   #TODO check outformat
 
   #Figure out input and output file names  
@@ -686,8 +686,8 @@ BascetRunFASTP <- function(
   stopifnot(is.valid.threadcount(numLocalThreads))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance) 
-    
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)

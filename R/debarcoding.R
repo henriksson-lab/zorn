@@ -22,7 +22,7 @@ PrepareSharding <- function(
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.numeric.range01(minQuantile))
-  stopifnot(is.bascet.instance)
+  stopifnot(is.bascet.instance(bascetInstance))
   stopifnot(is.logical(verbose))
 
   
@@ -245,8 +245,8 @@ BascetShardify <- function(
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)
-
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   #Figure out mapping input vs output shards
   totalNumOutputShards <- numOutputShards*debstat$numgroup
   dfListOutputs <- data.frame(

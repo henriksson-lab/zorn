@@ -81,7 +81,7 @@ BascetMakeMinhashHistogram <- function(
   stopifnot(is.valid.listcells(includeCells))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance) 
+  stopifnot(is.bascet.instance(bascetInstance))
   
   #Figure out input and output file names
   inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
@@ -171,7 +171,7 @@ BascetQueryFq <- function( #666
   stopifnot(is.positive.integer(maxReads))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance) 
+  stopifnot(is.bascet.instance(bascetInstance))
   
   
   #Figure out input and output file names  

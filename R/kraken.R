@@ -90,8 +90,8 @@ BascetRunKraken <- function(
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)
-
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
@@ -176,7 +176,7 @@ BascetMakeKrakenCountMatrix <- function(
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)
+  stopifnot(is.bascet.instance(bascetInstance))
   
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)

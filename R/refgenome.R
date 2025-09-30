@@ -243,7 +243,7 @@ BascetAlignmentToBigwig <- function(
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)
+  stopifnot(is.bascet.instance(bascetInstance))
   
   #Figure out input and output file names
   input_shards <- detectShardsForFile(bascetRoot, inputName) 
@@ -328,7 +328,7 @@ BascetFilterAlignment <- function(
   stopifnot(is.logical(keepMapped))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)  
+  stopifnot(is.bascet.instance(bascetInstance))
   
   #Figure out input and output file names
   input_shards <- detectShardsForFile(bascetRoot, inputName) 
@@ -438,7 +438,7 @@ BascetAlignToReference <- function(
   stopifnot("`aligner` must be specified." = !is.null(aligner))
   
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)
+  stopifnot(is.bascet.instance(bascetInstance))
   
   
   #Figure out input and output file names  
@@ -646,7 +646,7 @@ BascetBam2Fragments <- function(
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)  
+  stopifnot(is.bascet.instance(bascetInstance))
   
   #Get input names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
@@ -724,8 +724,8 @@ BascetCountChrom <- function(
   stopifnot(is.logical(removeDuplicates))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)  
-
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   #Get input names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
@@ -786,7 +786,7 @@ TabixGetFragmentsSeqs <- function(
 ) {
   #Check input arguments 
   stopifnot(file.exists(fragpath))
-  stopifnot(is.bascet.instance)  
+  stopifnot(is.bascet.instance(bascetInstance))
   
   system(paste(bascetInstance@prependCmd,"tabix -l ", fragpath), intern = TRUE)
 }
@@ -1050,8 +1050,8 @@ BascetCountFeature <- function(
   stopifnot(is.character(attrGeneName))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)  
-
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   #Get input name
   input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
@@ -1153,7 +1153,7 @@ BascetRunCellSNP <- function(
   stopifnot(is.valid.threadcount(numLocalThreads))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance)  
+  stopifnot(is.bascet.instance(bascetInstance))
   
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
