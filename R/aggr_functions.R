@@ -87,9 +87,10 @@ AggregateMinhashes <- function(
     inputName="minhash",
     bascetInstance
 ) {
+  #Arguments checked in called function
   minhash_aggr <- BascetAggregateMap(
-    bascetRoot,
-    inputName,
+    bascetRoot=bascetRoot,
+    inputName=inputName,
     aggr.minhash,
     bascetInstance=bascetInstance
   )

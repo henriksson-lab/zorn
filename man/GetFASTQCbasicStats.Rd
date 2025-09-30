@@ -4,7 +4,7 @@
 \alias{GetFASTQCbasicStats}
 \title{From aggregated FASTQC data, get basic statistics for overlay on UMAP etc}
 \usage{
-GetFASTQCbasicStats(aggrFastqData, readnum)
+GetFASTQCbasicStats(aggrFastqData, readnum = c(1, 2))
 }
 \arguments{
 \item{aggrFastqData}{Aggregated FASTQ data}

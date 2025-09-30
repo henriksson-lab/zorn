@@ -26,7 +26,16 @@ BascetMapCell <- function(
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.function(withfunction))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.list(args))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance) 
+
   #Figure out input and output file names  
   inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
@@ -99,6 +108,8 @@ BascetMapCell <- function(
 MapListAsDataFrame <- function(
     mylist
 ){
+  #check arguments
+  stopifnot(is.list(mylist))
   
   if(FALSE){
     mylist <- list()
@@ -141,6 +152,8 @@ MapListAsDataFrame <- function(
 #' @return TODO
 #' @export
 MapCellMultiListAsDataFrame <- function(mylist){
+  #check arguments
+  stopifnot(is.list(mylist))
   
   if(FALSE){
     mylist <- list()
@@ -172,7 +185,17 @@ MapCellMultiListAsDataFrame <- function(mylist){
 #' 
 #' @return A dgCMatrix sparse matrix
 #' @export
-CountDataFrameToSparseMatrix <- function(dat, rowname, colname) {
+CountDataFrameToSparseMatrix <- function(
+    dat, 
+    rowname, 
+    colname
+) {
+  #check arguments
+  stopifnot(is.data.frame(dat))
+  stopifnot(is.character(colname))
+  stopifnot(is.character(rowname))
+
+  #Extract relevant subset of dataframe  
   red_dat <- data.frame(
     col=dat[,colname],
     row=dat[,rowname]
@@ -214,6 +237,15 @@ BascetAggregateMap <- function(
     verbose=FALSE,
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.function(aggrFunction))
+  stopifnot(is.valid.listcells(includeCells))
+  stopifnot(is.logical(showProgress))
+  stopifnot(is.logical(verbose))
+  stopifnot(is.bascet.instance) 
+  
   
   #Get file coordinates of all objects in zip file
   cellname_coord <- BascetCellNames(bascetRoot, inputName, bascetInstance)  ############## todo: avoid opening streamer twice

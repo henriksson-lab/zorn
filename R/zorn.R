@@ -52,6 +52,11 @@ is.existing.fasta <- function(x) {
 }
 
 
+###############################################
+#' Check that parameter is a number between 0..1
+is.numeric.range01 <- function(x) {
+  is.numeric(x) && x>=0 && x<=1
+}
 
 
 
@@ -110,6 +115,11 @@ BascetCacheComputation <- function(
     fname, 
     value
 ){
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.character(fname))
+
+  
   fname <- file.path(bascetRoot,paste0(fname,".RDS"))
   if(file.exists(fname)){
     print("Found previously cached value")
@@ -150,6 +160,11 @@ DetectRawFileMeta <- function(
     rawRoot, 
     verbose=FALSE
 ){
+  #check arguments
+  stopifnot(dir.exists(rawRoot))
+  stopifnot(is.logical(verbose))
+  
+  
   #rawRoot <- "/husky/fromsequencer/241206_novaseq_wgs3/raw"
   allfiles <- list.files(rawRoot)
   
@@ -242,13 +257,24 @@ BascetGetRaw <- function(
     rawmeta, 
     outputName="debarcoded", 
     outputNameIncomplete="incomplete_reads", 
-    chemistry="atrandi_wgs",  #or atrandi_rnaseq; any way to get list from software?
+    chemistry=c("atrandi_wgs","atrandi_rnaseq"),  #any way to get list from software?
     subchemistry=NULL,
     barcodeTolerance=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.data.frame(rawmeta))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.valid.shardname(outputNameIncomplete))
+  chemistry <- match.arg(chemistry)
+  stopifnot(is.character(subchemistry) || is.null(subchemistry))
+  stopifnot(is.numeric(barcodeTolerance) || is.null(barcodeTolerance))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)  
 
   #One output per input pair of reads  
   num_shards <- nrow(rawmeta)
@@ -448,20 +474,20 @@ BascetMapTransform <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
-  
-  is.integer.overequal1 <- function(x){
-    return(x>=1 & x==as.integer(x))
-  }
-  
-  #Verify input
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.positive.integer(numDivide))
+  stopifnot(is.positive.integer(numMerge))
   if(!(numDivide==1 || numMerge==1)){
     stop("Either divide or merge must be set to 1")
   }
-  if(!is.integer.overequal1(numDivide) || !is.integer.overequal1(numMerge)){
-    stop("Number of divisions and merges must be an integer >= 1")
-  }
-  
+  stopifnot(is.valid.listcells(includeCells))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)    
+
   #TODO check outformat
 
   #Figure out input and output file names  
@@ -540,6 +566,9 @@ KneeplotPerSpecies <- function(
     adata, 
     maxSpecies=NULL
 ) {
+  #check arguments
+  #TODO
+
   strain_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   
   if(!is.null(maxSpecies)){
@@ -585,6 +614,10 @@ KneeplotPerSpecies <- function(
 BarnyardPlotMatrix <- function(
     adata
 ){
+  #check arguments
+  #TODO
+  
+  
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   cnt <- cnt[rowSums(cnt)>0,]  ##Only consider species we have
   list_species <- rownames(cnt)#[1:5] ######## Just do a few!
@@ -638,14 +671,23 @@ BarnyardPlotMatrix <- function(
 #' @export
 BascetRunFASTP <- function(
     bascetRoot,
-    numLocalThreads,
     inputName="asfq", ######### should be able to take filtered and pipe to if needed  "filtered"  TODO
     outputName="fastp",
+    numLocalThreads,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.positive.integer(numDivide))
+  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance) 
+    
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
   num_shards <- length(input_shards)
@@ -724,6 +766,9 @@ ReadBascetCountMatrix_one <- function(
     fname,
     verbose=FALSE
 ){
+  #check arguments
+  stopifnot(file.exists(fname))
+  stopifnot(is.logical(verbose))
   
   #fname <- "/husky/henriksson/atrandi//v4_wgs_novaseq1/chromcount.1.h5"
   #fname <- "/home/mahogny/test/cnt_feature.hdf5"
@@ -786,6 +831,11 @@ ReadBascetCountMatrix <- function(
     inputName,
     verbose=FALSE
 ){
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.logical(verbose))
+
   print("Loading HDF5 files")
   
   #Figure out input file names  
@@ -851,6 +901,5 @@ ReadBascetCountMatrix <- function(
     X=allmat,
     obs=allobs
   ) 
-  #allmat
 }
 

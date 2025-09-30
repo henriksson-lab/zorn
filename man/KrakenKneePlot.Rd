@@ -6,13 +6,17 @@
 \usage{
 KrakenKneePlot(
   adata,
-  groupby = "phylum",
+  groupby = c("phylum", "class", "order", "family", "genus", "species"),
   showNumSpecies = 15,
   sortByName = FALSE
 )
 }
 \arguments{
+\item{adata}{Seurat object}
+
 \item{groupby}{Valid options are: Genus, phylum or species}
+
+\item{showNumSpecies}{Max number of species to shop}
 
 \item{sortByName}{Sort by name}
 }

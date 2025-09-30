@@ -2,24 +2,33 @@
 % Please edit documentation in R/ext_tools.R
 \name{ShowFASTQCforCell}
 \alias{ShowFASTQCforCell}
-\title{Show the FASTQC HTML report for a cell}
+\title{Show the FASTQC HTML report for a cell, in the available web browser}
 \usage{
 ShowFASTQCforCell(
-  bascetFile,
+  bascetRoot,
+  inputName,
   cellID,
-  readnum = "1",
+  readnum = c(1, 2),
   useBrowser = FALSE,
   verbose = FALSE
 )
 }
 \arguments{
+\item{bascetRoot}{The root folder where all Bascets are stored}
+
+\item{inputName}{Name of input shard}
+
+\item{cellID}{Name of the cell}
+
 \item{readnum}{1 or 2, for R1 and R2}
 
 \item{useBrowser}{Use operating system browser to open file}
+
+\item{verbose}{Show debug output}
 }
 \value{
-TODO
+Nothing
 }
 \description{
-Show the FASTQC HTML report for a cell
+Show the FASTQC HTML report for a cell, in the available web browser
 }

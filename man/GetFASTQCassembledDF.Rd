@@ -4,7 +4,7 @@
 \alias{GetFASTQCassembledDF}
 \title{Get a data frame for one type of FASTQ statistics across across all cells}
 \usage{
-GetFASTQCassembledDF(aggrFastqData, section, readnum)
+GetFASTQCassembledDF(aggrFastqData, section, readnum = c(1, 2))
 }
 \arguments{
 \item{readnum}{1 or 2, for R1 and R2}

@@ -29,6 +29,11 @@ BascetComputeMinhash <- function(
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #check arguments
+  stopifnot(is.integer.like(kmerSize))
+  stopifnot(is.integer.like(maxReads))
+  
+  #most arguments checked in thgis call
   BascetMapCell(
     bascetRoot=bascetRoot, 
     withfunction="_minhash_fq", 
@@ -69,7 +74,15 @@ BascetMakeMinhashHistogram <- function(
   runner=GetDefaultBascetRunner(),
   bascetInstance=GetDefaultBascetInstance()
 ){
-
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.valid.listcells(includeCells))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance) 
+  
   #Figure out input and output file names
   inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
   num_shards <- length(inputFiles)
@@ -150,6 +163,15 @@ BascetQueryFq <- function( #666
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  #useKMERs TODO
+  stopifnot(is.positive.integer(maxReads))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance) 
   
   
   #Figure out input and output file names  
@@ -214,6 +236,11 @@ BascetReadMinhashHistogram <- function(
     bascetRoot,
     inputName="minhash_hist.csv"
 ){
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.character(inputName))
+
+  #Read file
   fname <- file.path(bascetRoot,inputName)
   if(!file.exists(fname)) {
     stop(paste("File is missing:",fname))
@@ -247,6 +274,12 @@ ChooseInformativeKMERs <- function(
     minFreq=0.005, 
     maxFreq=1
 ) {
+  #check arguments
+  stopifnot(is.data.frame(kmerHist))
+  stopifnot(is.numeric.range01(minFreq))
+  stopifnot(is.numeric.range01(maxFreq))
+  stopifnot(minFreq < maxFreq)
+  
   #maxFreq = 1
   #minFreq = 0.02
   

@@ -22,7 +22,12 @@
 
 
 
-
+###############################################
+#' Check that parameter is a valid environment variable name
+is.valid.env.variable <- function(x) {
+  #TODO check that the name has no weird symbols
+  is.character(x)
+}
 
 
 ###############################################
@@ -40,6 +45,9 @@ shellscriptMakeFilesExpander <- function(
     for_variable, 
     list_content
 ) {
+  #check arguments
+  stopifnot(is.valid.env.variable(for_variable))
+  stopifnot(is.list(list_content))
   
   #Figure out the name of a tempfile to use.
   #Note that we cannot use the regular tempfile() call as these files would be deleted
@@ -116,6 +124,9 @@ shellscriptMakeBashArray <- function(
     variable, 
     vals
 ){
+  #check arguments
+  stopifnot(is.valid.env.variable(variable))
+  
   paste0(
     variable,
     "=(",
@@ -168,6 +179,9 @@ shellscriptMakeOneFileExpander <- function(
     tmpname, 
     list_lines
 ) {
+  #check arguments
+  stopifnot(is.valid.env.variable(tmpname))
+  
   script_lines <- c(
     paste0(tmpname,"=$(mktemp)"),
     paste0(
@@ -193,6 +207,9 @@ shellscriptMakeOneFileExpander <- function(
 shellscriptCancelJobIfFileExists <- function(
     fvar
 ) {
+  #check arguments. cannot yet check if the file exists
+  stopifnot(is.character(fvar))
+  
   c(
     paste0(
       "if [ -f ",fvar," ]; then"),

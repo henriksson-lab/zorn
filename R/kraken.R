@@ -10,6 +10,9 @@
 SpeciesCorrMatrix <- function(
     adata
 ){
+  #check arguments
+  #TODO
+  
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   cnt <- cnt[rowSums(cnt)>0,]
   
@@ -79,6 +82,15 @@ BascetRunKraken <- function(
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(dir.exists(useKrakenDB))
+  stopifnot(is.valid.threadcount(numLocalThreads))  
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)
 
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
@@ -157,6 +169,14 @@ BascetMakeKrakenCountMatrix <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.threadcount(numLocalThreads))  
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)
   
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
@@ -212,6 +232,8 @@ BascetMakeKrakenCountMatrix <- function(
 KrakenFindConsensusTaxonomy <- function(
     mat
 ){
+  #check arguments
+  #TODO
   
   #taxid 135 9167  7942
   
@@ -265,14 +287,19 @@ KrakenFindConsensusTaxonomy <- function(
 #' Using a KRAKEN2 count matrix, produce a "kneeplot" of species
 #' 
 #' @param adata A Seurat object
+#' @param useAssay Which assay to use
 #' 
 #' @return A ggplot object
 #' @export
 KrakenSpeciesDistribution <- function(
     adata, 
-    use_assay="kraken"
+    useAssay="kraken"
 ){
-  strain_cnt <- adata@assays[[use_assay]]$counts
+  #Check arguments 
+  #adata TODO
+  stopifnot(is.character(useAssay))
+
+  strain_cnt <- adata@assays[[useAssay]]$counts
   df <- data.frame(
     taxid=rownames(strain_cnt),
     cnt=rowSums(strain_cnt)
@@ -308,6 +335,9 @@ SetTaxonomyNamesFeatures <- function(
     mat, 
     keepSpeciesOnly=TRUE
 ){
+  #check arguments
+  #TODO mat
+  stopifnot(is.logical(keepSpeciesOnly))
   
   #TODO can check if taxid_ is present for this function
   
@@ -350,12 +380,24 @@ SetTaxonomyNamesFeatures <- function(
 ###############################################
 #' Take a KRAKEN2 adata object and generate per-species kneeplots
 #' 
+#' @param adata Seurat object
 #' @param groupby Valid options are: Genus, phylum or species
+#' @param showNumSpecies Max number of species to shop
 #' @param sortByName Sort by name
 #' 
 #' @return A ggplot object
 #' @export
-KrakenKneePlot <- function(adata, groupby="phylum", showNumSpecies=15, sortByName=FALSE) {
+KrakenKneePlot <- function(
+    adata, 
+    groupby=c("phylum", "class", "order", "family", "genus","species"), 
+    showNumSpecies=15, 
+    sortByName=FALSE
+) {
+  #check arguments
+  #TODO adata
+  groupby <- match.arg(groupby)
+  stopifnot(is.positive.integer(showNumSpecies))
+  stopifnot(is.logical(sortByName))
   
   use_row <- as.integer(stringr::str_remove_all(adata$taxid, "taxid-"))   ##really needed??
   

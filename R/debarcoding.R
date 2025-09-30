@@ -18,6 +18,13 @@ PrepareSharding <- function(
     bascetInstance=GetDefaultBascetInstance(),
     verbose=TRUE
 ){
+  #Check arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.numeric.range01(minQuantile))
+  stopifnot(is.bascet.instance)
+  stopifnot(is.logical(verbose))
+
   
   #Read metadata to know which files need to be concatenated.
   #This speeds up the process
@@ -175,7 +182,9 @@ DebarcodedKneePlot <- function(
     debstat,
     filename=NULL
 ){
-  
+  #check arguments
+  stopifnot(is.data.frame(debstat))
+
   #should possibly show all points in kneeplot. currently cut off at low index, which is weird TODO
   
   #Set line aesthetics
@@ -230,6 +239,14 @@ BascetShardify <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check arguments 
+  stopifnot(is.data.frame(debstat))
+  stopifnot(is.positive.integer(numOutputShards))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)
+
   #Figure out mapping input vs output shards
   totalNumOutputShards <- numOutputShards*debstat$numgroup
   dfListOutputs <- data.frame(

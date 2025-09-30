@@ -17,6 +17,8 @@ BascetAlignmentToBigwig(
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
+\item{inputName}{Name of input shard (BAM-file)}
+
 \item{outputName}{Name of output shard (BIGWIG-file)}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}

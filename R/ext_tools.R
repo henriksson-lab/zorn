@@ -304,25 +304,38 @@ internal_parse_fastqc_data <- function(lines){
 
 
 ###############################################
-#' Show the FASTQC HTML report for a cell
+#' Show the FASTQC HTML report for a cell, in the available web browser
 #' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param cellID Name of the cell
 #' @param readnum 1 or 2, for R1 and R2
 #' @param useBrowser Use operating system browser to open file
+#' @param verbose Show debug output
 #' 
-#' @return TODO
+#' @return Nothing
 #' @export
 ShowFASTQCforCell <- function(
-    bascetFile, 
+    bascetRoot,
+    inputName,
     cellID, 
-    readnum="1",
+    readnum=c(1,2),
     useBrowser=FALSE,
     verbose=FALSE
 ){
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.character(cellID))
+  readnum <- match.arg(readnum)
+  stopifnot(is.logical(useBrowser))
+  stopifnot(is.logical(verbose))
+
   #Open the bascet file, get the HTML report
   if(verbose){
     print("Creating extract streamer session")
   }
-  bascetFile <- OpenBascet(bascetRoot, bascetName)
+  bascetFile <- OpenBascet(bascetRoot, inputName)
   if(verbose){
     print("Extract streamer session ok")
   }
@@ -359,17 +372,17 @@ ShowFASTQCforCell <- function(
 GetFASTQCassembledDF <- function(
     aggrFastqData, 
     section, 
-    readnum
+    readnum=c(1,2)
 ) {
-  
-  if(!(as.integer(readnum) %in% c(1,2))) {
-    stop("readnum must be 1 or 2")
-  }
-  
+  #check arguments
+  readnum <- match.arg(readnum)
+
+  #helper function
   internal_fastqc_getread_in_list <- function(lst,readnum){
     lapply(lst, function(s) s[[paste0("r",readnum)]])
   }
 
+  #helper function
   internal_fastqc_add_cellid_to_list <- function(lst){
     lapply(names(lst), function(x) {
       temp <- as.data.frame(lst[[x]]) #to be on the safe side; fixed one bug
@@ -398,8 +411,12 @@ GetFASTQCassembledDF <- function(
 #' @export
 PlotFASTQCadapterContent <- function(
     aggrFastqData,
-    readnum
+    readnum=c(1,2)
 ) {
+  #check arguments
+  readnum <- match.arg(readnum)
+
+  
   df_section <- GetFASTQCassembledDF(aggrFastqData,"Adapter Content",readnum)
   xlab_unit <- unique(df_section$X.Position)
   
@@ -431,8 +448,11 @@ PlotFASTQCadapterContent <- function(
 #' @export
 GetFASTQCbasicStats <- function(
     aggrFastqData, 
-    readnum
+    readnum=c(1,2)
 ) {
+  #check arguments
+  readnum <- match.arg(readnum)
+
   df <- GetFASTQCassembledDF(aggrFastqData,"Basic Statistics",readnum)
   df <- df[df$X.Measure %in% c("Sequence length","%GC","Sequences flagged as poor quality"),]
   df.mat <- as.data.frame(reshape2::acast(df, cellID ~ X.Measure, value.var = "Value"))
@@ -458,8 +478,11 @@ GetFASTQCbasicStats <- function(
 #' @export
 GetFASTQCpassfailStats <- function(
     aggrFastqData,
-    readnum
+    readnum=c(1,2)
 ) {
+  #check arguments
+  readnum <- match.arg(readnum)
+  
   df <- GetFASTQCassembledDF(aggrFastqData,"section_state",readnum)
   rownames(df) <- df$cellID
   df <- df[colnames(df)!="cellID",drop=FALSE]  
@@ -587,6 +610,9 @@ ListDatabaseAbricate <- function(
     dbdir,
     bascetInstance=GetDefaultBascetInstance()
 ) {
+  #check arguments
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   ret <- system(
     paste(
       bascetInstance@prependCmd,
@@ -758,19 +784,19 @@ DownloadDatabaseAriba <- function(
     ref=c("ncbi", "argannot", "card",  "megares", "plasmidfinder", "resfinder", "srst2_argannot", "vfdb_core", "vfdb_full", "virulencefinder"),
     bascetInstance=GetDefaultBascetInstance()
 ) {
+  #check arguments
   ref <- match.arg(ref)
-  
-  tmp <- tempfile()
-  tmp.fa <- paste0(tmp,".fa")
-  tmp.tsv <- paste0(tmp,".tsv")
-  out.prepareref <- file.path(dbdir,"out.prepareref")  #out.ncbi.prepareref
-  
-  #dir.exists()  better?
-  
+  stopifnot(is.bascet.instance(bascetInstance))
+
   if(file.exists(dbdir)) {
     print("Database already exists; skipping")
   } else {
     dir.create(dbdir, recursive=TRUE)
+
+    #generate temp files
+    tmp.fa <- tempfile(fileext = ".fa")
+    tmp.tsv <- tempfile(fileext = ".tsv") 
+    out.prepareref <- file.path(dbdir,"out.prepareref")  #out.ncbi.prepareref
     
     # ariba getref ncbi out.ncbi
     # ariba prepareref -f out.ncbi.fa -m out.ncbi.tsv out.ncbi.prepareref
@@ -910,6 +936,9 @@ DownloadDatabaseAMRfinder <- function(
     dbdir,
     bascetInstance=GetDefaultBascetInstance()
 ) {
+  #check arguments
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   if(file.exists(dbdir)) {
     print("Database already exists; skipping")
   } else {

@@ -4,10 +4,12 @@
 \alias{KrakenSpeciesDistribution}
 \title{Using a KRAKEN2 count matrix, produce a "kneeplot" of species}
 \usage{
-KrakenSpeciesDistribution(adata, use_assay = "kraken")
+KrakenSpeciesDistribution(adata, useAssay = "kraken")
 }
 \arguments{
 \item{adata}{A Seurat object}
+
+\item{useAssay}{Which assay to use}
 }
 \value{
 A ggplot object

@@ -30,9 +30,13 @@ BascetInstance <- function(
     tempdir, 
     prependCmd=""
 ){
+  #check arguments
   if(!is.null(tempdir) & !file.exists(tempdir)){
     stop(sprintf("temp directory %s does not exist", tempdir))
   }
+  #cannot check other arguments; need to trust user
+  
+  #Generate instance
   new(
     "BascetInstance",
     bin=bin,
@@ -79,6 +83,10 @@ GetDefaultBascetInstance <- function(){
 GetBascetTempDir <- function(
     bascetInstance
 ){
+  #Check arguments
+  stopifnot(is.bascet.instance(bascetInstance))
+  
+  #Generate a tempfile if needed
   if(is.null(bascetInstance@tempdir)){
     tempfile()
   } else {
@@ -103,24 +111,27 @@ getBascetSingularityImage <- function(
     storeAt=getwd(), 
     tempdir=NULL
 ){
+  #Check arguments
+  stopifnot(dir.exists(storeAt))
+
+  if(is.null(tempdir)){
+    tempdir <- "./temp"
+    dir.create(tempdir, showWarnings = FALSE)
+  } else {
+    stopifnot(dir.exists(tempdir))
+  }
   
+  #Download file if needed
   file_bascet_sif <- file.path(storeAt, "bascet.sif")
-  
   if(!file.exists(file_bascet_sif)) {
     print("No singularity image present; downloading")
- 
     safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif)
-
   } else {
     print(paste("Found existing Bascet singularity image:", file_bascet_sif))
   }
   
   prependCmd <- paste("singularity run", file_bascet_sif," ")
   
-  if(is.null(tempdir)){
-    tempdir <- "./temp"
-    dir.create(tempdir, showWarnings = FALSE)
-  }
 
   BascetInstance(
     bin="bascet",
@@ -152,6 +163,18 @@ getBascetDockerImage <- function(
     forceInstall=FALSE,
     verbose=FALSE
 ){
+  #check arguments
+  stopifnot(dir.exists(storeAt))
+  stopifnot(is.logical(forceInstall))
+  stopifnot(is.logical(verbose))
+  
+  #figure out where temporary files should go
+  if(is.null(tempdir)){
+    tempdir <- "./temp"
+    dir.create(tempdir, showWarnings = FALSE)
+  } else {
+    stopifnot(dir.exists(tempdir))
+  }
   
   # docker image inspect busybox:latest >/dev/null 2>&1 && echo yes || echo no
   
@@ -176,10 +199,6 @@ getBascetDockerImage <- function(
     
     prependCmd <- paste("docker run henriksson-lab/bascet ")
     
-    if(is.null(tempdir)){
-      tempdir <- "./temp"
-      dir.create(tempdir, showWarnings = FALSE)
-    }
     
     BascetInstance(
       bin="bascet",
@@ -214,7 +233,10 @@ removeBascetDockerImage <- function(){
 TestBascetInstance <- function(
     bascetInstance
 ) {
-  
+  #check arguments
+  stopifnot(is.bascet.instance(bascetInstance))
+
+  #run bascet, just checking current version  
   cmd <- paste(
     bascetInstance@prependCmd,
     bascetInstance@bin,

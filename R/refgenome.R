@@ -221,7 +221,7 @@ getFastqR2fromR1 <- function(
 #' apt install python3-deeptools
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param outputName Name of input shard (BAM-file)
+#' @param inputName Name of input shard (BAM-file)
 #' @param outputName Name of output shard (BIGWIG-file)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
@@ -237,7 +237,7 @@ BascetAlignmentToBigwig <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
-  #Check input arguments 
+  #Check arguments 
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
