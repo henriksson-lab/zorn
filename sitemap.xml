@@ -114,6 +114,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/SetTaxonomyNamesFeatures.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ShowFASTQCforCell.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/SlurmRunner.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/SpeciesCorrMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/TabixGetFragmentsSeqs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/TestBascetInstance.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.abricate.html</loc></url>
@@ -153,6 +154,5 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeFilesExpander.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeOneFileExpander.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptSplitArrayIntoListRandomly.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/template_BascetFunction.html</loc></url>
 </urlset>
 
