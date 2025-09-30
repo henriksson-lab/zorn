@@ -14,9 +14,9 @@ KrakenKneePlot(
 \arguments{
 \item{adata}{Seurat object}
 
-\item{groupby}{Valid options are: Genus, phylum or species}
+\item{groupby}{Which taxonomic level to group cells by}
 
-\item{showNumSpecies}{Max number of species to shop}
+\item{showNumSpecies}{Max number of species to show}
 
 \item{sortByName}{Sort by name}
 }

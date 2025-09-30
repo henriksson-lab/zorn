@@ -257,7 +257,7 @@ BascetGetRaw <- function(
     rawmeta, 
     outputName="debarcoded", 
     outputNameIncomplete="incomplete_reads", 
-    chemistry=c("atrandi_wgs","atrandi_rnaseq"),  #any way to get list from software?
+    chemistry=c("atrandi_wgs","atrandi_rnaseq","pb_rnaseq"),  #any way to get list from software?
     subchemistry=NULL,
     barcodeTolerance=NULL,
     overwrite=FALSE,

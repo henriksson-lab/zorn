@@ -9,7 +9,7 @@ BascetGetRaw(
   rawmeta,
   outputName = "debarcoded",
   outputNameIncomplete = "incomplete_reads",
-  chemistry = c("atrandi_wgs", "atrandi_rnaseq"),
+  chemistry = c("atrandi_wgs", "atrandi_rnaseq", "pb_rnaseq"),
   subchemistry = NULL,
   barcodeTolerance = NULL,
   overwrite = FALSE,
