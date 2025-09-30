@@ -6,7 +6,7 @@
 \usage{
 BascetAggregateMap(
   bascetRoot,
-  bascetName,
+  inputName,
   aggrFunction,
   includeCells = NULL,
   showProgress = TRUE,
@@ -17,7 +17,7 @@ BascetAggregateMap(
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{bascetName}{Name of input shard}
+\item{inputName}{Name of input shard}
 
 \item{aggrFunction}{Function to use for extracting simplified data for cell}
 

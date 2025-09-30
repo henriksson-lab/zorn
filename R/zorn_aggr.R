@@ -197,7 +197,7 @@ CountDataFrameToSparseMatrix <- function(dat, rowname, colname) {
 #' Aggregate data from previous Map call
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param bascetName Name of input shard
+#' @param inputName Name of input shard
 #' @param aggrFunction Function to use for extracting simplified data for cell
 #' @param includeCells Cells to aggregate
 #' @param showProgress Show progress bar
@@ -207,7 +207,7 @@ CountDataFrameToSparseMatrix <- function(dat, rowname, colname) {
 #' @export
 BascetAggregateMap <- function(
     bascetRoot, 
-    bascetName, 
+    inputName, 
     aggrFunction,
     includeCells=NULL,
     showProgress=TRUE,
@@ -216,13 +216,13 @@ BascetAggregateMap <- function(
 ){
   
   #Get file coordinates of all objects in zip file
-  cellname_coord <- BascetCellNames(bascetRoot, bascetName, bascetInstance)  ############## todo: avoid opening streamer twice
+  cellname_coord <- BascetCellNames(bascetRoot, inputName, bascetInstance)  ############## todo: avoid opening streamer twice
   
   #Open the file, prep for reading
   if(verbose){
     print("Creating extract streamer session")
   }
-  bascetFile <- OpenBascet(bascetRoot, bascetName)
+  bascetFile <- OpenBascet(bascetRoot, inputName)
   if(verbose){
     print("Extract streamer session ok")
   }

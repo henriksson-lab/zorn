@@ -196,7 +196,7 @@ BascetReadFile <- function(
     #### Open file and return as text
     
     if(extractstreamerOpen(bascetFile@streamer, name_of_zip)==0) {
-      ret <- extractstreamerShowtext(bascetFile@streamer, extract_files, superVerbose = verbose)
+      ret <- extractstreamerShowtext(bascetFile@streamer, extract_files, verbose = verbose)
       return(ret)
     } else {
       print(paste("Could not open file",name_of_zip))
