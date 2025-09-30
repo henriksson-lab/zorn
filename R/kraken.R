@@ -381,8 +381,8 @@ SetTaxonomyNamesFeatures <- function(
 #' Take a KRAKEN2 adata object and generate per-species kneeplots
 #' 
 #' @param adata Seurat object
-#' @param groupby Valid options are: Genus, phylum or species
-#' @param showNumSpecies Max number of species to shop
+#' @param groupby Which taxonomic level to group cells by
+#' @param showNumSpecies Max number of species to show
 #' @param sortByName Sort by name
 #' 
 #' @return A ggplot object
