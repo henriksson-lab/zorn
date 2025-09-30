@@ -8,7 +8,7 @@ BascetReadFile(
   bascetFile,
   cellID,
   filename,
-  as = c("tempfile"),
+  as = c("tempfile", "text"),
   bascetInstance = GetDefaultBascetInstance(),
   verbose = FALSE
 )

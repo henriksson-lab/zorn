@@ -153,6 +153,12 @@ setMethod(
 
 
 
+###############################################
+#' Check that parameter is a valid runner
+is.runner <- function(x) {
+  stringr::str_detect(as.character(class(x)),"Runner")
+}
+
 ################################################################################
 ########### Default runner #####################################################
 ################################################################################
@@ -166,4 +172,7 @@ setMethod(
 GetDefaultBascetRunner <- function() {
   bascetRunner.default
 }
+
+
+
 

@@ -19,6 +19,15 @@ setClass("Bascet", slots=list(
 ) 
 
 
+
+###############################################
+#' Check that parameter is a valid bascet file
+is.bascet.file <- function(f) {
+  as.character(class(x))=="Bascet"
+}
+
+
+
 ###############################################
 #' Get list of cells in a Bascet 
 #' 
@@ -33,6 +42,12 @@ BascetCellNames <- function(
     bascetName,  #rather inputName?
     bascetInstance
 ){
+  #Check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(bascetName))
+  stopifnot(is.bascet.instance(bascetInstance))
+
+  #Use streamer to complete the task  
   streamer <- extractstreamerStart(bascetInstance = bascetInstance)
   
   ret <- BascetCellNames_withstreamer(
@@ -61,6 +76,10 @@ BascetCellNames_withstreamer <- function(
     bascetName,
     streamer
 ){
+  #Check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(bascetName))
+  stopifnot(is.streamer(streamer))
   
   #Can support BAM later as well
   shards <- detectShardsForFile(bascetRoot,bascetName)
@@ -119,7 +138,12 @@ OpenBascet <- function(
     bascetName,
     bascetInstance=GetDefaultBascetInstance()
 ){
-
+  #Check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(bascetName))
+  stopifnot(is.bascet.instance(bascetInstance))
+  
+  #Set up streamer to read the file
   streamer <- extractstreamerStart(bascetInstance = bascetInstance)
   
   shards <- detectShardsForFile(bascetRoot,bascetName)
@@ -151,6 +175,9 @@ OpenBascet <- function(
 CloseBascet <- function(
     bascetFile
 ){
+  #Check arguments
+  stopifnot(is.bascet.file(bascetFile))
+
   extractstreamerExit(bascetFile@streamer)
   invisible()
 }
@@ -178,10 +205,17 @@ BascetReadFile <- function(
     bascetFile, 
     cellID, 
     filename, 
-    as=c("tempfile"), 
+    as=c("tempfile","text"), 
     bascetInstance=GetDefaultBascetInstance(), 
     verbose=FALSE
 ){
+  #Check arguments
+  stopifnot(is.bascet.file(bascetFile))
+  stopifnot(is.character(cellID))
+  stopifnot(is.character(filename))
+  as <- match.arg(as)
+  stopifnot(is.bascet.instance(bascetInstance))
+  stopifnot(is.logical(verbose))
   
   ## Check if the cell is present at all
   cellmeta <- bascetFile@cellmeta[bascetFile@cellmeta$cell==cellID,,drop=FALSE]
@@ -268,6 +302,11 @@ BascetListFilesForCell <- function(
     bascetInstance=GetDefaultBascetInstance(),
     superVerbose=FALSE
 ){
+  #Check arguments
+  stopifnot(is.bascet.file(bascetFile))
+  stopifnot(is.character(cellID))
+  stopifnot(is.bascet.instance(bascetInstance))
+  stopifnot(is.logical(superVerbose))
   
   ## Check if the cell is present at all
   cellmeta <- bascetFile@cellmeta[bascetFile@cellmeta$cell==cellID,,drop=FALSE]
@@ -326,6 +365,11 @@ ReadHistogram <- function(
     bascetInstance=GetDefaultBascetInstance(),
     verbose=TRUE 
 ){
+  #Check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.bascet.instance(bascetInstance))
+  stopifnot(is.logical(verbose))
   
   #Get all the TIRPs, sum up the reads  
   inputFiles <- detectShardsForFile(bascetRoot, inputName)
@@ -431,6 +475,10 @@ AtrandiBarcodeStats <- function(
     inputName="debarcoded", 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.bascet.instance(bascetInstance))
 
   #Get frequency of each barcode  
   cb <- as.data.frame(stringr::str_split_fixed(BascetCellNames(bascetRoot, inputName, bascetInstance=bascetInstance)$cell,"_",4))
@@ -463,6 +511,11 @@ detectShardsForFile <- function(
     bascetRoot, 
     inputName
 ){
+  #Check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+
+  #List all files and split into groups
   allfiles <- list.files(bascetRoot)
 
   allzip <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","zip", "$"))
@@ -519,6 +572,12 @@ makeOutputShardNames <- function(
     ext, 
     num_shards
 ){
+  #Check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.character(ext) && !stringr::str_starts(ext, stringr::fixed(".")))
+  stopifnot(is.positive.integer(num_shards))
+  
   file.path(bascetRoot, paste0(outputName,".",seq_len(num_shards),".",ext))
 }
 
@@ -543,6 +602,15 @@ if(FALSE){
 
 
 
+
+###############################################
+#' Check that parameter is a valid streamer
+is.streamer <- function(streamer) {
+  #TODO
+  TRUE
+}
+
+
 ###############################################
 #' extract streamer: create an instance
 #' 
@@ -556,6 +624,10 @@ extractstreamerStart <- function(
     verbose=FALSE,
     bascetInstance=GetDefaultBascetInstance()
 ) {
+  #Check arguments
+  stopifnot(file.exists(fname) || is.null(fname))
+  stopifnot(is.bascet.instance(bascetInstance))
+  stopifnot(is.logical(verbose))
   
   #Assemble the command
   all_cmd <- stringr::str_trim(paste(
@@ -629,7 +701,13 @@ extractstreamerLs <- function(
     p, 
     verbose=FALSE
 ){
+  #Check arguments
+  stopifnot(is.streamer(p))
+  stopifnot(is.logical(verbose))
+  
+  #Perform streamer command
   p$write_input("ls\n")
+  
   #Figure out how many lines to get
   newlines <- extractstreamerReadOneLine(p)
   if(stringr::str_starts(newlines,"error")) {
@@ -655,7 +733,14 @@ extractstreamerListCellsAnyFile <- function(
     fname,
     verbose=FALSE
 ){
+  #Check arguments
+  stopifnot(is.streamer(p))
+  stopifnot(is.character(fname))
+  stopifnot(is.logical(verbose))
+  
+  #Perform streamer command
   p$write_input(paste0("listcellsanyfile ",fname,"\n"))
+  
   #Figure out how many lines to get
   newlines <- extractstreamerReadOneLine(p)
   if(stringr::str_starts(newlines,"error")) {
@@ -680,6 +765,9 @@ extractstreamerListCellsAnyFile <- function(
 #' 
 #' @return Nothing
 extractstreamerExit <- function(p){
+  #Check arguments
+  stopifnot(is.streamer(p))
+  
   p$write_input("exit\n")
 }
 
@@ -695,6 +783,11 @@ extractstreamerReadOneLine <- function(
     p,
     verbose=FALSE
 ){
+  #Check arguments
+  stopifnot(is.streamer(p))
+  stopifnot(is.logical(verbose))
+          
+  
   while(TRUE){
     newlines <- p$read_output_lines(n = 1)
     if(length(newlines)>0) {
@@ -719,7 +812,13 @@ extractstreamerReadNLines <- function(
     n_lines, 
     verbose=FALSE
 ){
-  all_out <- list()#c()
+  #Check arguments
+  stopifnot(is.streamer(p))
+  stopifnot(is.integer.like(n_lines) && n_lines>=0)
+  stopifnot(is.logical(verbose))
+            
+  #Repeatedly get lines until we have enough  
+  all_out <- list()
   i <- 1
   sofar <- 0
   while(sofar < n_lines){
@@ -758,6 +857,12 @@ extractstreamerShowtext <- function(
     fname, 
     verbose=FALSE
 ) {
+  #Check arguments
+  stopifnot(is.streamer(p))
+  stopifnot(is.character(fname))
+  stopifnot(is.logical(verbose))
+  
+  #Perform streamer command
   p$write_input(paste0("showtext ",fname,"\n"))
 
   #Figure out how many lines to get, then get them
@@ -787,7 +892,14 @@ extractstreamerOpen <- function(
     fname, 
     verbose=FALSE
 ) {
+  #Check arguments
+  stopifnot(is.streamer(p))
+  stopifnot(is.character(fname))
+  stopifnot(is.logical(verbose))
+  
+  #Perform streamer command
   p$write_input(paste0("open ",fname,"\n"))
+  
   #Figure out how many lines to get, then get them
   newlines <- extractstreamerReadOneLine(p,verbose)
   if(newlines=="ok"){
@@ -812,6 +924,12 @@ extractstreamerExtractTo <- function(
     fname, 
     outpath
 ) {
+  #Check arguments
+  stopifnot(is.streamer(p))
+  stopifnot(is.character(fname))
+  stopifnot(is.character(outpath))
+  
+  #Perform streamer command
   p$write_input(paste0("extract_to ",fname," ",outpath,"\n"))
   newlines <- extractstreamerReadOneLine(p) #done or error
   if(newlines=="ok"){
@@ -850,6 +968,14 @@ BascetDumpContigs <- function(
     outputDir,
     bascetInstance
 ){
+  #Check arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.character(listCells))
+  stopifnot(dir.exists(outputDir))
+  stopifnot(is.bascet.instance(bascetInstance))
+  
+  #Open the Bascet file and iterate over cells
   skesa_file <- OpenBascet(bascetRoot, inputName, bascetInstance)
   
   for(cellid in listCells) {

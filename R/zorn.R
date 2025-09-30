@@ -1,30 +1,58 @@
 
+
+
+################################################################################
+################ Helper functions: check if call is correct ####################
+################################################################################
+
+
+
 ###############################################
-#' A wrapper to cache a computation. Put your function in as an argument,
-#' as R will only compute its value if needed. If the cache file exist,
-#' it will not be run again
-#' 
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param fname Name of the file to store the cache in. The extension .RDS is added automatically
-#' @param value The value to be cached
-#' 
-#' @return The cached value
-#' @export
-BascetCacheComputation <- function(
-    bascetRoot, 
-    fname, 
-    value
-){
-  fname <- file.path(bascetRoot,paste0(fname,".RDS"))
-  if(file.exists(fname)){
-    print("Found previously cached value")
-    readRDS(fname)
-  } else {
-    print("Running calculation and caching value")
-    saveRDS(value, fname) 
-    value
-  }
+#' Check that parameter is a valid thread count
+is.valid.threadcount <- function(x) {
+  is.positive.integer(x)
 }
+
+###############################################
+#' Check that parameter is an integer and >0
+is.positive.integer <- function(x) {
+  round(x)==x & x>0
+}
+
+###############################################
+#' Check that parameter is castable to an integer
+is.integer.like <- function(x) {
+  round(x)==x
+}
+
+###############################################
+#' Check that parameter is a valid shard name
+is.valid.shardname <- function(x) {
+  # can expand upon this
+  is.character(x) && !stringr::str_detect(x,stringr::fixed("."))
+}
+
+
+###############################################
+#' Check that parameter is a valid list of cells
+is.valid.listcells <- function(x) {
+  is.null(x) || is.character(x)
+}
+
+
+###############################################
+#' Check that parameter is a valid shard name
+is.existing.fasta <- function(x) {
+  is_fasta <- 
+    stringr::str_ends(x,stringr::fixed(".fa")) ||
+    stringr::str_ends(x,stringr::fixed(".fasta")) ||
+    stringr::str_ends(x,stringr::fixed(".fa.gz")) ||
+    stringr::str_ends(x,stringr::fixed(".fasta.gz"))
+  file.exists(x) && is_fasta
+}
+
+
+
 
 
 
@@ -58,6 +86,40 @@ bascetCheckOverwriteOutput <- function(
 }
 
   
+
+################################################################################
+################ Bascet caching system #########################################
+################################################################################
+
+
+
+
+###############################################
+#' A wrapper to cache a computation. Put your function in as an argument,
+#' as R will only compute its value if needed. If the cache file exist,
+#' it will not be run again
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param fname Name of the file to store the cache in. The extension .RDS is added automatically
+#' @param value The value to be cached
+#' 
+#' @return The cached value
+#' @export
+BascetCacheComputation <- function(
+    bascetRoot, 
+    fname, 
+    value
+){
+  fname <- file.path(bascetRoot,paste0(fname,".RDS"))
+  if(file.exists(fname)){
+    print("Found previously cached value")
+    readRDS(fname)
+  } else {
+    print("Running calculation and caching value")
+    saveRDS(value, fname) 
+    value
+  }
+}
 
 
 ################################################################################

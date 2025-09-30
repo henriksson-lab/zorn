@@ -42,6 +42,11 @@ BascetInstance <- function(
 }
 
 
+###############################################
+#' Check that parameter is a valid bascet instance
+is.bascet.instance <- function(x) {
+  stringr::str_detect(as.character(class(x)),"BascetInstance")
+}
 
 ###############################################
 # The default Bascet installation settings

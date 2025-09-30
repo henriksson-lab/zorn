@@ -17,7 +17,10 @@ isBamPairedAlignment <- function(
     fname,
     bascetInstance=GetDefaultBascetInstance()
 ){
-
+  #Check arguments
+  stopifnot(file.exists(fname))
+  stopifnot(is.bascet.instance(bascetInstance))
+  
   #example
   #@PG     ID:bwa  PN:bwa  VN:0.7.18-r1243-dirty   CL:bwa mem /home/m/mahogny/mystore/atrandi/bwa_ref/combo_hx/all.fa.gz /pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/atrandi/v2_wgs_saliva1/asfq.1.R1.fq.gz /pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/atrandi/v2_wgs_saliva1/asfq.1.R2.fq.gz -t 10
   
@@ -61,10 +64,10 @@ BascetIndexGenomeBWA <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
-  if(!file.exists(genomeFile)){
-    stop("Could not find genome FASTA file")
-  }
+  #Check arguments
+  stopifnot(is.existing.fasta(genomeFile))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
   
   #if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job
@@ -109,14 +112,17 @@ BascetIndexGenomeSTAR <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
-  if(!file.exists(fastaFile)){
-    stop("Could not find genome FASTA file")
-  }
+  #Check arguments
+  stopifnot(is.existing.fasta(fastaFile))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
   if(!file.exists(gtfFile)){
     stop("Could not find genome GTF file")
   }
+  
+  #Exit early if already done
   if(file.exists(outDir)){
+    print("STAR output directory already exists; assuming that genome is already built")
     return(new_no_job())
   }
 
@@ -231,6 +237,13 @@ BascetAlignmentToBigwig <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)
   
   #Figure out input and output file names
   input_shards <- detectShardsForFile(bascetRoot, inputName) 
@@ -307,7 +320,15 @@ BascetFilterAlignment <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.logical(keepMapped))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)  
   
   #Figure out input and output file names
   input_shards <- detectShardsForFile(bascetRoot, inputName) 
@@ -399,10 +420,26 @@ BascetAlignToReference <- function(
     outputNameBAMsorted="aligned", 
     doSort=TRUE,
     overwrite=FALSE,
-    aligner="BWA",
+    aligner=c(NULL, "BWA","STAR"),
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  #useReference TODO
+  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputNameBAMunsorted))
+  stopifnot(is.valid.shardname(outputNameBAMsorted))
+  stopifnot(is.logical(doSort))
+  stopifnot(is.logical(overwrite))
+
+  aligner <- match.arg(aligner)
+  stopifnot("`aligner` must be specified." = !is.null(aligner))
+  
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)
+  
   
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
@@ -603,7 +640,15 @@ BascetBam2Fragments <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)  
   
+  #Get input names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
     stop("Found no input files")
@@ -671,7 +716,17 @@ BascetCountChrom <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.numeric(minMatching))
+  stopifnot(is.logical(removeDuplicates))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)  
+
+  #Get input names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
     stop("Found no input files")
@@ -729,6 +784,10 @@ TabixGetFragmentsSeqs <- function(
     fragpath,
     bascetInstance=GetDefaultBascetInstance()
 ) {
+  #Check input arguments 
+  stopifnot(file.exists(fragpath))
+  stopifnot(is.bascet.instance)  
+  
   system(paste(bascetInstance@prependCmd,"tabix -l ", fragpath), intern = TRUE)
 }
 
@@ -746,7 +805,9 @@ TabixGetFragmentsSeqs <- function(
 FragmentsToSignac <- function(
     fragpath
 ) {
-  
+  #Check input arguments 
+  stopifnot(file.exists(fragpath))
+
   #### Index if needed; this should already have been done but added here just in case
   fragpath_index <- paste(fragpath,".tbi",sep="")
   if(!file.exists(fragpath_index)){
@@ -840,6 +901,9 @@ FragmentCountsPerChromAssay <- function(
     bascetRoot,
     inputName="fragments.1.tsv.gz" ### TODO, detect, merge all of them
 ) {
+  #Check input arguments 
+  #TODO
+  
   fragpath <- file.path(bascetRoot,inputName)
   chromAssay <- FragmentsToSignac(fragpath)
   chromAssay <- FragmentCountsPerChrom(chromAssay)
@@ -878,6 +942,8 @@ ChromToSpeciesCount <- function(
     adata, 
     mapSeq2strain
 ){
+  #Check input arguments 
+  #TODO
   
   mat_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   
@@ -916,6 +982,8 @@ CountGrangeFeatures <- function(
     adata, 
     grangeGene
 ){
+  #Check input arguments 
+  #TODO
   
   gene_counts <- FeatureMatrix(
     fragments = Fragments(adata),
@@ -972,7 +1040,19 @@ BascetCountFeature <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
-  
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(file.exists(gffFile))
+  stopifnot(is.character(useFeature))
+  stopifnot(is.character(attrGeneId))
+  stopifnot(is.character(attrGeneName))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)  
+
+  #Get input name
   input_shards <- detectShardsForFile(bascetRoot, inputName)
   if(length(input_shards)==0){
     stop("Found no input files")
@@ -1066,6 +1146,14 @@ BascetRunCellSNP <- function(
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance)  
   
   #Figure out input and output file names  
   input_shards <- detectShardsForFile(bascetRoot, inputName)
@@ -1151,7 +1239,11 @@ BascetRunCellSNP <- function(
 
 ###############################################
 ### Helper function
-ReadCellSNPmatrix_one <- function(basedir) {
+ReadCellSNPmatrix_one <- function(
+    basedir
+) {
+  #Check input arguments 
+  stopifnot(dir.exists(basedir))
   
   #cellSNP.base.vcf  one line per feature
   snp_info <- read.table(file.path(basedir,"cellSNP.base.vcf.gz"))
@@ -1199,6 +1291,12 @@ ReadCellSNPmatrix <- function(
     listCells=NULL,
     verbose=FALSE
 ){
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.listcells(listCells))
+  stopifnot(is.logical(verbose))
+
   print("Loading CellSNP file")
   
   #bascetRoot <- "/husky/henriksson/atrandi/v4_wgs_saliva1"

@@ -745,7 +745,6 @@ BascetMapCellAriba <- function(
 
 
 
-
 ###############################################
 #' Download database for Ariba
 #' 
@@ -756,9 +755,10 @@ BascetMapCellAriba <- function(
 #' @export
 DownloadDatabaseAriba <- function(
     dbdir,
-    ref="ncbi", #c("argannot", "card", "ncbi", "megares", "plasmidfinder", "resfinder", "srst2_argannot", "vfdb_core", "vfdb_full", "virulencefinder"),
+    ref=c("ncbi", "argannot", "card",  "megares", "plasmidfinder", "resfinder", "srst2_argannot", "vfdb_core", "vfdb_full", "virulencefinder"),
     bascetInstance=GetDefaultBascetInstance()
 ) {
+  ref <- match.arg(ref)
   
   tmp <- tempfile()
   tmp.fa <- paste0(tmp,".fa")
