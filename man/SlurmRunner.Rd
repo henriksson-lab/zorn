@@ -15,7 +15,8 @@ SlurmRunner(
   direct = NULL,
   deleteScript = NULL,
   benchmark = NULL,
-  verbose = NULL
+  verbose = NULL,
+  logTime = NULL
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ SlurmRunner(
 \item{benchmark}{Enable logging of final CPU and memory usage}
 
 \item{verbose}{Enable additional debug output}
+
+\item{logTime}{Log execution time}
 }
 \value{
 A SLURM runner

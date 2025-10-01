@@ -16,7 +16,8 @@ setClass("SlurmRunner", slots=list(
   direct="logical",
   verbose="logical",
   deleteScript="logical",
-  benchmark="logical"
+  benchmark="logical",
+  logTime="logical"
 )
 ) 
 
@@ -64,6 +65,7 @@ setClass("SlurmJob", slots=list(
 #' @param direct Run and get the result directly. FALSE implies asynchronous execution
 #' @param benchmark Enable logging of final CPU and memory usage
 #' @param verbose Enable additional debug output
+#' @param logTime Log execution time
 #' 
 #' @return A SLURM runner
 #' @export
@@ -78,7 +80,8 @@ SlurmRunner <- function(
     direct=NULL,
     deleteScript=NULL,
     benchmark=NULL,
-    verbose=NULL
+    verbose=NULL,
+    logTime=NULL
 ){
   
   ## Create a new default
@@ -94,7 +97,8 @@ SlurmRunner <- function(
       direct=TRUE,
       deleteScript=TRUE,
       benchmark=FALSE,
-      verbose=FALSE
+      verbose=FALSE,
+      logTime=FALSE
     )
   }
   
@@ -141,6 +145,10 @@ SlurmRunner <- function(
     settings@verbose <- verbose
   }
   
+  if(!is.null(logTime)){
+    settings@logTime <- logTime
+  }
+  
   settings
 }
 
@@ -174,6 +182,9 @@ setMethod(
     }
     scriptcontent <- c(scriptcontent, paste("#SBATCH -J ",jobname))
 
+    ## Get start time
+    scriptcontent <- c(scriptcontent, "timeStart=$( date +\"%s\" )")
+
     ## Decide on a tempdir location; different for each job
     scriptcontent <- c(
       scriptcontent,
@@ -184,6 +195,17 @@ setMethod(
     this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),"$SLURM_ARRAY_TASK_ID")
     this_cmd <- stringr::str_replace_all(this_cmd,stringr::fixed("${TASK_ID}"),"${SLURM_ARRAY_TASK_ID}")
     scriptcontent <- c(scriptcontent, this_cmd)
+
+    ## Get end time
+    scriptcontent <- c(scriptcontent, "timeEnd=$( date +\"%s\" )")
+    
+    ## Compute time spent running
+    scriptcontent <- c(scriptcontent, "let timeDelta=$timeEnd-$timeStart")
+    
+    ## Log running time if requested
+    if(runner@logTime) {
+      scriptcontent <- c(scriptcontent, "echo \"$SLURM_JOB_NAME $SLURM_ARRAY_TASK_ID  $timeDelta\" >> bascet_timelog.txt")
+    }
     
     scriptcontent <- c(scriptcontent, "echo \"End of SLURM script\"")
     
