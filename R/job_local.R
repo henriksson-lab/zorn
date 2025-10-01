@@ -186,7 +186,8 @@ setMethod(
 ########### Default runner #####################################################
 ################################################################################
 
-bascetRunner.default <- LocalRunner(direct = TRUE, showScript=FALSE)
+#
+#bascetRunner.default <- LocalRunner(direct = TRUE, showScript=FALSE)
 
 
 
