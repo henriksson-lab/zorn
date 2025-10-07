@@ -45,7 +45,7 @@ for(cur_shard in 1:num_shards) {
       
       ### For each chromosome to include
       #tab_use_chrom <- table(use_chrom)
-      for(cur_chrom in unique(use_chrom)){
+      for(cur_chrom in unique(use_chrom)){ ######################################## TODO need to mix chromosomes!!!
         get_num_reads <- sum(use_chrom==cur_chrom)
         
         ### Generate reads from this chromosome
@@ -72,7 +72,7 @@ for(cur_shard in 1:num_shards) {
         )  
         
         allreads_df[[pos_index]] <- df
-        pos_index <- pos_index + 1
+        pos_index <- pos_index + 1 )){ ######################################## should do outside this loop?
         
       }
     }

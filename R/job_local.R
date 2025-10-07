@@ -186,7 +186,8 @@ setMethod(
 ########### Default runner #####################################################
 ################################################################################
 
-#
+#Should not set this! It will prevent GetDefaultBascetRunner() from
+#searching outside the package
 #bascetRunner.default <- LocalRunner(direct = TRUE, showScript=FALSE)
 
 

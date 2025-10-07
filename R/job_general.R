@@ -170,6 +170,11 @@ is.runner <- function(x) {
 #' @return The current default runner
 #' @export
 GetDefaultBascetRunner <- function() {
+  
+  #Can create and return this if variable does not exist
+  #bascetRunner.default <- LocalRunner(direct = TRUE, showScript=FALSE)
+  
+  
   bascetRunner.default
 }
 
