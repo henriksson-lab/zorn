@@ -1,5 +1,5 @@
 
-![logo](man/figures/bascet_logo_300.jpg)
+![logo](man/figures/Zorn.png)
 
 # Zorn
 

@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="man/figures/bascet_logo_300.jpg" alt="Zorn logo" style="height: auto; width: auto;"/>
+<img src="man/figures/Zorn.png" alt="Zorn logo" style="height: auto; width: auto;"/>
 </p>
 
 
@@ -14,7 +14,7 @@ To get started using Zorn, see the [manual](articles/get_started.html).
 
 If you use Zorn in your research, please cite [our preprint](https://www.biorxiv.org/content/10.1101/2025.06.20.660799v1).
 
-Zorn is developed and maintained by the [Henriksson and Carroll labs](authors.html)
+Zorn is developed and maintained by the [HenLab](https://www.henlab.org/) and [CompMicroLab](https://www.microbe.dev/) at [Umeå University](https://www.umu.se/en/) in beautiful [Umeå, Sweden!](https://visitumea.se/en)
 
 
 ## News
