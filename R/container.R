@@ -211,7 +211,7 @@ getBascetDockerImage <- function(
     ) 
     
   } else {
-    stop("Docker is not installed or cannot be run")
+    stop("Docker is not installed or cannot be run. Ensure that Docker desktop is running if your platform requires it")
   } 
 }
 
