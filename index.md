@@ -16,6 +16,9 @@ If you use Zorn in your research, please cite [our preprint](https://www.biorxiv
 
 Zorn is developed and maintained by the [HenLab](https://www.henlab.org/) and [CompMicroLab](https://www.microbe.dev/) at [Umeå University](https://www.umu.se/en/) in beautiful [Umeå, Sweden!](https://visitumea.se/en)
 
+Most users want to use Zorn for all operations. However, if you want to expand on low-level functionality, you can have a look at the underlying software [Bascet](https://github.com/henriksson-lab/bascet/).
+
+
 
 ## News
 
