@@ -40,6 +40,7 @@ Suggests:
     rmarkdown
 Remotes: github::henriksson-lab/zorn
 URL: https://github.com/henriksson-lab/zorn, https://henriksson-lab.github.io/zorn/
+BugReports: https://github.com/henriksson-lab/zorn/issues
 Collate:
   'job_general.R'
   'job_local.R'
