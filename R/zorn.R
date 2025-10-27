@@ -247,6 +247,7 @@ DetectRawFileMeta <- function(
 #' @param outputNameIncomplete Name of output files: Reads that could not be parsed
 #' @param chemistry The type of data to be parsed
 #' @param barcodeTolerance Optional: Number of mismatches allowed in the barcode for it to still be considered valid
+#' @param numLocalThreads Number of threads to use per job
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
@@ -260,6 +261,7 @@ BascetGetRaw <- function(
     chemistry=c("atrandi_wgs","atrandi_rnaseq","pb_rnaseq"),  #any way to get list from software?
     subchemistry=NULL,
     barcodeTolerance=NULL,
+    numLocalThreads,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -272,6 +274,7 @@ BascetGetRaw <- function(
   chemistry <- match.arg(chemistry)
   stopifnot(is.character(subchemistry) || is.null(subchemistry))
   stopifnot(is.numeric(barcodeTolerance) || is.null(barcodeTolerance))
+  stopifnot(is.valid.threadcount(numLocalThreads))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -314,16 +317,22 @@ BascetGetRaw <- function(
         paste(
           bascetInstance@prependCmd,
           bascetInstance@bin,
-          "getraw",
-          "-t $BASCET_TEMPDIR",
-          "--chemistry",chemistry,
+          "get-raw",
+          "-@", numLocalThreads, ########### TODO get from job manager
+          "--temp $BASCET_TEMPDIR",
+#          "--chemistry",chemistry,
+#"--hist foo.hist",
+
+
+          "--buffer-size 20000", #[mb]
+          "--sort-buffer-size 20000", #[mb]
           if(!is.null(subchemistry)) paste("--subchemistry",subchemistry),
           if(!is.null(barcodeTolerance)) c("--barcode-tol", barcodeTolerance),
           "--r1 ${files_r1[$TASK_ID]}",
           "--r2 ${files_r2[$TASK_ID]}",
           if(add_libnames) "--libname ${libnames[$TASK_ID]}",
-          "--out-complete   ${files_out[$TASK_ID]}",                 #Each job produces a single output
-          "--out-incomplete ${files_out_incomplete[$TASK_ID]}"       #Each job produces a single output
+          "--out   ${files_out[$TASK_ID]}"                 #Each job produces a single output
+#          "--out-incomplete ${files_out_incomplete[$TASK_ID]}"       #Each job produces a single output
         )
       ),
       arraysize = nrow(rawmeta)

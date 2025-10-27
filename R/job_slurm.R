@@ -185,10 +185,18 @@ setMethod(
     ## Get start time
     scriptcontent <- c(scriptcontent, "timeStart=$( date +\"%s\" )")
 
+
     ## Decide on a tempdir location; different for each job
+    tmproot <- GetBascetTempDir(bascetInstance)
     scriptcontent <- c(
       scriptcontent,
-      paste0("BASCET_TEMPDIR=",file.path(GetBascetTempDir(bascetInstance), "$SLURM_ARRAY_TASK_ID"))
+      paste0("BASCET_TEMPDIR=",file.path(tmproot, ".", "$SLURM_ARRAY_TASK_ID"))
+    )
+
+    ## Also create the directory
+    scriptcontent <- c(
+      scriptcontent,
+      paste("mkdir -p", file.path(tmproot, ".", "$SLURM_ARRAY_TASK_ID"))
     )
     
     ## Add the command
