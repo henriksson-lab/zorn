@@ -153,6 +153,7 @@ if(FALSE){
 #' @param storeAt Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory
 #' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
 #' @param forceInstall Set to true to overwrite any existing Docker image
+#' @param mapDirs Directories to map through to the container
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return A Bascet instance
@@ -161,6 +162,7 @@ getBascetDockerImage <- function(
     storeAt=getwd(),
     tempdir=NULL,
     forceInstall=FALSE,
+    mapDirs=NULL, #c("/Users","/Volumes","/home"),
     verbose=FALSE
 ){
   #check arguments
@@ -201,7 +203,23 @@ getBascetDockerImage <- function(
       print(paste("Found existing Bascet Docker image"))
     }
     
-    prependCmd <- paste("docker run henriksson-lab/bascet ")
+    #Add default mapdirs 
+    if(is.null(mapDirs) && Sys.info()["sysname"] == "Darwin") {
+      mapDirs <- c("/Users","/Volumes")
+    }
+
+    #Check which directories to map through actually exist
+    mapDirs_filtered <- c()
+    for(d in mapDirs) {
+      if(dir.exists(d)) {
+        mapDirs_filtered <- c(mapDirs_filtered, d)
+      }
+    }
+
+    #Generate map-through flags
+    mapDirs_cmd <- paste0("--mount type=bind,src=",mapDirs_filtered,",dst=",mapDirs_filtered)
+    mapDirs_cmd_all <- paste(mapDirs_cmd, collapse = " ")
+    prependCmd <- paste("docker run ", mapDirs_cmd_all, " henriksson-lab/bascet ")
     
     
     BascetInstance(
