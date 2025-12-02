@@ -12,6 +12,7 @@ BascetGetRaw(
   chemistry = c("atrandi_wgs", "atrandi_rnaseq", "pb_rnaseq"),
   subchemistry = NULL,
   barcodeTolerance = NULL,
+  numLocalThreads,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -29,6 +30,8 @@ BascetGetRaw(
 \item{chemistry}{The type of data to be parsed}
 
 \item{barcodeTolerance}{Optional: Number of mismatches allowed in the barcode for it to still be considered valid}
+
+\item{numLocalThreads}{Number of threads to use per job}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

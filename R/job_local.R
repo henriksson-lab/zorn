@@ -8,7 +8,7 @@
 ###############################################
 #' @export
 setClass("LocalRunner", slots=list(
-  maxcpu="character",
+  ncpu="character",
   direct="logical",
   showScript="logical"
 )
@@ -28,18 +28,27 @@ setClass("LocalJob", slots=list(
 ###############################################
 #' Create new local runner instance
 #' 
-#' @param maxcpu Number of CPUs to use (max)
+#' @param ncpu Number of CPU cores to use. By default, will attempt to detect and use all of them
 #' @param direct Run jobs synchronously
 #' @param showScript Show the script to run, for debugging purposes
 #' 
 #' @return A runner instance
 #' @export
 LocalRunner <- function(
-    maxcpu="10", 
+    ncpu=NA, 
     direct=TRUE, 
     showScript=FALSE
 ){
-  new("LocalRunner", maxcpu=maxcpu, direct=direct, showScript=showScript)
+  if(is.na(ncpu)) {
+    ncpu <- parallel::detectCores()
+    if(is.na(ncpu)) {
+      warning("Cannot detect number of CPU cores so it was set to 1. Set it manually instead")
+      ncpu <- 1
+    }
+    
+  }
+  
+  new("LocalRunner", ncpu=ncpu, direct=direct, showScript=showScript)
 }
 
 

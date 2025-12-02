@@ -9,6 +9,7 @@ getBascetDockerImage(
   storeAt = getwd(),
   tempdir = NULL,
   forceInstall = FALSE,
+  mapDirs = NULL,
   verbose = FALSE
 )
 }
@@ -18,6 +19,8 @@ getBascetDockerImage(
 \item{tempdir}{Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible}
 
 \item{forceInstall}{Set to true to overwrite any existing Docker image}
+
+\item{mapDirs}{Directories to map through to the container}
 
 \item{verbose}{Print additional information, primarily to help troubleshooting}
 }

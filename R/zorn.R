@@ -258,14 +258,19 @@ BascetGetRaw <- function(
     rawmeta, 
     outputName="debarcoded", 
     outputNameIncomplete="incomplete_reads", 
-    chemistry=c("atrandi_wgs","atrandi_rnaseq","pb_rnaseq"),  #any way to get list from software?
+    chemistry=c("atrandi-wgs","atrandi-rnaseq","parse-bio"),  #TODO any way to get list from software?
     subchemistry=NULL,
     barcodeTolerance=NULL,
-    numLocalThreads,
+    numLocalThreads=NA,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Set number of threads if not given
+  if(is.na(numLocalThreads)) {
+    numLocalThreads <- as.integer(runner@ncpu)
+  }
+  
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.data.frame(rawmeta))
@@ -318,11 +323,10 @@ BascetGetRaw <- function(
           bascetInstance@prependCmd,
           bascetInstance@bin,
           "get-raw",
-          "-@", numLocalThreads, ########### TODO get from job manager
+          "-@", numLocalThreads, 
           "--temp $BASCET_TEMPDIR",
-#          "--chemistry",chemistry,
-#"--hist foo.hist",
-
+          #          "--chemistry",chemistry,
+          #"--hist foo.hist",
 
           "--buffer-size 20000", #[mb]
           "--sort-buffer-size 20000", #[mb]
@@ -331,7 +335,8 @@ BascetGetRaw <- function(
           "--r1 ${files_r1[$TASK_ID]}",
           "--r2 ${files_r2[$TASK_ID]}",
           if(add_libnames) "--libname ${libnames[$TASK_ID]}",
-          "--out   ${files_out[$TASK_ID]}"                 #Each job produces a single output
+          "--out   ${files_out[$TASK_ID]}",                 #Each job produces a single output
+          chemistry
 #          "--out-incomplete ${files_out_incomplete[$TASK_ID]}"       #Each job produces a single output
         )
       ),
@@ -669,7 +674,7 @@ BarnyardPlotMatrix <- function(
 #'
 #'
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param numLocalThreads Number of threads to use for FASTP. TODO: autodetect? take from runner? (fastp has no good defaults)
+#' @param numLocalThreads Number of threads to use for FASTP. Default is the maximum, taken from runner settings
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist

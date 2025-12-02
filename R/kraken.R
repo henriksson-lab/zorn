@@ -75,13 +75,18 @@ SpeciesCorrMatrix <- function(
 BascetRunKraken <- function(
     bascetRoot,
     useKrakenDB="/data/henlab/kraken/standard-8",
-    numLocalThreads=1,
+    numLocalThreads=NA,
     inputName="asfq", ######### should be able to take filtered and pipe to kraken if needed  "filtered"
     outputName="kraken_out",
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Set number of threads if not given
+  if(is.na(numLocalThreads)) {
+    numLocalThreads <- as.integer(runner@ncpu)
+  }
+  
   #Check arguments 
   stopifnot(dir.exists(bascetRoot))
   stopifnot(dir.exists(useKrakenDB))
@@ -151,7 +156,7 @@ BascetRunKraken <- function(
 #' Produce a count matrix of taxonomy IDs from KRAKEN output
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param numLocalThreads Number of threads for KRAKEN to use
+#' @param numLocalThreads Number of threads for KRAKEN to use. Default is the maximum, taken from runner settings
 #' @param inputName Name of input shard (KRAKEN output)
 #' @param outputName Name of output shard (h5 count matrix)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
@@ -162,13 +167,18 @@ BascetRunKraken <- function(
 #' @export
 BascetMakeKrakenCountMatrix <- function(
     bascetRoot,
-    numLocalThreads=1,
+    numLocalThreads=NA,
     inputName="kraken_out", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputName="kraken", 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Set number of threads if not given
+  if(is.na(numLocalThreads)) {
+    numLocalThreads <- as.integer(runner@ncpu)
+  }
+  
   #Check arguments 
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.threadcount(numLocalThreads))  
