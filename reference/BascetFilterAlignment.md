@@ -9,7 +9,7 @@ need to be mapped (flag 0x2); otherwise (flag 0x4)
 ``` r
 BascetFilterAlignment(
   bascetRoot,
-  numLocalThreads = 1,
+  numLocalThreads = NULL,
   inputName,
   outputName,
   keepMapped = FALSE,
@@ -27,8 +27,8 @@ BascetFilterAlignment(
 
 - numLocalThreads:
 
-  Number of threads to use for each runner (TODO: get default from
-  runner settings?)
+  Number of threads to use. Default is the maximum, taken from runner
+  settings
 
 - inputName:
 

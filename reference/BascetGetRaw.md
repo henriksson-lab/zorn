@@ -10,10 +10,10 @@ BascetGetRaw(
   rawmeta,
   outputName = "debarcoded",
   outputNameIncomplete = "incomplete_reads",
-  chemistry = c("atrandi_wgs", "atrandi_rnaseq", "pb_rnaseq"),
+  chemistry = c("atrandi-wgs", "atrandi-rnaseq", "parse-bio"),
   subchemistry = NULL,
   barcodeTolerance = NULL,
-  numLocalThreads,
+  numLocalThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -49,7 +49,8 @@ BascetGetRaw(
 
 - numLocalThreads:
 
-  Number of threads to use per job
+  Number of threads to use per job. Default is the number from the
+  runner
 
 - runner:
 

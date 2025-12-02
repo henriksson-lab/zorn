@@ -10,7 +10,7 @@ BascetRunCellSNP(
   bascetRoot,
   inputName = "aligned",
   outputName = "cellsnp",
-  numLocalThreads = 1,
+  numLocalThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -33,7 +33,8 @@ BascetRunCellSNP(
 
 - numLocalThreads:
 
-  Number of threads to use for each runner
+  Number of threads to use for each runner. Default is the maximum,
+  taken from runner settings
 
 - overwrite:
 

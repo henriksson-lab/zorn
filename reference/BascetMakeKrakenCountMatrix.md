@@ -7,7 +7,7 @@ Produce a count matrix of taxonomy IDs from KRAKEN output
 ``` r
 BascetMakeKrakenCountMatrix(
   bascetRoot,
-  numLocalThreads = 1,
+  numLocalThreads = NULL,
   inputName = "kraken_out",
   outputName = "kraken",
   overwrite = FALSE,
@@ -24,7 +24,8 @@ BascetMakeKrakenCountMatrix(
 
 - numLocalThreads:
 
-  Number of threads for KRAKEN to use
+  Number of threads for KRAKEN to use. Default is the maximum, taken
+  from runner settings
 
 - inputName:
 

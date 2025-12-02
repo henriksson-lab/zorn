@@ -9,7 +9,7 @@ BascetRunFASTP(
   bascetRoot,
   inputName = "asfq",
   outputName = "fastp",
-  numLocalThreads,
+  numLocalThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -32,8 +32,8 @@ BascetRunFASTP(
 
 - numLocalThreads:
 
-  Number of threads to use for FASTP. TODO: autodetect? take from
-  runner? (fastp has no good defaults)
+  Number of threads to use for FASTP. Default is the maximum, taken from
+  runner settings
 
 - overwrite:
 

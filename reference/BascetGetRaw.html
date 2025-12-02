@@ -68,10 +68,10 @@
 <span>  <span class="va">rawmeta</span>,</span>
 <span>  outputName <span class="op">=</span> <span class="st">"debarcoded"</span>,</span>
 <span>  outputNameIncomplete <span class="op">=</span> <span class="st">"incomplete_reads"</span>,</span>
-<span>  chemistry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"atrandi_wgs"</span>, <span class="st">"atrandi_rnaseq"</span>, <span class="st">"pb_rnaseq"</span><span class="op">)</span>,</span>
+<span>  chemistry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"atrandi-wgs"</span>, <span class="st">"atrandi-rnaseq"</span>, <span class="st">"parse-bio"</span><span class="op">)</span>,</span>
 <span>  subchemistry <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  barcodeTolerance <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">numLocalThreads</span>,</span>
+<span>  numLocalThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -107,7 +107,7 @@
 
 
 <dt id="arg-numlocalthreads">numLocalThreads<a class="anchor" aria-label="anchor" href="#arg-numlocalthreads"></a></dt>
-<dd><p>Number of threads to use per job</p></dd>
+<dd><p>Number of threads to use per job. Default is the number from the runner</p></dd>
 
 
 <dt id="arg-runner">runner<a class="anchor" aria-label="anchor" href="#arg-runner"></a></dt>

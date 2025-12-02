@@ -8,7 +8,7 @@ Run KRAKEN2 for each cell
 BascetRunKraken(
   bascetRoot,
   useKrakenDB = "/data/henlab/kraken/standard-8",
-  numLocalThreads = 1,
+  numLocalThreads = NULL,
   inputName = "asfq",
   outputName = "kraken_out",
   overwrite = FALSE,

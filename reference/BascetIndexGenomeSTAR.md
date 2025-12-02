@@ -9,7 +9,7 @@ BascetIndexGenomeSTAR(
   fastaFile,
   gtfFile,
   outDir,
-  numLocalThreads = 10,
+  numLocalThreads = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -32,8 +32,8 @@ BascetIndexGenomeSTAR(
 
 - numLocalThreads:
 
-  The number of threads to use for the STAR index. Default is 10. TODO
-  could get from runner
+  The number of threads to use for the STAR index, for each runner.
+  Default is the maximum, taken from runner settings
 
 - runner:
 
