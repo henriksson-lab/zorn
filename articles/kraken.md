@@ -1,0 +1,150 @@
+# KRAKEN2
+
+First set up your Zorn/Bascet working directory as before. If you wish
+to run these steps on a SLURM cluster, see separate vignette and adapt
+accordingly.
+
+``` r
+library(Zorn)
+bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRoot <- "/home/yours/an_empty_workdirectory"
+```
+
+## Preprocessing
+
+KRAKEN2 wants the data in FASTQ format. Here we assume that you use a
+single-cell WGS chemistry that produces paired reads, and direct Zorn to
+produce R1/R2 FASTQ files (only R1 specified). We name the output
+Bascets “asfq”, taking as input the typical sharded reads:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+### Get reads in fastq format
+BascetMapTransform(
+  bascetRoot,
+  "filtered",   #default; can omit
+  "asfq",  ###name parameter
+  out_format="R1.fq.gz"
+)
+```
+
+To run KRAKEN2, you need a database. You can get them here:
+<https://benlangmead.github.io/aws-indexes/k2>
+
+If you want a small one then consider standard-8. Unzip it in a
+directory. You can then run KRAKEN2 like this:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+### Run Kraken on each cell
+BascetRunKraken(
+  bascetRoot,
+  useKrakenDB="/your_disk/kraken/standard-8",
+  numLocalThreads=20
+)
+
+### Produce a count matrix of taxonomy features
+BascetMakeKrakenCountMatrix(
+  bascetRoot,
+  numLocalThreads=20
+)
+```
+
+Note that there are two steps here. First KRAKEN2 classifies each read
+to a taxonomy. In the second step, we count the taxonomic reads for each
+cell. This ends up being a rather small matrix that you can process
+using Seurat.
+
+## Postprocessing with Signac/Seurat
+
+The output format is one binary HDF5 file for each shard, roughly in the
+[Anndata file
+format](https://anndata.readthedocs.io/en/stable/fileformat-prose.html).
+To load these, use the following command that loads the files and
+concatenates them into a single matrix. It can then be loaded into
+Seurat:
+
+``` r
+mat <- ReadBascetCountMatrix(bascetRoot,"kraken", verbose=FALSE)
+
+taxid_ob <- CreateAssayObject(t(mat)) #t() needed to conform from anndata to seurat
+adata <- CreateSeuratObject(counts = taxid_ob, project = "proj", min.cells = 0, min.features = 0) 
+```
+
+You then most likely want to know which cell is which species. Zorn can
+annotate species by simply picking the dominant species, phylum and
+group for each cell:
+
+``` r
+## Look up taxonomy consensus data given taxonomyID counts for each cell
+kraken_taxid <- KrakenFindConsensusTaxonomy(mat)
+
+## Add KRAKEN consensus taxonomy to metadata
+rownames(kraken_taxid) <- kraken_taxid$cell_id
+kraken_taxid <- kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]
+adata@meta.data <- cbind(
+  adata@meta.data,
+  kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]
+)
+```
+
+You will need to filter low-abundance cells. To do this, first
+investigate a kneeplot of each species. As different species are
+differently hard to lyse, you will likely have different kneeplot
+patterns.
+
+``` r
+KrakenKneePlot(adata, groupby = "phylum", showNumSpecies=showNumSpecies)
+```
+
+You can then proceed to filter out cells with few reads. Note that the
+cutoff will induce biases if the cells have different DNA content; the
+best way to handle this is an open research question (e.g. you could
+also consider different cutoffs for different species). This is however
+the most basic filtering you can perform:
+
+``` r
+keep_cells <- adata$nCount_RNA > 10000 #10k reads
+sum(keep_cells)
+adata <- adata[,keep_cells]
+```
+
+You can now proceed to generate a dimensional reduction in the form of a
+UMAP. See the tutorials for [Seurat](https://satijalab.org/seurat/) and
+[Signac](https://stuartlab.org/signac/) for details. We summarize the
+required command below, where you can apply either an RNA-seq or
+ATAC-seq dimensional reduction depending on what you think is
+appropriate.
+
+``` r
+if(TRUE){
+  #ATAC-seq style analysis
+  library(Signac)
+  adata <- RunTFIDF(adata)
+  adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+  adata <- RunSVD(adata)
+  DepthCor(adata)
+  adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "kraken_umap")  
+} else {
+  #RNA-seq style analysis
+  adata <- NormalizeData(adata)
+  adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
+  adata <- ScaleData(adata, features = rownames(adata))
+  adata <- RunPCA(adata, features = VariableFeatures(object = adata))
+  adata <- RunUMAP(adata, dims = 1:20, reduction.name = "kraken_umap")
+}
+```
+
+You can now plot a UMAP with your cells! Here colored by genus, but you
+can also try other levels of annotation:
+
+``` r
+DimPlot(object = adata, label = TRUE, group.by = "genus", reduction = "kraken_umap") + 
+  NoLegend() + 
+  xlab("KRAKEN1") + 
+  ylab("KRAKEN2")
+```

@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   alignment: alignment.html
@@ -23,7 +23,7 @@ articles:
   slurm: slurm.html
   snp_analysis: snp_analysis.html
   tcr_analysis: tcr_analysis.html
-last_built: 2025-10-27T18:24Z
+last_built: 2025-12-02T15:54Z
 urls:
   reference: https://henriksson-lab.github.io/zorn/reference
   article: https://henriksson-lab.github.io/zorn/articles

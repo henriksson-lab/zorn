@@ -1,0 +1,39 @@
+# Example data
+
+## Simulated data
+
+To test the pipeline, we have prepared several simulated datasets that
+you can use
+
+### Full simulation (small)
+
+To test the full pipeline, we have prepared simulated raw FASTQ files
+
+- (R1)\[<http://beagle.henlab.org/public/bascet/sim3/sim3_R1_001.fastq.gz>\]
+- (R2)\[<http://beagle.henlab.org/public/bascet/sim3/sim3_R2_001.fastq.gz>\]
+
+### Debarcoded simulation (small)
+
+You can use (shardified
+reads)\[<http://beagle.henlab.org/public/bascet/demodata/simulated.zip>\]
+as input. There are few cells, of different depth. This is our smallest
+demo dataset. Skip debarcoding and shardification if you use this data
+
+## More simulate data
+
+You can also simulate your own data, to, e.g., check performance on
+genomes that you might expect in a sample. This can be useful for power
+calculations/estimation. See [the Zorn github
+repo](https://github.com/henriksson-lab/zorn/tree/main/simulate). Note
+that the simulation scripts are for developers primarily, and likely
+have rough corners. Please get in touch if you have a need of this and
+need directions on how to use the code.
+
+## Real data (small)
+
+You can also investigate some (miseq
+data)\[<http://beagle.henlab.org/public/bascet/demodata/miseq.zip>\].
+Note that this data is ultra-shallowly sequenced, so don’t expect to see
+much. But there is a great number of barcodes which will stress test
+some parts of Zorn/Bascet without the need for a large computational
+cluster.

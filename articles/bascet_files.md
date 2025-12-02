@@ -1,0 +1,75 @@
+# Working with Bascet files
+
+If you want to get files out of Bascets, this the tutorial for you! Note
+that you should avoid doing this unless needed - the map system is there
+if you wish to process each cell; aggregate can then be used to
+systematically extract information. These offer the benefit of
+multithreading and you do not need to worry about having copious amounts
+of files which definitely will not make your systems administrator
+happy.
+
+That said, in case of emergency, or if you just want a single file, this
+is the approach to take.
+
+First load an instance, and ensure that it works:
+
+``` r
+bascetInstance <- getBascetSingularityImage(...)
+TestBascetInstance(bascetInstance)
+```
+
+You can now open a file. Internally, this creates an instance of Bascet
+running in a separate thread, which R can send commands to. This design
+is necessary to avoid the startup cost of Docker and Singularity, such
+that you pay the cost only once; but reading many files is very fast.
+
+``` r
+skesa_file <- OpenBascet(
+  bascetRoot, 
+  "skesa", 
+  bascetInstance
+)
+```
+
+You can obtain a list of files for a cell like this (see reference for
+more commands):
+
+``` r
+BascetListFilesForCell(
+  skesa_file, 
+  "G1_E5_H7_E11", 
+  bascetInstance = bascetInstance
+)
+```
+
+A common scenario is that you want the assembled genome of a particular
+cell. It can be done like this:
+
+``` r
+contig_file <- BascetReadFile(
+  skesa_file,
+  cellID = "G1_E5_H7_E11", 
+  filename = "contigs.fa",
+  as="text"
+)
+```
+
+Be sure to close the file when you are done, as you have a rather large
+ecosystem of tools still in memory!
+
+``` r
+CloseBascet(
+  skesa_file
+)
+```
+
+You can now save the file to disk. If you want to actually look at the
+data, we recommend loading it using the seqinr package rather than
+directly using the raw file data obtained by the function above.
+
+``` r
+writeLines(
+  contig_file, 
+  "my_genome.fa"
+)
+```

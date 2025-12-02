@@ -1,0 +1,170 @@
+# SNP analysis
+
+## Alignment
+
+First align files to a reference of your choice. See the alignment
+tutorial for full details, but this is an example command to align once
+you have a reference:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+BascetAlignToReference(
+  bascetRoot,
+  inputName="fastp", #FASTP-filtered FASTQ as input
+  outputNameBAMunsorted = "myref_unsorted_aligned",
+  outputNameBAMsorted = "myref_aligned",
+  useReference="..../../../myref",
+  numLocalThreads=10
+)
+```
+
+## Extracting cells most similar to the reference
+
+If you have a complex sample, you likely want to only compare cells of a
+given species (however you define it). You can obtain a rather trivial
+count table, including how many reads did not align, for later
+filtering. The alignment tutorial has more details, but here is an
+example command:
+
+``` r
+BascetCountChrom(
+  bascetRoot,
+  inputName="myref_unsorted_aligned",
+  outputName="cnt_myref",
+  runner=SlurmRunner(bascet_runner.default, ncpu="2") 
+)
+```
+
+## SNP-calling
+
+You can now check how each cells genome deviate from the reference and
+obtain SNPs. This is done by calling CellSNP-lite. It is ok to do this
+on all the cells, even those that are not of the species of interest;
+you can filter later:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+BascetRunCellSNP(
+  bascetRoot,
+  inputName="myref_aligned",
+  numLocalThreads=5,
+  runner=SlurmRunner(bascet_runner.default, ncpu="5") 
+)
+```
+
+## Selecting cells
+
+The heavy work is now over. If you generated a count matrix, you can
+load it like this:
+
+``` r
+# get aligned counts
+cnt_myref <- ReadBascetCountMatrix(bascetRoot,"cnt_myref")
+
+# Compute fraction aligned
+cnt_myref$obs$tot_reads <- as.double(cnt_myref$obs$`_unmapped` + cnt_myref$X)
+cnt_myref$obs$frac_mapped <- as.double(cnt_myref$X/cnt_myref$obs$tot_reads)
+cnt_myref$obs$`_index` <- stringr::str_remove(cnt_myref$obs$`_index`,"BASCET_")  #will not be needed in the future
+rownames(cnt_myref$obs) <- cnt_myref$obs$`_index`
+```
+
+You can then produce a type of kneeplot, showing how well certain cells
+map to this reference:
+
+``` r
+### Knee plot of alignment
+df <- data.frame(
+  frac_mapped = sort(cnt_myref$obs$frac_mapped, decreasing = TRUE),
+  index = 1:nrow(cnt_myref$obs)
+)
+ggplot(df, aes(index, frac_mapped)) + 
+  geom_line() + 
+  scale_x_log10() + 
+  theme_bw()
+```
+
+Based on the knee plot, you can extract cells that are close enough to
+your reference like this:
+
+``` r
+list_cell_mutans <- cnt_myref$obs$`_index`[which(cnt_myref$obs$frac_mapped>0.8)]
+```
+
+\#Clustering by SNPs
+
+Load the CellSNP-lite counts as follows:
+
+``` r
+snp_ad <- ReadCellSNPmatrix(
+  bascetRoot,
+  "cellsnp"
+)
+```
+
+Create a Seurat object from the counts:
+
+``` r
+pbmc <- CreateSeuratObject(counts = t(snp_ad), project = "pbmc3k", min.cells = 3, min.features = 0)
+
+#only keep selected cells (optional)
+pbmc <- pbmc[,colnames(pbmc) %in% list_cell_mutans]
+
+#transfer count metadata (optional)
+pbmc$frac_mapped <-  cnt_mutans$obs[colnames(pbmc),]$frac_mapped
+pbmc$tot_reads <-  cnt_mutans$obs[colnames(pbmc),]$tot_reads
+```
+
+Do the usual transformations and clustering:
+
+``` r
+### Normalize data, PCA etc
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+pbmc <- NormalizeData(pbmc)
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, features = all.genes) ########## todo should normalize by sequencing depth of original cell! not SNP count
+
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = 0.5)
+
+pbmc <- RunUMAP(pbmc, dims = 1:10)
+
+pbmc$snp_count <- rowSums(pbmc@assays$RNA@layers$counts)
+```
+
+Do some quick plots to check for clusters:
+
+``` r
+DimPlot(pbmc, reduction = "umap")
+FeaturePlot(pbmc, reduction = "umap", features = c("snp_count"))
+FeaturePlot(pbmc, reduction = "umap", features = c("frac_mapped"))
+FeaturePlot(pbmc, reduction = "umap", features = c("tot_reads"))
+```
+
+Find differential SNPs using the Seurat marker tools
+
+``` r
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
+
+pbmc.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 2) %>%
+  slice_head(n = 100) %>%
+  ungroup() -> top10
+
+as.data.frame(top10)
+```
+
+Plot SNPs to your liking
+
+``` r
+FeaturePlot(pbmc, reduction = "umap", features = c("NZ-CP077404.1-7148-T-to-C"))
+```
+
+That’s it!

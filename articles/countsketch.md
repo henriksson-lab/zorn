@@ -1,0 +1,84 @@
+# Count sketch KMER-based workflow
+
+First set up your Zorn/Bascet work directory as before. If you wish to
+run these steps on a SLURM cluster, see separate vignette and adapt
+accordingly.
+
+``` r
+library(Zorn)
+bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRoot <- "/home/yours/an_empty_workdirectory"
+```
+
+## Preprocessing
+
+Next, produce a count sketch for each cell. There are further options if
+you wish to alter the number of dimensions. You can reduce the number of
+dimensions later in R, but you will need more memory for this procedure.
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+#Internally wraps mapcell to compute count sketches for each cell
+BascetComputeCountSketch(
+  bascetRoot
+)
+```
+
+This results in a Bascet-ZIP with all the count sketches. Turn this into
+a count matrix file using the following command:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+#Gather count sketches into a single matrix file
+BascetGatherCountSketch(
+  bascetRoot
+)
+```
+
+## Postprocessing with Signac/Seurat
+
+You can now load all of this data into R as a Seurat object:
+
+``` r
+adata <- BascetLoadCountSketchMatrix(
+  bascetRoot
+)
+```
+
+The data is rather large; we recommend enabling multithreading for
+Seurat:
+
+``` r
+library(future)
+plan("multicore", workers = 10)
+```
+
+Note that the data was loaded directly as a reduction, rather than as
+regular counts. This is because the counts have little meaning of their
+own, and it makes little sense to perform PCA, SVD or similar on the
+data. Rather, we recommend using all the dimensions. The following
+produces a UMAP, setting the dimension to all available dimensions in
+the reduction:
+
+``` r
+reduction_name <- "kmersketch"
+adata <- RunUMAP(
+  adata,
+  dims = 1:ncol(adata@reductions[[reduction_name]]@cell.embeddings),
+  reduction = reduction_name,
+  metric = "cosine"
+)
+```
+
+The result can be visualized:
+
+``` r
+DimPlot(adata)
+```
+
+We recommend that you integrate this object with the output of KRAKEN2
+to get some clue about what the clusters mean.

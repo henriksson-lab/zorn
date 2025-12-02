@@ -1,0 +1,52 @@
+# TCR/BCR analysis
+
+## Install TRUST4
+
+TRUST4 is part of the Bascet container
+([source](https://github.com/liulab-dfci/TRUST4)). However, you need to
+provide a
+
+## The TCR/BCR workflow
+
+Generate FASTQ-files for alignment
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+###TODO
+```
+
+Align your reads using STAR (not BWA):
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+###TODO
+```
+
+Run TRUST4 on your aligned reads:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+#TODO
+run-trust4 -b foo.bam -f human_IMGT+C.fa --barcode BC --UMI UMI -t 10 
+```
+
+You can now load the extracted sequences in R:
+
+``` r
+#TODO
+```
+
+## Citing
+
+If you use TRUST4, you should cite it in addition to Zorn/Bascet
+<https://www.nature.com/articles/s41592-021-01142-2>
+
+Song, L., Cohen, D., Ouyang, Z. et al. TRUST4: immune repertoire
+reconstruction from bulk and single-cell RNA-seq data. Nat Methods
+(2021). <https://doi.org/10.1038/s41592-021-01142-2>

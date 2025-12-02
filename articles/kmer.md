@@ -1,0 +1,144 @@
+# Informative KMER-based workflow
+
+First set up your Zorn/Bascet workdirectory as before. If you wish to
+run these steps on a SLURM cluster, see separate vignette and adapt
+accordingly.
+
+``` r
+library(Zorn)
+bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRoot <- "/home/yours/an_empty_workdirectory"
+```
+
+## Preprocessing
+
+To extract informative KMERs, you first need to obtain a list of them.
+Bascet/Zorn offers one way, in which we first extract minhashes from
+each cell. These are finger prints that we later can look for in other
+cells.
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+### Compute minhashes for each cell
+BascetComputeMinhash(
+  bascetRoot
+)
+
+### Gather minhashes into a single histogram
+BascetMakeMinhashHistogram(
+  bascetRoot
+)
+```
+
+If two cells of the same species are shallowly sequenced, they may not
+share minhashes, simply because the reads don’t span all of their
+genomes. We can however look for KMERs that are more frequently shared
+by counting minhashes across all cells, and generating a histogram.
+
+``` r
+kmerHist <- BascetReadMinhashHistogram(bascetRoot)
+
+kmerHist$rank <- 1:nrow(kmerHist)
+ggplot(kmerHist[kmerHist$cnt>2,], aes(rank, cnt)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10()
+```
+
+It is an open problem which KMERs to pick. KMERs of low abundance will
+not help clustering much as the UMAP algorithm will not find many other
+cells they are correlated with. Likewise, KMERs present in each cell are
+not [informative
+either](https://en.wikipedia.org/wiki/Binary_entropy_function). In
+practice, we don’t see this happening; just picking the most common top
+10,000 KMERs or so seems to give useful results. You can also pick KMERs
+based on a cutoff:
+
+``` r
+### Pick KMERs
+useKMERs <- kmerHist$kmer[kmerHist$cnt>5]  #Pick KMERs present in more than 5 cells
+```
+
+Using the list of KMERs, you can now re-scan all genomes for their
+presence.
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+### Build count table by looking up selected KMERs in per-cell KMER databases
+BascetQueryFq(
+  bascetRoot,
+  useKMERs=useKMERs
+)
+```
+
+The output format is one binary HDF5 file for each shard, roughly in the
+[Anndata file
+format](https://anndata.readthedocs.io/en/stable/fileformat-prose.html).
+To load these, use the following command that loads the files and
+concatenates them into a single matrix. It can then be loaded into
+Seurat:
+
+``` r
+library(Seurat)
+### Read count matrix
+cnt <- ReadBascetCountMatrix(
+  bascetRoot,
+  "kmer_counts"
+  #TODO note that the is a maximum count by default
+) 
+```
+
+Most likely you will have to filter out the low abundant cells. Note
+that with this workflow, the cutoff is based on the number of KMERs
+rather than the number of reads.
+
+``` r
+  ## Load subset of real cells
+  keep_cells <- rowSums(cnt)>20000 #this cutoff is based on the number of KMERs, not read count!
+  sum(keep_cells)
+  adata <- CreateSeuratObject(
+    counts = CreateAssayObject(t(cnt[keep_cells,])),  #note that t() is needed
+    assay = "infokmer"
+  )
+```
+
+You can now proceed to generate a dimensional reduction in the form of a
+UMAP. See the tutorials for [Seurat](https://satijalab.org/seurat/) and
+[Signac](https://stuartlab.org/signac/) for details. We summarize the
+required command below, where you can apply either an RNA-seq or
+ATAC-seq dimensional reduction depending on what you think is
+appropriate.
+
+``` r
+if(TRUE){
+  #ATAC-seq style analysis
+  library(Signac)
+  adata <- RunTFIDF(adata)
+  adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+  adata <- RunSVD(adata)
+  DepthCor(adata)
+  adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "infokmers_umap")  
+} else {
+  #RNA-seq style analysis
+  adata <- NormalizeData(adata)
+  adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
+  adata <- ScaleData(adata, features = rownames(adata))
+  adata <- RunPCA(adata, features = VariableFeatures(object = adata))
+  adata <- RunUMAP(adata, dims = 1:20, reduction.name = "infokmers_umap")
+}
+```
+
+You can now plot a UMAP with your cells. Note that the cells do not have
+any labels. One way to obtain labels is by also running the KRAKEN-based
+workflow; or you can use other annotation tools through the
+mapcell-system.
+
+``` r
+DimPlot(object = adata, reduction = "infokmers_umap") + 
+  xlab("KMER1") + 
+  ylab("KMER2")
+```

@@ -1,0 +1,38 @@
+# Frequently Asked Questions
+
+## If your questions is not here
+
+Please email us your questions and we’ll do our best to help. Either
+email [Johan Henriksson](mailto:johan.henriksson@umu.se) or [Laura
+Carroll](mailto:laura.carroll@umu.se)
+
+## Can you help me wrap tool X?
+
+Contact us; if it is a commonly used tool and the effort is low, we
+might be able to rather quickly get it in. If it is a major endeavor, it
+might be a possible task for a collaboration.
+
+## How do I contribute?
+
+There’s a ton of tasks that we would be happy to get help with.
+Depending on the task, it might be enough to just know R and some BASH;
+more difficult tasks requires you to learn
+[Rust](https://www.rust-lang.org), in which case it helps to at least
+have written some Python (or even better; Java, C# or C++).
+
+Some examples of tasks:
+
+- Wrapping of commonly used tools
+- Improved read trimming / support for other trimmers
+- Improved barcode detection
+- Support for other assemblers
+- Support for other single-cell chemistries
+- General speed improvements
+
+## Who was Zorn?
+
+See [Anders Zorn](https://en.wikipedia.org/wiki/Anders_Zorn) on
+wikipedia!
+
+![Anders
+Zorn](https://upload.wikimedia.org/wikipedia/commons/0/0b/Anders_Zorn_1908.jpg)

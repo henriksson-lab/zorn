@@ -1,0 +1,105 @@
+# Read-based quality control
+
+## FASTQC
+
+If you want to run QC on all cells as a whole, to get the average
+picture, simply run FASTQC on reads after transformation to FASTQ:
+
+``` r
+### Get reads in fastq format
+BascetMapTransform(
+  bascetRoot,
+  inputName="filtered",   
+  outputName="asfq",      
+  out_format="R1.fq.gz"
+)
+```
+
+You can also run FASTQC on each individual cell, in which case you do
+not need to convert to FASTQ as above. This takes a fair bit of time,
+but can help tell if, e.g., a cluster of cells is caused by technical
+issues such as adapter content. You first run FASTQC with mapcell:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+BascetMapCellFASTQ(
+  bascetRoot,
+  inputName = "filtered"  #or other source of reads
+)
+```
+
+``` r
+BascetMapCellFASTQ(
+  bascetRoot,
+  inputName = "filtered"  #or other source of reads
+)
+```
+
+If you have an outlier cell in your dataset, you can investigate its
+FASTQ HTML report in the follow manner (opening in the RShiny plot pane,
+or separate browser):
+
+``` r
+ShowFASTQCforCell(
+    bascetFile, 
+    cellID="xyz", #name of your cell 
+    readnum="1", #for R1
+)
+```
+
+You can also compare cells by aggregating the data. Note that FASTQC
+creates rather complex statistics that need further extraction for
+simple plotting
+
+``` r
+aggr_fastqc <- BascetAggregateFASTQC(
+  bascetRoot
+)
+```
+
+One relevant statistic is the adapter content across the read:
+
+``` r
+PlotFASTQCadapterContent <- function(
+    aggr_fastqc,
+    readnum="1" #for R1
+)
+```
+
+You can also retrieve a table of pass/fail statistics:
+
+``` r
+fastqc_passfail <- GetFASTQCpassfailStats(
+    aggr_fastqc,
+    readnum="1" #for R1
+)
+```
+
+Because there are so many things you can do with this statistics, we
+provide a general interface to each table that FASTQC generates:
+
+``` r
+mystats <- GetFASTQCassembledDF(
+    aggr_fastqc, 
+    section="see below", 
+    readnum="1"
+)
+```
+
+Possible values of section are:
+
+- “Basic Statistics”
+- “Per base sequence quality”
+- “Per sequence quality scores”
+- “Per base sequence content”
+- “Per sequence GC content”
+- “Per base N content”
+- “Sequence Length Distribution”
+- “Sequence Duplication Levels”
+- “Overrepresented sequences”
+- “Adapter Content”
+
+Other statistics can also be extracted. Refer to the full reference
+manual for a list
