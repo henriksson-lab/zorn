@@ -10,7 +10,8 @@
 ###############################################
 #' Check that parameter is a valid thread count
 is.valid.threadcount <- function(x) {
-  is.positive.integer(x)
+  #Note: not calling is.positive.integer to ensure we get a proper error message
+  round(x)==x & x>0
 }
 
 ###############################################
@@ -269,6 +270,12 @@ BascetGetRaw <- function(
   #Set number of threads if not given
   if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
+  }
+  
+  #Need a minimum number of threads
+  if(numLocalThreads<4) {
+    print("Note: Setting number of threads to 4 as this is the minimum, even if the CPU has fewer cores")
+    numLocalThreads <- 4
   }
   
   #Check input arguments 
