@@ -247,7 +247,7 @@ DetectRawFileMeta <- function(
 #' @param outputNameIncomplete Name of output files: Reads that could not be parsed
 #' @param chemistry The type of data to be parsed
 #' @param barcodeTolerance Optional: Number of mismatches allowed in the barcode for it to still be considered valid
-#' @param numLocalThreads Number of threads to use per job
+#' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
@@ -261,13 +261,13 @@ BascetGetRaw <- function(
     chemistry=c("atrandi-wgs","atrandi-rnaseq","parse-bio"),  #TODO any way to get list from software?
     subchemistry=NULL,
     barcodeTolerance=NULL,
-    numLocalThreads=NA,
+    numLocalThreads=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.na(numLocalThreads)) {
+  if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
   }
   
@@ -687,11 +687,16 @@ BascetRunFASTP <- function(
     bascetRoot,
     inputName="asfq", ######### should be able to take filtered and pipe to if needed  "filtered"  TODO
     outputName="fastp",
-    numLocalThreads,
+    numLocalThreads=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Set number of threads if not given
+  if(is.null(numLocalThreads)) {
+    numLocalThreads <- as.integer(runner@ncpu)
+  }
+  
   #check arguments
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.shardname(inputName))

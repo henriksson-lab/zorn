@@ -108,12 +108,12 @@ BascetIndexGenomeSTAR <- function(
     fastaFile, 
     gtfFile,
     outDir,
-    numLocalThreads=NA,
+    numLocalThreads=NULL,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.na(numLocalThreads)) {
+  if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
   }
   
@@ -317,7 +317,7 @@ BascetAlignmentToBigwig <- function(
 #' @export
 BascetFilterAlignment <- function(  
     bascetRoot, 
-    numLocalThreads=NA,
+    numLocalThreads=NULL,
     inputName, 
     outputName,
     keepMapped=FALSE,
@@ -326,7 +326,7 @@ BascetFilterAlignment <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.na(numLocalThreads)) {
+  if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
   }
   
@@ -424,7 +424,7 @@ BascetFilterAlignment <- function(
 BascetAlignToReference <- function(
     bascetRoot, 
     useReference,
-    numLocalThreads=NA,
+    numLocalThreads=NULL,
     inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputNameBAMunsorted="unsorted_aligned", 
     outputNameBAMsorted="aligned", 
@@ -435,7 +435,7 @@ BascetAlignToReference <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.na(numLocalThreads)) {
+  if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
   }
   
@@ -1156,13 +1156,13 @@ BascetRunCellSNP <- function(
     bascetRoot, 
     inputName="aligned", 
     outputName="cellsnp", 
-    numLocalThreads=NA,
+    numLocalThreads=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.na(numLocalThreads)) {
+  if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
   }
   

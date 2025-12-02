@@ -75,7 +75,7 @@ SpeciesCorrMatrix <- function(
 BascetRunKraken <- function(
     bascetRoot,
     useKrakenDB="/data/henlab/kraken/standard-8",
-    numLocalThreads=NA,
+    numLocalThreads=NULL,
     inputName="asfq", ######### should be able to take filtered and pipe to kraken if needed  "filtered"
     outputName="kraken_out",
     overwrite=FALSE,
@@ -83,7 +83,7 @@ BascetRunKraken <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.na(numLocalThreads)) {
+  if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
   }
   
@@ -167,7 +167,7 @@ BascetRunKraken <- function(
 #' @export
 BascetMakeKrakenCountMatrix <- function(
     bascetRoot,
-    numLocalThreads=NA,
+    numLocalThreads=NULL,
     inputName="kraken_out", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
     outputName="kraken", 
     overwrite=FALSE,
@@ -175,7 +175,7 @@ BascetMakeKrakenCountMatrix <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.na(numLocalThreads)) {
+  if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
   }
   

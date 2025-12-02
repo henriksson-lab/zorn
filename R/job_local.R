@@ -35,11 +35,11 @@ setClass("LocalJob", slots=list(
 #' @return A runner instance
 #' @export
 LocalRunner <- function(
-    ncpu=NA, 
+    ncpu=NULL, 
     direct=TRUE, 
     showScript=FALSE
 ){
-  if(is.na(ncpu)) {
+  if(is.null(ncpu)) {
     ncpu <- parallel::detectCores()
     if(is.na(ncpu)) {
       warning("Cannot detect number of CPU cores so it was set to 1. Set it manually instead")
