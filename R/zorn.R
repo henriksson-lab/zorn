@@ -452,7 +452,7 @@ BascetShardifyOld <- function(
           "-t $BASCET_TEMPDIR",
           "-i",shellscriptMakeCommalist(inputFiles), #Need to give all input files for each job
           "-o ${files_out[$TASK_ID]}",                 #Each job produces a single output
-          "--cells $CELLFILE"                          #Each job takes its own list of cells
+          "--cells=$CELLFILE"                          #Each job takes its own list of cells
         ),  
         "rm $CELLFILE"
       ), 
@@ -557,7 +557,7 @@ BascetMapTransform <- function(
           bascetInstance@prependCmd,
           bascetInstance@bin, 
           "transform",
-          if(produce_cell_list) "--cells ${CELLFILE[$TASK_ID]}",
+          if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
           #"-t $BASCET_TEMPDIR",  ##not supported
           "-i ${files_in[$TASK_ID]}",
           "-o ${files_out[$TASK_ID]}"
@@ -766,7 +766,7 @@ BascetRunFASTP <- function(
         paste(
           bascetInstance@prependCmd,
           "fastp",
-          "--thread", numLocalThreads,
+          "--thread", numLocalThreads,  ## TODO should there be = here?
           "-h ${files_html[$TASK_ID]}",
           "-j ${files_json[$TASK_ID]}",
           "-i ${files_in_R1[$TASK_ID]}",

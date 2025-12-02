@@ -134,8 +134,8 @@ BascetRunKraken <- function(
         paste(
           bascetInstance@prependCmd,
           "kraken2",
-          "--db", useKrakenDB,
-          "--threads", numLocalThreads,
+          "--db", useKrakenDB, #TODO =?
+          "--threads", numLocalThreads, #TODO =?
           "--output ${files_out[$TASK_ID]}",
           if(is_paired) "--paired",
           "${files_in_R1[$TASK_ID]}",
