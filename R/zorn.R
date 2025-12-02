@@ -339,8 +339,8 @@ BascetGetRaw <- function(
 #          "--buffer-size=20000", #[mb]
 #          "--sort-buffer-size=20000", #[mb] ################################################################# TODO: calculate based on available memory
           
-          "--buffer-size=12000", #[mb]
-          "--sort-buffer-size=12000", #[mb] ################################################################# TODO: for before bascet2
+          "--buffer-size=2000", #[mb]
+          "--sort-buffer-size=2000", #[mb] ################################################################# TODO: for before bascet2
           
           
           if(!is.null(subchemistry)) paste0("--subchemistry=",subchemistry),
