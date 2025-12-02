@@ -4,10 +4,10 @@
 \alias{LocalRunner}
 \title{Create new local runner instance}
 \usage{
-LocalRunner(maxcpu = "10", direct = TRUE, showScript = FALSE)
+LocalRunner(ncpu = NULL, direct = TRUE, showScript = FALSE)
 }
 \arguments{
-\item{maxcpu}{Number of CPUs to use (max)}
+\item{ncpu}{Number of CPU cores to use. By default, will attempt to detect and use all of them}
 
 \item{direct}{Run jobs synchronously}
 

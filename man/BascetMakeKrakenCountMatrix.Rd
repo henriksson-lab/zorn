@@ -6,7 +6,7 @@
 \usage{
 BascetMakeKrakenCountMatrix(
   bascetRoot,
-  numLocalThreads = 1,
+  numLocalThreads = NULL,
   inputName = "kraken_out",
   outputName = "kraken",
   overwrite = FALSE,
@@ -17,7 +17,7 @@ BascetMakeKrakenCountMatrix(
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{numLocalThreads}{Number of threads for KRAKEN to use}
+\item{numLocalThreads}{Number of threads for KRAKEN to use. Default is the maximum, taken from runner settings}
 
 \item{inputName}{Name of input shard (KRAKEN output)}
 

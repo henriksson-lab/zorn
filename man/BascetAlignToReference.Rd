@@ -7,7 +7,7 @@
 BascetAlignToReference(
   bascetRoot,
   useReference,
-  numLocalThreads = 1,
+  numLocalThreads = NULL,
   inputName = "asfq",
   outputNameBAMunsorted = "unsorted_aligned",
   outputNameBAMsorted = "aligned",
@@ -23,7 +23,7 @@ BascetAlignToReference(
 
 \item{useReference}{Name of the BWA reference to use}
 
-\item{numLocalThreads}{Number of threads to use for each runner}
+\item{numLocalThreads}{Number of threads to use for each runner. Default is the maximum, taken from runner settings}
 
 \item{inputName}{Name of input shard}
 

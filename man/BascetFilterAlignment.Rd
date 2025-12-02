@@ -6,7 +6,7 @@
 \usage{
 BascetFilterAlignment(
   bascetRoot,
-  numLocalThreads = 1,
+  numLocalThreads = NULL,
   inputName,
   outputName,
   keepMapped = FALSE,
@@ -18,7 +18,7 @@ BascetFilterAlignment(
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{numLocalThreads}{Number of threads to use for each runner (TODO: get default from runner settings?)}
+\item{numLocalThreads}{Number of threads to use. Default is the maximum, taken from runner settings}
 
 \item{inputName}{Name of input shards (BAM-file format)}
 

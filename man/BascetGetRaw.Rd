@@ -9,10 +9,10 @@ BascetGetRaw(
   rawmeta,
   outputName = "debarcoded",
   outputNameIncomplete = "incomplete_reads",
-  chemistry = c("atrandi_wgs", "atrandi_rnaseq", "pb_rnaseq"),
+  chemistry = c("atrandi-wgs", "atrandi-rnaseq", "parse-bio"),
   subchemistry = NULL,
   barcodeTolerance = NULL,
-  numLocalThreads,
+  numLocalThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -31,7 +31,7 @@ BascetGetRaw(
 
 \item{barcodeTolerance}{Optional: Number of mismatches allowed in the barcode for it to still be considered valid}
 
-\item{numLocalThreads}{Number of threads to use per job}
+\item{numLocalThreads}{Number of threads to use per job. Default is the number from the runner}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

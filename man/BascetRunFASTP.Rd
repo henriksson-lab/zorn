@@ -8,7 +8,7 @@ BascetRunFASTP(
   bascetRoot,
   inputName = "asfq",
   outputName = "fastp",
-  numLocalThreads,
+  numLocalThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -21,7 +21,7 @@ BascetRunFASTP(
 
 \item{outputName}{Name of output shard}
 
-\item{numLocalThreads}{Number of threads to use for FASTP. TODO: autodetect? take from runner? (fastp has no good defaults)}
+\item{numLocalThreads}{Number of threads to use for FASTP. Default is the maximum, taken from runner settings}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
