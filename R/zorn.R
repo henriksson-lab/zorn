@@ -331,19 +331,21 @@ BascetGetRaw <- function(
           bascetInstance@bin,
           "get-raw",
           "-@", numLocalThreads, 
-          "--temp $BASCET_TEMPDIR",
-          #          "--chemistry",chemistry,
+          "--temp=$BASCET_TEMPDIR",
+          
+          #"--chemistry",chemistry,
           #"--hist foo.hist",
 
-          "--buffer-size 20000", #[mb]
-          "--sort-buffer-size 20000", #[mb]
-          if(!is.null(subchemistry)) paste("--subchemistry",subchemistry),
-          if(!is.null(barcodeTolerance)) c("--barcode-tol", barcodeTolerance),
-          "--r1 ${files_r1[$TASK_ID]}",
-          "--r2 ${files_r2[$TASK_ID]}",
-          if(add_libnames) "--libname ${libnames[$TASK_ID]}",
-          "--out   ${files_out[$TASK_ID]}",                 #Each job produces a single output
+          "--buffer-size=20000", #[mb]
+          "--sort-buffer-size=20000", #[mb]
+          if(!is.null(subchemistry)) paste0("--subchemistry=",subchemistry),
+          if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
+          "--r1=${files_r1[$TASK_ID]}",
+          "--r2=${files_r2[$TASK_ID]}",
+          if(add_libnames) "--libname=${libnames[$TASK_ID]}",
+          "--out=${files_out[$TASK_ID]}",                 #Each job produces a single output
           chemistry
+          
 #          "--out-incomplete ${files_out_incomplete[$TASK_ID]}"       #Each job produces a single output
         )
       ),
