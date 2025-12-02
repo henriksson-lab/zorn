@@ -336,8 +336,13 @@ BascetGetRaw <- function(
           #"--chemistry",chemistry,
           #"--hist foo.hist",
 
-          "--buffer-size=20000", #[mb]
-          "--sort-buffer-size=20000", #[mb]
+#          "--buffer-size=20000", #[mb]
+#          "--sort-buffer-size=20000", #[mb] ################################################################# TODO: calculate based on available memory
+          
+          "--buffer-size=12000", #[mb]
+          "--sort-buffer-size=12000", #[mb] ################################################################# TODO: for before bascet2
+          
+          
           if(!is.null(subchemistry)) paste0("--subchemistry=",subchemistry),
           if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
           "--r1=${files_r1[$TASK_ID]}",
