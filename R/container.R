@@ -354,7 +354,7 @@ assembleBascetCommand <- function(bascetInstance, params) {
     bascetInstance@prependCmd,
     bascetInstance@bin,
     "--log-path=$BASCET_LOGFILE",
-    params,
+    params
   )
 }
 
