@@ -16,7 +16,7 @@ BascetShardify(
 \arguments{
 \item{debstat}{Plan for sharding provided by PrepareSharding}
 
-\item{numOutputShards}{How many shards to generate /for each input library/}
+\item{numOutputShards}{How many shards to generate /for each input prefix/}
 
 \item{outputName}{Name of the output file: Properly sharded debarcoded reads}
 
