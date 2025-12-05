@@ -124,8 +124,9 @@ SlurmRunner <- function(
   }
   
   if(!is.null(mem)){
+    #Check that the argument is correct. will stop otherwise
+    parse_size_to_bytes(mem)
     settings@mem <- mem
-    #mem can have "g" at end. need to parse to integer  TODO
   }
 
   
@@ -193,13 +194,20 @@ setMethod(
       paste0("BASCET_TEMPDIR=",file.path(tmproot, ".", "$SLURM_ARRAY_TASK_ID"))
     )
 
-    ## Also create the directory
+    ## Also create the temp directory
     scriptcontent <- c(
       scriptcontent,
       paste("mkdir -p", file.path(tmproot, ".", "$SLURM_ARRAY_TASK_ID"))
     )
     
-    ## Add the command
+    ## Decide on a log location; different for each job
+    scriptcontent <- c(
+      scriptcontent,
+      "mkdir -p logs",
+      paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${TASK_ID}.log"))
+    )
+    
+    ## Add the provided command
     this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),"$SLURM_ARRAY_TASK_ID")
     this_cmd <- stringr::str_replace_all(this_cmd,stringr::fixed("${TASK_ID}"),"${SLURM_ARRAY_TASK_ID}")
     scriptcontent <- c(scriptcontent, this_cmd)

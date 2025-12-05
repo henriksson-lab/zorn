@@ -61,6 +61,43 @@ is.numeric.range01 <- function(x) {
 
 
 
+###############################################
+#' Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
+#' 
+#' @param s Size as string. If numeric, it is just returned
+#' 
+#' @return Size in bytes, as integer
+parse_size_to_bytes <- function(s) {
+  #Return a number directly
+  if(is.numeric(s)) {
+    return(s)
+  } 
+  
+  #Parse string
+  sorig <- s
+  mult <- 1
+  pref <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
+  last_c <- stringr::str_sub(s, stringr::str_length(s))
+  #print(last_c)
+  
+  if(last_c=="g") {
+    mult <- 1e9
+    s <- pref
+  } else if(last_c=="m") {
+    mult <- 1e6
+    s <- pref
+  } else if(last_c=="b") {
+    mult <- 1e3
+    s <- pref
+  }
+  asint <- as.integer(s)
+  if(is.na(asint)) {
+    stop(paste("Failed to parse size:",sorig))
+  }
+  asint*mult
+}
+#parse_size_to_bytes("2dasd")
+
 
 ###############################################
 #' Detect metadata for raw input FASTQ files
@@ -131,338 +168,6 @@ BascetCacheComputation <- function(
     value
   }
 }
-
-
-################################################################################
-################ Bascet command line tool: debarcoding raw fastq ###############
-################################################################################
-
-
-
-###############################################
-#' Detect metadata for raw input FASTQ files
-#' 
-#' _R1 -- common from illumina sequencer
-#' SRR****_1.fastq.gz -- typical from SRA
-#' 
-#' TODO Would be convenient to handle multiple samples, as sample1/xxx; in this case, 
-#' should prepend the sample name to the barcodes.
-#' 
-#' issue: when shardifying, good to keep info about what to merge. this reduces the work plenty!
-#' could keep a list of which shards belong for the next step
-#' 
-#' 
-#' @param rawRoot Path to folder with FASTQ files
-#' @param verbose Print additional information, primarily to help troubleshooting
-#' 
-#' @return A data frame with metadata for the raw input files
-#' @export
-DetectRawFileMeta <- function(
-    rawRoot, 
-    verbose=FALSE
-){
-  #check arguments
-  stopifnot(dir.exists(rawRoot))
-  stopifnot(is.logical(verbose))
-  
-  
-  #rawRoot <- "/husky/fromsequencer/241206_novaseq_wgs3/raw"
-  allfiles <- list.files(rawRoot)
-  
-  if(verbose){
-    print("Found the following files in the directory")
-    print(allfiles)
-  }
-  
-  allfiles <- allfiles[
-    stringr::str_ends(allfiles,".fq.gz") | 
-      stringr::str_ends(allfiles, ".fastq.gz") | 
-      stringr::str_ends(allfiles, ".fq") | 
-      stringr::str_ends(allfiles,".fastq")]
-  
-  if(verbose){
-    print("Found the following raw read-like files")
-    print(allfiles)
-  }
-  
-  r1_files <- allfiles[stringr::str_detect(allfiles,stringr::fixed("_R1"))]
-  
-  if(verbose){
-    print("Found the following R1-like files")
-    print(r1_files)
-  }
-  
-  ## TODO for SRA, replace with _1.fastq.gz
-  r2_corresponding <- stringr::str_replace(r1_files,stringr::fixed("R1"),"R2")
-  
-  if(!all(r2_corresponding %in% allfiles)){
-    stop("Not all R1 files appear to have a corresponding R2 file")
-  }
-  
-  ### Gather first set of metadata
-  meta <- data.frame(
-    r1=r1_files,
-    r2=r2_corresponding,
-    dir=file.path(rawRoot) #this standarizes the trailing /
-  )
-  meta$prefix <- ""
-  
-  #Guess prefixes
-  meta$possible_prefix <- stringr::str_split_i(meta$r1, "_S[0123456789]",1)
-  unique_prefix <- unique(meta$possible_prefix)
-  if(verbose){
-    print("Detected possible prefixes:")
-    print(unique_prefix)
-  }
-
-  #If there is more than one prefix, then we have to add them. otherwise just keep it simple
-  if(length(unique_prefix)>1){
-    #Sanitize prefixes. Some characters will break BAM tags etc
-    meta$prefix <- meta$possible_prefix
-    meta$prefix <- stringr::str_remove_all(meta$prefix, " ")
-    meta$prefix <- stringr::str_remove_all(meta$prefix, "/")
-    meta$prefix <- stringr::str_remove_all(meta$prefix, "\"")
-
-    print("Detected multiple libraries")    
-  } else {
-    print("Detected a single library")    
-    
-    if(verbose){
-      print("Detected only one possible prefix, so not adding it")
-    }
-  }
-
-  #Return metadata
-  meta[,c("prefix","r1","r2","dir")]
-}
-
-#rawmeta <- DetectRawFileMeta("/husky/fromsequencer/241206_novaseq_wgs3/raw")
-
-
-###############################################
-#' Generate BAM with barcodes from input raw FASTQ
-#' 
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param rawmeta Metadata for the raw FASTQ input files. See DetectRawFileMeta
-#' @param outputName Name output files: Debarcoded reads
-#' @param outputNameIncomplete Name of output files: Reads that could not be parsed
-#' @param chemistry The type of data to be parsed
-#' @param barcodeTolerance Optional: Number of mismatches allowed in the barcode for it to still be considered valid
-#' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
-#' @return A job to be executed, or being executed, depending on runner settings
-#' @export
-BascetGetRaw <- function(
-    bascetRoot, 
-    rawmeta, 
-    outputName="debarcoded", 
-    outputNameIncomplete="incomplete_reads", 
-    chemistry=c("atrandi-wgs","atrandi-rnaseq","parse-bio"),  #TODO any way to get list from software?
-    subchemistry=NULL,
-    barcodeTolerance=NULL,
-    numLocalThreads=NULL,
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(), 
-    bascetInstance=GetDefaultBascetInstance()
-){
-  #Set number of threads if not given
-  if(is.null(numLocalThreads)) {
-    numLocalThreads <- as.integer(runner@ncpu)
-  }
-  
-  #Need a minimum number of threads
-  if(numLocalThreads<4) {
-    print("Note: Setting number of threads to 4 as this is the minimum, even if the CPU has fewer cores")
-    numLocalThreads <- 4
-  }
-  
-  #Check input arguments 
-  stopifnot(dir.exists(bascetRoot))
-  stopifnot(is.data.frame(rawmeta))
-  stopifnot(is.valid.shardname(outputName))
-  stopifnot(is.valid.shardname(outputNameIncomplete))
-  chemistry <- match.arg(chemistry)
-  stopifnot(is.character(subchemistry) || is.null(subchemistry))
-  stopifnot(is.numeric(barcodeTolerance) || is.null(barcodeTolerance))
-  stopifnot(is.valid.threadcount(numLocalThreads))
-  stopifnot(is.logical(overwrite))
-  stopifnot(is.runner(runner))
-  stopifnot(is.bascet.instance(bascetInstance))
-
-  #One output per input pair of reads  
-  num_shards <- nrow(rawmeta)
-  if(num_shards==0){
-    stop("No input files")
-  }
-  outputFilesComplete <- makeOutputShardNames(bascetRoot, outputName, "tirp.gz", num_shards)
-  outputFilesIncomplete <- makeOutputShardNames(bascetRoot, outputNameIncomplete, "tirp.gz", num_shards)
-  
-  #Check if libnames should be added
-  add_libnames <- any(rawmeta$prefix!="")
-  
-  #Write a file describing the libraries
-  rawmeta$shard <- 1:num_shards
-  write.csv(
-    rawmeta,
-    file=file.path(bascetRoot, paste0(outputName, ".meta")),
-    row.names = FALSE
-  )
-
-  if(bascetCheckOverwriteOutput(outputFilesComplete, overwrite)) {
-    RunJob(
-      runner = runner, 
-      jobname = "Z_getraw",
-      bascetInstance = bascetInstance,
-      cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
-        shellscriptMakeBashArray("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
-        shellscriptMakeBashArray("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
-        shellscriptMakeBashArray("libnames",rawmeta$prefix),
-        shellscriptMakeBashArray("files_out",outputFilesComplete),
-        shellscriptMakeBashArray("files_out_incomplete",outputFilesIncomplete),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        paste(
-          bascetInstance@prependCmd,
-          bascetInstance@bin,
-          "get-raw",
-          "-@", numLocalThreads, 
-          "--temp=$BASCET_TEMPDIR",
-          
-          #"--chemistry",chemistry,
-          #"--hist foo.hist",
-
-#          "--buffer-size=20000", #[mb]
-#          "--sort-buffer-size=20000", #[mb] ################################################################# TODO: calculate based on available memory
-          
-          "--buffer-size=2000", #[mb]
-          "--sort-buffer-size=2000", #[mb] ################################################################# TODO: for before bascet2
-          
-          
-          if(!is.null(subchemistry)) paste0("--subchemistry=",subchemistry),
-          if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
-          "--r1=${files_r1[$TASK_ID]}",
-          "--r2=${files_r2[$TASK_ID]}",
-          if(add_libnames) "--libname=${libnames[$TASK_ID]}",
-          "--out=${files_out[$TASK_ID]}",                 #Each job produces a single output
-          chemistry
-          
-#          "--out-incomplete ${files_out_incomplete[$TASK_ID]}"       #Each job produces a single output
-        )
-      ),
-      arraysize = nrow(rawmeta)
-    )    
-  } else {
-    new_no_job()
-  }
-}
-
-
-
-
-
-################################################################################
-################ Bascet command line tools: WGS ################################
-################################################################################
-
-
-
-
-###############################################
-#' Take debarcoded reads and split them into suitable numbers of shards.
-#' 
-#' The reads from one cell is guaranteed to only be present in a single shard.
-#' This makes parallel processing simple as each shard can be processed on
-#' a separate computer. Using more shards means that more computers can be used.
-#' 
-#' If you perform all the calculations on a single computer, having more
-#' than one shard will not result in a speedup. This option is only relevant
-#' when using a cluster of compute nodes.
-#' 
-#' 
-#' 
-#' TODO if we have multiple input samples, is there a way to group them?
-#' otherwise we will be reading more input files than needed. that said,
-#' if we got an index, so if list of cells specified, it is possible to quickly figure out
-#' out if a file is needed at all for a merge
-#' 
-#' TODO Figuring out if a file is needed can be done at "planning" (Zorn) stage
-#' 
-#' TODO seems faster to have a single merger that writes multiple output files if
-#' cell list is not provided. if the overhead is accepted then read all input files and
-#' discard cells on the fly
-#' 
-#' @param inputName Name of input file: Debarcoded reads
-#' @param outputName Name of the output file: Properly sharded debarcoded reads
-#' 
-#' @return A job to be executed, or being executed, depending on runner settings
-#' @export
-BascetShardifyOld <- function(
-    bascetRoot, 
-    inputName="debarcoded", 
-    includeCells=NULL, ############# TODO: get rid of this parameter; only support direct merging
-    numOutputShards=1,
-    outputName="filtered", 
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(), 
-    bascetInstance=GetDefaultBascetInstance()
-){
-
-  input_shards <- detectShardsForFile(bascetRoot, inputName)
-  if(length(input_shards)==0){
-    stop("Found no input files")
-  }
-
-  #Include all cells if nothing else provided
-  if(is.null(includeCells)){
-    includeCells <- BascetCellNames(bascetRoot, inputName, bascetInstance=bascetInstance)
-    includeCells <- unique(includeCells$cell) #when shardifying, we expect cells to appear more than once  -- could warn for other commands!
-    print(paste("Including all the",length(includeCells), "cells"))
-  }
-
-  #Figure out which cell goes into which shard
-  list_cell_for_shard <- shellscriptSplitArrayIntoListRandomly(includeCells, numOutputShards)
-  
-  #Figure out input and output file names  
-  inputFiles <- file.path(bascetRoot, input_shards)
-  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "tirp.gz", numOutputShards)
-
-  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
-    #Produce the script and run the job
-    RunJob(
-      runner = runner, 
-      jobname = "Z_shardify",
-      bascetInstance = bascetInstance,
-      cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
-        shellscriptMakeBashArray("files_out", outputFiles),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
-        paste(
-          bascetInstance@prependCmd,
-          bascetInstance@bin,
-          "shardify", 
-          "-t $BASCET_TEMPDIR",
-          "-i",shellscriptMakeCommalist(inputFiles), #Need to give all input files for each job
-          "-o ${files_out[$TASK_ID]}",                 #Each job produces a single output
-          "--cells=$CELLFILE"                          #Each job takes its own list of cells
-        ),  
-        "rm $CELLFILE"
-      ), 
-      arraysize = numOutputShards
-    )
-  } else {
-    new_no_job()
-  }
-}
-
 
 
 
@@ -553,15 +258,13 @@ BascetMapTransform <- function(
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
         if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
-        paste(
-          bascetInstance@prependCmd,
-          bascetInstance@bin, 
+        assembleBascetCommand(bascetInstance, c(
           "transform",
           if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
           #"-t $BASCET_TEMPDIR",  ##not supported
           "-i ${files_in[$TASK_ID]}",
           "-o ${files_out[$TASK_ID]}"
-        )
+        ))
       ),
       arraysize = num_shards
     )  

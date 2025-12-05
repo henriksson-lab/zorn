@@ -341,3 +341,20 @@ safeDownloadMD5 <- function(
 }
 
 
+
+###############################################
+#' Prepare Bascet command given arguments
+#' 
+#' @param bascetInstance bascetInstance
+#' @param params List of parameters
+#' 
+#' @return Bascet command to run as a string
+assembleBascetCommand <- function(bascetInstance, params) {
+  paste(
+    bascetInstance@prependCmd,
+    bascetInstance@bin,
+    "--log-path=$BASCET_LOGFILE",
+    params,
+  )
+}
+

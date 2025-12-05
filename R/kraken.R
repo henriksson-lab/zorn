@@ -212,14 +212,12 @@ BascetMakeKrakenCountMatrix <- function(
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
 
-        paste(
-          bascetInstance@prependCmd,
-          bascetInstance@bin, 
+        assembleBascetCommand(bascetInstance, c(
           "kraken",
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",
           "-o ${files_out[$TASK_ID]}"
-          )
+        ))
       ),
       arraysize = num_shards
     )  

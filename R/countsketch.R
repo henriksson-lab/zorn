@@ -96,15 +96,13 @@ BascetGatherCountSketch <- function(
     cmd <- c(
       #shellscript_set_tempdir(bascetInstance),
       if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
-      paste(
-        bascetInstance@prependCmd,
-        bascetInstance@bin, 
+      assembleBascetCommand(bascetInstance, c(
         "countsketch",
         if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
         "-t $BASCET_TEMPDIR",
         "-i", shellscriptMakeCommalist(inputFiles),
         "-o", outputFile
-      )
+      ))
     )
     
     #Run the job

@@ -60,7 +60,7 @@ setMethod(
   f = "RunJob",
   signature ="LocalRunner",
   definition = function(runner, jobname, bascetInstance, cmd, arraysize) { 
-    
+    print("Starting local job")
     
     ## Decide on a tempdir location; different for each job
     cmd <- c(
@@ -68,12 +68,14 @@ setMethod(
       cmd
     )
     
+    ## Decide on a log location; different for each job
+    cmd <- c(
+      "mkdir -p logs",
+      paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${TASK_ID}.log")),
+      cmd
+    )
     
-    print("Starting local job")
-    cmd <- stringr::str_flatten(c(
-      cmd,
-      ""
-    ),"\n")
+    cmd <- stringr::str_flatten(cmd,"\n")
     
     print("----------- arg")
     if(runner@showScript){

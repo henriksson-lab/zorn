@@ -687,14 +687,12 @@ BascetBam2Fragments <- function(
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
-        paste(
-          bascetInstance@prependCmd,
-          bascetInstance@bin, 
+        assembleBascetCommand(bascetInstance, c(
           "bam2fragments",
           "-t $BASCET_TEMPDIR", #TODO =?
           "-i ${files_in[$TASK_ID]}",  
           "-o ${files_out[$TASK_ID]}"
-        )
+        ))
       ),
       arraysize = length(inputFiles)
     )
@@ -765,16 +763,14 @@ BascetCountChrom <- function(
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
-        paste(
-          bascetInstance@prependCmd,
-          bascetInstance@bin, 
+        assembleBascetCommand(bascetInstance, c(
           "countchrom",
           paste0("--min-matching==",minMatching),
           if(removeDuplicates) "--remove-duplicates",
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",  
           "-o ${files_out[$TASK_ID]}"
-        )
+        ))
       ),
       arraysize = length(inputFiles)
     )
@@ -1090,9 +1086,7 @@ BascetCountFeature <- function(
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
         
-        paste(
-          bascetInstance@prependCmd,
-          bascetInstance@bin, 
+        assembleBascetCommand(bascetInstance, c(
           "countfeature",
           paste("-g", gffFile),
           paste0("--use-feature=", useFeature),
@@ -1101,7 +1095,7 @@ BascetCountFeature <- function(
           "-t $BASCET_TEMPDIR",
           "-i ${files_in[$TASK_ID]}",  
           "-o ${files_out[$TASK_ID]}"
-        )
+        ))
       ),
       arraysize = length(inputFiles)
     )
@@ -1220,7 +1214,6 @@ BascetRunCellSNP <- function(
     ### For SNP-calling
     paste(
       bascetInstance@prependCmd,
-
       "cellsnp-lite", 
       "-s ${files_in[$TASK_ID]}",        #Align BAM
       "-p", numLocalThreads,
