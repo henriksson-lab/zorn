@@ -73,7 +73,6 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunFASTP.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunKraken.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetShardify.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetShardifyOld.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ChooseInformativeKMERs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ChromToSpeciesCount.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CloseBascet.html</loc></url>
@@ -125,6 +124,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.minhash.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.quast.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.rawtext.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/assembleBascetCommand.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/bascetCheckOverwriteOutput.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/detectShardsForFile.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerExit.html</loc></url>
@@ -158,6 +158,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/lseq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/makeOutputShardNames.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/new_no_job.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/parse_size_to_bytes.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptCancelJobIfFileExists.html</loc></url>

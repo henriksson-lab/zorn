@@ -29,7 +29,7 @@ BascetShardify(
 
 - numOutputShards:
 
-  How many shards to generate /for each input library/
+  How many shards to generate /for each input prefix/
 
 - outputName:
 

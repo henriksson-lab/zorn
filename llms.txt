@@ -37,346 +37,535 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 
 - [`AggregateMinhashes()`](https://henriksson-lab.github.io/zorn/reference/AggregateMinhashes.md)
   : Aggregate frequency of minhashes across cells
+
 - [`AtrandiBarcodeStats()`](https://henriksson-lab.github.io/zorn/reference/AtrandiBarcodeStats.md)
   : Given a Bascet, produce a matrix showing for each combinatorial
   barcode, how many times it occurs across the cells. Presented as a
   96-well plate matrix
+
 - [`BarnyardPlotMatrix()`](https://henriksson-lab.github.io/zorn/reference/BarnyardPlotMatrix.md)
   : Produce a matrix of Barnyard plots, i.e., counts for one species vs
   another, for all combinations of species.
+
 - [`Bascet-class`](https://henriksson-lab.github.io/zorn/reference/Bascet-class.md)
   : A bascet, along with all the shards
+
 - [`BascetAggregateAMRfinder()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateAMRfinder.md)
   : Aggregate data from AMRfinder This is a thin wrapper around
   BascetAggregateMap
+
 - [`BascetAggregateAbricate()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateAbricate.md)
   : Aggregate data from Abricate This is a thin wrapper around
   BascetAggregateMap
+
 - [`BascetAggregateAriba()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateAriba.md)
   : Aggregate data from Ariba This is a thin wrapper around
   BascetAggregateMap
+
 - [`BascetAggregateFASTQC()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateFASTQC.md)
   : Aggregate data from FASTQC This is a thin wrapper around
   BascetAggregateMap
+
 - [`BascetAggregateGECCO()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateGECCO.md)
   : Aggregate data from GECCO This is a thin wrapper around
   BascetAggregateMap
+
 - [`BascetAggregateMap()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.md)
   : Aggregate data from previous Map call
+
 - [`BascetAggregateQUAST()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateQUAST.md)
   : Aggregate data from QUAST This is a thin wrapper around
   BascetAggregateMap
+
 - [`BascetAlignToReference()`](https://henriksson-lab.github.io/zorn/reference/BascetAlignToReference.md)
   : Align from FASTQ, generate sorted and indexed BAM file
+
 - [`BascetAlignmentToBigwig()`](https://henriksson-lab.github.io/zorn/reference/BascetAlignmentToBigwig.md)
   : Generate a bigwig out of all reads in a sorted BAM. Note that the
   caller is responsible for sorting the BAM first
+
 - [`BascetBam2Fragments()`](https://henriksson-lab.github.io/zorn/reference/BascetBam2Fragments.md)
   : Take aligned BAM file and produce Fragments.tsv.gz, compatible with
   Signac ATAC-seq style analysis
+
 - [`BascetCacheComputation()`](https://henriksson-lab.github.io/zorn/reference/BascetCacheComputation.md)
   : A wrapper to cache a computation. Put your function in as an
   argument, as R will only compute its value if needed. If the cache
   file exist, it will not be run again
+
 - [`BascetCellNames()`](https://henriksson-lab.github.io/zorn/reference/BascetCellNames.md)
   : Get list of cells in a Bascet
+
 - [`BascetCellNames_withstreamer()`](https://henriksson-lab.github.io/zorn/reference/BascetCellNames_withstreamer.md)
   : Get list of cells in a Bascet – streamer provided
+
 - [`BascetComputeCountSketch()`](https://henriksson-lab.github.io/zorn/reference/BascetComputeCountSketch.md)
   : Compute count sketch for each cell. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetComputeMinhash()`](https://henriksson-lab.github.io/zorn/reference/BascetComputeMinhash.md)
   : Compute minhashes for each cell. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetCountChrom()`](https://henriksson-lab.github.io/zorn/reference/BascetCountChrom.md)
   : From aligned BAM file, compute counts per chromosome
+
 - [`BascetCountFeature()`](https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.md)
   : From aligned BAM file, compute counts per feature
+
 - [`BascetDumpContigs()`](https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.md)
   : Store all contigs in an output directory, as cell_id.fa
+
 - [`BascetFilterAlignment()`](https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.md)
   : Filter an alignment (BAM-file).
+
 - [`BascetGatherCountSketch()`](https://henriksson-lab.github.io/zorn/reference/BascetGatherCountSketch.md)
   : Gather all count sketches into a single count sketch matrix
+
 - [`BascetGetRaw()`](https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.md)
-  : Generate BAM with barcodes from input raw FASTQ
+  : Extract barcodes and trim input raw FASTQ
+
 - [`BascetIndexGenomeBWA()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWA.md)
   : Index a genome using BWA such that it can be used for alignment
+
 - [`BascetIndexGenomeSTAR()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeSTAR.md)
   : Index a genome using STAR such that it can be used for alignment
+
 - [`BascetInstance()`](https://henriksson-lab.github.io/zorn/reference/BascetInstance.md)
   : Create a new bascet instance. For advanced users only
+
 - [`BascetListFilesForCell()`](https://henriksson-lab.github.io/zorn/reference/BascetListFilesForCell.md)
   : List files for a cell in a Bascet
+
 - [`BascetLoadCountSketchMatrix()`](https://henriksson-lab.github.io/zorn/reference/BascetLoadCountSketchMatrix.md)
   : Load count sketch matrix as Seurat object
+
 - [`BascetMakeKrakenCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/BascetMakeKrakenCountMatrix.md)
   : Produce a count matrix of taxonomy IDs from KRAKEN output
+
 - [`BascetMakeMinhashHistogram()`](https://henriksson-lab.github.io/zorn/reference/BascetMakeMinhashHistogram.md)
   : Gather all minhashes into a single histogram file
+
 - [`BascetMapCell()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)
   : Call a MAP function for all cells
+
 - [`BascetMapCellAMRfinder()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellAMRfinder.md)
   : Run AMRfinder on contigs of all cells. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetMapCellAbricate()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellAbricate.md)
   : Run Abricate on contigs of all cells. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetMapCellAriba()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellAriba.md)
   : Run Ariba on reads of all cells. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetMapCellBakta()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellBakta.md)
   : Run Bakta on contigs of all cells. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetMapCellFASTQC()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellFASTQC.md)
   : Run FASTQC on reads of all cells. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetMapCellGECCO()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellGECCO.md)
   : Run GEECCO on contigs of all cells. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetMapCellQUAST()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.md)
   : Run QUAST on reads of all cells. This is a thin wrapper around
   BascetMapCell
+
 - [`BascetMapTransform()`](https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.md)
   : Transform data
+
 - [`BascetQueryFq()`](https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.md)
   : Build count table from FASTQ reads and a list of selected kmers
+
 - [`BascetReadFile()`](https://henriksson-lab.github.io/zorn/reference/BascetReadFile.md)
   : Read one file from a Bascet
+
 - [`BascetReadMinhashHistogram()`](https://henriksson-lab.github.io/zorn/reference/BascetReadMinhashHistogram.md)
   : Read histogram of KMERs, the output of BascetMakeMinhashHistogram
+
 - [`BascetRunCellSNP()`](https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.md)
   : Align from FASTQ, generate sorted and indexed BAM file
+
 - [`BascetRunFASTP()`](https://henriksson-lab.github.io/zorn/reference/BascetRunFASTP.md)
   : Run FASTP for each cell. Input must be in FASTQ file format
+
 - [`BascetRunKraken()`](https://henriksson-lab.github.io/zorn/reference/BascetRunKraken.md)
   : Run KRAKEN2 for each cell
+
 - [`BascetShardify()`](https://henriksson-lab.github.io/zorn/reference/BascetShardify.md)
   : Take debarcoded reads, merge them, and split them into suitable
   numbers of shards.
-- [`BascetShardifyOld()`](https://henriksson-lab.github.io/zorn/reference/BascetShardifyOld.md)
-  : Take debarcoded reads and split them into suitable numbers of
-  shards.
+
 - [`ChooseInformativeKMERs()`](https://henriksson-lab.github.io/zorn/reference/ChooseInformativeKMERs.md)
   : Pick random KMERs from KMC3 database. The choice is among KMERs
   within a frequency range
+
 - [`ChromToSpeciesCount()`](https://henriksson-lab.github.io/zorn/reference/ChromToSpeciesCount.md)
   : Produce a count matrix on strain level
+
 - [`CloseBascet()`](https://henriksson-lab.github.io/zorn/reference/CloseBascet.md)
   : Close a Bascet file.
+
 - [`CountDataFrameToSparseMatrix()`](https://henriksson-lab.github.io/zorn/reference/CountDataFrameToSparseMatrix.md)
   : Count entries in long format data frame and return as a sparse
   matrix
+
 - [`CountGrangeFeatures()`](https://henriksson-lab.github.io/zorn/reference/CountGrangeFeatures.md)
   : Obtain a feature matrix (as seurat object) given an seurat object
   having Fragments associated
+
 - [`CreateSeuratObjectWithReduction()`](https://henriksson-lab.github.io/zorn/reference/CreateSeuratObjectWithReduction.md)
   : Create a seurat object from e.g. count sketch reduction
+
 - [`DebarcodedKneePlot()`](https://henriksson-lab.github.io/zorn/reference/DebarcodedKneePlot.md)
   : Produce summary kneeplot given debarcoded statistics
+
 - [`DetectRawFileMeta()`](https://henriksson-lab.github.io/zorn/reference/DetectRawFileMeta.md)
   : Detect metadata for raw input FASTQ files
+
 - [`DownloadDatabaseAMRfinder()`](https://henriksson-lab.github.io/zorn/reference/DownloadDatabaseAMRfinder.md)
   : Download a database for AMRfinder
+
 - [`DownloadDatabaseAriba()`](https://henriksson-lab.github.io/zorn/reference/DownloadDatabaseAriba.md)
   : Download database for Ariba
+
 - [`DownloadDatabaseBakta()`](https://henriksson-lab.github.io/zorn/reference/DownloadDatabaseBakta.md)
   : Download a database for Bakta
+
 - [`FragmentCountsPerChrom()`](https://henriksson-lab.github.io/zorn/reference/FragmentCountsPerChrom.md)
   : From a Signac chromatin assay with fragments, for each cell, count
   how many reads per chromosome
+
 - [`FragmentCountsPerChromAssay()`](https://henriksson-lab.github.io/zorn/reference/FragmentCountsPerChromAssay.md)
   : From a Signac chromatin assay with fragments, for each cell, count
   how many reads per chromosome. This function directly returns an assay
   that can be added to a Seurat multimodal object
+
 - [`FragmentsToSignac()`](https://henriksson-lab.github.io/zorn/reference/FragmentsToSignac.md)
   : From a fragments file, get a chromatin assay for Signac.
+
 - [`GetBascetTempDir()`](https://henriksson-lab.github.io/zorn/reference/GetBascetTempDir.md)
   : Get a temp directory to use; need to be created
+
 - [`GetDefaultBascetInstance()`](https://henriksson-lab.github.io/zorn/reference/GetDefaultBascetInstance.md)
   : Get default Bascet instance from global variable
   (bascetInstance.default)
+
 - [`GetDefaultBascetRunner()`](https://henriksson-lab.github.io/zorn/reference/GetDefaultBascetRunner.md)
   : Get the current default runner
+
 - [`GetFASTQCassembledDF()`](https://henriksson-lab.github.io/zorn/reference/GetFASTQCassembledDF.md)
   : Get a data frame for one type of FASTQ statistics across across all
   cells
+
 - [`GetFASTQCbasicStats()`](https://henriksson-lab.github.io/zorn/reference/GetFASTQCbasicStats.md)
   : From aggregated FASTQC data, get basic statistics for overlay on
   UMAP etc
+
 - [`GetFASTQCpassfailStats()`](https://henriksson-lab.github.io/zorn/reference/GetFASTQCpassfailStats.md)
   : From aggregated FASTQC data, get overall pass-fail statistics for
   overlay on UMAP etc
+
 - [`KneeplotPerSpecies()`](https://henriksson-lab.github.io/zorn/reference/KneeplotPerSpecies.md)
   : Produce a kneeplot
+
 - [`KrakenFindConsensusTaxonomy()`](https://henriksson-lab.github.io/zorn/reference/KrakenFindConsensusTaxonomy.md)
   : For a KRAKEN2 count matrix, return consensus taxID for each cell as
   metadata
+
 - [`KrakenKneePlot()`](https://henriksson-lab.github.io/zorn/reference/KrakenKneePlot.md)
   : Take a KRAKEN2 adata object and generate per-species kneeplots
+
 - [`KrakenSpeciesDistribution()`](https://henriksson-lab.github.io/zorn/reference/KrakenSpeciesDistribution.md)
   : Using a KRAKEN2 count matrix, produce a "kneeplot" of species
+
 - [`ListDatabaseAbricate()`](https://henriksson-lab.github.io/zorn/reference/ListDatabaseAbricate.md)
   : List installed databases available for Abricate
+
 - [`LocalRunner()`](https://henriksson-lab.github.io/zorn/reference/LocalRunner.md)
   : Create new local runner instance
+
 - [`MapCellMultiListAsDataFrame()`](https://henriksson-lab.github.io/zorn/reference/MapCellMultiListAsDataFrame.md)
   : Convenience function; alternative is to somehow implement
   as.data.frame
+
 - [`MapListAsDataFrame()`](https://henriksson-lab.github.io/zorn/reference/MapListAsDataFrame.md)
   : Convenience function; alternative is to somehow implement
   as.data.frame.
+
 - [`NoRunner()`](https://henriksson-lab.github.io/zorn/reference/NoRunner.md)
   : Create new no-runner instance, used for debugging
+
 - [`OpenBascet()`](https://henriksson-lab.github.io/zorn/reference/OpenBascet.md)
   : Open a Bascet, prepare it for reading individual files
+
 - [`PlotFASTQCadapterContent()`](https://henriksson-lab.github.io/zorn/reference/PlotFASTQCadapterContent.md)
   : From aggregated FASTQC data, plot adapter content
+
 - [`PlotHistogram()`](https://henriksson-lab.github.io/zorn/reference/PlotHistogram.md)
   : Plot a histogram, loaded by ReadHistogram
+
 - [`PlotJohnsonLindenstraussMinDim()`](https://henriksson-lab.github.io/zorn/reference/PlotJohnsonLindenstraussMinDim.md)
   : Plot minimum number of dimensions needed to retain distance between
   samples
+
 - [`PrepareSharding()`](https://henriksson-lab.github.io/zorn/reference/PrepareSharding.md)
-  : Prepare to shard reads by collecting statistics about each barcode,
-  and filtering out cells with few reads
+  :
+
+  \############################################### \#' Take debarcoded
+  reads and split them into suitable numbers of shards. \#' \#' The
+  reads from one cell is guaranteed to only be present in a single
+  shard. \#' This makes parallel processing simple as each shard can be
+  processed on \#' a separate computer. Using more shards means that
+  more computers can be used. \#' \#' If you perform all the
+  calculations on a single computer, having more \#' than one shard will
+  not result in a speedup. This option is only relevant \#' when using a
+  cluster of compute nodes. \#' \#' \#' \#' TODO if we have multiple
+  input samples, is there a way to group them? \#' otherwise we will be
+  reading more input files than needed. that said, \#' if we got an
+  index, so if list of cells specified, it is possible to quickly figure
+  out \#' out if a file is needed at all for a merge \#' \#' TODO
+  Figuring out if a file is needed can be done at "planning" (Zorn)
+  stage \#' \#' TODO seems faster to have a single merger that writes
+  multiple output files if \#' cell list is not provided. if the
+  overhead is accepted then read all input files and \#' discard cells
+  on the fly \#' \#' @param inputName Name of input file: Debarcoded
+  reads \#' @param outputName Name of the output file: Properly sharded
+  debarcoded reads \#' \#' @return A job to be executed, or being
+  executed, depending on runner settings \#' @export BascetShardifyOld
+  \<- function( bascetRoot, inputName="debarcoded", includeCells=NULL,
+  \############# TODO: get rid of this parameter; only support direct
+  merging numOutputShards=1, outputName="filtered", overwrite=FALSE,
+  runner=GetDefaultBascetRunner(),
+  bascetInstance=GetDefaultBascetInstance() ) input_shards \<-
+  detectShardsForFile(bascetRoot, inputName) if(length(input_shards)==0)
+  stop("Found no input files") \#Include all cells if nothing else
+  provided if(is.null(includeCells)) includeCells \<-
+  BascetCellNames(bascetRoot, inputName, bascetInstance=bascetInstance)
+  includeCells \<- unique(includeCells\$cell) \#when shardifying, we
+  expect cells to appear more than once – could warn for other commands!
+  print(paste("Including all the",length(includeCells), "cells"))
+  \#Figure out which cell goes into which shard list_cell_for_shard \<-
+  shellscriptSplitArrayIntoListRandomly(includeCells, numOutputShards)
+  \#Figure out input and output file names inputFiles \<-
+  file.path(bascetRoot, input_shards) outputFiles \<-
+  makeOutputShardNames(bascetRoot, outputName, "tirp.gz",
+  numOutputShards) if(bascetCheckOverwriteOutput(outputFiles,
+  overwrite)) \#Produce the script and run the job RunJob( runner =
+  runner, jobname = "Z_shardify", bascetInstance = bascetInstance, cmd =
+  c( \#shellscript_set_tempdir(bascetInstance),
+  shellscriptMakeBashArray("files_out", outputFiles),
+
+       ### Abort early if needed if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"), shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard), paste( bascetInstance@prependCmd, bascetInstance@bin, "shardify", "-t $BASCET_TEMPDIR", "-i",shellscriptMakeCommalist(inputFiles), #Need to give all input files for each job "-o ${files_out[$TASK_ID]}", #Each job produces a single output "--cells=$CELLFILE" #Each job takes its own list of cells ), "rm $CELLFILE" ), arraysize = numOutputShards ) 
+
+  else new_no_job() Prepare to shard reads by collecting statistics
+  about each barcode, and filtering out cells with few reads
+
 - [`ReadBascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/ReadBascetCountMatrix.md)
   : Read a count matrix as produced by Bascet (hdf5 format). This can be
   output from both BascetQueryFq and BascetCountChrom
+
 - [`ReadCellSNPmatrix()`](https://henriksson-lab.github.io/zorn/reference/ReadCellSNPmatrix.md)
   : Read a count matrix as produced by CellSNP, but as shards
+
 - [`ReadHistogram()`](https://henriksson-lab.github.io/zorn/reference/ReadHistogram.md)
   : Read the count histogram associated with a Bascet. Not all Bascets
   have one, but it is typically produced after debarcoding
+
 - [`SetTaxonomyNamesFeatures()`](https://henriksson-lab.github.io/zorn/reference/SetTaxonomyNamesFeatures.md)
   : Take a KRAKEN2 count matrix where the column is the taxonomyID.
   Convert to a matrix where the columns instead are the names of each
   taxonomy. Unused taxonomyID columns will not be kept
+
 - [`ShowFASTQCforCell()`](https://henriksson-lab.github.io/zorn/reference/ShowFASTQCforCell.md)
   : Show the FASTQC HTML report for a cell, in the available web browser
+
 - [`SlurmRunner()`](https://henriksson-lab.github.io/zorn/reference/SlurmRunner.md)
   : Create a runner that submits jobs to SLURM
+
 - [`SpeciesCorrMatrix()`](https://henriksson-lab.github.io/zorn/reference/SpeciesCorrMatrix.md)
   : TODO is this function used? export
+
 - [`TabixGetFragmentsSeqs()`](https://henriksson-lab.github.io/zorn/reference/TabixGetFragmentsSeqs.md)
   : Using Tabix, get list of sequences in a fragment file
+
 - [`TestBascetInstance()`](https://henriksson-lab.github.io/zorn/reference/TestBascetInstance.md)
   : Check if a Bascet instance works
+
 - [`aggr.abricate()`](https://henriksson-lab.github.io/zorn/reference/aggr.abricate.md)
   : Callback function for aggregating ABRicate data for each cell. To be
   called from BascetAggregateMap
+
 - [`aggr.amrfinder()`](https://henriksson-lab.github.io/zorn/reference/aggr.amrfinder.md)
   : Callback function for aggregating ABRicate data for each cell. To be
   called from BascetAggregateMap
+
 - [`aggr.ariba()`](https://henriksson-lab.github.io/zorn/reference/aggr.ariba.md)
   : Callback function for aggregating ARIBA data for each cell. To be
   called from BascetAggregateMap
+
 - [`aggr.fastqc()`](https://henriksson-lab.github.io/zorn/reference/aggr.fastqc.md)
   : Callback function for aggregating FASTQC data for each cell. To be
   called from BascetAggregateMap
+
 - [`aggr.gecco()`](https://henriksson-lab.github.io/zorn/reference/aggr.gecco.md)
   : Callback function for aggregating GECCO data for each cell. To be
   called from BascetAggregateMap
+
 - [`aggr.minhash()`](https://henriksson-lab.github.io/zorn/reference/aggr.minhash.md)
   : Callback function for aggregating min-hashes for each cell. To be
   called from BascetAggregateMap
+
 - [`aggr.quast()`](https://henriksson-lab.github.io/zorn/reference/aggr.quast.md)
   : Callback function for aggregating QUAST data. To be called from
   BascetAggregateMap
+
 - [`aggr.rawtext()`](https://henriksson-lab.github.io/zorn/reference/aggr.rawtext.md)
   : Callback function for just getting raw file contents To be called
   from BascetAggregateMap
+
+- [`assembleBascetCommand()`](https://henriksson-lab.github.io/zorn/reference/assembleBascetCommand.md)
+  : Prepare Bascet command given arguments
+
 - [`bascetCheckOverwriteOutput()`](https://henriksson-lab.github.io/zorn/reference/bascetCheckOverwriteOutput.md)
   : Detect metadata for raw input FASTQ files
+
 - [`detectShardsForFile()`](https://henriksson-lab.github.io/zorn/reference/detectShardsForFile.md)
   : Helper function: Figure out which shards belong together given root
   input name and extension i.e. root/name.##.ext
+
 - [`extractstreamerExit()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerExit.md)
   : extract streamer: end an instance. the object should no longer be
   used after calling this function
+
 - [`extractstreamerExtractTo()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerExtractTo.md)
   : extract streamer: extract to external file
+
 - [`extractstreamerListCellsAnyFile()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerListCellsAnyFile.md)
   : extract streamer: list all cells in a given file
+
 - [`extractstreamerLs()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerLs.md)
   : extract streamer: list all files in current Bascet zip-file
+
 - [`extractstreamerOpen()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerOpen.md)
   : extract streamer: set which file is open
+
 - [`extractstreamerReadNLines()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerReadNLines.md)
   : extract streamer: helper function to read N lines
+
 - [`extractstreamerReadOneLine()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerReadOneLine.md)
   : extract streamer: helper function to read one line
+
 - [`extractstreamerShowtext()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerShowtext.md)
   : extract streamer: get content of file, assumed to be text (or this
   function crashes)
+
 - [`extractstreamerStart()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerStart.md)
   : extract streamer: create an instance
+
 - [`getBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/getBascetDockerImage.md)
   : Get and install a Bascet docker image. It will be cached to avoid
   downloading it each the time the function is called
+
 - [`getBascetSingularityImage()`](https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.md)
   : Get a Bascet image (singularity or docker). It will be cached in the
   provided directory to avoid downloading it each the time the function
   is called
+
 - [`getFastqR2fromR1()`](https://henriksson-lab.github.io/zorn/reference/getFastqR2fromR1.md)
   : Get corresponding R2 file. Assumes that the input file is R1
+
 - [`is.bascet.file()`](https://henriksson-lab.github.io/zorn/reference/is.bascet.file.md)
   : Check that parameter is a valid bascet file
+
 - [`is.bascet.instance()`](https://henriksson-lab.github.io/zorn/reference/is.bascet.instance.md)
   : Check that parameter is a valid bascet instance
+
 - [`is.existing.fasta()`](https://henriksson-lab.github.io/zorn/reference/is.existing.fasta.md)
   : Check that parameter is a valid shard name
+
 - [`is.integer.like()`](https://henriksson-lab.github.io/zorn/reference/is.integer.like.md)
   : Check that parameter is castable to an integer
+
 - [`is.numeric(`*`<range01>`*`)`](https://henriksson-lab.github.io/zorn/reference/is.numeric.range01.md)
   : Check that parameter is a number between 0..1
+
 - [`is.positive.integer()`](https://henriksson-lab.github.io/zorn/reference/is.positive.integer.md)
   : Check that parameter is an integer and \>0
+
 - [`is.runner()`](https://henriksson-lab.github.io/zorn/reference/is.runner.md)
   : Check that parameter is a valid runner
+
 - [`is.streamer()`](https://henriksson-lab.github.io/zorn/reference/is.streamer.md)
   : Check that parameter is a valid streamer
+
 - [`is.valid.env.variable()`](https://henriksson-lab.github.io/zorn/reference/is.valid.env.variable.md)
   : Check that parameter is a valid environment variable name
+
 - [`is.valid.listcells()`](https://henriksson-lab.github.io/zorn/reference/is.valid.listcells.md)
   : Check that parameter is a valid list of cells
+
 - [`is.valid.shardname()`](https://henriksson-lab.github.io/zorn/reference/is.valid.shardname.md)
   : Check that parameter is a valid shard name
+
 - [`is.valid.threadcount()`](https://henriksson-lab.github.io/zorn/reference/is.valid.threadcount.md)
   : Check that parameter is a valid thread count
+
 - [`isBamPairedAlignment()`](https://henriksson-lab.github.io/zorn/reference/isBamPairedAlignment.md)
   : Figure out if a BAM-file is a paired alignment or not
+
 - [`isFastq()`](https://henriksson-lab.github.io/zorn/reference/isFastq.md)
   : Check if a file is a FASTQ file
+
 - [`isPairedFastq()`](https://henriksson-lab.github.io/zorn/reference/isPairedFastq.md)
   : Check if a file is a paired FASTQ file. Panics if the file is not a
   FASTQ at all
+
 - [`lseq()`](https://henriksson-lab.github.io/zorn/reference/lseq.md) :
   logarithmic spaced sequence; taken from emdbook library
+
 - [`makeOutputShardNames()`](https://henriksson-lab.github.io/zorn/reference/makeOutputShardNames.md)
   : Helper function: Generate suitable output filenames according to
   shard system i.e. root/name.##.ext
+
 - [`new_no_job()`](https://henriksson-lab.github.io/zorn/reference/new_no_job.md)
   : Create an empty job. It is considered to have terminated from the
   start
+
+- [`parse_size_to_bytes()`](https://henriksson-lab.github.io/zorn/reference/parse_size_to_bytes.md)
+  : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
+
 - [`removeBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.md)
   : Remove current Bascet docker image
+
 - [`safeDownloadMD5()`](https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.md)
   : Download a file, check MD5 to ensure success. This assumes a
   file.md5 is stored on the server
+
 - [`shellscriptCancelJobIfFileExists()`](https://henriksson-lab.github.io/zorn/reference/shellscriptCancelJobIfFileExists.md)
   : Create a piece of script to exit a job early if file exists
+
 - [`shellscriptMakeBashArray()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeBashArray.md)
   : Helper function: Create array of values in bash scripts example:
   myArray=("cat" "dog" "mouse" "frog")
+
 - [`shellscriptMakeCommalist()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeCommalist.md)
   : Helper function, taking a list of elements such as a,b, and
   returning "a,b"
+
 - [`shellscriptMakeFilesExpander()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeFilesExpander.md)
   : Generate a shell script command to produce a file of list of strings
+
 - [`shellscriptMakeOneFileExpander()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeOneFileExpander.md)
   : Helper function that takes content of a list and generates a BASH
   script that stores the content in a temporary file during execution
+
 - [`shellscriptSplitArrayIntoListRandomly()`](https://henriksson-lab.github.io/zorn/reference/shellscriptSplitArrayIntoListRandomly.md)
   : Helper function to take an array of elements and split it randomly
   into a number of subset lists

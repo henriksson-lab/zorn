@@ -1,6 +1,6 @@
-# Generate BAM with barcodes from input raw FASTQ
+# Extract barcodes and trim input raw FASTQ
 
-Generate BAM with barcodes from input raw FASTQ
+Extract barcodes and trim input raw FASTQ
 
 ## Usage
 
@@ -8,6 +8,7 @@ Generate BAM with barcodes from input raw FASTQ
 BascetGetRaw(
   bascetRoot,
   rawmeta,
+  maxShardSize = "50g",
   outputName = "debarcoded",
   outputNameIncomplete = "incomplete_reads",
   chemistry = c("atrandi-wgs", "atrandi-rnaseq", "parse-bio"),
@@ -29,6 +30,12 @@ BascetGetRaw(
 - rawmeta:
 
   Metadata for the raw FASTQ input files. See DetectRawFileMeta
+
+- maxShardSize:
+
+  Estimated maximum size of output shard. Can be set higher but as
+  sorting is also performed during sharding, it can be overall more
+  efficient to only do partial sorting during this command
 
 - outputName:
 
