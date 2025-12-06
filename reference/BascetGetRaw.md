@@ -15,6 +15,8 @@ BascetGetRaw(
   subchemistry = NULL,
   barcodeTolerance = NULL,
   numLocalThreads = NULL,
+  bufferSize = 4000,
+  sortBufferSize = 4000,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
