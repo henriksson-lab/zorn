@@ -635,7 +635,7 @@ extractstreamerStart <- function(
       "extract-stream",
       if(!is.null(fname)) paste0("-i=",fname)
     ))
-  ))
+  )
   
   #Get home variable. will be "" if empty
   env_home <- Sys.getenv("HOME") 
