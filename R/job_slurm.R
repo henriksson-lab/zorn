@@ -292,6 +292,40 @@ setMethod(
 )
 
 
+
+
+#' @export
+setMethod(
+  f = "JobStatus",
+  signature ="SlurmJob",
+  definition = function(job) {
+    
+    ret <- system(paste("sacct -j",job@pid, "-o jobid,state"), intern = TRUE)
+    ret <- ret[-c(1:2)]  #This are the lines " jobid state " and "-----"
+    
+    #split columns
+    info <- as.data.frame(stringr::str_split_fixed(stringr::str_trim(ret),"[ ]+",2))
+    colnames(info) <- c("proc","status")
+    
+    #split jobid[..] and jobid_.. into two columns
+    divproc <- stringr::str_split_fixed(info$proc,"[_\\.]",2)
+    info$proc <- divproc[,1]
+    info$num <- divproc[,2]
+    
+    #Correct cropped labels
+    info$status[stringr::str_starts(info$status,"CANC")] <- "CANCELLED"
+    info$status[stringr::str_starts(info$status,"RUN")] <- "RUNNING"
+    info$status[stringr::str_starts(info$status,"FAIL")] <- "FAILED"
+    info$status[stringr::str_starts(info$status,"OUT_OF_ME")] <- "OUT_OF_MEM"
+    
+    info
+  }
+)
+
+
+
+
+
 #Has possibility of ctrl+c; just keeps polling, possibly with a status indicator from log. or keep plotting log file
 #' @export
 setMethod(
@@ -305,35 +339,72 @@ setMethod(
       format = "{cli::pb_bar} {cli::pb_percent} | {cur_summary}"
     )
     
+    #Because SLURM info is emptied overnight, we need to keep old info,
+    #or it will get lost
+    last_info <- NULL
+    
     while(TRUE) {
-      info <- JobStatus(job)
+      info <- JobStatus(job)[,c("status","num")]
       
-      if(nrow(info)==0){
+      #Merge new info with last info. Only keep the latest entries
+      info <- rbind(info, last_info)
+      info <- info[!duplicated(info$num),] #remove older entries
+      
+      #For each expected job in the array, figure out it's status
+      current_state <- rep("PENDING",job@arraysize) ## keep outside??
+      
+      for(i in 1:nrow(info)) {
+        this_num <- info$num[i]
+        if(this_num=="[0]") {
+          #This is the entry for the batch array as a whole
+          if(info$status=="CANCELLED") {
+            current_state[1:job@arraysize] <- "CANCELLED"
+          }
+        } else {
+          
+          #check if string is numeric
+          if(grepl("[0123456789]+$",this_num)) {
+            
+            #This is an individual index into the array
+            slurm_index <- as.integer(this_num)
+            current_state[slurm_index] <- info$status[i]
+            
+          } else {
+            #this might be a weird entry such as 35556921_0.+  ; not sure what to make of these
+          }
+        }
+      }
+      
+      if(nrow(info)==0) {
+        #If we are extremely unlucky, this can suddenly happen overnight while waiting for jobs to be done
+        
+        #todo should likely keep status outside loop TODO
+        
         #print("Waiting to start")  
         cur_summary <- "Waiting for SLURM job to start"
         cli::cli_progress_update(set = 0)
         Sys.sleep(5)
       } else {
-        if(all(info$status=="COMPLETED")){
+        
+        if(all(current_state=="COMPLETED")){
           break;
         } else {
           #print(info$status)
           
-          #TODO: list only jobs starting with #_#" "  ; no . in it!   then no need for /2 below
-          
-          
-          num_total <- job@arraysize
+          #Count number of jobs of each type
+          num_total <- nrow(info)
           num_running <- floor(sum(info$status=="RUNNING")/2)
-          num_completed <- floor(sum(info$status=="COMPLETED")/2)  ### for some reason, these are reported twice.. ish
-          num_failed <- floor(sum(info$status=="FAILED")/2)  ### for some reason, these are reported twice.. ish ?
-          num_outofmem <- floor(sum(stringr::str_starts(info$status,"OUT_OF_ME"))/2)  ### for some reason, these are reported twice.. ish ?
-          num_cancelled <- floor(sum(info$status=="CANCELLED")/2)  ### for some reason, these are reported twice.. ish ?
+          num_completed <- floor(sum(info$status=="COMPLETED")) 
+          num_failed <- floor(sum(info$status=="FAILED"))
+          num_outofmem <- floor(sum(info$status=="OUT_OF_MEM"))
+          num_cancelled <- floor(sum(info$status=="CANCELLED"))
           
-
+          #TODO: could also paste separate entries
+          
           cur_summary <- paste0(
             job@pid," ",
             job@jobname,"   ",
-            "Total to run: ",num_total,"   ",
+            "To run: ",num_total,"   ",
             "Completed: ",num_completed,"   ",
             "Running: ",num_running,"   ",
             "Failed: ", num_failed,"   ",
@@ -341,14 +412,19 @@ setMethod(
             "Out-of-mem: ", num_outofmem
           )
           cli::cli_progress_update(set = num_completed)
-
+          
           Sys.sleep(5)
         }
       }
     }
-      
+    
   }
 )
+
+# job <- createSlurmJobFromExisting(35556921,2)
+# JobStatus(job)
+# WaitForJob(job)
+
 
 
 
@@ -366,23 +442,6 @@ setMethod(
 
 
 
-#' @export
-setMethod(
-  f = "JobStatus",
-  signature ="SlurmJob",
-  definition = function(job) {
-    # sacct -j JOBID -o jobid,submit,start,end,state
-    
-#    ret <- system(paste("sacct -j",job@pid), intern = TRUE)
-#    print(ret)
-    
-    ret <- system(paste("sacct -j",job@pid, "-o state"), intern = TRUE)
-    ret <- ret[-c(1:2)]  #This is " state " and "-----"
-    status <- stringr::str_remove_all(ret, " ")  
-    data.frame(status=status) #, chard=1
-  }
-)
-
 
 #' @export
 setMethod(
@@ -398,10 +457,16 @@ setMethod(
 
 
 ###############################################
-# This creates a job object, linking to a running command.
-# Mainly used for development but can be used in case
-# a Zorn session died and you want to create a new
-# monitor
+#' This creates a job object, linking to a running command.
+#' Mainly used for development but can be used in case
+#' a Zorn session died and you want to create a new
+#' monitor
+#' 
+#' @param pid Process ID
+#' @param arraysize Size of array (must be known)
+#' @return A SLURM job object
+#' 
+#' @export
 createSlurmJobFromExisting <- function(pid, arraysize) {
   new(
     "SlurmJob",
