@@ -214,9 +214,9 @@ BascetMakeKrakenCountMatrix <- function(
 
         assembleBascetCommand(bascetInstance, c(
           "kraken",
-          "-t $BASCET_TEMPDIR",
-          "-i ${files_in[$TASK_ID]}",
-          "-o ${files_out[$TASK_ID]}"
+          "-t=$BASCET_TEMPDIR",
+          "-i=${files_in[$TASK_ID]}",
+          "-o=${files_out[$TASK_ID]}"
         ))
       ),
       arraysize = num_shards

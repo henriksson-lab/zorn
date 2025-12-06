@@ -630,11 +630,11 @@ extractstreamerStart <- function(
   stopifnot(is.logical(verbose))
   
   #Assemble the command
-  all_cmd <- stringr::str_trim(paste(
-    bascetInstance@prependCmd,
-    bascetInstance@bin,
-    "extract-stream",
-    if(!is.null(fname)) c("-i",fname)
+  all_cmd <- stringr::str_trim(
+    assembleBascetCommand(bascetInstance, c(
+      "extract-stream",
+      if(!is.null(fname)) paste0("-i=",fname)
+    ))
   ))
   
   #Get home variable. will be "" if empty

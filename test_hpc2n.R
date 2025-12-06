@@ -12,7 +12,6 @@ if(FALSE){
   source("R/refgenome.R")
   source("R/kraken.R")
   source("R/container.R")
-  
 }
 
 

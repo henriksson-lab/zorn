@@ -350,11 +350,17 @@ safeDownloadMD5 <- function(
 #' 
 #' @return Bascet command to run as a string
 assembleBascetCommand <- function(bascetInstance, params) {
-  paste(
-    bascetInstance@prependCmd,
-    bascetInstance@bin,
-    "--log-path=$BASCET_LOGFILE",
-    params
+  tor <- stringr::str_flatten(collapse = " ",
+    c(
+      bascetInstance@prependCmd,
+      bascetInstance@bin,
+      "--log-path=$BASCET_LOGFILE",
+      params
+    )
   )
+#  print("///////////////")
+#  print(tor)
+#  print("///////////////")
+  tor
 }
 

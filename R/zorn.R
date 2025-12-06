@@ -250,7 +250,6 @@ BascetMapTransform <- function(
       jobname = "Z_transform",
       bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
         shellscriptMakeBashArray("files_in",inputFiles),
         shellscriptMakeBashArray("files_out",outputFiles),
         
@@ -261,9 +260,8 @@ BascetMapTransform <- function(
         assembleBascetCommand(bascetInstance, c(
           "transform",
           if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
-          #"-t $BASCET_TEMPDIR",  ##not supported
-          "-i ${files_in[$TASK_ID]}",
-          "-o ${files_out[$TASK_ID]}"
+          "-i=${files_in[$TASK_ID]}",
+          "-o=${files_out[$TASK_ID]}"
         ))
       ),
       arraysize = num_shards

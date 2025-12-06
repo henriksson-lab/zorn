@@ -99,9 +99,9 @@ BascetGatherCountSketch <- function(
       assembleBascetCommand(bascetInstance, c(
         "countsketch",
         if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
-        "-t $BASCET_TEMPDIR",
-        "-i", shellscriptMakeCommalist(inputFiles),
-        "-o", outputFile
+        "-t=$BASCET_TEMPDIR",
+        paste0("-i=", shellscriptMakeCommalist(inputFiles)),
+        paste0("-o=", outputFile)
       ))
     )
     

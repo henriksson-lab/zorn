@@ -204,7 +204,7 @@ setMethod(
     scriptcontent <- c(
       scriptcontent,
       "mkdir -p logs",
-      paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${TASK_ID}.log"))
+      paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${SLURM_ARRAY_TASK_ID}.log"))
     )
     
     ## Add the provided command
@@ -395,6 +395,23 @@ setMethod(
   }
 )
 
+
+
+###############################################
+# This creates a job object, linking to a running command.
+# Mainly used for development but can be used in case
+# a Zorn session died and you want to create a new
+# monitor
+createSlurmJobFromExisting <- function(pid, arraysize) {
+  new(
+    "SlurmJob",
+    pid=as.character(pid),
+    cmd="prevcmd", 
+    logfile="todo",
+    jobname="prevjob",
+    arraysize=arraysize
+  )
+}
 
 
 ####### testing

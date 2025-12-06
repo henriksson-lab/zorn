@@ -689,9 +689,9 @@ BascetBam2Fragments <- function(
         
         assembleBascetCommand(bascetInstance, c(
           "bam2fragments",
-          "-t $BASCET_TEMPDIR", #TODO =?
-          "-i ${files_in[$TASK_ID]}",  
-          "-o ${files_out[$TASK_ID]}"
+          "-t=$BASCET_TEMPDIR", 
+          "-i=${files_in[$TASK_ID]}",  
+          "-o=${files_out[$TASK_ID]}"
         ))
       ),
       arraysize = length(inputFiles)
@@ -767,9 +767,9 @@ BascetCountChrom <- function(
           "countchrom",
           paste0("--min-matching==",minMatching),
           if(removeDuplicates) "--remove-duplicates",
-          "-t $BASCET_TEMPDIR",
-          "-i ${files_in[$TASK_ID]}",  
-          "-o ${files_out[$TASK_ID]}"
+          "-t=$BASCET_TEMPDIR",
+          "-i=${files_in[$TASK_ID]}",  
+          "-o=${files_out[$TASK_ID]}"
         ))
       ),
       arraysize = length(inputFiles)
@@ -1088,13 +1088,13 @@ BascetCountFeature <- function(
         
         assembleBascetCommand(bascetInstance, c(
           "countfeature",
-          paste("-g", gffFile),
+          paste0("-g=", gffFile),
           paste0("--use-feature=", useFeature),
           paste0("--attr-id=", attrGeneId),
           paste0("--attr-name=", attrGeneName),
-          "-t $BASCET_TEMPDIR",
-          "-i ${files_in[$TASK_ID]}",  
-          "-o ${files_out[$TASK_ID]}"
+          "-t=$BASCET_TEMPDIR",
+          "-i=${files_in[$TASK_ID]}",  
+          "-o=${files_out[$TASK_ID]}"
         ))
       ),
       arraysize = length(inputFiles)

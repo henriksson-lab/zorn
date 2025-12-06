@@ -72,14 +72,13 @@ BascetMapCell <- function(
       ### Abort early if needed    
       if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
 
-      paste(
-        bascetInstance@prependCmd,
-        bascetInstance@bin, 
+      assembleBascetCommand(bascetInstance, c( 
         "mapcell",
-        "-t $BASCET_TEMPDIR",
-        "-i ${files_in[$TASK_ID]}",
-        "-o ${files_out[$TASK_ID]}",
-        "-s", withfunction)
+        "-t=$BASCET_TEMPDIR",
+        "-i=${files_in[$TASK_ID]}",
+        "-o=${files_out[$TASK_ID]}",
+        paste0("-s=", withfunction)
+      ))
     )
     
     #Run the job

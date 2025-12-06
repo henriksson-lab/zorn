@@ -110,10 +110,10 @@ BascetMakeMinhashHistogram <- function(
       if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
       assembleBascetCommand(bascetInstance, c(
         "minhash-hist",
-        if(produce_cell_list) "--cells ${CELLFILE[$TASK_ID]}",
-        "-t $BASCET_TEMPDIR",
-        "-i", shellscriptMakeCommalist(inputFiles),
-        "-o", outputFile
+        if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
+        "-t=$BASCET_TEMPDIR",
+        paste0("-i=", shellscriptMakeCommalist(inputFiles)),
+        paste0("-o=", outputFile)
       ))
     )
   
@@ -203,11 +203,11 @@ BascetQueryFq <- function( #666
         shellscriptMakeOneFileExpander("KMERFILE", useKMERs), 
         assembleBascetCommand(bascetInstance, c(
           "query-fq",
-          "-t $BASCET_TEMPDIR",
-          "-m ", format(maxReads, scientific=FALSE),
-          "-f $KMERFILE",
-          "-i ${files_in[$TASK_ID]}",
-          "-o ${files_out[$TASK_ID]}"
+          "-t=$BASCET_TEMPDIR",
+          paste0("-m=", format(maxReads, scientific=FALSE)),
+          "-f=$KMERFILE",
+          "-i=${files_in[$TASK_ID]}",
+          "-o=${files_out[$TASK_ID]}"
         ))
       ),
       arraysize = num_shards
