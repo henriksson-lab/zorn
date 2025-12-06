@@ -9,6 +9,8 @@ BascetShardify(
   numOutputShards = 1,
   outputName = "filtered",
   overwrite = FALSE,
+  bufferSize = 1500,
+  pageSize = 32,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
