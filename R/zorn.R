@@ -416,7 +416,6 @@ BascetRunFASTP <- function(
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
-  stopifnot(is.positive.integer(numDivide))
   stopifnot(is.valid.threadcount(numLocalThreads))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))

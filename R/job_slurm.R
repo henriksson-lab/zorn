@@ -353,31 +353,9 @@ setMethod(
       #For each expected job in the array, figure out it's status
       current_state <- rep("PENDING",job@arraysize) ## keep outside??
       
-      for(i in 1:nrow(info)) {
-        this_num <- info$num[i]
-        if(this_num=="[0]") {
-          #This is the entry for the batch array as a whole
-          if(info$status=="CANCELLED") {
-            current_state[1:job@arraysize] <- "CANCELLED"
-          }
-        } else {
-          
-          #check if string is numeric
-          if(grepl("[0123456789]+$",this_num)) {
-            
-            #This is an individual index into the array
-            slurm_index <- as.integer(this_num)
-            current_state[slurm_index] <- info$status[i]
-            
-          } else {
-            #this might be a weird entry such as 35556921_0.+  ; not sure what to make of these
-          }
-        }
-      }
-      
       if(nrow(info)==0) {
         #If we are extremely unlucky, this can suddenly happen overnight while waiting for jobs to be done
-        
+
         #todo should likely keep status outside loop TODO
         
         #print("Waiting to start")  
@@ -385,6 +363,31 @@ setMethod(
         cli::cli_progress_update(set = 0)
         Sys.sleep(5)
       } else {
+        
+        #Parse each line of info
+        for(i in 1:nrow(info)) {
+          this_num <- info$num[i]
+#          print(info)
+          if(this_num=="[0]") {
+            #This is the entry for the batch array as a whole
+            if(info$status=="CANCELLED") {
+              current_state[1:job@arraysize] <- "CANCELLED"
+            }
+          } else {
+            
+            #check if string is numeric
+            if(grepl("[0123456789]+$",this_num)) {
+              
+              #This is an individual index into the array
+              slurm_index <- as.integer(this_num)
+              current_state[slurm_index] <- info$status[i]
+              
+            } else {
+              #this might be a weird entry such as 35556921_0.+  ; not sure what to make of these
+            }
+          }
+        }        
+        
         
         if(all(current_state=="COMPLETED")){
           break;
