@@ -40,10 +40,10 @@ LocalRunner <- function(
     showScript=FALSE
 ){
   if(is.null(ncpu)) {
-    ncpu <- parallel::detectCores()
+    ncpu <- as.character(parallel::detectCores())
     if(is.na(ncpu)) {
       warning("Cannot detect number of CPU cores so it was set to 1. Set it manually instead")
-      ncpu <- 1
+      ncpu <- "1"
     }
     
   }
@@ -62,13 +62,15 @@ setMethod(
   definition = function(runner, jobname, bascetInstance, cmd, arraysize) { 
     print("Starting local job")
     
-    ## Decide on a tempdir location; different for each job
+    ## Decide on a tempdir location; different for each job. Ensure to create it
+    path_tempdir <- file.path(GetBascetTempDir(bascetInstance), "$TASK_ID")
     cmd <- c(
-      paste0("BASCET_TEMPDIR=",file.path(GetBascetTempDir(bascetInstance), "$TASK_ID")),
+      paste0("BASCET_TEMPDIR=",path_tempdir),
+      paste0("mkdir -p ",path_tempdir),
       cmd
     )
-    
-    ## Decide on a log location; different for each job
+
+    ## Decide on a log location; different for each job. Create the directory
     cmd <- c(
       "mkdir -p logs",
       paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${TASK_ID}.log")),

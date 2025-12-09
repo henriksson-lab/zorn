@@ -147,7 +147,6 @@ BascetGetRaw <- function(
     stop("No input files")
   }
   
-  
   #Set number of threads if not given
   if(is.null(numLocalThreads)) {
     numLocalThreads <- as.integer(runner@ncpu)
