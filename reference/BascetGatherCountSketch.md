@@ -11,6 +11,7 @@ BascetGatherCountSketch(
   outputName = "countsketch_mat.csv",
   includeCells = NULL,
   overwrite = FALSE,
+  numLocalThreads = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -38,6 +39,11 @@ BascetGatherCountSketch(
 
   Force overwriting of existing files. The default is to do nothing
   files exist
+
+- numLocalThreads:
+
+  Number of threads to use per job. Default is the number from the
+  runner
 
 - runner:
 

@@ -49,9 +49,6 @@
   : Get list of cells in a Bascet
 - [`BascetCellNames_withstreamer()`](https://henriksson-lab.github.io/zorn/reference/BascetCellNames_withstreamer.md)
   : Get list of cells in a Bascet – streamer provided
-- [`BascetComputeCountSketch()`](https://henriksson-lab.github.io/zorn/reference/BascetComputeCountSketch.md)
-  : Compute count sketch for each cell. This is a thin wrapper around
-  BascetMapCell
 - [`BascetComputeMinhash()`](https://henriksson-lab.github.io/zorn/reference/BascetComputeMinhash.md)
   : Compute minhashes for each cell. This is a thin wrapper around
   BascetMapCell
