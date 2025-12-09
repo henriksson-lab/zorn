@@ -495,6 +495,10 @@ BascetAlignToReference <- function(
   
   if(aligner=="BWA"){
     
+    if(!file.exists(useReference)){
+      stop("BWA reference file does not exist")
+    }
+    
     cmd_align <- paste(
       bascetInstance@prependCmd,
       "bash -c \"",
@@ -514,7 +518,10 @@ BascetAlignToReference <- function(
     
   } else if(aligner=="STAR") {
     
-
+    if(!dir.exists(useReference)){  ### TODO could also check contents of this dir
+      stop("STAR reference file does not exist")
+    }
+    
     cmd_mkdir_starlog <- paste(  ########## TODO delete all of this directory?
       paste("mkdir -p STARlog")
     )
@@ -574,7 +581,7 @@ BascetAlignToReference <- function(
     if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_final[$TASK_ID]}"),
     
     ### For alignment
-    "echo Aligning ${files_in_r1[$TASK_ID]} + ${files_in_r2[$TASK_ID]} ==> ${files_out_unsorted[$TASK_ID]}",
+    "echo Aligning ${files_in_r1[$TASK_ID]} + ${files_in_r2[$TASK_ID]} to ${files_out_unsorted[$TASK_ID]}",
     cmd_align
   )
   
@@ -586,14 +593,14 @@ BascetAlignToReference <- function(
       cmd,
       
       ### For sorting
-      "echo Sorting ${files_out_unsorted[$TASK_ID]}  ==>  ${files_out_sorted[$TASK_ID]}",
+      "echo Sorting ${files_out_unsorted[$TASK_ID]}  to  ${files_out_sorted[$TASK_ID]}",
       paste(
         bascetInstance@prependCmd,
-        "samtools sort", 
+        "/usr/bin/samtools sort", 
 #        "-f",                                 #Output file name is given as a whole (not prefix) -- other samtools version
         "-@",numLocalThreads,                 #Number of threads to use
         "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
-        "${files_out_sorted_pre[$TASK_ID]}"       #Each job produces a single output
+        "-o ${files_out_sorted[$TASK_ID]}"       #Each job produces a single output
 #        "${files_out_sorted[$TASK_ID]}"       #Each job produces a single output -- other samtools version
       ),
       
@@ -601,7 +608,7 @@ BascetAlignToReference <- function(
       "echo Indexing ${files_out_sorted[$TASK_ID]}",
       paste(
         bascetInstance@prependCmd,
-        "samtools index", 
+        "/usr/bin/samtools index", 
         "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
       )      
     )
@@ -765,7 +772,7 @@ BascetCountChrom <- function(
         
         assembleBascetCommand(bascetInstance, c(
           "countchrom",
-          paste0("--min-matching==",minMatching),
+          paste0("--min-matching=",minMatching),
           if(removeDuplicates) "--remove-duplicates",
           "-t=$BASCET_TEMPDIR",
           "-i=${files_in[$TASK_ID]}",  

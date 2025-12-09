@@ -28,7 +28,7 @@ BascetMapCell <- function(
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
-  stopifnot(is.function(withfunction))
+  stopifnot(is.character(withfunction))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.list(args))

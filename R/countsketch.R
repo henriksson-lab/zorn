@@ -1,49 +1,5 @@
 
 
-###############################################
-#' Compute count sketch for each cell.
-#' This is a thin wrapper around BascetMapCell
-#' 
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of input shard
-#' @param outputName Name of output shard
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param maxReads Max number of reads to sample per cell
-#' @param kmerSize Size of the KMER to hash
-#' @param sketchSize Number of dimensions to reduce to
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
-#' @return A job to be executed, or being executed, depending on runner settings
-#' @export
-BascetComputeCountSketch <- function( 
-    bascetRoot, 
-    inputName="filtered", 
-    outputName="countsketch", 
-    overwrite=FALSE,
-    maxReads=100000,  #for 5M genome, 150x2 reads, this is 6x coverage
-    kmerSize=31,
-    sketchSize=5000,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
-){
-  BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_countsketch_fq", 
-    inputName=inputName, 
-    outputName=outputName,
-    #includeCells=includeCells
-    args = list(
-      KMER_SIZE=format(kmerSize, scientific=FALSE),
-      sketchSize=format(sketchSize, scientific=FALSE),
-      MAX_READS=format(maxReads, scientific=FALSE)
-    ),
-    overwrite=overwrite,
-    runner=runner,
-    bascetInstance=bascetInstance)
-}
-
-
 
 
 ###############################################
@@ -54,6 +10,7 @@ BascetComputeCountSketch <- function(
 #' @param outputName Name of output file
 #' @param includeCells List of cells to process
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
@@ -67,9 +24,26 @@ BascetGatherCountSketch <- function(
     outputName="countsketch_mat.csv", 
     includeCells=NULL,
     overwrite=FALSE,
+    numLocalThreads=NULL,
+    
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
+  
+  #Set number of threads if not given
+  if(is.null(numLocalThreads)) {
+    numLocalThreads <- as.integer(runner@ncpu)
+  }
+  stopifnot(is.valid.threadcount(numLocalThreads))
+  
+  #Check input arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.character(outputName))
+  stopifnot(is.character(inputName))
+  #includeCells todo
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
   
   #Figure out input and output file names
   inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
@@ -99,7 +73,151 @@ BascetGatherCountSketch <- function(
       assembleBascetCommand(bascetInstance, c(
         "countsketch",
         if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
-        "-t=$BASCET_TEMPDIR",
+        paste0("-@=", numLocalThreads), 
+        paste0("-i=", shellscriptMakeCommalist(inputFiles)),
+        paste0("-o=", outputFile)
+      ))
+    )
+    
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = "bascet_get_countsketch",
+      bascetInstance = bascetInstance,
+      cmd = cmd,
+      arraysize = 1
+    )  
+  } else {
+    new_no_job()
+  }
+}
+
+
+
+
+
+
+
+###############################################
+#' Compute count sketch for each cell.
+#' This is a thin wrapper around BascetMapCell
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param maxReads Max number of reads to sample per cell
+#' @param kmerSize Size of the KMER to hash
+#' @param sketchSize Number of dimensions to reduce to
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
+#' @export
+BascetComputeCountSketch___OLD <- function( 
+    bascetRoot, 
+    inputName="filtered", 
+    outputName="countsketch", 
+    overwrite=FALSE,
+    maxReads=100000,  #for 5M genome, 150x2 reads, this is 6x coverage
+    kmerSize=31,
+    sketchSize=5000,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
+) {
+  BascetMapCell(
+    bascetRoot=bascetRoot, 
+    withfunction="_countsketch_fq", 
+    inputName=inputName, 
+    outputName=outputName,
+    #includeCells=includeCells
+    args = list(
+      KMER_SIZE=format(kmerSize, scientific=FALSE),
+      sketchSize=format(sketchSize, scientific=FALSE),
+      MAX_READS=format(maxReads, scientific=FALSE)
+    ),
+    overwrite=overwrite,
+    runner=runner,
+    bascetInstance=bascetInstance)
+}
+
+
+
+
+###############################################
+#' Gather all count sketches into a single count sketch matrix
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output file
+#' @param includeCells List of cells to process
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' TODO produce a binary file format instead; gather files upon loading?
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
+#' @export
+BascetGatherCountSketch__OLD <- function( 
+    bascetRoot, 
+    inputName="countsketch", 
+    outputName="countsketch_mat.csv", 
+    includeCells=NULL,
+    overwrite=FALSE,
+    
+    numLocalThreads=NULL,
+    
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
+){
+  
+  #Set number of threads if not given
+  if(is.null(numLocalThreads)) {
+    numLocalThreads <- as.integer(runner@ncpu)
+  }
+  stopifnot(is.valid.threadcount(numLocalThreads))
+  
+  #Check input arguments
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.character(outputName))
+  stopifnot(is.character(inputName))
+  #includeCells todo
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
+  
+  #Figure out input and output file names
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+  
+  if(num_shards==0){
+    stop("No input files")
+  }
+  
+  outputFile <- file.path(bascetRoot, outputName)
+  
+  #If cell list is provided, produce a file for input (not all transform calls can handle this, so optional)
+  produce_cell_list <- !is.null(includeCells)
+  if(produce_cell_list) {
+    #Currently using the same cell list for all shards (good idea?)
+    list_cell_for_shard <- list()
+    for(i in 1:length(inputFiles)){
+      list_cell_for_shard[[i]] <- includeCells
+    }
+  }
+  
+  if(bascetCheckOverwriteOutput(outputFile, overwrite)) {
+    #Make the command
+    cmd <- c(
+      #shellscript_set_tempdir(bascetInstance),
+      if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
+      assembleBascetCommand(bascetInstance, c(
+        "countsketch",
+        if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
+        paste0("-@=", numLocalThreads), 
+        #"-@=$BASCET_TEMPDIR",
         paste0("-i=", shellscriptMakeCommalist(inputFiles)),
         paste0("-o=", outputFile)
       ))

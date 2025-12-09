@@ -466,7 +466,8 @@ BascetRunFASTP <- function(
         paste(
           bascetInstance@prependCmd,
           "fastp",
-          "--thread", numLocalThreads,  ## TODO should there be = here?
+          "--thread", numLocalThreads,
+          "-g",                           #polyG trimming
           "-h ${files_html[$TASK_ID]}",
           "-j ${files_json[$TASK_ID]}",
           "-i ${files_in_R1[$TASK_ID]}",
