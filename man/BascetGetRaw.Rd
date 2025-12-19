@@ -14,8 +14,14 @@ BascetGetRaw(
   subchemistry = NULL,
   barcodeTolerance = NULL,
   numLocalThreads = NULL,
-  bufferSize = 4000,
-  sortBufferSize = 4000,
+  numReadThreads = NULL,
+  numDebarcodeThreads = NULL,
+  numSortingThreads = NULL,
+  numWriteThreads = NULL,
+  streamBufferSize = NULL,
+  sortBufferSize = NULL,
+  pageBufferSize = NULL,
+  totalMem = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -37,6 +43,24 @@ BascetGetRaw(
 \item{barcodeTolerance}{Optional: Number of mismatches allowed in the barcode for it to still be considered valid}
 
 \item{numLocalThreads}{Number of threads to use per job. Default is the number from the runner}
+
+\item{numReadThreads}{Number of threads for reading (advanced; parameter not checked)}
+
+\item{numDebarcodeThreads}{Number of threads for debarcoding (advanced; parameter not checked)}
+
+\item{numSortingThreads}{Number of threads for sorting (advanced; parameter not checked)}
+
+\item{numWriteThreads}{Number of threads for writing (advanced; parameter not checked)}
+
+\item{streamBufferSize}{Stream buffer size (advanced; parameter not checked)}
+
+\item{sortBufferSize}{Sort buffer size (advanced; parameter not checked)}
+
+\item{pageBufferSize}{Page buffer size (advanced; parameter not checked)}
+
+\item{totalMem}{Total memory to allocate}
+
+\item{overwrite}{}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

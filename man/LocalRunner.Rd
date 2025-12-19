@@ -4,10 +4,12 @@
 \alias{LocalRunner}
 \title{Create new local runner instance}
 \usage{
-LocalRunner(ncpu = NULL, direct = TRUE, showScript = FALSE)
+LocalRunner(ncpu = NULL, mem = NULL, direct = TRUE, showScript = FALSE)
 }
 \arguments{
 \item{ncpu}{Number of CPU cores to use. By default, will attempt to detect and use all of them}
+
+\item{mem}{Total memory for each job. This setting will be used whenever possible. Default is to use up to all available memory}
 
 \item{direct}{Run jobs synchronously}
 
