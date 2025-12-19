@@ -5,7 +5,7 @@ Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
 ## Usage
 
 ``` r
-parse_size_to_bytes(s)
+parse_size_to_mb(s)
 ```
 
 ## Arguments
@@ -16,4 +16,4 @@ parse_size_to_bytes(s)
 
 ## Value
 
-Size in bytes, as integer in a string (long format)
+Size in mb, as integer in a string (long format)

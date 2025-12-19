@@ -361,6 +361,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   start
 - [`parse_size_to_bytes()`](https://henriksson-lab.github.io/zorn/reference/parse_size_to_bytes.md)
   : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
+- [`parse_size_to_mb()`](https://henriksson-lab.github.io/zorn/reference/parse_size_to_mb.md)
+  : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
 - [`removeBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.md)
   : Remove current Bascet docker image
 - [`safeDownloadMD5()`](https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.md)

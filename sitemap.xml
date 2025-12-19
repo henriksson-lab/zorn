@@ -159,6 +159,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/makeOutputShardNames.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/new_no_job.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/parse_size_to_bytes.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/parse_size_to_mb.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptCancelJobIfFileExists.html</loc></url>

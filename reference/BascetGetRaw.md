@@ -15,8 +15,14 @@ BascetGetRaw(
   subchemistry = NULL,
   barcodeTolerance = NULL,
   numLocalThreads = NULL,
-  bufferSize = 4000,
-  sortBufferSize = 4000,
+  numReadThreads = NULL,
+  numDebarcodeThreads = NULL,
+  numSortingThreads = NULL,
+  numWriteThreads = NULL,
+  streamBufferSize = NULL,
+  sortBufferSize = NULL,
+  pageBufferSize = NULL,
+  totalMem = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -60,6 +66,40 @@ BascetGetRaw(
 
   Number of threads to use per job. Default is the number from the
   runner
+
+- numReadThreads:
+
+  Number of threads for reading (advanced; parameter not checked)
+
+- numDebarcodeThreads:
+
+  Number of threads for debarcoding (advanced; parameter not checked)
+
+- numSortingThreads:
+
+  Number of threads for sorting (advanced; parameter not checked)
+
+- numWriteThreads:
+
+  Number of threads for writing (advanced; parameter not checked)
+
+- streamBufferSize:
+
+  Stream buffer size (advanced; parameter not checked)
+
+- sortBufferSize:
+
+  Sort buffer size (advanced; parameter not checked)
+
+- pageBufferSize:
+
+  Page buffer size (advanced; parameter not checked)
+
+- totalMem:
+
+  Total memory to allocate
+
+- overwrite:
 
 - runner:
 

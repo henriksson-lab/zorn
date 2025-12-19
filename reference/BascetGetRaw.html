@@ -73,8 +73,14 @@
 <span>  subchemistry <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  barcodeTolerance <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  numLocalThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  bufferSize <span class="op">=</span> <span class="fl">4000</span>,</span>
-<span>  sortBufferSize <span class="op">=</span> <span class="fl">4000</span>,</span>
+<span>  numReadThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  numDebarcodeThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  numSortingThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  numWriteThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  streamBufferSize <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sortBufferSize <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pageBufferSize <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  totalMem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -115,6 +121,42 @@
 
 <dt id="arg-numlocalthreads">numLocalThreads<a class="anchor" aria-label="anchor" href="#arg-numlocalthreads"></a></dt>
 <dd><p>Number of threads to use per job. Default is the number from the runner</p></dd>
+
+
+<dt id="arg-numreadthreads">numReadThreads<a class="anchor" aria-label="anchor" href="#arg-numreadthreads"></a></dt>
+<dd><p>Number of threads for reading (advanced; parameter not checked)</p></dd>
+
+
+<dt id="arg-numdebarcodethreads">numDebarcodeThreads<a class="anchor" aria-label="anchor" href="#arg-numdebarcodethreads"></a></dt>
+<dd><p>Number of threads for debarcoding (advanced; parameter not checked)</p></dd>
+
+
+<dt id="arg-numsortingthreads">numSortingThreads<a class="anchor" aria-label="anchor" href="#arg-numsortingthreads"></a></dt>
+<dd><p>Number of threads for sorting (advanced; parameter not checked)</p></dd>
+
+
+<dt id="arg-numwritethreads">numWriteThreads<a class="anchor" aria-label="anchor" href="#arg-numwritethreads"></a></dt>
+<dd><p>Number of threads for writing (advanced; parameter not checked)</p></dd>
+
+
+<dt id="arg-streambuffersize">streamBufferSize<a class="anchor" aria-label="anchor" href="#arg-streambuffersize"></a></dt>
+<dd><p>Stream buffer size (advanced; parameter not checked)</p></dd>
+
+
+<dt id="arg-sortbuffersize">sortBufferSize<a class="anchor" aria-label="anchor" href="#arg-sortbuffersize"></a></dt>
+<dd><p>Sort buffer size (advanced; parameter not checked)</p></dd>
+
+
+<dt id="arg-pagebuffersize">pageBufferSize<a class="anchor" aria-label="anchor" href="#arg-pagebuffersize"></a></dt>
+<dd><p>Page buffer size (advanced; parameter not checked)</p></dd>
+
+
+<dt id="arg-totalmem">totalMem<a class="anchor" aria-label="anchor" href="#arg-totalmem"></a></dt>
+<dd><p>Total memory to allocate</p></dd>
+
+
+<dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
+<dd></dd>
 
 
 <dt id="arg-runner">runner<a class="anchor" aria-label="anchor" href="#arg-runner"></a></dt>
