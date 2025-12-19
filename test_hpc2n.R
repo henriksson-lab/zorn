@@ -1,6 +1,7 @@
 library(Zorn)
 
 if(FALSE){
+  setwd("~/github/zorn")
   source("R/job_general.R")
   source("R/job_local.R")
   source("R/job_slurm.R")

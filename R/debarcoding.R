@@ -119,6 +119,18 @@ DetectRawFileMeta <- function(
 #' @param chemistry The type of data to be parsed
 #' @param barcodeTolerance Optional: Number of mismatches allowed in the barcode for it to still be considered valid
 #' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
+#' 
+#' @param numReadThreads Number of threads for reading (advanced; parameter not checked)
+#' @param numDebarcodeThreads Number of threads for debarcoding (advanced; parameter not checked)
+#' @param numSortingThreads Number of threads for sorting (advanced; parameter not checked)
+#' @param numWriteThreads Number of threads for writing (advanced; parameter not checked)
+#' 
+#' @param streamBufferSize Stream buffer size (advanced; parameter not checked)
+#' @param sortBufferSize Sort buffer size (advanced; parameter not checked)
+#' @param pageBufferSize Page buffer size (advanced; parameter not checked)
+#' @param totalMem Total memory to allocate
+#' 
+#' @param overwrite 
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
@@ -134,9 +146,16 @@ BascetGetRaw <- function(
     subchemistry=NULL,
     barcodeTolerance=NULL,
     numLocalThreads=NULL,
-
-    bufferSize=4000,
-    sortBufferSize=4000,
+    
+    numReadThreads=NULL,
+    numDebarcodeThreads=NULL,
+    numSortingThreads=NULL,
+    numWriteThreads=NULL,
+    
+    streamBufferSize=NULL,
+    sortBufferSize=NULL,
+    pageBufferSize=NULL,
+    totalMem=NULL,
 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
@@ -171,6 +190,30 @@ BascetGetRaw <- function(
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
   
+  #Check memory sizes
+  if(!is.null(streamBufferSize)) {
+    streamBufferSize <- parse_size_to_mb(streamBufferSize)
+    stopifnot(streamBufferSize>10)
+  }
+  if(!is.null(sortBufferSize)) {
+    sortBufferSize <- parse_size_to_mb(sortBufferSize)
+    stopifnot(sortBufferSize>10)
+  }
+  if(!is.null(pageBufferSize)) {
+    pageBufferSize <- parse_size_to_mb(pageBufferSize)
+    stopifnot(pageBufferSize>4)
+  }
+  if(!is.null(totalMem)) {
+    totalMem <- parse_size_to_mb(totalMem)
+    stopifnot(totalMem>1000)
+  } else {
+    #Take memory from runner if possible
+    if(runner@mem!="") {
+      totalMem <- parse_size_to_mb(runner@mem)
+      stopifnot(totalMem>1000)
+    }
+  }
+
   #Convert size to bytes and check argument
   maxShardSize <- parse_size_to_bytes(maxShardSize)
   
@@ -230,8 +273,6 @@ BascetGetRaw <- function(
   }
   #  print(rawmeta)
   #  print(arg_outputFiles)
-  
-  
   #  return(666)
   
   if(bascetCheckOverwriteOutput(outputFilesComplete, overwrite)) {
@@ -263,11 +304,17 @@ BascetGetRaw <- function(
           "get-raw",
           paste0("-@=", numLocalThreads), 
           "--temp=$BASCET_TEMPDIR",
-          #          "--buffer-size=20000", #[mb]
-          #          "--sort-buffer-size=20000", #[mb] ################################################################# TODO: calculate based on available memory
-          paste0("--buffer-size=",bufferSize), #[mb]
-          paste0("--sort-buffer-size=",sortBufferSize), #[mb] ################################################################# TODO: for before bascet2
-
+          if(!is.null(streamBufferSize)) paste0("--buffer-size=",streamBufferSize), #[mb]
+          
+          if(!is.null(numReadThreads)) paste0("--threads-read=",numReadThreads),
+          if(!is.null(numDebarcodeThreads)) paste0("--threads-debarcode=",numDebarcodeThreads),
+          if(!is.null(numSortingThreads)) paste0("--threads-sort=",numSortingThreads),
+          if(!is.null(numWriteThreads)) paste0("--threads-write=",numWriteThreads),
+          
+          if(!is.null(pageBufferSize)) paste0("--page-size=",pageBufferSize), #[mb]
+          if(!is.null(sortBufferSize)) paste0("--sort-buffer-size=",sortBufferSize), #[mb]
+          if(!is.null(totalMem)) paste0("--total-mem=",totalMem), #[mb]
+          
           if(!is.null(subchemistry))     paste0("--subchemistry=",subchemistry),
           if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
           "--r1=${files_r1[$TASK_ID]}",

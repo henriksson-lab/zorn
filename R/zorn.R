@@ -66,7 +66,7 @@ is.numeric.range01 <- function(x) {
 #' 
 #' @param s Size as string. If numeric, it is just returned
 #' 
-#' @return Size in bytes, as integer
+#' @return Size in bytes, as integer in a string (long format)
 parse_size_to_bytes <- function(s) {
   #Return a number directly
   if(is.numeric(s)) {
@@ -75,6 +75,13 @@ parse_size_to_bytes <- function(s) {
   
   #Parse string
   sorig <- s
+  
+  #If there is a trailing b, then remove it
+  if(stringr::str_ends(s, stringr::fixed("b"))) {
+    s <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
+  }
+  
+  #Figure out prefix (g, etc)
   mult <- 1
   pref <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
   last_c <- stringr::str_sub(s, stringr::str_length(s))
@@ -94,10 +101,21 @@ parse_size_to_bytes <- function(s) {
   if(is.na(asint)) {
     stop(paste("Failed to parse size:",sorig))
   }
-  asint*mult
+  format(asint*mult, scientific=TRUE)
 }
 #parse_size_to_bytes("2dasd")
 
+###############################################
+#' Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
+#' 
+#' @param s Size as string. If numeric, it is just returned
+#' 
+#' @return Size in mb, as integer in a string (long format)
+parse_size_to_mb <- function(s) {
+  b <- round(as.integer(parse_size_to_bytes(s))/1000000)
+  format(b, scientific =FALSE)
+}
+  
 
 ###############################################
 #' Detect metadata for raw input FASTQ files

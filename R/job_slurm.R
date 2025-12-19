@@ -395,7 +395,7 @@ setMethod(
           #print(info$status)
           
           #Count number of jobs of each type
-          num_total <- nrow(info)
+          num_total <- job@arraysize
           num_running <- floor(sum(info$status=="RUNNING")/2)
           num_completed <- floor(sum(info$status=="COMPLETED")) 
           num_failed <- floor(sum(info$status=="FAILED"))
@@ -497,5 +497,10 @@ if(FALSE){
   status <- stringr::str_remove_all(ret, " ")  
   #first line after header
   ret[3]
+  
+  
+  
+  j <- createSlurmJobFromExisting("35772765", arraysize = 1)
+  WaitForJob(j)
 }
 

@@ -9,6 +9,7 @@
 #' @export
 setClass("LocalRunner", slots=list(
   ncpu="character",
+  mem="character",
   direct="logical",
   showScript="logical"
 )
@@ -29,6 +30,7 @@ setClass("LocalJob", slots=list(
 #' Create new local runner instance
 #' 
 #' @param ncpu Number of CPU cores to use. By default, will attempt to detect and use all of them
+#' @param mem Total memory for each job. This setting will be used whenever possible. Default is to use up to all available memory
 #' @param direct Run jobs synchronously
 #' @param showScript Show the script to run, for debugging purposes
 #' 
@@ -36,6 +38,7 @@ setClass("LocalJob", slots=list(
 #' @export
 LocalRunner <- function(
     ncpu=NULL, 
+    mem=NULL,
     direct=TRUE, 
     showScript=FALSE
 ){
@@ -45,10 +48,21 @@ LocalRunner <- function(
       warning("Cannot detect number of CPU cores so it was set to 1. Set it manually instead")
       ncpu <- "1"
     }
-    
+  }
+  if(is.null(mem)) {
+    mem <- ""
+  } else {
+    #Check that memory can be parsed and is some bare minimum
+    stopifnot(parse_size_to_mb(mem)>1000)
   }
   
-  new("LocalRunner", ncpu=ncpu, direct=direct, showScript=showScript)
+  new(
+    "LocalRunner", 
+    ncpu=ncpu, 
+    mem=mem,
+    direct=direct, 
+    showScript=showScript
+  )
 }
 
 
