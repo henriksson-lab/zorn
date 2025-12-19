@@ -21,7 +21,7 @@
 BascetGatherCountSketch <- function( 
     bascetRoot, 
     inputName="countsketch", 
-    outputName="countsketch_mat.csv", 
+    outputName="countsketch_mat.csv",  ### replace with shard!!
     includeCells=NULL,
     overwrite=FALSE,
     numLocalThreads=NULL,

@@ -338,8 +338,10 @@ PrepareSharding <- function(
   inputFiles <- detectShardsForFile(bascetRoot, inputName)
   inputFiles <- naturalsort::naturalsort(inputFiles)
 
-  if(length(inputFiles)!=nrow(meta)){
-    stop("Metadata has different number of files than currently detected")
+  if(length(inputFiles) != nrow(meta)){
+    print("=== Detected input files: ===")
+    print(inputFiles)
+    stop(paste0("Metadata has different number of files (",nrow(meta),") than currently detected (",length(inputFiles),")"))
   }
   
   if(verbose) {
