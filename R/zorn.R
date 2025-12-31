@@ -101,7 +101,8 @@ parse_size_to_bytes <- function(s) {
   if(is.na(asint)) {
     stop(paste("Failed to parse size:",sorig))
   }
-  format(asint*mult, scientific=TRUE)
+  asint*mult
+#  format(asint*mult, scientific=FALSE)
 }
 #parse_size_to_bytes("2dasd")
 
@@ -112,10 +113,17 @@ parse_size_to_bytes <- function(s) {
 #' 
 #' @return Size in mb, as integer in a string (long format)
 parse_size_to_mb <- function(s) {
-  b <- round(as.integer(parse_size_to_bytes(s))/1000000)
-  format(b, scientific =FALSE)
+#print(777)
+#print(s)
+  b <- round(parse_size_to_bytes(s)/1000000)
+  b
+#  format(b, scientific =FALSE)
 }
   
+formatPlainNumber <- function(s) {
+  format(s, scientific=FALSE)
+}
+
 
 ###############################################
 #' Detect metadata for raw input FASTQ files

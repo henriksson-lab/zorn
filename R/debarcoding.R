@@ -216,7 +216,7 @@ BascetGetRaw <- function(
 
   #Convert size to bytes and check argument
   maxShardSize <- parse_size_to_bytes(maxShardSize)
-  
+
   #Figure out how many output files are needed.
   #Do this by checking size of input files
   rawmeta$filesize <- NA
@@ -227,6 +227,11 @@ BascetGetRaw <- function(
   }
   rawmeta$need_num_outputs <- ceiling(rawmeta$filesize/maxShardSize)
   
+
+#print(6666)
+#print(rawmeta)
+#print(rawmeta$need_num_outputs)
+
   if(any(is.na(rawmeta$filesize))){
     print(rawmeta)
     stop("Not all input files exist or all accessible")
@@ -311,9 +316,9 @@ BascetGetRaw <- function(
           if(!is.null(numSortingThreads)) paste0("--threads-sort=",numSortingThreads),
           if(!is.null(numWriteThreads)) paste0("--threads-write=",numWriteThreads),
           
-          if(!is.null(pageBufferSize)) paste0("--page-size=",pageBufferSize), #[mb]
-          if(!is.null(sortBufferSize)) paste0("--sort-buffer-size=",sortBufferSize), #[mb]
-          if(!is.null(totalMem)) paste0("--total-mem=",totalMem), #[mb]
+          if(!is.null(pageBufferSize)) paste0("--page-size=",formatPlainNumber(pageBufferSize)), #[mb]
+          if(!is.null(sortBufferSize)) paste0("--sort-buffer-size=",formatPlainNumber(sortBufferSize)), #[mb]
+          if(!is.null(totalMem)) paste0("--total-mem=",formatPlainNumber(totalMem)), #[mb]
           
           if(!is.null(subchemistry))     paste0("--subchemistry=",subchemistry),
           if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
