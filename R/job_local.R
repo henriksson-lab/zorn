@@ -45,7 +45,7 @@ LocalRunner <- function(
     showScript=FALSE
 ){
   #Bring in defaults
-  if(!is.null(settings) & is.null(cpu)) {
+  if(!is.null(settings) & is.null(ncpu)) {
     ncpu <- settings@ncpu
   }
 
