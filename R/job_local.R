@@ -50,7 +50,15 @@ LocalRunner <- function(
     }
   }
   if(is.null(mem)) {
-    mem <- ""
+    
+    bram <- benchmarkme::get_ram()
+    if(is.null(bram)) {
+      print("Warning: unable to detect amount of ram; it is better if you specify it. Setting a default of 64g")
+      mem <- "64g"
+    } else {
+      bram_gb <- round(as.double(bram)/1000000000)
+      mem <- paste0(bram_gb,"g")
+    }
   } else {
     #Check that memory can be parsed and is some bare minimum
     stopifnot(parse_size_to_mb(mem)>1000)

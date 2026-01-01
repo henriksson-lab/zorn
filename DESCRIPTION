@@ -35,7 +35,8 @@ Imports:
     data.table,
     naturalsort,
     RCurl,
-    sparseMatrixStats (>= 1.10.0)
+    sparseMatrixStats (>= 1.10.0),
+    benchmarkme
 Suggests: 
     rmarkdown
 Remotes: github::henriksson-lab/zorn

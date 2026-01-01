@@ -211,6 +211,8 @@ BascetGetRaw <- function(
     if(runner@mem!="") {
       totalMem <- parse_size_to_mb(runner@mem)
       stopifnot(totalMem>1000)
+    } else {
+      print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
     }
   }
 
