@@ -29,6 +29,7 @@ setClass("LocalJob", slots=list(
 ###############################################
 #' Create new local runner instance
 #' 
+#' @param settings Default settings to override; can be NULL
 #' @param ncpu Number of CPU cores to use. By default, will attempt to detect and use all of them
 #' @param mem Total memory for each job. This setting will be used whenever possible. Default is to use up to all available memory
 #' @param direct Run jobs synchronously
@@ -37,11 +38,31 @@ setClass("LocalJob", slots=list(
 #' @return A runner instance
 #' @export
 LocalRunner <- function(
+    settings=NULL,
     ncpu=NULL, 
     mem=NULL,
     direct=TRUE, 
     showScript=FALSE
 ){
+  #Bring in defaults
+  if(!is.null(settings) & is.null(cpu)) {
+    ncpu <- settings@ncpu
+  }
+
+  if(!is.null(settings) & is.null(mem)) {
+    mem <- settings@mem
+  }
+
+  if(!is.null(settings) & is.null(direct)) {
+    direct <- settings@direct
+  }
+  
+  if(!is.null(settings) & is.null(showScript)) {
+    showScript <- settings@showScript
+  }
+  
+    
+  #Try to detect parameters    
   if(is.null(ncpu)) {
     ncpu <- as.character(parallel::detectCores())
     if(is.na(ncpu)) {
@@ -49,8 +70,9 @@ LocalRunner <- function(
       ncpu <- "1"
     }
   }
+  
+  
   if(is.null(mem)) {
-    
     bram <- benchmarkme::get_ram()
     if(is.null(bram)) {
       print("Warning: unable to detect amount of ram; it is better if you specify it. Setting a default of 64g")
