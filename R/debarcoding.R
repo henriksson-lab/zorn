@@ -320,7 +320,7 @@ BascetGetRaw <- function(
           
           if(!is.null(pageBufferSize)) paste0("--page-size=",formatPlainNumber(pageBufferSize)), #[mb]
           if(!is.null(sortBufferSize)) paste0("--sort-buffer-size=",formatPlainNumber(sortBufferSize)), #[mb]
-          if(!is.null(totalMem)) paste0("--total-mem=",formatPlainNumber(totalMem)), #[mb]
+          if(!is.null(totalMem)) paste0("--mem=",formatPlainNumber(totalMem)), #[mb]
           
           if(!is.null(subchemistry))     paste0("--subchemistry=",subchemistry),
           if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
