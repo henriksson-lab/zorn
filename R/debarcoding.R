@@ -311,16 +311,16 @@ BascetGetRaw <- function(
           "get-raw",
           paste0("-@=", numLocalThreads), 
           "--temp=$BASCET_TEMPDIR",
-          if(!is.null(streamBufferSize)) paste0("--buffer-size=",streamBufferSize), #[mb]
+          if(!is.null(streamBufferSize)) paste0("--buffer-size=",formatMemMB(streamBufferSize)),
           
           if(!is.null(numReadThreads)) paste0("--threads-read=",numReadThreads),
           if(!is.null(numDebarcodeThreads)) paste0("--threads-debarcode=",numDebarcodeThreads),
           if(!is.null(numSortingThreads)) paste0("--threads-sort=",numSortingThreads),
           if(!is.null(numWriteThreads)) paste0("--threads-write=",numWriteThreads),
           
-          if(!is.null(pageBufferSize)) paste0("--page-size=",formatPlainNumber(pageBufferSize)), #[mb]
-          if(!is.null(sortBufferSize)) paste0("--sort-buffer-size=",formatPlainNumber(sortBufferSize)), #[mb]
-          if(!is.null(totalMem)) paste0("--mem=",formatPlainNumber(totalMem)), #[mb]
+          if(!is.null(pageBufferSize)) paste0("--page-size=",formatMemMB(pageBufferSize)), 
+          if(!is.null(sortBufferSize)) paste0("--sort-buffer-size=",formatMemMB(sortBufferSize)), 
+          if(!is.null(totalMem)) paste0("--memory=",formatMemMB(totalMem)), 
           
           if(!is.null(subchemistry))     paste0("--subchemistry=",subchemistry),
           if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
@@ -652,8 +652,12 @@ BascetShardify <- function(
           "-i=${files_in[$TASK_ID]}",   
           "-o=${files_out[$TASK_ID]}",  
           "--include=${CELLFILE[$TASK_ID]}",
-          paste0("--buffer-size=",bufferSize),  # 16000  
-          paste0("--page-size=",pageSize)
+
+
+### --memory? TODO 666
+
+          paste0("--buffer-size=",formatMemMB(bufferSize)),
+          paste0("--page-size=",formatMemMB(pageSize))
 
         ))
       ), 

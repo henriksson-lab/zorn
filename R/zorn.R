@@ -126,6 +126,15 @@ formatPlainNumber <- function(s) {
 
 
 ###############################################
+#' Given memory amount in mb, format it in a format suitable for Rust parsing
+#' 
+formatMemMB <- function(s) {
+  paste0(format(s, scientific=FALSE),"mb")
+}
+
+
+
+###############################################
 #' Detect metadata for raw input FASTQ files
 #' 
 #' _R1 -- common from illumina sequencer
