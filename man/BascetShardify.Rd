@@ -9,8 +9,11 @@ BascetShardify(
   numOutputShards = 1,
   outputName = "filtered",
   overwrite = FALSE,
-  bufferSize = 1500,
-  pageSize = 32,
+  numThreads = NULL,
+  numWriterThreads = NULL,
+  totalMem = NULL,
+  streamArenaMem = NULL,
+  streamBufferSize = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -23,6 +26,14 @@ BascetShardify(
 \item{outputName}{Name of the output file: Properly sharded debarcoded reads}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{numThreads}{Number of threads to use per job. Default is the number from the runner}
+
+\item{numWriterThreads}{Advanced settings: Number of writer threads to use per job}
+
+\item{totalMem}{How much memory to use. Extracted from runner if set}
+
+\item{streamArenaMem}{Advanced settings: How much memory to use for streaming arena (fraction, given as e.g. "10\%")}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

@@ -115,20 +115,21 @@ DetectRawFileMeta <- function(
 #' @param rawmeta Metadata for the raw FASTQ input files. See DetectRawFileMeta
 #' @param maxShardSize Estimated maximum size of output shard. Can be set higher but as sorting is also performed during sharding, it can be overall more efficient to only do partial sorting during this command
 #' @param outputName Name output files: Debarcoded reads
-#' @param outputNameIncomplete Name of output files: Reads that could not be parsed
 #' @param chemistry The type of data to be parsed
 #' @param barcodeTolerance Optional: Number of mismatches allowed in the barcode for it to still be considered valid
-#' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
 #' 
-#' @param numReadThreads Number of threads for reading (advanced; parameter not checked)
-#' @param numDebarcodeThreads Number of threads for debarcoding (advanced; parameter not checked)
-#' @param numSortingThreads Number of threads for sorting (advanced; parameter not checked)
-#' @param numWriteThreads Number of threads for writing (advanced; parameter not checked)
+#' @param numThreads Number of threads to use per job. Default is the number from the runner
+#' @param numReadThreads Advanced setting: Number of threads for reading 
+#' @param numDebarcodeThreads Advanced setting: Number of threads for debarcoding
+#' @param numSortingThreads Advanced setting: Number of threads for sorting, first phase
+#' @param numMergeSortingThreads Advanced setting: Number of threads for sorting, second phase
+#' @param numWriteThreads Advanced setting: Number of threads for writing
+#' @param numCompressThreads Advanced setting: Number of threads for compressing
 #' 
-#' @param streamBufferSize Stream buffer size (advanced; parameter not checked)
-#' @param sortBufferSize Sort buffer size (advanced; parameter not checked)
-#' @param pageBufferSize Page buffer size (advanced; parameter not checked)
 #' @param totalMem Total memory to allocate
+#' @param streamBufferSize Advanced setting: Stream buffer size (fraction, given as e.g. "10%")
+#' @param sortBufferSize Advanced setting: Sort buffer size (fraction, given as e.g. "10%")
+#' @param pageBufferSize Advanced setting: Page buffer size (fraction, given as e.g. "10%")
 #' 
 #' @param overwrite 
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
@@ -141,21 +142,23 @@ BascetGetRaw <- function(
     rawmeta,
     maxShardSize="50g",  ### if any?
     outputName="debarcoded", 
-    outputNameIncomplete="incomplete_reads", 
     chemistry=c("atrandi-wgs","atrandi-rnaseq","parse-bio"),  #TODO any way to get list from software?
-    subchemistry=NULL,
+    #subchemistry=NULL,
     barcodeTolerance=NULL,
-    numLocalThreads=NULL,
     
+    numThreads=NULL,
     numReadThreads=NULL,
     numDebarcodeThreads=NULL,
     numSortingThreads=NULL,
+    numMergeSortingThreads=NULL,
     numWriteThreads=NULL,
+    numCompressThreads=NULL,
     
+    totalMem=NULL,
     streamBufferSize=NULL,
     sortBufferSize=NULL,
-    pageBufferSize=NULL,
-    totalMem=NULL,
+    compressBufferSize=NULL,
+    compressRawBufferSize=NULL,
 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
@@ -167,57 +170,48 @@ BascetGetRaw <- function(
   }
   
   #Set number of threads if not given
-  if(is.null(numLocalThreads)) {
-    numLocalThreads <- as.integer(runner@ncpu)
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
   }
   
   #Need a minimum number of threads
-  if(numLocalThreads<4) {
-    print("Note: Setting number of threads to 4 as this is the minimum, even if the CPU has fewer cores")
-    numLocalThreads <- 4
+  if(numThreads < 6) {
+    print("Note: Setting number of threads to 6 as this is the minimum, even if the CPU has fewer cores")
+    numThreads <- 6
   }
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.data.frame(rawmeta))
   stopifnot(is.valid.shardname(outputName))
-  stopifnot(is.valid.shardname(outputNameIncomplete))
   chemistry <- match.arg(chemistry)
-  stopifnot(is.character(subchemistry) || is.null(subchemistry))
   stopifnot(is.numeric(barcodeTolerance) || is.null(barcodeTolerance))
-  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.valid.threadcount(numThreads))
+
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
   
   #Check memory sizes
-  if(!is.null(streamBufferSize)) {
-    streamBufferSize <- parse_size_to_mb(streamBufferSize)
-    stopifnot(streamBufferSize>10)
-  }
-  if(!is.null(sortBufferSize)) {
-    sortBufferSize <- parse_size_to_mb(sortBufferSize)
-    stopifnot(sortBufferSize>10)
-  }
-  if(!is.null(pageBufferSize)) {
-    pageBufferSize <- parse_size_to_mb(pageBufferSize)
-    stopifnot(pageBufferSize>4)
-  }
+  stopifnot(is.null(streamBufferSize) || is.percent.string(streamBufferSize))
+  stopifnot(is.null(sortBufferSize) || is.percent.string(sortBufferSize))
+  stopifnot(is.null(compressBufferSize) || is.percent.string(compressBufferSize))
+  stopifnot(is.null(compressRawBufferSize) || is.percent.string(compressRawBufferSize))
   if(!is.null(totalMem)) {
-    totalMem <- parse_size_to_mb(totalMem)
-    stopifnot(totalMem>1000)
+    totalMem <- parse_size_string(totalMem)
+    stopifnot(totalMem > fs::fs_bytes("1Gb"))
   } else {
     #Take memory from runner if possible
     if(runner@mem!="") {
-      totalMem <- parse_size_to_mb(runner@mem)
-      stopifnot(totalMem>1000)
+      totalMem <- parse_size_string(runner@mem) - fs::fs_bytes("5Gb")
+      stopifnot(totalMem > fs::fs_bytes("1Gb"))
     } else {
       print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
     }
   }
 
   #Convert size to bytes and check argument
-  maxShardSize <- parse_size_to_bytes(maxShardSize)
+  maxShardSize <- parse_size_string(maxShardSize)
 
   #Figure out how many output files are needed.
   #Do this by checking size of input files
@@ -225,7 +219,7 @@ BascetGetRaw <- function(
   for(i in 1:nrow(rawmeta)){
     size_r1 <- file.info(file.path(rawmeta$dir, rawmeta$r1[i]))$size
     size_r2 <- file.info(file.path(rawmeta$dir, rawmeta$r2[i]))$size
-    rawmeta$filesize[i] <- size_r1+size_r2
+    rawmeta$filesize[i] <- fs::as_fs_bytes(size_r1+size_r2)
   }
   rawmeta$need_num_outputs <- ceiling(rawmeta$filesize/maxShardSize)
   
@@ -309,18 +303,19 @@ BascetGetRaw <- function(
         
         assembleBascetCommand(bascetInstance, c(
           "get-raw",
-          paste0("-@=", numLocalThreads), 
           "--temp=$BASCET_TEMPDIR",
-          if(!is.null(streamBufferSize)) paste0("--buffer-size=",formatMemMB(streamBufferSize)),
           
-          if(!is.null(numReadThreads)) paste0("--threads-read=",numReadThreads),
-          if(!is.null(numDebarcodeThreads)) paste0("--threads-debarcode=",numDebarcodeThreads),
-          if(!is.null(numSortingThreads)) paste0("--threads-sort=",numSortingThreads),
-          if(!is.null(numWriteThreads)) paste0("--threads-write=",numWriteThreads),
+          paste0("--threads=", numThreads),
+          if(!is.null(numReadThreads)) paste0("--countof-threads-read=",numReadThreads),
+          if(!is.null(numDebarcodeThreads)) paste0("--countof-threads-debarcode=",numDebarcodeThreads),
+          if(!is.null(numSortingThreads)) paste0("--countof-threads-sort=",numSortingThreads),
+          if(!is.null(numWriteThreads)) paste0("--countof-threads-write=",numWriteThreads),
           
-          if(!is.null(pageBufferSize)) paste0("--page-size=",formatMemMB(pageBufferSize)), 
-          if(!is.null(sortBufferSize)) paste0("--sort-buffer-size=",formatMemMB(sortBufferSize)), 
-          if(!is.null(totalMem)) paste0("--memory=",formatMemMB(totalMem)), 
+          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
+          if(!is.null(streamBufferSize)) paste0("--sizeof-stream-buffer=",format_size_bascet(streamBufferSize)),    # in %!!
+          if(!is.null(sortBufferSize)) paste0("--sizeof-sort-buffer=",format_size_bascet(sortBufferSize)), 
+          if(!is.null(compressBufferSize)) paste0("--sizeof-compress-buffer=",format_size_bascet(compressBufferSize)),  ### rename
+          if(!is.null(compressRawBufferSize)) paste0("--sizeof-compress-raw-buffer=",format_size_bascet(compressRawBufferSize)),  ### rename
           
           if(!is.null(subchemistry))     paste0("--subchemistry=",subchemistry),
           if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
@@ -585,6 +580,12 @@ DebarcodedKneePlot <- function(
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
+#' @param numThreads Number of threads to use per job. Default is the number from the runner
+#' @param numWriterThreads Advanced settings: Number of writer threads to use per job
+#' 
+#' @param totalMem How much memory to use. Extracted from runner if set
+#' @param streamArenaMem Advanced settings: How much memory to use for streaming arena (fraction, given as e.g. "10%")
+#' 
 #' @return A runner job (details depends on runner)
 #' @export
 BascetShardify <- function(
@@ -593,12 +594,25 @@ BascetShardify <- function(
     outputName="filtered", 
     overwrite=FALSE,
 
-    bufferSize=1500,
-    pageSize=32,
+    numThreads=NULL,
+    numWriterThreads=NULL,
+    totalMem=NULL,
+    streamArenaMem=NULL,
+    streamBufferSize=NULL,
 
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  
+  #Set number of threads if not given
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
+  }
+  if(numThreads < 3) {
+    print("Note: Setting number of threads to 3 as this is the minimum, even if the CPU has fewer cores")
+    numThreads <- 3
+  }
+  
   #Check arguments 
   stopifnot(is.debstat(debstat))
   stopifnot(is.positive.integer(numOutputShards))
@@ -606,7 +620,25 @@ BascetShardify <- function(
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
-
+  streamArenaMem <- parse_size_string(streamArenaMem)
+  stopifnot(is.null(streamBufferSize) || is.percent.string(streamBufferSize))
+  
+  
+  #Figure out memory usage
+  if(!is.null(totalMem)) {
+    totalMem <- parse_size_string(totalMem)
+    stopifnot(totalMem > fs::fs_bytes("1Gb"))
+  } else {
+    #Take memory from runner if possible
+    if(runner@mem!="") {
+      totalMem <- parse_size_string(runner@mem) - fs::fs_bytes("5Gb") ############################# TODO: reduce by 5gb
+      stopifnot(totalMem > fs::fs_bytes("1Gb"))
+    } else {
+      print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
+    }
+  }
+  
+  
   #Figure out mapping input vs output shards
   totalNumOutputShards <- numOutputShards*debstat$numgroup
   dfListOutputs <- data.frame(
@@ -647,18 +679,15 @@ BascetShardify <- function(
         shellscriptMakeFilesExpander("CELLFILE", debstat$list_picked_cells),
         assembleBascetCommand(bascetInstance, c(
           "shardify", 
-          ### "-t $BASCET_TEMPDIR", #no longer part
-          ### "-@ numthreads",  #should autodetect
+          "--temp=$BASCET_TEMPDIR",
           "-i=${files_in[$TASK_ID]}",   
           "-o=${files_out[$TASK_ID]}",  
           "--include=${CELLFILE[$TASK_ID]}",
 
-
-### --memory? TODO 666
-
-          paste0("--buffer-size=",formatMemMB(bufferSize)),
-          paste0("--page-size=",formatMemMB(pageSize))
-
+          if(!is.null(numThreads)) paste0("--threads=",format_size_bascet(numThreads)),
+          if(!is.null(numWriterThreads)) paste0("--numof-threads-write=",format_size_bascet(numWriterThreads)),
+          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)),
+          if(!is.null(streamArenaMem)) paste0("--sizeof-stream-arena=",format_size_bascet(streamArenaMem))
         ))
       ), 
       arraysize = debstat$numgroup

@@ -2,9 +2,151 @@
 
 
 ################################################################################
+################ Helper functions: memory size #################################
+################################################################################
+
+
+
+if(FALSE) {
+  # new!
+  # to be compatible with Rust bytesize: https://docs.rs/bytesize/latest/bytesize/
+  fs::fs_bytes("3")
+  fs::fs_bytes("3mb")
+  ?fs::fs_bytes
+  fs::fs_bytes("3g") ### need to support 
+  
+  as.character(fs::fs_bytes("3GB"))
+  as.character(fs::fs_bytes("4Kib"))
+  as.character(fs::fs_bytes("4"))
+  as.character(fs::fs_bytes("4b"))
+  
+  inp <- "5Mb"
+  
+  inp_conv <- fs::fs_bytes(inp)
+  if(is.na(inp_conv)) {
+    #If R library fails to convert bytes, we will attempt some additional
+    #patters used by SLURM
+  }
+  
+  sorig <- "5g"
+  regmatches(sorig,regexpr("[0-9]+[gGmMkKtT]$",sorig))
+  regexpr("[0-9]+[gGmMkKtT]",sorig)
+  
+  
+}
+
+
+
+###############################################
+#' Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
+#' 
+#' @param s Size as string. If numeric, it is just returned
+#' 
+#' @return Size in bytes, as integer in a string (long format)
+parse_size_string <- function(s) {
+  if(is.null(s)) {
+    return(NULL)
+  }
+  
+  s_fs <- fs::fs_bytes(s)
+  if(!is.na(s_fs)) {
+    #Return fs_bytes response if successful
+    return(s_fs)
+  } else {
+    #If R library fails to convert bytes, we will attempt some additional patterns used by SLURM.
+    #These include lower case units such as "5g"
+    sorig <- s
+    
+    #If there is a trailing b, then remove it
+    if(stringr::str_ends(s, stringr::fixed("b"))) {
+      s <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
+    }
+    
+    #Figure out prefix (g, etc)
+    pref <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
+    last_c <- stringr::str_sub(s, stringr::str_length(s))
+
+    if(last_c=="t") {
+      return(fs::fs_bytes(paste0(pref,"T")))
+    } else if(last_c=="g") {
+      return(fs::fs_bytes(paste0(pref,"G")))
+    } else if(last_c=="m") {
+      return(fs::fs_bytes(paste0(pref,"M")))
+    } else if(last_c=="k") {
+      return(fs::fs_bytes(paste0(pref,"k")))
+    } else {
+      stop(paste("Cannot parse memory size:", s))
+      #return(NA)
+    }
+#    > class(inp_conv)
+#    [1] "fs_bytes" "numeric" 
+  }
+}
+#parse_size_to_bytes("2dasd")
+
+
+###############################################
+#' Format size for input to Bascet
+#' 
+#' @param s Size as output from fs::fs_bytes, or a string
+format_size_bascet <- function(s) {
+  paste0(s, "B")
+}
+
+###############################################
+#' Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
+#' 
+#' @param s Size as string. If numeric, it is just returned
+#' 
+#' @return Size in mb, as integer in a string (long format)
+#parse_size_to_rust_mb <- function(s) {
+  #print(777)
+  #print(s)
+#  b <- round(parse_size_to_bytes(s)/1000000)
+#  b
+  #  format(b, scientific =FALSE)
+#}
+
+formatPlainNumber <- function(s) {
+  format(s, scientific=FALSE)
+}
+
+
+###############################################
+#' Given memory amount in mb, format it in a format suitable for Rust parsing
+#' 
+#formatMemMB <- function(s) {
+#  paste0(format(s, scientific=FALSE),"mb")
+#}
+
+
+
+################################################################################
 ################ Helper functions: check if call is correct ####################
 ################################################################################
 
+###############################################
+#' Check that parameter is in the form "xxx%"
+is.percent.string <- function(s) {
+  if(!is.null(x)) {
+    pref <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
+    last_c <- stringr::str_sub(s, stringr::str_length(s))
+    
+    if(last_c=="%" & is.numeric(pref)) {
+      val <- as.numeric(pref)
+      val >= 0 && val<=100
+    } else {
+      FALSE
+    }
+  }
+}
+
+
+###############################################
+#' Check that parameter is a valid memory size
+is.valid.memsize <- function(x) {
+  !is.na(parse_size_to_bytes(x))
+}
 
 
 ###############################################
@@ -60,77 +202,6 @@ is.numeric.range01 <- function(x) {
 }
 
 
-
-###############################################
-#' Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
-#' 
-#' @param s Size as string. If numeric, it is just returned
-#' 
-#' @return Size in bytes, as integer in a string (long format)
-parse_size_to_bytes <- function(s) {
-  #Return a number directly
-  if(is.numeric(s)) {
-    return(s)
-  } 
-  
-  #Parse string
-  sorig <- s
-  
-  #If there is a trailing b, then remove it
-  if(stringr::str_ends(s, stringr::fixed("b"))) {
-    s <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
-  }
-  
-  #Figure out prefix (g, etc)
-  mult <- 1
-  pref <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
-  last_c <- stringr::str_sub(s, stringr::str_length(s))
-  #print(last_c)
-  
-  if(last_c=="g") {
-    mult <- 1e9
-    s <- pref
-  } else if(last_c=="m") {
-    mult <- 1e6
-    s <- pref
-  } else if(last_c=="b") {
-    mult <- 1e3
-    s <- pref
-  }
-  asint <- as.integer(s)
-  if(is.na(asint)) {
-    stop(paste("Failed to parse size:",sorig))
-  }
-  asint*mult
-#  format(asint*mult, scientific=FALSE)
-}
-#parse_size_to_bytes("2dasd")
-
-###############################################
-#' Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
-#' 
-#' @param s Size as string. If numeric, it is just returned
-#' 
-#' @return Size in mb, as integer in a string (long format)
-parse_size_to_mb <- function(s) {
-#print(777)
-#print(s)
-  b <- round(parse_size_to_bytes(s)/1000000)
-  b
-#  format(b, scientific =FALSE)
-}
-  
-formatPlainNumber <- function(s) {
-  format(s, scientific=FALSE)
-}
-
-
-###############################################
-#' Given memory amount in mb, format it in a format suitable for Rust parsing
-#' 
-formatMemMB <- function(s) {
-  paste0(format(s, scientific=FALSE),"mb")
-}
 
 
 

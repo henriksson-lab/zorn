@@ -9,19 +9,20 @@ BascetGetRaw(
   rawmeta,
   maxShardSize = "50g",
   outputName = "debarcoded",
-  outputNameIncomplete = "incomplete_reads",
   chemistry = c("atrandi-wgs", "atrandi-rnaseq", "parse-bio"),
-  subchemistry = NULL,
   barcodeTolerance = NULL,
-  numLocalThreads = NULL,
+  numThreads = NULL,
   numReadThreads = NULL,
   numDebarcodeThreads = NULL,
   numSortingThreads = NULL,
+  numMergeSortingThreads = NULL,
   numWriteThreads = NULL,
+  numCompressThreads = NULL,
+  totalMem = NULL,
   streamBufferSize = NULL,
   sortBufferSize = NULL,
-  pageBufferSize = NULL,
-  totalMem = NULL,
+  compressBufferSize = NULL,
+  compressRawBufferSize = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -36,35 +37,37 @@ BascetGetRaw(
 
 \item{outputName}{Name output files: Debarcoded reads}
 
-\item{outputNameIncomplete}{Name of output files: Reads that could not be parsed}
-
 \item{chemistry}{The type of data to be parsed}
 
 \item{barcodeTolerance}{Optional: Number of mismatches allowed in the barcode for it to still be considered valid}
 
-\item{numLocalThreads}{Number of threads to use per job. Default is the number from the runner}
+\item{numThreads}{Number of threads to use per job. Default is the number from the runner}
 
-\item{numReadThreads}{Number of threads for reading (advanced; parameter not checked)}
+\item{numReadThreads}{Advanced setting: Number of threads for reading}
 
-\item{numDebarcodeThreads}{Number of threads for debarcoding (advanced; parameter not checked)}
+\item{numDebarcodeThreads}{Advanced setting: Number of threads for debarcoding}
 
-\item{numSortingThreads}{Number of threads for sorting (advanced; parameter not checked)}
+\item{numSortingThreads}{Advanced setting: Number of threads for sorting, first phase}
 
-\item{numWriteThreads}{Number of threads for writing (advanced; parameter not checked)}
+\item{numMergeSortingThreads}{Advanced setting: Number of threads for sorting, second phase}
 
-\item{streamBufferSize}{Stream buffer size (advanced; parameter not checked)}
+\item{numWriteThreads}{Advanced setting: Number of threads for writing}
 
-\item{sortBufferSize}{Sort buffer size (advanced; parameter not checked)}
-
-\item{pageBufferSize}{Page buffer size (advanced; parameter not checked)}
+\item{numCompressThreads}{Advanced setting: Number of threads for compressing}
 
 \item{totalMem}{Total memory to allocate}
+
+\item{streamBufferSize}{Advanced setting: Stream buffer size (fraction, given as e.g. "10\%")}
+
+\item{sortBufferSize}{Advanced setting: Sort buffer size (fraction, given as e.g. "10\%")}
 
 \item{overwrite}{}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
 \item{bascetInstance}{A Bascet instance}
+
+\item{pageBufferSize}{Advanced setting: Page buffer size (fraction, given as e.g. "10\%")}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
