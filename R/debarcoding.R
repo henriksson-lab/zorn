@@ -281,9 +281,12 @@ BascetGetRaw <- function(
 #    print(cur_ids)
 #    print(data.frame(shard=cur_ids))
     rawmeta_one <- data.frame(
-      shard=cur_ids,
-      r1=rawmeta_one$r1,
-      r2=rawmeta_one$r2,
+      shard = cur_ids,
+      prefix = rawmeta_one$prefix,
+      r1 = rawmeta_one$r1,
+      r2 = rawmeta_one$r2,
+      filesize = rawmeta_one$filesize,
+      need_num_outputs = rawmeta_one$need_num_outputs,
       row.names = NULL
     )
     rawmeta_tostore <- rbind(rawmeta_tostore, rawmeta_one)
@@ -713,7 +716,7 @@ BascetShardify <- function(
           "-o=${files_out[$TASK_ID]}",  
           "--include=${CELLFILE[$TASK_ID]}",
 
-          if(!is.null(numThreads)) paste0("--threads=",format_size_bascet(numThreads)),
+          if(!is.null(numThreads)) paste0("--threads=",numThreads),
           if(!is.null(numWriterThreads)) paste0("--numof-threads-write=",format_size_bascet(numWriterThreads)),
           if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)),
           if(!is.null(streamArenaMem)) paste0("--sizeof-stream-arena=",format_size_bascet(streamArenaMem))
