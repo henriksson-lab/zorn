@@ -10,19 +10,20 @@ BascetGetRaw(
   rawmeta,
   maxShardSize = "50g",
   outputName = "debarcoded",
-  outputNameIncomplete = "incomplete_reads",
   chemistry = c("atrandi-wgs", "atrandi-rnaseq", "parse-bio"),
-  subchemistry = NULL,
   barcodeTolerance = NULL,
-  numLocalThreads = NULL,
+  numThreads = NULL,
   numReadThreads = NULL,
   numDebarcodeThreads = NULL,
   numSortingThreads = NULL,
+  numMergeSortingThreads = NULL,
   numWriteThreads = NULL,
+  numCompressThreads = NULL,
+  totalMem = NULL,
   streamBufferSize = NULL,
   sortBufferSize = NULL,
-  pageBufferSize = NULL,
-  totalMem = NULL,
+  compressBufferSize = NULL,
+  compressRawBufferSize = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -49,10 +50,6 @@ BascetGetRaw(
 
   Name output files: Debarcoded reads
 
-- outputNameIncomplete:
-
-  Name of output files: Reads that could not be parsed
-
 - chemistry:
 
   The type of data to be parsed
@@ -62,42 +59,46 @@ BascetGetRaw(
   Optional: Number of mismatches allowed in the barcode for it to still
   be considered valid
 
-- numLocalThreads:
+- numThreads:
 
   Number of threads to use per job. Default is the number from the
   runner
 
 - numReadThreads:
 
-  Number of threads for reading (advanced; parameter not checked)
+  Advanced setting: Number of threads for reading
 
 - numDebarcodeThreads:
 
-  Number of threads for debarcoding (advanced; parameter not checked)
+  Advanced setting: Number of threads for debarcoding
 
 - numSortingThreads:
 
-  Number of threads for sorting (advanced; parameter not checked)
+  Advanced setting: Number of threads for sorting, first phase
+
+- numMergeSortingThreads:
+
+  Advanced setting: Number of threads for sorting, second phase
 
 - numWriteThreads:
 
-  Number of threads for writing (advanced; parameter not checked)
+  Advanced setting: Number of threads for writing
 
-- streamBufferSize:
+- numCompressThreads:
 
-  Stream buffer size (advanced; parameter not checked)
-
-- sortBufferSize:
-
-  Sort buffer size (advanced; parameter not checked)
-
-- pageBufferSize:
-
-  Page buffer size (advanced; parameter not checked)
+  Advanced setting: Number of threads for compressing
 
 - totalMem:
 
   Total memory to allocate
+
+- streamBufferSize:
+
+  Advanced setting: Stream buffer size (fraction, given as e.g. "10%")
+
+- sortBufferSize:
+
+  Advanced setting: Sort buffer size (fraction, given as e.g. "10%")
 
 - overwrite:
 
@@ -109,6 +110,10 @@ BascetGetRaw(
 - bascetInstance:
 
   A Bascet instance
+
+- pageBufferSize:
+
+  Advanced setting: Page buffer size (fraction, given as e.g. "10%")
 
 ## Value
 

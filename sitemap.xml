@@ -136,6 +136,8 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerReadOneLine.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerShowtext.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerStart.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/formatPlainNumber.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/format_size_bascet.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetDockerImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getFastqR2fromR1.html</loc></url>
@@ -145,11 +147,13 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.existing.fasta.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.integer.like.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.numeric.range01.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/is.percent.string.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.positive.integer.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.runner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.streamer.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.valid.env.variable.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.valid.listcells.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/is.valid.memsize.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.valid.shardname.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.valid.threadcount.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/isBamPairedAlignment.html</loc></url>
@@ -158,8 +162,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/lseq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/makeOutputShardNames.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/new_no_job.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/parse_size_to_bytes.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/parse_size_to_mb.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/parse_size_string.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptCancelJobIfFileExists.html</loc></url>

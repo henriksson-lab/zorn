@@ -278,6 +278,10 @@
   function crashes)
 - [`extractstreamerStart()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerStart.md)
   : extract streamer: create an instance
+- [`formatPlainNumber()`](https://henriksson-lab.github.io/zorn/reference/formatPlainNumber.md)
+  : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
+- [`format_size_bascet()`](https://henriksson-lab.github.io/zorn/reference/format_size_bascet.md)
+  : Format size for input to Bascet
 - [`getBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/getBascetDockerImage.md)
   : Get and install a Bascet docker image. It will be cached to avoid
   downloading it each the time the function is called
@@ -297,6 +301,9 @@
   : Check that parameter is castable to an integer
 - [`is.numeric(`*`<range01>`*`)`](https://henriksson-lab.github.io/zorn/reference/is.numeric.range01.md)
   : Check that parameter is a number between 0..1
+- [`is.percent.string()`](https://henriksson-lab.github.io/zorn/reference/is.percent.string.md)
+  : Given memory amount in mb, format it in a format suitable for Rust
+  parsing
 - [`is.positive.integer()`](https://henriksson-lab.github.io/zorn/reference/is.positive.integer.md)
   : Check that parameter is an integer and \>0
 - [`is.runner()`](https://henriksson-lab.github.io/zorn/reference/is.runner.md)
@@ -307,6 +314,8 @@
   : Check that parameter is a valid environment variable name
 - [`is.valid.listcells()`](https://henriksson-lab.github.io/zorn/reference/is.valid.listcells.md)
   : Check that parameter is a valid list of cells
+- [`is.valid.memsize()`](https://henriksson-lab.github.io/zorn/reference/is.valid.memsize.md)
+  : Check that parameter is a valid memory size
 - [`is.valid.shardname()`](https://henriksson-lab.github.io/zorn/reference/is.valid.shardname.md)
   : Check that parameter is a valid shard name
 - [`is.valid.threadcount()`](https://henriksson-lab.github.io/zorn/reference/is.valid.threadcount.md)
@@ -326,9 +335,7 @@
 - [`new_no_job()`](https://henriksson-lab.github.io/zorn/reference/new_no_job.md)
   : Create an empty job. It is considered to have terminated from the
   start
-- [`parse_size_to_bytes()`](https://henriksson-lab.github.io/zorn/reference/parse_size_to_bytes.md)
-  : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
-- [`parse_size_to_mb()`](https://henriksson-lab.github.io/zorn/reference/parse_size_to_mb.md)
+- [`parse_size_string()`](https://henriksson-lab.github.io/zorn/reference/parse_size_string.md)
   : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
 - [`removeBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.md)
   : Remove current Bascet docker image

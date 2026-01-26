@@ -5,10 +5,20 @@ Create new local runner instance
 ## Usage
 
 ``` r
-LocalRunner(ncpu = NULL, mem = NULL, direct = TRUE, showScript = FALSE)
+LocalRunner(
+  settings = NULL,
+  ncpu = NULL,
+  mem = NULL,
+  direct = TRUE,
+  showScript = FALSE
+)
 ```
 
 ## Arguments
+
+- settings:
+
+  Default settings to override; can be NULL
 
 - ncpu:
 

@@ -16,8 +16,11 @@ BascetShardify(
   numOutputShards = 1,
   outputName = "filtered",
   overwrite = FALSE,
-  bufferSize = 1500,
-  pageSize = 32,
+  numThreads = NULL,
+  numWriterThreads = NULL,
+  totalMem = NULL,
+  streamArenaMem = NULL,
+  streamBufferSize = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -41,6 +44,24 @@ BascetShardify(
 
   Force overwriting of existing files. The default is to do nothing
   files exist
+
+- numThreads:
+
+  Number of threads to use per job. Default is the number from the
+  runner
+
+- numWriterThreads:
+
+  Advanced settings: Number of writer threads to use per job
+
+- totalMem:
+
+  How much memory to use. Extracted from runner if set
+
+- streamArenaMem:
+
+  Advanced settings: How much memory to use for streaming arena
+  (fraction, given as e.g. "10%")
 
 - runner:
 
