@@ -145,7 +145,7 @@ is.percent.string <- function(s) {
 ###############################################
 #' Check that parameter is a valid memory size
 is.valid.memsize <- function(x) {
-  !is.na(parse_size_to_bytes(x))
+  !is.na(parse_size_string(x))
 }
 
 
