@@ -140,7 +140,7 @@ DetectRawFileMeta <- function(
 BascetGetRaw <- function(
     bascetRoot, 
     rawmeta,
-    maxShardSize="50g",  ### if any?
+    maxShardSize="200g",  ### if any?   maybe no need!
     outputName="debarcoded", 
     chemistry=c("atrandi-wgs","atrandi-rnaseq","parse-bio"),  #TODO any way to get list from software?
     #subchemistry=NULL,
@@ -159,6 +159,8 @@ BascetGetRaw <- function(
     sortBufferSize=NULL,
     compressBufferSize=NULL,
     compressRawBufferSize=NULL,
+
+    numMergeStreams=NULL,
 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
@@ -187,6 +189,13 @@ BascetGetRaw <- function(
   chemistry <- match.arg(chemistry)
   stopifnot(is.numeric(barcodeTolerance) || is.null(barcodeTolerance))
   stopifnot(is.valid.threadcount(numThreads))
+
+  stopifnot(is.null(numMergeStreams) || is.positive.integer(numMergeStreams))
+  if(!is.null(numMergeStreams)) {
+    stopifnot(is.positive.integer(numMergeStreams))
+    numMergeStreams <- as.integer(numMergeStreams)
+    stopifnot(numMergeStreams >= 2)
+  }
 
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
@@ -246,6 +255,11 @@ BascetGetRaw <- function(
   #Check if libnames should be added
   add_libnames <- any(rawmeta$prefix!="")
   
+#print("---")
+#print("---")
+#print("---")
+#print("---")
+
   #Duplicate rawmeta for each output file
   rawmeta_tostore <- NULL
   cur_start_shard <- 0
@@ -253,12 +267,13 @@ BascetGetRaw <- function(
   for(i in 1:nrow(rawmeta)) {
     rawmeta_one <- rawmeta[i,,drop=FALSE]
     cur_ids <- cur_start_shard + (1:rawmeta_one$need_num_outputs)
-    #print(rawmeta_one)
-    #print(cur_ids)
-    #    print(data.frame(shard=cur_ids))
-    rawmeta_one <- cbind(
-      rawmeta_one,
-      data.frame(shard=cur_ids),
+#    print(rawmeta_one)
+#    print(cur_ids)
+#    print(data.frame(shard=cur_ids))
+    rawmeta_one <- data.frame(
+      shard=cur_ids,
+      r1=rawmeta_one$r1,
+      r2=rawmeta_one$r2,
       row.names = NULL
     )
     rawmeta_tostore <- rbind(rawmeta_tostore, rawmeta_one)
@@ -272,6 +287,8 @@ BascetGetRaw <- function(
     #Move to next set of outputs
     cur_start_shard <- cur_start_shard + rawmeta_one$need_num_outputs
   }
+
+  print(rawmeta_tostore)
   #  print(rawmeta)
   #  print(arg_outputFiles)
   #  return(666)
@@ -312,16 +329,19 @@ BascetGetRaw <- function(
           if(!is.null(numWriteThreads)) paste0("--countof-threads-write=",numWriteThreads),
           
           if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
-          if(!is.null(streamBufferSize)) paste0("--sizeof-stream-buffer=",format_size_bascet(streamBufferSize)),    # in %!!
-          if(!is.null(sortBufferSize)) paste0("--sizeof-sort-buffer=",format_size_bascet(sortBufferSize)), 
-          if(!is.null(compressBufferSize)) paste0("--sizeof-compress-buffer=",format_size_bascet(compressBufferSize)),  ### rename
-          if(!is.null(compressRawBufferSize)) paste0("--sizeof-compress-raw-buffer=",format_size_bascet(compressRawBufferSize)),  ### rename
+          if(!is.null(streamBufferSize)) paste0("--sizeof-stream-buffer=",streamBufferSize),
+          if(!is.null(sortBufferSize)) paste0("--sizeof-sort-buffer=",sortBufferSize), 
+          if(!is.null(compressBufferSize)) paste0("--sizeof-compress-buffer=",compressBufferSize),
+          if(!is.null(compressRawBufferSize)) paste0("--sizeof-compress-raw-buffer=",compressRawBufferSize),
+
+          if(!is.null(numMergeStreams)) paste0("--countof-merge-streams=",numMergeStreams),
+
           
-          if(!is.null(subchemistry))     paste0("--subchemistry=",subchemistry),
-          if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
+          #if(!is.null(subchemistry))     paste0("--subchemistry=",subchemistry),
+#          if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
           "--r1=${files_r1[$TASK_ID]}",
           "--r2=${files_r2[$TASK_ID]}",
-          if(add_libnames) "--libname=${libnames[$TASK_ID]}",
+#          if(add_libnames) "--libname=${libnames[$TASK_ID]}",
           "--out=${files_out[$TASK_ID]}",                 #Each job produces a single output
           chemistry
         ))
