@@ -7,7 +7,8 @@
 setClass("BascetInstance", slots=list(
   bin="character",
   tempdir="character",
-  prependCmd="character"
+  prependCmd="character",
+  containerMem="character"
 )
 ) 
 
@@ -22,13 +23,15 @@ setClass("BascetInstance", slots=list(
 #' @param bin Name of the binary
 #' @param tempdir Directory where to store temporary files
 #' @param prependCmd Something to prepend to the command, to e.g. support container systems
+#' @param containerMem Amount of memory used by the container itself
 #' 
 #' @return A Bascet instance
 #' @export
 BascetInstance <- function(
     bin, 
     tempdir, 
-    prependCmd=""
+    prependCmd="",
+    containerMem="0B"
 ){
   #check arguments
   if(!is.null(tempdir) & !file.exists(tempdir)){
@@ -36,12 +39,15 @@ BascetInstance <- function(
   }
   #cannot check other arguments; need to trust user
   
+  stopifnot(is.valid.memsize(containerMem))
+  
   #Generate instance
   new(
     "BascetInstance",
     bin=bin,
     tempdir=tempdir,
-    prependCmd=prependCmd
+    prependCmd=prependCmd,
+    containerMem=containerMem
   )
 }
 
@@ -136,7 +142,8 @@ getBascetSingularityImage <- function(
   BascetInstance(
     bin="bascet",
     tempdir=tempdir,
-    prependCmd=prependCmd
+    prependCmd=prependCmd,
+    containerMem="10GB"
   ) 
 }
 
@@ -225,7 +232,8 @@ getBascetDockerImage <- function(
     BascetInstance(
       bin="bascet",
       tempdir=tempdir,
-      prependCmd=prependCmd
+      prependCmd=prependCmd,
+      containerMem="10GB"
     ) 
     
   } else {
