@@ -124,8 +124,8 @@ SlurmRunner <- function(
   }
   
   if(!is.null(mem)){
-    #Check that the argument is correct. will stop otherwise
-    parse_size_to_bytes(mem)
+    #Check that the argument is correct
+    stopifnot(is.valid.memsize(mem))
     settings@mem <- mem
   }
 
