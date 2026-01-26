@@ -130,6 +130,7 @@ DetectRawFileMeta <- function(
 #' @param streamBufferSize Advanced setting: Stream buffer size (fraction, given as e.g. "10%")
 #' @param sortBufferSize Advanced setting: Sort buffer size (fraction, given as e.g. "10%")
 #' @param pageBufferSize Advanced setting: Page buffer size (fraction, given as e.g. "10%")
+#' @param compressionLevel Advanced setting: Compression level (0..12)
 #' 
 #' @param overwrite 
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
@@ -159,6 +160,8 @@ BascetGetRaw <- function(
     sortBufferSize=NULL,
     compressBufferSize=NULL,
     compressRawBufferSize=NULL,
+    
+    compressionLevel=NULL,
 
     numMergeStreams=NULL,
 
@@ -200,6 +203,13 @@ BascetGetRaw <- function(
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
+
+  #Check compression setting  
+  stopifnot(is.integer(compressionLevel))
+  if(!is.null(compressionLevel)) {
+    compressionLevel <- as.integer(compressionLevel)
+    stopifnot(compressionLevel >= 0 && compressionLevel <= 12)
+  }
   
   #Check memory sizes
   stopifnot(is.null(streamBufferSize) || is.percent.string(streamBufferSize))
@@ -336,12 +346,11 @@ BascetGetRaw <- function(
 
           if(!is.null(numMergeStreams)) paste0("--countof-merge-streams=",numMergeStreams),
 
+          if(!is.null(compressionLevel)) paste0("--compression-level=",compressionLevel),
           
-          #if(!is.null(subchemistry))     paste0("--subchemistry=",subchemistry),
-#          if(!is.null(barcodeTolerance)) paste0("--barcode-tol=", barcodeTolerance),
           "--r1=${files_r1[$TASK_ID]}",
           "--r2=${files_r2[$TASK_ID]}",
-#          if(add_libnames) "--libname=${libnames[$TASK_ID]}",
+#########          if(add_libnames) "--libname=${libnames[$TASK_ID]}",
           "--out=${files_out[$TASK_ID]}",                 #Each job produces a single output
           chemistry
         ))
