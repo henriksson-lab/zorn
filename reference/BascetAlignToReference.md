@@ -8,11 +8,10 @@ Align from FASTQ, generate sorted and indexed BAM file
 BascetAlignToReference(
   bascetRoot,
   useReference,
-  numLocalThreads = NULL,
-  inputName = "asfq",
+  numThreads = NULL,
+  inputName = "filtered",
   outputNameBAMunsorted = "unsorted_aligned",
   outputNameBAMsorted = "aligned",
-  doSort = TRUE,
   overwrite = FALSE,
   aligner = c(NULL, "BWA", "STAR"),
   runner = GetDefaultBascetRunner(),
@@ -30,7 +29,7 @@ BascetAlignToReference(
 
   Name of the BWA reference to use
 
-- numLocalThreads:
+- numThreads:
 
   Number of threads to use for each runner. Default is the maximum,
   taken from runner settings
@@ -46,10 +45,6 @@ BascetAlignToReference(
 - outputNameBAMsorted:
 
   Name of sorted BAMs (if generated)
-
-- doSort:
-
-  Whether to sort the output or not
 
 - overwrite:
 

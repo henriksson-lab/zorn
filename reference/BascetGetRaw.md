@@ -8,7 +8,7 @@ Extract barcodes and trim input raw FASTQ
 BascetGetRaw(
   bascetRoot,
   rawmeta,
-  maxShardSize = "50g",
+  maxShardSize = "200g",
   outputName = "debarcoded",
   chemistry = c("atrandi-wgs", "atrandi-rnaseq", "parse-bio"),
   barcodeTolerance = NULL,
@@ -24,6 +24,8 @@ BascetGetRaw(
   sortBufferSize = NULL,
   compressBufferSize = NULL,
   compressRawBufferSize = NULL,
+  compressionLevel = NULL,
+  numMergeStreams = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -99,6 +101,10 @@ BascetGetRaw(
 - sortBufferSize:
 
   Advanced setting: Sort buffer size (fraction, given as e.g. "10%")
+
+- compressionLevel:
+
+  Advanced setting: Compression level (0..12)
 
 - overwrite:
 
