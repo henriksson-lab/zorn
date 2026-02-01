@@ -8,7 +8,7 @@ BascetRunCellSNP(
   bascetRoot,
   inputName = "aligned",
   outputName = "cellsnp",
-  numLocalThreads = NULL,
+  numThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -21,7 +21,7 @@ BascetRunCellSNP(
 
 \item{outputName}{Name of output shard}
 
-\item{numLocalThreads}{Number of threads to use for each runner. Default is the maximum, taken from runner settings}
+\item{numThreads}{Number of threads to use for each runner. Default is the maximum, taken from runner settings}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

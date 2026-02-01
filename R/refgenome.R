@@ -675,8 +675,6 @@ BascetAlignToReference <- function(
   outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
   outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
-#print(outputFilesBAMunsorted)
-
   if(aligner=="BWA"){
     if(!file.exists(useReference)){
       stop("BWA reference file does not exist")
@@ -688,20 +686,6 @@ BascetAlignToReference <- function(
       ### TODO could also check contents of this dir
       stop("STAR reference file does not exist")
     }
-    
-    # cmd_mkdir_starlog <- paste(  ########## TODO delete all of this directory?
-    #   paste("mkdir -p STARlog")
-    # )
-    # 
-    # #### STAR needs its own tempdir. Make sure they don't collide.
-    # #TODO Should we rather put in subdir of user request?
-    # star_temp_dir <- "STARlog/_STARtmp.${TASK_ID}"
-    
-    #ensure any old STAR temp directory is removed.
-    #the naming should make this command safe
-    #cmd_delete_temp <- paste(
-    #  paste("rm -Rf",star_temp_dir)
-    #)    
     
   } else {
     stop(paste("Unknown aligner: ", aligner))

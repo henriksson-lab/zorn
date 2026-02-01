@@ -8,7 +8,7 @@ BascetIndexGenomeSTAR(
   fastaFile,
   gtfFile,
   outDir,
-  numLocalThreads = NULL,
+  numThreads = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -20,7 +20,7 @@ BascetIndexGenomeSTAR(
 
 \item{outDir}{A directory in which to store the index. This directory will be created}
 
-\item{numLocalThreads}{The number of threads to use for the STAR index, for each runner. Default is the maximum, taken from runner settings}
+\item{numThreads}{The number of threads to use for the STAR index, for each runner. Default is the maximum, taken from runner settings}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

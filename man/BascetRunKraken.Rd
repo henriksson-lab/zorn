@@ -2,14 +2,16 @@
 % Please edit documentation in R/kraken.R
 \name{BascetRunKraken}
 \alias{BascetRunKraken}
-\title{Run KRAKEN2 for each cell}
+\title{Run KRAKEN2 for each cell.
+Then produce a count matrix of taxonomy IDs from the output}
 \usage{
 BascetRunKraken(
   bascetRoot,
-  useKrakenDB = "/data/henlab/kraken/standard-8",
-  numLocalThreads = NULL,
-  inputName = "asfq",
-  outputName = "kraken_out",
+  useKrakenDB = NULL,
+  numThreads = NULL,
+  inputName = "filtered",
+  outputRawName = "kraken_raw",
+  outputMatrixName = "kraken_mat",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -20,11 +22,13 @@ BascetRunKraken(
 
 \item{useKrakenDB}{Path to KRAKEN2 database}
 
-\item{numLocalThreads}{Number of threads for one KRAKEN instance}
+\item{numThreads}{Number of threads for one KRAKEN instance}
 
 \item{inputName}{Name of input shard (FASTQ)}
 
-\item{outputName}{Name of output shard (kraken data)}
+\item{outputRawName}{Name of output shard (kraken raw output)}
+
+\item{outputMatrixName}{Name of output shard (kraken count table data)}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
@@ -36,5 +40,6 @@ BascetRunKraken(
 A job to be executed, or being executed, depending on runner settings
 }
 \description{
-Run KRAKEN2 for each cell
+Run KRAKEN2 for each cell.
+Then produce a count matrix of taxonomy IDs from the output
 }
