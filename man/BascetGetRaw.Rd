@@ -7,7 +7,7 @@
 BascetGetRaw(
   bascetRoot,
   rawmeta,
-  maxShardSize = "50g",
+  maxShardSize = "200g",
   outputName = "debarcoded",
   chemistry = c("atrandi-wgs", "atrandi-rnaseq", "parse-bio"),
   barcodeTolerance = NULL,
@@ -23,6 +23,8 @@ BascetGetRaw(
   sortBufferSize = NULL,
   compressBufferSize = NULL,
   compressRawBufferSize = NULL,
+  compressionLevel = NULL,
+  numMergeStreams = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -60,6 +62,8 @@ BascetGetRaw(
 \item{streamBufferSize}{Advanced setting: Stream buffer size (fraction, given as e.g. "10\%")}
 
 \item{sortBufferSize}{Advanced setting: Sort buffer size (fraction, given as e.g. "10\%")}
+
+\item{compressionLevel}{Advanced setting: Compression level (0..12)}
 
 \item{overwrite}{}
 

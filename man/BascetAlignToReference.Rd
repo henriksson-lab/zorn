@@ -7,11 +7,10 @@
 BascetAlignToReference(
   bascetRoot,
   useReference,
-  numLocalThreads = NULL,
-  inputName = "asfq",
+  numThreads = NULL,
+  inputName = "filtered",
   outputNameBAMunsorted = "unsorted_aligned",
   outputNameBAMsorted = "aligned",
-  doSort = TRUE,
   overwrite = FALSE,
   aligner = c(NULL, "BWA", "STAR"),
   runner = GetDefaultBascetRunner(),
@@ -23,15 +22,13 @@ BascetAlignToReference(
 
 \item{useReference}{Name of the BWA reference to use}
 
-\item{numLocalThreads}{Number of threads to use for each runner. Default is the maximum, taken from runner settings}
+\item{numThreads}{Number of threads to use for each runner. Default is the maximum, taken from runner settings}
 
 \item{inputName}{Name of input shard}
 
 \item{outputNameBAMunsorted}{Name of unsorted BAMs}
 
 \item{outputNameBAMsorted}{Name of sorted BAMs (if generated)}
-
-\item{doSort}{Whether to sort the output or not}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

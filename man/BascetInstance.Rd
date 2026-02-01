@@ -5,7 +5,7 @@
 \title{Create a new bascet instance.
 For advanced users only}
 \usage{
-BascetInstance(bin, tempdir, prependCmd = "")
+BascetInstance(bin, tempdir, prependCmd = "", containerMem = "0B")
 }
 \arguments{
 \item{bin}{Name of the binary}
@@ -13,6 +13,8 @@ BascetInstance(bin, tempdir, prependCmd = "")
 \item{tempdir}{Directory where to store temporary files}
 
 \item{prependCmd}{Something to prepend to the command, to e.g. support container systems}
+
+\item{containerMem}{Amount of memory used by the container itself}
 }
 \value{
 A Bascet instance
