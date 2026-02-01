@@ -345,7 +345,8 @@ setMethod(
     
     while(TRUE) {
       info <- JobStatus(job)[,c("status","num")]
-      
+      info <- info[!stringr::str_detect(info$num, stringr::fixed(".+")),,drop=FALSE] #ignore jobs like 1.+
+
       #Merge new info with last info. Only keep the latest entries
       info <- rbind(info, last_info)
       info <- info[!duplicated(info$num),] #remove older entries
@@ -390,13 +391,13 @@ setMethod(
         
         
         if(all(current_state=="COMPLETED")){
-          break;
+          break
         } else {
           #print(info$status)
           
           #Count number of jobs of each type
           num_total <- job@arraysize
-          num_running <- floor(sum(info$status=="RUNNING")/2)
+          num_running <- floor(sum(info$status=="RUNNING"))
           num_completed <- floor(sum(info$status=="COMPLETED")) 
           num_failed <- floor(sum(info$status=="FAILED"))
           num_outofmem <- floor(sum(info$status=="OUT_OF_MEM"))
@@ -414,6 +415,11 @@ setMethod(
             "Cancelled: ", num_cancelled,"   ",
             "Out-of-mem: ", num_outofmem
           )
+
+#print("num_completed")
+#print(num_completed)  ## too many!!
+#print(job@arraysize)
+#print(info)
           cli::cli_progress_update(set = num_completed)
           
           Sys.sleep(5)

@@ -98,7 +98,7 @@ BascetIndexGenomeBWA <- function(
 #' @param fastaFile Name of FASTA file holding genome sequence
 #' @param gtfFile GFF file holding genome annotation
 #' @param outDir A directory in which to store the index. This directory will be created
-#' @param numLocalThreads The number of threads to use for the STAR index, for each runner. Default is the maximum, taken from runner settings
+#' @param numThreads The number of threads to use for the STAR index, for each runner. Default is the maximum, taken from runner settings
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
@@ -108,13 +108,13 @@ BascetIndexGenomeSTAR <- function(
     fastaFile, 
     gtfFile,
     outDir,
-    numLocalThreads=NULL,
+    numThreads=NULL,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.null(numLocalThreads)) {
-    numLocalThreads <- as.integer(runner@ncpu)
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
   }
   
   #Check arguments
@@ -305,7 +305,7 @@ BascetAlignmentToBigwig <- function(
 #' If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); otherwise (flag 0x4)
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param numLocalThreads Number of threads to use. Default is the maximum, taken from runner settings
+#' @param numThreads Number of threads to use. Default is the maximum, taken from runner settings
 #' @param inputName Name of input shards (BAM-file format)
 #' @param outputName Name of output shards (BAM-file format)
 #' @param keepMapped Keep the mapped reads (TRUE) or unmapped (FALSE)
@@ -317,7 +317,7 @@ BascetAlignmentToBigwig <- function(
 #' @export
 BascetFilterAlignment <- function(  
     bascetRoot, 
-    numLocalThreads=NULL,
+    numThreads=NULL,
     inputName, 
     outputName,
     keepMapped=FALSE,
@@ -326,13 +326,13 @@ BascetFilterAlignment <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.null(numLocalThreads)) {
-    numLocalThreads <- as.integer(runner@ncpu)
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
   }
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
-  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(keepMapped))
@@ -381,7 +381,7 @@ BascetFilterAlignment <- function(
         bascetInstance@prependCmd,
         "samtools view",
         samtools_flags, 
-        "-@",numLocalThreads,           #Number of threads to use
+        "-@",numThreads,           #Number of threads to use
         "${files_in[$TASK_ID]}",        #Each job takes a single output
         "-b",                           #Output binary
         "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
@@ -410,7 +410,7 @@ BascetFilterAlignment <- function(
 # BascetAlignToReference <- function(
 #     bascetRoot, 
 #     useReference,
-#     numLocalThreads=NULL,
+#     numThreads=NULL,
 #     inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
 #     outputNameBAMunsorted="unsorted_aligned", 
 #     outputNameBAMsorted="aligned", 
@@ -421,14 +421,14 @@ BascetFilterAlignment <- function(
 #     bascetInstance=GetDefaultBascetInstance()
 # ){
 #   #Set number of threads if not given
-#   if(is.null(numLocalThreads)) {
-#     numLocalThreads <- as.integer(runner@ncpu)
+#   if(is.null(numThreads)) {
+#     numThreads <- as.integer(runner@ncpu)
 #   }
 #   
 #   #Check input arguments 
 #   stopifnot(dir.exists(bascetRoot))
 #   #useReference TODO
-#   stopifnot(is.valid.threadcount(numLocalThreads))
+#   stopifnot(is.valid.threadcount(numThreads))
 #   stopifnot(is.valid.shardname(inputName))
 #   stopifnot(is.valid.shardname(outputNameBAMunsorted))
 #   stopifnot(is.valid.shardname(outputNameBAMsorted))
@@ -492,7 +492,7 @@ BascetFilterAlignment <- function(
 #       useReference,
 #       "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
 #       "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
-#       "-t", numLocalThreads,
+#       "-t", numThreads,
 #       "-c 1", #only keep unique mappers
 #       "| ", bascetInstance@bin, "pipe-sam-add-tags",
 #       "| samtools view - -S -b -o",
@@ -528,7 +528,7 @@ BascetFilterAlignment <- function(
 #       "STAR", 
 #       "--genomeDir", useReference,
 #       "--readFilesIn ${files_in_r1[$TASK_ID]} ${files_in_r2[$TASK_ID]}",  #Align R1 and R2 FASTQ
-#       "--runThreadN", numLocalThreads,
+#       "--runThreadN", numThreads,
 #       "--outSAMtype SAM",  #this implies Unsorted
 #       "--outSAMunmapped Within",
 #       "--outSAMattributes Standard",
@@ -584,7 +584,7 @@ BascetFilterAlignment <- function(
 #         bascetInstance@prependCmd,
 #         "/usr/bin/samtools sort", 
 # #        "-f",                                 #Output file name is given as a whole (not prefix) -- other samtools version
-#         "-@",numLocalThreads,                 #Number of threads to use
+#         "-@",numThreads,                 #Number of threads to use
 #         "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
 #         "-o ${files_out_sorted[$TASK_ID]}"       #Each job produces a single output
 # #        "${files_out_sorted[$TASK_ID]}"       #Each job produces a single output -- other samtools version
@@ -646,17 +646,16 @@ BascetAlignToReference <- function(
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.null(numLocalThreads)) {
-    numLocalThreads <- as.integer(runner@ncpu)
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
   }
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
-  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputNameBAMunsorted))
   stopifnot(is.valid.shardname(outputNameBAMsorted))
-  stopifnot(is.logical(doSort))
   stopifnot(is.logical(overwrite))
   
   aligner <- match.arg(aligner)
@@ -672,10 +671,12 @@ BascetAlignToReference <- function(
   if(num_shards==0){
     stop("No input files")
   }
-
+  inputFiles <- file.path(bascetRoot, input_shards)
   outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
   outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
   
+#print(outputFilesBAMunsorted)
+
   if(aligner=="BWA"){
     if(!file.exists(useReference)){
       stop("BWA reference file does not exist")
@@ -707,7 +708,7 @@ BascetAlignToReference <- function(
   }
   
   
-  if(bascetCheckOverwriteOutput(outputFilesFinal, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputNameBAMsorted, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -719,10 +720,9 @@ BascetAlignToReference <- function(
         shellscriptMakeBashArray("files_out_sorted", outputFilesBAMsorted),
         
         ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_final[$TASK_ID]}"),
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_sorted[$TASK_ID]}"),
         
         assembleBascetCommand(bascetInstance, c(
-          bascetInstance@prependCmd,
           "align",
           "--in=${files_in[$TASK_ID]}",   
           "--unsorted=${files_out_unsorted[$TASK_ID]}",
@@ -1264,7 +1264,7 @@ BascetCountFeature <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
-#' @param numLocalThreads Number of threads to use for each runner. Default is the maximum, taken from runner settings
+#' @param numThreads Number of threads to use for each runner. Default is the maximum, taken from runner settings
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -1274,21 +1274,21 @@ BascetRunCellSNP <- function(
     bascetRoot, 
     inputName="aligned", 
     outputName="cellsnp", 
-    numLocalThreads=NULL,
+    numThreads=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
-  if(is.null(numLocalThreads)) {
-    numLocalThreads <- as.integer(runner@ncpu)
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
   }
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
-  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -1340,7 +1340,7 @@ BascetRunCellSNP <- function(
       bascetInstance@prependCmd,
       "cellsnp-lite", 
       "-s ${files_in[$TASK_ID]}",        #Align BAM
-      "-p", numLocalThreads,
+      "-p", numThreads,
       "--genotype",
       "--chrom `cat ${files_listchrom[$TASK_ID]} | paste --serial -d, - -`",
       #"--minMAF 0.1",

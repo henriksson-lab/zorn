@@ -205,8 +205,8 @@ BascetGetRaw <- function(
   stopifnot(is.bascet.instance(bascetInstance))
 
   #Check compression setting  
-  stopifnot(is.integer(compressionLevel))
   if(!is.null(compressionLevel)) {
+    stopifnot(is.integer(compressionLevel))
     compressionLevel <- as.integer(compressionLevel)
     stopifnot(compressionLevel >= 0 && compressionLevel <= 12)
   }
@@ -267,8 +267,6 @@ BascetGetRaw <- function(
   
 #print("---")
 #print("---")
-#print("---")
-#print("---")
 
   #Duplicate rawmeta for each output file
   rawmeta_tostore <- NULL
@@ -277,18 +275,11 @@ BascetGetRaw <- function(
   for(i in 1:nrow(rawmeta)) {
     rawmeta_one <- rawmeta[i,,drop=FALSE]
     cur_ids <- cur_start_shard + (1:rawmeta_one$need_num_outputs)
-#    print(rawmeta_one)
 #    print(cur_ids)
-#    print(data.frame(shard=cur_ids))
-    rawmeta_one <- data.frame(
-      shard = cur_ids,
-      prefix = rawmeta_one$prefix,
-      r1 = rawmeta_one$r1,
-      r2 = rawmeta_one$r2,
-      filesize = rawmeta_one$filesize,
-      need_num_outputs = rawmeta_one$need_num_outputs,
-      row.names = NULL
-    )
+    rawmeta_one <- rawmeta_one[rep(1, length(cur_ids)),,drop=FALSE] #replicate rows
+    rawmeta_one$shard <- cur_ids
+    rownames(rawmeta_one) <- NULL
+#print(rawmeta_one)
     rawmeta_tostore <- rbind(rawmeta_tostore, rawmeta_one)
     
     #Also create a ,-separated file list for running Bascet
