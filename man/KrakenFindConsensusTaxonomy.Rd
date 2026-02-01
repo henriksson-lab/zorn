@@ -2,32 +2,16 @@
 % Please edit documentation in R/kraken.R
 \name{KrakenFindConsensusTaxonomy}
 \alias{KrakenFindConsensusTaxonomy}
-\title{Produce a count matrix of taxonomy IDs from KRAKEN output}
+\title{For a KRAKEN2 count matrix, return consensus taxID for each cell as metadata}
 \usage{
 KrakenFindConsensusTaxonomy(mat)
 }
 \arguments{
 \item{mat}{A count matrix, typically in sparse format}
-
-\item{bascetRoot}{The root folder where all Bascets are stored}
-
-\item{numThreads}{Number of threads for KRAKEN to use. Default is the maximum, taken from runner settings}
-
-\item{inputName}{Name of input shard (KRAKEN output)}
-
-\item{outputName}{Name of output shard (h5 count matrix)}
-
-\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
-
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
 }
 \value{
-A job to be executed, or being executed, depending on runner settings
-
 A data.frame holding cellID and consensus taxID
 }
 \description{
-Produce a count matrix of taxonomy IDs from KRAKEN output
+For a KRAKEN2 count matrix, return consensus taxID for each cell as metadata
 }
