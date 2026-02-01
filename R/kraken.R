@@ -95,7 +95,8 @@ BascetRunKraken <- function(
   stopifnot(dir.exists(useKrakenDB))
   stopifnot(is.valid.threadcount(numThreads))  
   stopifnot(is.valid.shardname(inputName))
-  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.valid.shardname(outputRawName))
+  stopifnot(is.valid.shardname(outputMatrixName))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -128,7 +129,7 @@ BascetRunKraken <- function(
           "kraken",
           "--in=${files_in[$TASK_ID]}",   
           "--out-raw=${files_out_raw[$TASK_ID]}",
-          "--out-matrix=${files_out_raw[$TASK_ID]}",
+          "--out-matrix=${files_out_matrix[$TASK_ID]}",
           "--temp=$BASCET_TEMPDIR",
           paste0("--db=", useKrakenDB), ################################ TODO might have whitespace
           paste0("--threads=", numThreads)
@@ -140,167 +141,6 @@ BascetRunKraken <- function(
     new_no_job()
   }
 }
-
-
-
-
-# 
-# BascetRunKraken <- function(
-#     bascetRoot,
-#     useKrakenDB="/data/henlab/kraken/standard-8",
-#     numThreads=NULL,
-#     inputName="asfq", ######### should be able to take filtered and pipe to kraken if needed  "filtered"
-#     outputName="kraken_out",
-#     overwrite=FALSE,
-#     runner=GetDefaultBascetRunner(),
-#     bascetInstance=GetDefaultBascetInstance()
-# ){
-#   #Set number of threads if not given
-#   if(is.null(numThreads)) {
-#     numThreads <- as.integer(runner@ncpu)
-#   }
-#   
-#   #Check arguments 
-#   stopifnot(dir.exists(bascetRoot))
-#   stopifnot(dir.exists(useKrakenDB))
-#   stopifnot(is.valid.threadcount(numThreads))  
-#   stopifnot(is.valid.shardname(inputName))
-#   stopifnot(is.valid.shardname(outputName))
-#   stopifnot(is.logical(overwrite))
-#   stopifnot(is.runner(runner))
-#   stopifnot(is.bascet.instance(bascetInstance))
-#   
-#   #Figure out input and output file names  
-#   input_shards <- detectShardsForFile(bascetRoot, inputName)
-#   num_shards <- length(input_shards)
-#   if(num_shards==0){
-#     stop("No input files")
-#   }
-#   inputFiles_R1 <- file.path(bascetRoot, input_shards)
-#   
-#   outputFiles <- makeOutputShardNames(bascetRoot, outputName, "kraken_out", num_shards) 
-#   
-#   ### Check if paired or not
-#   is_paired <- isPairedFastq(inputFiles_R1[1])
-#   print(paste("Detect paired FASTQ:",is_paired))
-#   
-#   ### Figure out R2 names
-#   if(is_paired){
-#     inputFiles_R2 <- getFastqR2fromR1(inputFiles_R1)
-#   }
-#   
-#   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
-#     #Run the job
-#     RunJob(
-#       runner = runner, 
-#       jobname = paste0("Z_kraken_fq"),
-#       bascetInstance = bascetInstance,
-#       cmd = c(
-#         #shellscript_set_tempdir(bascetInstance),
-#         shellscriptMakeBashArray("files_in_R1",inputFiles_R1),
-#         if(is_paired) shellscriptMakeBashArray("files_in_R2",inputFiles_R2),
-#         shellscriptMakeBashArray("files_out",outputFiles),
-#         
-#         ### Abort early if needed    
-#         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-#         
-#         paste(
-#           bascetInstance@prependCmd,
-#           "kraken2",
-#           "--db", useKrakenDB, #TODO =?
-#           "--threads", numThreads, #TODO =?
-#           "--output ${files_out[$TASK_ID]}",
-#           if(is_paired) "--paired",
-#           "${files_in_R1[$TASK_ID]}",
-#           if(is_paired) "${files_in_R2[$TASK_ID]}"
-#         )
-#       ),
-#       arraysize = num_shards
-#     )  
-#   } else {
-#     new_no_job()
-#   }
-# }
-# 
-# 
-
-
-
-
-
-###############################################
-#' Produce a count matrix of taxonomy IDs from KRAKEN output
-#' 
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param numThreads Number of threads for KRAKEN to use. Default is the maximum, taken from runner settings
-#' @param inputName Name of input shard (KRAKEN output)
-#' @param outputName Name of output shard (h5 count matrix)
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
-#' @return A job to be executed, or being executed, depending on runner settings
-#' @export
-# BascetMakeKrakenCountMatrix <- function(
-#     bascetRoot,
-#     numThreads=NULL,
-#     inputName="kraken_out", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
-#     outputName="kraken", 
-#     overwrite=FALSE,
-#     runner=GetDefaultBascetRunner(), 
-#     bascetInstance=GetDefaultBascetInstance()
-# ){
-#   #Set number of threads if not given
-#   if(is.null(numThreads)) {
-#     numThreads <- as.integer(runner@ncpu)
-#   }
-#   
-#   #Check arguments 
-#   stopifnot(dir.exists(bascetRoot))
-#   stopifnot(is.valid.threadcount(numThreads))  
-#   stopifnot(is.valid.shardname(inputName))
-#   stopifnot(is.valid.shardname(outputName))
-#   stopifnot(is.logical(overwrite))
-#   stopifnot(is.runner(runner))
-#   stopifnot(is.bascet.instance(bascetInstance))
-#   
-#   #Figure out input and output file names  
-#   input_shards <- detectShardsForFile(bascetRoot, inputName)
-#   num_shards <- length(input_shards)
-#   if(num_shards==0){
-#     stop("No input files")
-#   }
-#   inputFiles <- file.path(bascetRoot, input_shards)
-#   
-#   outputFiles <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards) 
-#   
-#   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
-#     #Run the job
-#     RunJob(
-#       runner = runner, 
-#       jobname = paste0("Z_kraken_mat"),
-#       bascetInstance = bascetInstance,
-#       cmd = c(
-#         #shellscript_set_tempdir(bascetInstance),
-#         shellscriptMakeBashArray("files_in",inputFiles),
-#         shellscriptMakeBashArray("files_out",outputFiles),
-#         
-#         ### Abort early if needed    
-#         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-# 
-#         assembleBascetCommand(bascetInstance, c(
-#           "kraken",
-#           "-t=$BASCET_TEMPDIR",
-#           "-i=${files_in[$TASK_ID]}",
-#           "-o=${files_out[$TASK_ID]}"
-#         ))
-#       ),
-#       arraysize = num_shards
-#     )  
-#   } else {
-#     new_no_job()
-#   }
-# }
 
 
 
