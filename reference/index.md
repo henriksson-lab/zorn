@@ -74,8 +74,6 @@
   : List files for a cell in a Bascet
 - [`BascetLoadCountSketchMatrix()`](https://henriksson-lab.github.io/zorn/reference/BascetLoadCountSketchMatrix.md)
   : Load count sketch matrix as Seurat object
-- [`BascetMakeKrakenCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/BascetMakeKrakenCountMatrix.md)
-  : Produce a count matrix of taxonomy IDs from KRAKEN output
 - [`BascetMakeMinhashHistogram()`](https://henriksson-lab.github.io/zorn/reference/BascetMakeMinhashHistogram.md)
   : Gather all minhashes into a single histogram file
 - [`BascetMapCell()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)
@@ -114,7 +112,8 @@
 - [`BascetRunFASTP()`](https://henriksson-lab.github.io/zorn/reference/BascetRunFASTP.md)
   : Run FASTP for each cell. Input must be in FASTQ file format
 - [`BascetRunKraken()`](https://henriksson-lab.github.io/zorn/reference/BascetRunKraken.md)
-  : Run KRAKEN2 for each cell
+  : Run KRAKEN2 for each cell. Then produce a count matrix of taxonomy
+  IDs from the output
 - [`BascetShardify()`](https://henriksson-lab.github.io/zorn/reference/BascetShardify.md)
   : Take debarcoded reads, merge them, and split them into suitable
   numbers of shards.

@@ -1,16 +1,18 @@
-# Run KRAKEN2 for each cell
+# Run KRAKEN2 for each cell. Then produce a count matrix of taxonomy IDs from the output
 
-Run KRAKEN2 for each cell
+Run KRAKEN2 for each cell. Then produce a count matrix of taxonomy IDs
+from the output
 
 ## Usage
 
 ``` r
 BascetRunKraken(
   bascetRoot,
-  useKrakenDB = "/data/henlab/kraken/standard-8",
-  numLocalThreads = NULL,
-  inputName = "asfq",
-  outputName = "kraken_out",
+  useKrakenDB = NULL,
+  numThreads = NULL,
+  inputName = "filtered",
+  outputRawName = "kraken_raw",
+  outputMatrixName = "kraken_mat",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -27,7 +29,7 @@ BascetRunKraken(
 
   Path to KRAKEN2 database
 
-- numLocalThreads:
+- numThreads:
 
   Number of threads for one KRAKEN instance
 
@@ -35,9 +37,13 @@ BascetRunKraken(
 
   Name of input shard (FASTQ)
 
-- outputName:
+- outputRawName:
 
-  Name of output shard (kraken data)
+  Name of output shard (kraken raw output)
+
+- outputMatrixName:
+
+  Name of output shard (kraken count table data)
 
 - overwrite:
 

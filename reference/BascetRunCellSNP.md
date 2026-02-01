@@ -10,7 +10,7 @@ BascetRunCellSNP(
   bascetRoot,
   inputName = "aligned",
   outputName = "cellsnp",
-  numLocalThreads = NULL,
+  numThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -31,7 +31,7 @@ BascetRunCellSNP(
 
   Name of output shard
 
-- numLocalThreads:
+- numThreads:
 
   Number of threads to use for each runner. Default is the maximum,
   taken from runner settings

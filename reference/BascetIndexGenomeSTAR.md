@@ -9,7 +9,7 @@ BascetIndexGenomeSTAR(
   fastaFile,
   gtfFile,
   outDir,
-  numLocalThreads = NULL,
+  numThreads = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -30,7 +30,7 @@ BascetIndexGenomeSTAR(
   A directory in which to store the index. This directory will be
   created
 
-- numLocalThreads:
+- numThreads:
 
   The number of threads to use for the STAR index, for each runner.
   Default is the maximum, taken from runner settings
