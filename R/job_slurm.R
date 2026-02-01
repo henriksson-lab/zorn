@@ -345,7 +345,7 @@ setMethod(
     
     while(TRUE) {
       info <- JobStatus(job)[,c("status","num")]
-      info <- info[!stringr::str_detect(info$num, stringr::fixed(".+")),,drop=FALSE] #ignore jobs like 1.+
+      info <- info[!stringr::str_detect(info$num, stringr::fixed("+")),,drop=FALSE] #ignore jobs like 1+
 
       #Merge new info with last info. Only keep the latest entries
       info <- rbind(info, last_info)
