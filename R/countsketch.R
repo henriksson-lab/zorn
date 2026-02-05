@@ -82,7 +82,7 @@ BascetGatherCountSketch <- function(
     #Run the job
     RunJob(
       runner = runner, 
-      jobname = "bascet_get_countsketch",
+      jobname = "Zcs",
       bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = 1

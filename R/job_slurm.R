@@ -336,13 +336,16 @@ setMethod(
     
     cli::cli_progress_bar(
       total = job@arraysize,
+      .auto_close = FALSE,
       format = "{cli::pb_bar} {cli::pb_percent} | {cur_summary}"
     )
-    
+    cli::cli_progress_update(set = 0)
+    #print(pb)
     #Because SLURM info is emptied overnight, we need to keep old info,
     #or it will get lost
     last_info <- NULL
-    
+    num_completed <- 0
+    num_total <- job@arraysize
     while(TRUE) {
       info <- JobStatus(job)[,c("status","num")]
       info <- info[!stringr::str_detect(info$num, stringr::fixed("+")),,drop=FALSE] #ignore jobs like 1+
@@ -361,8 +364,8 @@ setMethod(
         
         #print("Waiting to start")  
         cur_summary <- "Waiting for SLURM job to start"
-        cli::cli_progress_update(set = 0)
-        Sys.sleep(5)
+        #cli::cli_progress_update(id=pb, set = 0)
+        #Sys.sleep(5)
       } else {
         
         #Parse each line of info
@@ -396,7 +399,6 @@ setMethod(
           #print(info$status)
           
           #Count number of jobs of each type
-          num_total <- job@arraysize
           num_running <- floor(sum(info$status=="RUNNING"))
           num_completed <- floor(sum(info$status=="COMPLETED")) 
           num_failed <- floor(sum(info$status=="FAILED"))
@@ -415,17 +417,26 @@ setMethod(
             "Cancelled: ", num_cancelled,"   ",
             "Out-of-mem: ", num_outofmem
           )
+          
+          #print(cur_summary)
 
 #print("num_completed")
 #print(num_completed)  ## too many!!
 #print(job@arraysize)
 #print(info)
-          cli::cli_progress_update(set = num_completed)
-          
-          Sys.sleep(5)
         }
       }
+      
+#      cli::cli_progress_update(set = 20)
+      if(num_completed==num_total) {
+        #Need to break early or cli call fails. Poor design of the library!
+        break
+      } else {
+        cli::cli_progress_update(set = num_completed)
+        Sys.sleep(1)
+      }
     }
+    #cli::cli_progress_done()
     
   }
 )
