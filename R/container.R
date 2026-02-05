@@ -8,7 +8,8 @@ setClass("BascetInstance", slots=list(
   bin="character",
   tempdir="character",
   prependCmd="character",
-  containerMem="character"
+  containerMem="character",
+  logLevel="character"
 )
 ) 
 
@@ -24,6 +25,7 @@ setClass("BascetInstance", slots=list(
 #' @param tempdir Directory where to store temporary files
 #' @param prependCmd Something to prepend to the command, to e.g. support container systems
 #' @param containerMem Amount of memory used by the container itself
+#' @param logLevel ...
 #' 
 #' @return A Bascet instance
 #' @export
@@ -31,7 +33,8 @@ BascetInstance <- function(
     bin, 
     tempdir, 
     prependCmd="",
-    containerMem="0B"
+    containerMem="0B",
+    logLevel="info"			#TODO check options. info, debug, warn
 ){
   #check arguments
   if(!is.null(tempdir) & !file.exists(tempdir)){
@@ -47,7 +50,8 @@ BascetInstance <- function(
     bin=bin,
     tempdir=tempdir,
     prependCmd=prependCmd,
-    containerMem=containerMem
+    containerMem=containerMem,
+    logLevel=logLevel
   )
 }
 
@@ -115,7 +119,8 @@ GetBascetTempDir <- function(
 #' @export
 getBascetSingularityImage <- function(
     storeAt=getwd(), 
-    tempdir=NULL
+    tempdir=NULL,
+    logLevel="info"                    #TODO check options. info, debug, warn
 ){
   #Check arguments
   stopifnot(dir.exists(storeAt))
@@ -143,7 +148,8 @@ getBascetSingularityImage <- function(
     bin="bascet",
     tempdir=tempdir,
     prependCmd=prependCmd,
-    containerMem="10GB"
+    containerMem="10GB",
+    logLevel=logLevel
   ) 
 }
 
@@ -170,7 +176,8 @@ getBascetDockerImage <- function(
     tempdir=NULL,
     forceInstall=FALSE,
     mapDirs=NULL, #c("/Users","/Volumes","/home"),
-    verbose=FALSE
+    verbose=FALSE,
+    logLevel="info"                    #TODO check options. info, debug, warn
 ){
   #check arguments
   stopifnot(dir.exists(storeAt))
@@ -233,7 +240,8 @@ getBascetDockerImage <- function(
       bin="bascet",
       tempdir=tempdir,
       prependCmd=prependCmd,
-      containerMem="10GB"
+      containerMem="10GB",
+      logLevel=logLevel
     ) 
     
   } else {
@@ -363,6 +371,7 @@ assembleBascetCommand <- function(bascetInstance, params) {
       bascetInstance@prependCmd,
       bascetInstance@bin,
       "--log-mode=$BASCET_LOGFILE",
+      paste0("--log-level=",bascetInstance@logLevel),
       params
     )
   )
