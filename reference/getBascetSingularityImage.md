@@ -7,7 +7,7 @@ called
 ## Usage
 
 ``` r
-getBascetSingularityImage(storeAt = getwd(), tempdir = NULL)
+getBascetSingularityImage(storeAt = getwd(), tempdir = NULL, logLevel = "info")
 ```
 
 ## Arguments

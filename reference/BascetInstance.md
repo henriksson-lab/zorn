@@ -5,7 +5,13 @@ Create a new bascet instance. For advanced users only
 ## Usage
 
 ``` r
-BascetInstance(bin, tempdir, prependCmd = "", containerMem = "0B")
+BascetInstance(
+  bin,
+  tempdir,
+  prependCmd = "",
+  containerMem = "0B",
+  logLevel = "info"
+)
 ```
 
 ## Arguments
@@ -25,6 +31,10 @@ BascetInstance(bin, tempdir, prependCmd = "", containerMem = "0B")
 - containerMem:
 
   Amount of memory used by the container itself
+
+- logLevel:
+
+  ...
 
 ## Value
 
