@@ -10,7 +10,8 @@ getBascetDockerImage(
   tempdir = NULL,
   forceInstall = FALSE,
   mapDirs = NULL,
-  verbose = FALSE
+  verbose = FALSE,
+  logLevel = "info"
 )
 }
 \arguments{
