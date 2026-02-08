@@ -107,7 +107,6 @@ BascetMakeMinhashHistogram <- function(
   if(bascetCheckOverwriteOutput(outputFile, overwrite)) {
     #Make the command
     cmd <- c(
-      #shellscript_set_tempdir(bascetInstance),
       if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
       assembleBascetCommand(bascetInstance, c(
         "minhash-hist",
@@ -194,7 +193,6 @@ BascetQueryFq <- function( #666
       jobname = "bascet_query",
       bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
         shellscriptMakeBashArray("files_in",inputFiles),
         shellscriptMakeBashArray("files_out",outputFiles),
         

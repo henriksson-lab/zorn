@@ -353,7 +353,7 @@ BascetMapTransform <- function(
     #Run the job
     RunJob(
       runner = runner, 
-      jobname = "Z_transform",
+      jobname = "Ztransform",
       bascetInstance = bascetInstance,
       cmd = c(
         shellscriptMakeBashArray("files_in",inputFiles),
@@ -377,6 +377,86 @@ BascetMapTransform <- function(
   }
 }
 
+
+
+
+###############################################
+#' Convert data to Bascet-FASTQ
+#' 
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @return A job to be executed, or being executed, depending on runner settings
+#' @export
+BascetToFastq <- function(
+    bascetRoot, 
+    inputName, 
+    outputName,
+    numLocalThreads=NULL,
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(), 
+    bascetInstance=GetDefaultBascetInstance()
+){
+  
+  #Set number of threads if not given
+  if(is.null(numLocalThreads)) {
+    numLocalThreads <- as.integer(runner@ncpu)
+  }
+  stopifnot(is.valid.threadcount(numLocalThreads))
+  
+  #Check input arguments 
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
+  
+  #Figure out input and output file names  
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+  
+  if(num_shards==0){
+    stop("No input files")
+  }
+  
+  outputFilesR1 <- makeOutputShardNames(bascetRoot, outputName, "R1.fq.gz", num_shards)
+  outputFilesR2 <- makeOutputShardNames(bascetRoot, outputName, "R2.fq.gz", num_shards)
+
+  if(bascetCheckOverwriteOutput(c(outputFilesR1, outputFilesR2), overwrite)) {
+    #Run the job
+    RunJob(
+      runner = runner, 
+      jobname = "Ztofq",
+      bascetInstance = bascetInstance,
+      cmd = c(
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out_r1",outputFilesR1),
+        shellscriptMakeBashArray("files_out_r2",outputFilesR2),
+        
+        ### Abort early if needed    
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_r1[$TASK_ID]}"),
+        
+        assembleBascetCommand(bascetInstance, c(
+          "to-fastq",
+          "-i=${files_in[$TASK_ID]}",
+          "--out-r1=${files_out_r1[$TASK_ID]}",
+          "--out-r2=${files_out_r2[$TASK_ID]}",
+          "--temp=$BASCET_TEMPDIR",
+          paste0("-@=",numLocalThreads) 
+        ))
+      ),
+      arraysize = num_shards
+    )  
+  } else {
+    new_no_job()
+  }
+}
 
 
 
@@ -555,7 +635,7 @@ BascetRunFASTP <- function(
     #Run the job
     RunJob(
       runner = runner, 
-      jobname = paste0("Z_fastp"),
+      jobname = paste0("Zfastp"),
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),

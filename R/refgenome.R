@@ -73,7 +73,7 @@ BascetIndexGenomeBWA <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "Z_bwa_index",
+      jobname = "Zbwa_index",
       bascetInstance = bascetInstance,
       cmd = c(
         ### For sorting
@@ -136,7 +136,7 @@ BascetIndexGenomeSTAR <- function(
   #Note: overwrite not supported. It is too dangerous to implement
   RunJob(
     runner = runner, 
-    jobname = "Z_star_index",
+    jobname = "Zstar_index",
     bascetInstance = bascetInstance,
     cmd = c(
       paste(
@@ -263,7 +263,6 @@ BascetAlignmentToBigwig <- function(
     
     ### Build command
     cmd <- c(
-      #shellscript_set_tempdir(bascetInstance),
       shellscriptMakeBashArray("files_in", inputFiles),
       shellscriptMakeBashArray("files_out", outputFiles),
       
@@ -279,7 +278,7 @@ BascetAlignmentToBigwig <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "Z_tobw",
+      jobname = "Ztobw",
       bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
@@ -373,7 +372,6 @@ BascetFilterAlignment <- function(
     
     ### Build command
     cmd <- c(
-      #shellscript_set_tempdir(bascetInstance),
       shellscriptMakeBashArray("files_in", inputFiles),
       shellscriptMakeBashArray("files_out", outputFiles),
       
@@ -394,7 +392,7 @@ BascetFilterAlignment <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "Z_filteraln",
+      jobname = "Zfilteraln",
       bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
@@ -406,215 +404,6 @@ BascetFilterAlignment <- function(
 
 
 
-
-# BascetAlignToReference <- function(
-#     bascetRoot, 
-#     useReference,
-#     numThreads=NULL,
-#     inputName="asfq", ######### should be able to take filtered and pipe to bwa if needed  "filtered"
-#     outputNameBAMunsorted="unsorted_aligned", 
-#     outputNameBAMsorted="aligned", 
-#     doSort=TRUE,
-#     overwrite=FALSE,
-#     aligner=c(NULL, "BWA","STAR"),
-#     runner=GetDefaultBascetRunner(), 
-#     bascetInstance=GetDefaultBascetInstance()
-# ){
-#   #Set number of threads if not given
-#   if(is.null(numThreads)) {
-#     numThreads <- as.integer(runner@ncpu)
-#   }
-#   
-#   #Check input arguments 
-#   stopifnot(dir.exists(bascetRoot))
-#   #useReference TODO
-#   stopifnot(is.valid.threadcount(numThreads))
-#   stopifnot(is.valid.shardname(inputName))
-#   stopifnot(is.valid.shardname(outputNameBAMunsorted))
-#   stopifnot(is.valid.shardname(outputNameBAMsorted))
-#   stopifnot(is.logical(doSort))
-#   stopifnot(is.logical(overwrite))
-# 
-#   aligner <- match.arg(aligner)
-#   stopifnot("`aligner` must be specified." = !is.null(aligner))
-#   
-#   stopifnot(is.runner(runner))
-#   stopifnot(is.bascet.instance(bascetInstance))
-#   
-#   
-#   #Figure out input and output file names  
-#   input_shards <- detectShardsForFile(bascetRoot, inputName)
-#   num_shards <- length(input_shards)
-#   if(num_shards==0){
-#     stop("No input files")
-#   }
-#   inputFiles_R1 <- file.path(bascetRoot, input_shards) 
-#   
-#   outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
-#   outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
-#   outputFilesBAMsortedPRE <- stringr::str_remove(outputFilesBAMsorted, "\\.bam$")
-#   
-#   ### What files to look for if to avoid overwriting
-#   if(doSort) {
-#     outputFilesFinal <- outputFilesBAMsorted
-#   } else {
-#     outputFilesFinal <- outputFilesBAMunsorted
-#   }
-#   
-#   ### Verify that the input is FASTQ. check what type
-#   if(!isFastq(inputFiles_R1[1])) {
-#     stop("Input files are not FASTQ")
-#   }
-#   
-#   ### Check if paired or not
-#   is_paired <- isPairedFastq(inputFiles_R1[1])
-#   print(paste("Detect paired FASTQ:",is_paired))
-#   
-#   ### Figure out R2 names
-#   if(is_paired){
-#     inputFiles_R2 <- getFastqR2fromR1(inputFiles_R1)
-#   } else {
-#     ### No R2
-#     inputFiles_R2 <- rep("",length(inputFiles_R1))
-#   }
-# 
-#   
-#   if(aligner=="BWA"){
-#     
-#     if(!file.exists(useReference)){
-#       stop("BWA reference file does not exist")
-#     }
-#     
-#     cmd_align <- paste(
-#       bascetInstance@prependCmd,
-#       "bash -c \"",
-#       "bwa mem", 
-#       useReference,
-#       "${files_in_r1[$TASK_ID]}",                #Align R1 FASTQ
-#       "${files_in_r2[$TASK_ID]}",                #Align R2 FASTQ
-#       "-t", numThreads,
-#       "-c 1", #only keep unique mappers
-#       "| ", bascetInstance@bin, "pipe-sam-add-tags",
-#       "| samtools view - -S -b -o",
-#       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
-#       "\""
-#     )
-#     
-#     #print(cmd_align)
-#     
-#   } else if(aligner=="STAR") {
-#     
-#     if(!dir.exists(useReference)){  ### TODO could also check contents of this dir
-#       stop("STAR reference file does not exist")
-#     }
-#     
-#     cmd_mkdir_starlog <- paste(  ########## TODO delete all of this directory?
-#       paste("mkdir -p STARlog")
-#     )
-#     
-#     #### STAR needs its own tempdir. Make sure they don't collide.
-#     #TODO Should we rather put in subdir of user request?
-#     star_temp_dir <- "STARlog/_STARtmp.${TASK_ID}"
-#     
-#     #ensure any old STAR temp directory is removed.
-#     #the naming should make this command safe
-#     cmd_delete_temp <- paste(
-#       paste("rm -Rf",star_temp_dir)
-#     )
-#     
-#     cmd_star <- paste(
-#       bascetInstance@prependCmd,
-#       "bash -c \"",
-#       "STAR", 
-#       "--genomeDir", useReference,
-#       "--readFilesIn ${files_in_r1[$TASK_ID]} ${files_in_r2[$TASK_ID]}",  #Align R1 and R2 FASTQ
-#       "--runThreadN", numThreads,
-#       "--outSAMtype SAM",  #this implies Unsorted
-#       "--outSAMunmapped Within",
-#       "--outSAMattributes Standard",
-#       paste("--outTmpDir",star_temp_dir), 
-#       "--outFileNamePrefix ./STARlog/${TASK_ID}_",
-#       "--outStd SAM",
-#       "--readFilesCommand zcat",
-#       "| ", bascetInstance@bin, "pipe-sam-add-tags",
-#       "| samtools view - -S -b -o",
-#       "${files_out_unsorted[$TASK_ID]}",        #Each input means one output
-#       "\""
-#     )
-#     
-#     cmd_align <- c(
-#       cmd_mkdir_starlog,
-#       cmd_delete_temp,
-#       cmd_star
-#     )
-#   } else {
-#     stop(paste("Unknown aligner: ", aligner))
-#   }
-#   
-#   
-#   ### Build command: basic alignment
-#   #final_outputFiles <- outputFilesBAMunsorted
-#   cmd <- c(
-#     #shellscript_set_tempdir(bascetInstance),
-#     shellscriptMakeBashArray("files_in_r1", inputFiles_R1),
-#     shellscriptMakeBashArray("files_in_r2", inputFiles_R2),
-#     shellscriptMakeBashArray("files_out_unsorted", outputFilesBAMunsorted),
-#     shellscriptMakeBashArray("files_out_sorted", outputFilesBAMsorted),
-#     shellscriptMakeBashArray("files_out_sorted_pre", outputFilesBAMsortedPRE),
-#     shellscriptMakeBashArray("files_out_final", outputFilesFinal),
-# 
-#     ### Abort early if needed    
-#     if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_final[$TASK_ID]}"),
-#     
-#     ### For alignment
-#     "echo Aligning ${files_in_r1[$TASK_ID]} + ${files_in_r2[$TASK_ID]} to ${files_out_unsorted[$TASK_ID]}",
-#     cmd_align
-#   )
-#   
-#   
-#   ### Build command: sorting and indexing
-#   if(doSort){
-#     #final_outputFiles <- outputFilesBAMsorted
-#     cmd <- c(
-#       cmd,
-#       
-#       ### For sorting
-#       "echo Sorting ${files_out_unsorted[$TASK_ID]}  to  ${files_out_sorted[$TASK_ID]}",
-#       paste(
-#         bascetInstance@prependCmd,
-#         "/usr/bin/samtools sort", 
-# #        "-f",                                 #Output file name is given as a whole (not prefix) -- other samtools version
-#         "-@",numThreads,                 #Number of threads to use
-#         "${files_out_unsorted[$TASK_ID]}",    #Each job produces a single output
-#         "-o ${files_out_sorted[$TASK_ID]}"       #Each job produces a single output
-# #        "${files_out_sorted[$TASK_ID]}"       #Each job produces a single output -- other samtools version
-#       ),
-#       
-#       ### For indexing
-#       "echo Indexing ${files_out_sorted[$TASK_ID]}",
-#       paste(
-#         bascetInstance@prependCmd,
-#         "/usr/bin/samtools index", 
-#         "${files_out_sorted[$TASK_ID]}"        #Each job produces a single output
-#       )      
-#     )
-#   }
-#   
-#   
-#   
-#   if(bascetCheckOverwriteOutput(outputFilesFinal, overwrite)) {
-#     #Produce the script and run the job
-#     RunJob(
-#       runner = runner, 
-#       jobname = "Z_aln",
-#       bascetInstance = bascetInstance,
-#       cmd = cmd,
-#       arraysize = num_shards
-#     )
-#   } else {
-#     new_no_job()
-#   }
-# }
 
 
 
@@ -696,7 +485,7 @@ BascetAlignToReference <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "Z_aln",
+      jobname = "Zaln",
       bascetInstance = bascetInstance,
       cmd = c(
         shellscriptMakeBashArray("files_in", inputFiles),
@@ -785,10 +574,9 @@ BascetBam2Fragments <- function(
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     RunJob(
       runner = runner, 
-      jobname = "Z_bam2fragments",
+      jobname = "Zbam2frag",
       bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
         shellscriptMakeBashArray("files_in", inputFiles),
         shellscriptMakeBashArray("files_out",outputFiles),
         
@@ -861,10 +649,9 @@ BascetCountChrom <- function(
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     RunJob(
       runner = runner, 
-      jobname = "Z_countchrom",
+      jobname = "Zcountchrom",
       bascetInstance = bascetInstance,
       cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
         shellscriptMakeBashArray("files_in", inputFiles),
         shellscriptMakeBashArray("files_out",outputFiles),
         
@@ -1185,7 +972,7 @@ BascetCountFeature <- function(
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     RunJob(
       runner = runner, 
-      jobname = "Z_countf",
+      jobname = "Zcountf",
       bascetInstance = bascetInstance,
       cmd = c(
         shellscriptMakeBashArray("files_in", inputFiles),
@@ -1292,7 +1079,6 @@ BascetRunCellSNP <- function(
 
   ### Build command: basic alignment
   cmd <- c(
-    #shellscript_set_tempdir(bascetInstance),
     shellscriptMakeBashArray("files_in", inputFiles),
     shellscriptMakeBashArray("files_out", outputFiles),
     shellscriptMakeBashArray("files_listcell", listcellFiles),
@@ -1343,7 +1129,7 @@ BascetRunCellSNP <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "Z_cellsnp",
+      jobname = "Zcellsnp",
       bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards

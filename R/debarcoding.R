@@ -310,7 +310,7 @@ BascetGetRaw <- function(
     
     RunJob(
       runner = runner, 
-      jobname = "Z_getraw",
+      jobname = "Zgetraw",
       bascetInstance = bascetInstance,
       cmd = c(
         #shellscript_set_tempdir(bascetInstance),
@@ -690,7 +690,7 @@ BascetShardify <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "Z_shardify",
+      jobname = "Zshardify",
       bascetInstance = bascetInstance,
       cmd = c(
         shellscriptMakeBashArray("files_in", inputFiles),

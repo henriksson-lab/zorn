@@ -25,7 +25,6 @@ BascetGatherCountSketch <- function(
     includeCells=NULL,
     overwrite=FALSE,
     numLocalThreads=NULL,
-    
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
