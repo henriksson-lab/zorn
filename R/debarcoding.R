@@ -143,8 +143,8 @@ BascetGetRaw <- function(
     rawmeta,
     maxShardSize="200g",  ### if any?   maybe no need!
     outputName="debarcoded", 
-    chemistry=c("atrandi-wgs","atrandi-rnaseq","parse-bio"),  #TODO any way to get list from software?
-    #subchemistry=NULL,
+    chemistry=c("atrandi-wgs","atrandi-wgslr","atrandi-rnaseq","parse-bio"),  #TODO any way to get list from software?
+    subchemistry=NULL,
     barcodeTolerance=NULL,
     
     numThreads=NULL,
@@ -346,7 +346,8 @@ BascetGetRaw <- function(
           "--r2=${files_r2[$TASK_ID]}",
 #########          if(add_libnames) "--libname=${libnames[$TASK_ID]}",
           "--out=${files_out[$TASK_ID]}",                 #Each job produces a single output
-          chemistry
+          chemistry,
+          if(!is.null(subchemistry)) paste0("--subchemistry=",subchemistry)
         ))
       ),
       arraysize = nrow(rawmeta)
