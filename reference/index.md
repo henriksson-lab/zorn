@@ -117,6 +117,8 @@
 - [`BascetShardify()`](https://henriksson-lab.github.io/zorn/reference/BascetShardify.md)
   : Take debarcoded reads, merge them, and split them into suitable
   numbers of shards.
+- [`BascetToFastq()`](https://henriksson-lab.github.io/zorn/reference/BascetToFastq.md)
+  : Convert data to Bascet-FASTQ
 - [`ChooseInformativeKMERs()`](https://henriksson-lab.github.io/zorn/reference/ChooseInformativeKMERs.md)
   : Pick random KMERs from KMC3 database. The choice is among KMERs
   within a frequency range
