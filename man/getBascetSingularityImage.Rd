@@ -5,7 +5,7 @@
 \title{Get a Bascet image (singularity or docker).
 It will be cached in the provided directory to avoid downloading it each the time the function is called}
 \usage{
-getBascetSingularityImage(storeAt = getwd(), tempdir = NULL)
+getBascetSingularityImage(storeAt = getwd(), tempdir = NULL, logLevel = "info")
 }
 \arguments{
 \item{storeAt}{Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory}

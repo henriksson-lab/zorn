@@ -110,7 +110,11 @@ BascetLoadCountSketchMatrix <- function(
     inputName="countsketch_mat.csv"
 ) {
   fname <- file.path(bascetRoot, inputName)
-  mat <- as.data.frame(data.table::fread(fname))
+  #mat <- as.data.frame(data.table::fread(fname)) #fread package cannot be used
+  mat <- as.data.frame(read.csv2(fname, header=FALSE, sep=","))
+  mat[1:5,1:5]
+  #mat <- read.csv2("/husky/henriksson/atrandi/v6_251128_jyoti_mock_bulk/countsketch_mat.csv", sep=",", header = FALSE)
+#  mat <- read.csv2("/husky/henriksson/atrandi/v6_251128_jyoti_mock_bulk/countsketch_mat.sub.csv", sep=",", header = FALSE)
   
   cellid <- mat[,1]
   celldepth <- mat[,2]
