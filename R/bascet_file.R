@@ -575,10 +575,14 @@ makeOutputShardNames <- function(
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.shardname(outputName))
-  stopifnot(is.character(ext) && !stringr::str_starts(ext, stringr::fixed(".")))
   stopifnot(is.positive.integer(num_shards))
-  
-  file.path(bascetRoot, paste0(outputName,".",seq_len(num_shards),".",ext))
+
+  if(is.null(ext)) {
+    file.path(bascetRoot, paste0(outputName,".",seq_len(num_shards)))
+  } else {
+    stopifnot(is.character(ext) && !stringr::str_starts(ext, stringr::fixed(".")))
+    file.path(bascetRoot, paste0(outputName,".",seq_len(num_shards),".",ext))
+  }
 }
 
 
