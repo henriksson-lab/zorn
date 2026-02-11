@@ -9,6 +9,8 @@
 #' @param inputName Name of input shard
 #' @param outputName Name of output file
 #' @param includeCells List of cells to process
+#' @param kmerSize KMER length to use
+#' @param sketchSize Size of the count sketch. Must be a power of two
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
@@ -23,6 +25,8 @@ BascetGatherCountSketch <- function(
     inputName="countsketch", 
     outputName="countsketch_mat.csv",  ### replace with shard!!
     includeCells=NULL,
+    kmerSize=31,
+    sketchSize=4096,
     overwrite=FALSE,
     numLocalThreads=NULL,
     runner=GetDefaultBascetRunner(),
@@ -40,6 +44,9 @@ BascetGatherCountSketch <- function(
   stopifnot(is.character(outputName))
   stopifnot(is.character(inputName))
   #includeCells todo
+
+## todo check sketch size is power of two. check int. and kmerSize is int!?
+
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -74,6 +81,8 @@ BascetGatherCountSketch <- function(
         if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
         paste0("-@=", numLocalThreads), 
         paste0("-i=", shellscriptMakeCommalist(inputFiles)),
+        paste0("--kmer-size=",kmerSize),
+        paste0("--sketch-size=",sketchSize),
         paste0("-o=", outputFile)
       ))
     )
