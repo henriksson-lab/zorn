@@ -84,7 +84,7 @@ BascetMapCell <- function(
     #Run the job
     RunJob(
       runner = runner, 
-      jobname = paste0("Z_map_",withfunction),
+      jobname = paste0("Zmap_",basename(withfunction)),
       bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
