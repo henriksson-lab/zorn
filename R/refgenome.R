@@ -52,7 +52,7 @@ isBamPairedAlignment <- function(
 ###############################################
 #' Index a genome using BWA such that it can be used for alignment
 #' 
-#' FUTURE: could check if genome is indexed already
+#' TODO: could check if genome is indexed already
 #' 
 #' @param genomeFile Name of FASTA file holding genome sequence
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
@@ -89,6 +89,60 @@ BascetIndexGenomeBWA <- function(
 #    new_no_job()
 #  }
 }
+
+
+
+
+
+###############################################
+#' Index a genome using Bowtie2 such that it can be used for alignment
+#' 
+#' @param genomeFile Name of FASTA file holding genome sequence
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#' 
+#' @export
+BascetIndexGenomeBowtie2 <- function(  
+    genomeFile, 
+    numThreads=NULL,
+    runner=GetDefaultBascetRunner(), 
+    bascetInstance=GetDefaultBascetInstance()
+){
+  #Set number of threads if not given
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
+  }
+
+  #Check arguments
+  stopifnot(is.existing.fasta(genomeFile))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
+  
+  indexName <- genomeFile #paste0(genomeFile,".btindex")
+  
+  if(bascetCheckOverwriteOutput(indexName, overwrite)) {
+    #Produce the script and run the job
+    RunJob(
+      runner = runner, 
+      jobname = "Zbt2_build",
+      bascetInstance = bascetInstance,
+      cmd = c(
+        ### For sorting
+        paste(
+          bascetInstance@prependCmd,
+          "bowtie2-build",
+          "--threads",numThreads,
+          genomeFile,
+          indexFile
+        )
+      ),
+      arraysize = 1
+    )
+  } else {
+    new_no_job()
+  }
+}
+
 
 
 
@@ -430,7 +484,7 @@ BascetAlignToReference <- function(
     outputNameBAMunsorted="unsorted_aligned", 
     outputNameBAMsorted="aligned",
     overwrite=FALSE,
-    aligner=c(NULL, "BWA","STAR"),
+    aligner=c(NULL, "bowtie2", "BWA","STAR"),
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -468,14 +522,17 @@ BascetAlignToReference <- function(
     if(!file.exists(useReference)){
       stop("BWA reference file does not exist")
     }
+  } else if (aligner=="bowtie2") {
+    #TODO: option of providing extra flag, "--very-sensitive-local" (should be default)
+    if(!file.exists(useReference)){
+      stop("bowtie2 reference file does not exist")
+    }
   } else if(aligner=="STAR") {
-    stop("not yet implemented")
-    
-    if(!dir.exists(useReference)){  
+    #stop("not yet implemented")
+    if(!dir.exists(useReference)) {  
       ### TODO could also check contents of this dir
       stop("STAR reference file does not exist")
     }
-    
   } else {
     stop(paste("Unknown aligner: ", aligner))
   }

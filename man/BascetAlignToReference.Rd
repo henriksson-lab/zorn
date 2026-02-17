@@ -12,7 +12,7 @@ BascetAlignToReference(
   outputNameBAMunsorted = "unsorted_aligned",
   outputNameBAMsorted = "aligned",
   overwrite = FALSE,
-  aligner = c(NULL, "BWA", "STAR"),
+  aligner = c(NULL, "bowtie2", "BWA", "STAR"),
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )

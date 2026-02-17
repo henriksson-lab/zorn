@@ -9,6 +9,8 @@ BascetGatherCountSketch(
   inputName = "countsketch",
   outputName = "countsketch_mat.csv",
   includeCells = NULL,
+  kmerSize = 31,
+  sketchSize = 4096,
   overwrite = FALSE,
   numLocalThreads = NULL,
   runner = GetDefaultBascetRunner(),
@@ -23,6 +25,10 @@ BascetGatherCountSketch(
 \item{outputName}{Name of output file}
 
 \item{includeCells}{List of cells to process}
+
+\item{kmerSize}{KMER length to use}
+
+\item{sketchSize}{Size of the count sketch. Must be a power of two}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
