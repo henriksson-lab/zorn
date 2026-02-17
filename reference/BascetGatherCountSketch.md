@@ -10,6 +10,8 @@ BascetGatherCountSketch(
   inputName = "countsketch",
   outputName = "countsketch_mat.csv",
   includeCells = NULL,
+  kmerSize = 31,
+  sketchSize = 4096,
   overwrite = FALSE,
   numLocalThreads = NULL,
   runner = GetDefaultBascetRunner(),
@@ -34,6 +36,14 @@ BascetGatherCountSketch(
 - includeCells:
 
   List of cells to process
+
+- kmerSize:
+
+  KMER length to use
+
+- sketchSize:
+
+  Size of the count sketch. Must be a power of two
 
 - overwrite:
 

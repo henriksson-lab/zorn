@@ -66,6 +66,8 @@
   : Extract barcodes and trim input raw FASTQ
 - [`BascetIndexGenomeBWA()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWA.md)
   : Index a genome using BWA such that it can be used for alignment
+- [`BascetIndexGenomeBowtie2()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBowtie2.md)
+  : Index a genome using Bowtie2 such that it can be used for alignment
 - [`BascetIndexGenomeSTAR()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeSTAR.md)
   : Index a genome using STAR such that it can be used for alignment
 - [`BascetInstance()`](https://henriksson-lab.github.io/zorn/reference/BascetInstance.md)

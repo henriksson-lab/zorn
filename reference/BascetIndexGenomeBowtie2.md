@@ -1,12 +1,13 @@
-# Index a genome using BWA such that it can be used for alignment
+# Index a genome using Bowtie2 such that it can be used for alignment
 
-TODO: could check if genome is indexed already
+Index a genome using Bowtie2 such that it can be used for alignment
 
 ## Usage
 
 ``` r
-BascetIndexGenomeBWA(
+BascetIndexGenomeBowtie2(
   genomeFile,
+  numThreads = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )

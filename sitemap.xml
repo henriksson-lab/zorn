@@ -50,6 +50,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGatherCountSketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWA.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBowtie2.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeSTAR.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetInstance.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetListFilesForCell.html</loc></url>
