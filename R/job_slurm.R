@@ -220,7 +220,8 @@ setMethod(
     
     ## Log running time if requested
     if(runner@logTime) {
-      scriptcontent <- c(scriptcontent, "echo \"$SLURM_JOB_NAME $SLURM_ARRAY_TASK_ID  $timeDelta\" >> bascet_timelog.txt")
+      #scriptcontent <- c(scriptcontent, paste0("let cpuName=\"\\\"", benchmarkme::get_cpu()$model_name, "\\\"\""))  ## check!!
+      scriptcontent <- c(scriptcontent, "echo -e \"$SLURM_JOB_NAME\t$SLURM_ARRAY_TASK_ID\t$timeDelta\" >> bascet_timelog.txt")
     }
     
     scriptcontent <- c(scriptcontent, "echo \"End of SLURM script\"")
