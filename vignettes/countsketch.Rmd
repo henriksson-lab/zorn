@@ -14,35 +14,37 @@ these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
 # Preprocessing
 
-Next, produce a count sketch for each cell. There are further options if you
-wish to alter the number of dimensions. You can reduce the number of dimensions
-later in R, but you will need more memory for this procedure.
+Count sketching relies on the following ideas:
+* Genomes can be represented as a vector of KMER counts. If these KMERs are long enough, they exist nearly-only once in a genome, and seldom in genomes of different origins * Angles between KMER count vectors ignore sequencing depth and thus represent underlying genome prior to sampling-by-sequencing
+* The distance between high dimensional vectors is preserved also after random linear projection into a lower dimensional space (lower, but still high-dimensional)
+* The random projection matrix can be represented implicitly, avoiding the need for the original full KMER vectors
 
-[(SLURM-compatible step)](slurm.html)
+Note that these linear projections are different from Min-Hashes, and have further nice properties beyond the description here.
 
-```{r, eval=F, echo=T}
-#Internally wraps mapcell to compute count sketches for each cell
-BascetComputeCountSketch(
-  bascetRoot
-)
-```
+To first compute the project KMER counts, we will use the BascetGatherCountSketch-command. The length of KMERs, and number of reduced dimensions,
+is set at this stage
+* 31 bp is a common choice of KMER lengths as it fits well in 32-bit registers of a CPU, while being rather unique. *The KMER length is typically odd*, to remove KMERs symmetric under reverse complement (e.g., AATT)
+* *The reduced number of dimensions must be a power of two*, such as 2**n. Or: 2048, 4096, 8192, 16384 etc. This restriction is due to the choice of underlying algorithm.
 
-
-This results in a Bascet-ZIP with all the count sketches. Turn this into a count
-matrix file using the following command:
+The following command computes a countsketch matrix. The input is here the raw reads, which is suitable for metatranscriptomics, and works for metagenomics as well.
+For higher precision, you can also use the *de novo* assembly commands to extract unique KMERs as input for sketching (not shown here).
 
 [(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
 #Gather count sketches into a single matrix file
 BascetGatherCountSketch(
-  bascetRoot
+  bascetRoot,
+  kmerSize=31,      #Default
+  sketchSize=4096,  #Need to be power of two
+
 )
 ```
 
@@ -56,17 +58,21 @@ adata <- BascetLoadCountSketchMatrix(
 )
 ```
 
-The data is rather large; we recommend enabling multithreading for Seurat:
+The data is rather large; we recommend enabling multithreading for Seurat. *Note
+that in the current version of R/Bioconductor, as of writing, threading might be disabled in RStudio.
+You then need to run the code in a separate R session. If you see warning messages about threading later on,
+then this is the only backup we can offer for now!*
 
 ```{r, eval=F, echo=T}
 library(future)
 plan("multicore", workers = 10)
 ```
 
-Note that the data was loaded directly as a reduction, rather than as regular
-counts. This is because the counts have little meaning of their own, and it
+Note that the data was loaded directly as a *Seurat reduction*, rather than as regular counts.
+This is because the counts have little meaning of their own, and it
 makes little sense to perform PCA, SVD or similar on the data. Rather, we
-recommend using all the dimensions. The following produces a UMAP, setting
+recommend using all the dimensions, and compute fewer in the first steps if you
+want to reduce. The following code produces a UMAP, setting
 the dimension to all available dimensions in the reduction:
 
 ```{r, eval=F, echo=T}

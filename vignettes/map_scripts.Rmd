@@ -117,8 +117,8 @@ The script returns a list of what files to extract from the Bascet, for each cel
 Here, "*" means to get everything. Asking for less means higher performance
 
 ```{console, eval=F, echo=T}
-```
 --missing-file-mode
+```
 The Bascet what to do if the files are missing. "skip" means to just proceed with the next cell
 
 ```{console, eval=F, echo=T}

@@ -30,7 +30,7 @@ the name of your account. You can also set a permissible default timeout time:
 
 ```{r, eval=F, echo=T}
 ## Set the new default runner. Note that the name should not be changed!
-bascet_runner.default <- SlurmRunner(
+bascetRunner.default <- SlurmRunner(
   partition="shared", 
   account="name_of_your_project", 
   time="0-24:00:00"
@@ -53,11 +53,12 @@ You likely want to tune each SLURM job a bit in terms of how many cores are used
 This is the suggested method, where only relevant settings are overridden on a per-job basis:
 
 ```{r, eval=F, echo=T}
-BascetGetRawAtrandiWGS(
+BascetGetRaw(
   bascetRoot,
   rawmeta,
+  chemistry="atrandi-wgs",
   runner=SlurmRunner(
-    bascet_runner.default,
+    bascetRunner.default,
     ncpu=5,
     mem="5g")
 )
@@ -89,9 +90,9 @@ To set up this mode of running, you create the SLURM runner slightly differently
 
 ```{r, eval=F, echo=T}
 ## Set the new default runner. Note that the name should not be changed!
-bascet_runner.default <- SlurmRunner(
+bascetRunner.default <- SlurmRunner(
   ... #previous settings
-  direct=FALSE ## new! asynchronous mode
+  direct=FALSE ## NEW! this enables asynchronous mode
 )
 
 ## get a Bascet instance as usual; this is a separate concern from the runner
@@ -101,11 +102,12 @@ bascetInstance.default <- getBascetSingularityImage(storeAt="~/")
 Whenever you run a job, you now want to catch a handle to the job in a variable:
 
 ```{r, eval=F, echo=T}
-my_job <- BascetGetRawAtrandiWGS(  #note, store job in a variable
+my_job <- BascetGetRaw(  #note, store job in a variable
   bascetRoot,
   rawmeta,
+  chemistry="atrandi-wgs",
   runner=SlurmRunner(
-    bascet_runner.default,
+    bascetRunner.default,
     ncpu=5,
     mem="5g")
 )

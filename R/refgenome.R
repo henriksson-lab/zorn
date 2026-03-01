@@ -446,7 +446,7 @@ BascetFilterAlignment <- function(
     #Produce the script and run the job
     RunJob(
       runner = runner, 
-      jobname = "Zfilteraln",
+      jobname = "ZfilterAln",
       bascetInstance = bascetInstance,
       cmd = cmd,
       arraysize = num_shards
