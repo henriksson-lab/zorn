@@ -6,7 +6,8 @@ accordingly.
 
 ``` r
 library(Zorn)
-bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
@@ -46,6 +47,12 @@ and any UMI information. The only thing you additionally need to specify
 is what type of data you have, where “atrandi_wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.
 
+Note that Bascet performs trimming of reads during the GetRaw stage.
+This includes: \* For RNA-seq: PolyA trimming and trimming at adapters
+\* For Atrandi WGS: A specialized algorithm to detect overlap and remove
+adapters accordingly Regular users should thus not need to worry about
+this
+
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
@@ -68,8 +75,7 @@ using the following command:
 debstat <- PrepareSharding(
   bascetRoot,
   inputName="debarcoded",
-  bascetInstance=bascet_instance.default,
-  minQuantile=0.99
+  minQuantile=0.95                         #Lower number keeps more cells; do more thorough filtering later
 )
 ```
 
@@ -84,7 +90,7 @@ DebarcodedKneePlot(
 ```
 
 This is just a histogram of reads per barcode. (downsampling for speed
-causes cells of low indices to not be shown, worry not!) The didagram
+causes cells of low indices to not be shown, worry not!) The diagram
 however tells you \* how many cells you have \* how much free-floating
 RNA/DNA you have in your background (empty droplets/SPCs) \* how
 distinct cells are from background
@@ -115,54 +121,9 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 ``` r
 BascetShardify(
   debstat,
-  numOutputShards = 1, #shards per library; increase to spread the workload over more computers
-  runner=SlurmRunner(bascet_runner.default, ncpu="4")
+  numOutputShards = 10 #Shards per library; increase to spread the workload over more computers
 )
 ```
-
-## Additional trimming
-
-Bascet only does rudimentary trimming. We recommend trimming the reads
-further. To do this, first convert your data to FASTQ format:
-
-``` r
-### Get reads in fastq format
-BascetMapTransform(
-  bascetRoot,
-  inputName="filtered",   #default; can omit
-  outputName="asfq",
-  out_format="R1.fq.gz"
-)
-```
-
-Now use FASTP to perform the trimming:
-
-``` r
-### Get reads in fastq format for BWA
-BascetRunFASTP(
-  bascetRoot,
-  numLocalThreads=10,
-  inputName="asfq",
-  outputName="fastp"
-)
-```
-
-If your plan is to perform alignment, then the resulting fastp FASTQ
-files can be used as input (don’t forget to specify inputName=“fastp”!).
-If you want to instead get a TIRP file, you can convert it back:
-
-``` r
-BascetMapTransform(
-  bascetRoot,
-  "fastp",
-  "new_filtered",
-  out_format="tirp.gz"
-)
-```
-
-You now have a TIRP file again, equivalent to the first shardified
-output. Don’t forget to specify inputName=“new_filtered” to later
-commands, as the default is to use “filtered”
 
 ## Onward
 
@@ -172,3 +133,7 @@ critical steps in the workflow!
 How you proceed depends on your use case. If you are doing single-cell
 metagenomics of a sample of unknown composition then we recommend the
 KRAKEN2 workflow next.
+
+Advanced users may wish to get FASTQ files as input for other tools.
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)

@@ -6,29 +6,11 @@ accordingly.
 
 ``` r
 library(Zorn)
-bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
-## Preprocessing
-
-KRAKEN2 wants the data in FASTQ format. Here we assume that you use a
-single-cell WGS chemistry that produces paired reads, and direct Zorn to
-produce R1/R2 FASTQ files (only R1 specified). We name the output
-Bascets “asfq”, taking as input the typical sharded reads:
-
-[(SLURM-compatible
-step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
-
-``` r
-### Get reads in fastq format
-BascetMapTransform(
-  bascetRoot,
-  "filtered",   #default; can omit
-  "asfq",  ###name parameter
-  out_format="R1.fq.gz"
-)
-```
+## Classifying reads with KRAKEN2
 
 To run KRAKEN2, you need a database. You can get them here:
 <https://benlangmead.github.io/aws-indexes/k2>
@@ -40,24 +22,17 @@ directory. You can then run KRAKEN2 like this:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
-### Run Kraken on each cell
+### Run Kraken on each cell. Produce a count matrix of taxonomy features
 BascetRunKraken(
   bascetRoot,
-  useKrakenDB="/your_disk/kraken/standard-8",
-  numLocalThreads=20
-)
-
-### Produce a count matrix of taxonomy features
-BascetMakeKrakenCountMatrix(
-  bascetRoot,
-  numLocalThreads=20
+  useKrakenDB="/your_disk/kraken/standard-8"
 )
 ```
 
-Note that there are two steps here. First KRAKEN2 classifies each read
-to a taxonomy. In the second step, we count the taxonomic reads for each
-cell. This ends up being a rather small matrix that you can process
-using Seurat.
+Internally, there are two steps here. First KRAKEN2 taxonomically
+classifies each read. In the second step, we count the taxonomic reads
+for each cell. This ends up being a rather small count matrix that you
+can process using Seurat.
 
 ## Postprocessing with Signac/Seurat
 
@@ -85,7 +60,7 @@ kraken_taxid <- KrakenFindConsensusTaxonomy(mat)
 
 ## Add KRAKEN consensus taxonomy to metadata
 rownames(kraken_taxid) <- kraken_taxid$cell_id
-kraken_taxid <- kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]
+kraken_taxid <- kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")] #optional subsetting
 adata@meta.data <- cbind(
   adata@meta.data,
   kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]
@@ -94,18 +69,20 @@ adata@meta.data <- cbind(
 
 You will need to filter low-abundance cells. To do this, first
 investigate a kneeplot of each species. As different species are
-differently hard to lyse, you will likely have different kneeplot
+differently hard to lyse, you will likely have phylum-specific kneeplot
 patterns.
 
 ``` r
+showNumSpecies <- 10
 KrakenKneePlot(adata, groupby = "phylum", showNumSpecies=showNumSpecies)
 ```
 
-You can then proceed to filter out cells with few reads. Note that the
-cutoff will induce biases if the cells have different DNA content; the
-best way to handle this is an open research question (e.g. you could
-also consider different cutoffs for different species). This is however
-the most basic filtering you can perform:
+You can then proceed to filter out cells with few reads. Note that a
+general cutoff is nonideal as different phyla have different amount of
+DNA (due to different genome sizes & lysis biases); the best way to
+handle this is an open research question (e.g. you could also consider
+different cutoffs for different species). This is however the most basic
+filtering you can perform:
 
 ``` r
 keep_cells <- adata$nCount_RNA > 10000 #10k reads

@@ -44,14 +44,14 @@
     <li><a class="dropdown-item" href="../articles/kmer.html">Informative KMER-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/countsketch.html">Count sketch KMER-based workflow</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
-    <li><a class="dropdown-item" href="../articles/bascet_files.html">Working with Bascet files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_fastq.html">Working with Bascet-FASTQ</a></li>
     <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
     <li><a class="dropdown-item" href="../articles/example_data.html">Example data</a></li>
   </ul>
@@ -89,50 +89,73 @@ to run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span> <span class="co">#Assuming Linux</span></span>
 <span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h2>
-<p>Next, produce a count sketch for each cell. There are further options
-if you wish to alter the number of dimensions. You can reduce the number
-of dimensions later in R, but you will need more memory for this
-procedure.</p>
+<p>Count sketching relies on the following ideas: * Genomes can be
+represented as a vector of KMER counts. If these KMERs are long enough,
+they exist nearly-only once in a genome, and seldom in genomes of
+different origins * Angles between KMER count vectors ignore sequencing
+depth and thus represent underlying genome prior to
+sampling-by-sequencing * The distance between high dimensional vectors
+is preserved also after random linear projection into a lower
+dimensional space (lower, but still high-dimensional) * The random
+projection matrix can be represented implicitly, avoiding the need for
+the original full KMER vectors</p>
+<p>Note that these linear projections are different from Min-Hashes, and
+have further nice properties beyond the description here.</p>
+<p>To first compute the project KMER counts, we will use the
+BascetGatherCountSketch-command. The length of KMERs, and number of
+reduced dimensions, is set at this stage * 31 bp is a common choice of
+KMER lengths as it fits well in 32-bit registers of a CPU, while being
+rather unique. <em>The KMER length is typically odd</em>, to remove
+KMERs symmetric under reverse complement (e.g., AATT) * <em>The reduced
+number of dimensions must be a power of two</em>, such as 2**n. Or:
+2048, 4096, 8192, 16384 etc. This restriction is due to the choice of
+underlying algorithm.</p>
+<p>The following command computes a countsketch matrix. The input is
+here the raw reads, which is suitable for metatranscriptomics, and works
+for metagenomics as well. For higher precision, you can also use the
+<em>de novo</em> assembly commands to extract unique KMERs as input for
+sketching (not shown here).</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Internally wraps mapcell to compute count sketches for each cell</span></span>
-<span><span class="fu">BascetComputeCountSketch</span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>This results in a Bascet-ZIP with all the count sketches. Turn this
-into a count matrix file using the following command:</p>
-<p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Gather count sketches into a single matrix file</span></span>
 <span><span class="fu"><a href="../reference/BascetGatherCountSketch.html">BascetGatherCountSketch</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  kmerSize<span class="op">=</span><span class="fl">31</span>,      <span class="co">#Default</span></span>
+<span>  sketchSize<span class="op">=</span><span class="fl">4096</span>,  <span class="co">#Need to be power of two</span></span>
+<span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="postprocessing-with-signacseurat">Postprocessing with Signac/Seurat<a class="anchor" aria-label="anchor" href="#postprocessing-with-signacseurat"></a>
 </h2>
 <p>You can now load all of this data into R as a Seurat object:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetLoadCountSketchMatrix.html">BascetLoadCountSketchMatrix</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The data is rather large; we recommend enabling multithreading for
-Seurat:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+Seurat. <em>Note that in the current version of R/Bioconductor, as of
+writing, threading might be disabled in RStudio. You then need to run
+the code in a separate R session. If you see warning messages about
+threading later on, then this is the only backup we can offer for
+now!</em></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="st">"multicore"</span>, workers <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>Note that the data was loaded directly as a reduction, rather than as
-regular counts. This is because the counts have little meaning of their
-own, and it makes little sense to perform PCA, SVD or similar on the
-data. Rather, we recommend using all the dimensions. The following
-produces a UMAP, setting the dimension to all available dimensions in
-the reduction:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>Note that the data was loaded directly as a <em>Seurat
+reduction</em>, rather than as regular counts. This is because the
+counts have little meaning of their own, and it makes little sense to
+perform PCA, SVD or similar on the data. Rather, we recommend using all
+the dimensions, and compute fewer in the first steps if you want to
+reduce. The following code produces a UMAP, setting the dimension to all
+available dimensions in the reduction:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reduction_name</span> <span class="op">&lt;-</span> <span class="st">"kmersketch"</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span></span>
 <span>  <span class="va">adata</span>,</span>
@@ -141,7 +164,7 @@ the reduction:</p>
 <span>  metric <span class="op">=</span> <span class="st">"cosine"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The result can be visualized:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></code></pre></div>
 <p>We recommend that you integrate this object with the output of
 KRAKEN2 to get some clue about what the clusters mean.</p>

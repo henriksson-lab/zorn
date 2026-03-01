@@ -44,14 +44,14 @@
     <li><a class="dropdown-item" href="../articles/kmer.html">Informative KMER-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/countsketch.html">Count sketch KMER-based workflow</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
-    <li><a class="dropdown-item" href="../articles/bascet_files.html">Working with Bascet files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_fastq.html">Working with Bascet-FASTQ</a></li>
     <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
     <li><a class="dropdown-item" href="../articles/example_data.html">Example data</a></li>
   </ul>
@@ -89,45 +89,25 @@ wish to run these steps on a SLURM cluster, see separate vignette and
 adapt accordingly.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
+<h2 id="classifying-reads-with-kraken2">Classifying reads with KRAKEN2<a class="anchor" aria-label="anchor" href="#classifying-reads-with-kraken2"></a>
 </h2>
-<p>KRAKEN2 wants the data in FASTQ format. Here we assume that you use a
-single-cell WGS chemistry that produces paired reads, and direct Zorn to
-produce R1/R2 FASTQ files (only R1 specified). We name the output
-Bascets “asfq”, taking as input the typical sharded reads:</p>
-<p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
-<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"filtered"</span>,   <span class="co">#default; can omit</span></span>
-<span>  <span class="st">"asfq"</span>,  <span class="co">###name parameter</span></span>
-<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
 <p>To run KRAKEN2, you need a database. You can get them here: <a href="https://benlangmead.github.io/aws-indexes/k2" class="external-link uri">https://benlangmead.github.io/aws-indexes/k2</a></p>
 <p>If you want a small one then consider standard-8. Unzip it in a
 directory. You can then run KRAKEN2 like this:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Run Kraken on each cell</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Run Kraken on each cell. Produce a count matrix of taxonomy features</span></span>
 <span><span class="fu"><a href="../reference/BascetRunKraken.html">BascetRunKraken</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  useKrakenDB<span class="op">=</span><span class="st">"/your_disk/kraken/standard-8"</span>,</span>
-<span>  numLocalThreads<span class="op">=</span><span class="fl">20</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">### Produce a count matrix of taxonomy features</span></span>
-<span><span class="fu">BascetMakeKrakenCountMatrix</span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  numLocalThreads<span class="op">=</span><span class="fl">20</span></span>
+<span>  useKrakenDB<span class="op">=</span><span class="st">"/your_disk/kraken/standard-8"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Note that there are two steps here. First KRAKEN2 classifies each
-read to a taxonomy. In the second step, we count the taxonomic reads for
-each cell. This ends up being a rather small matrix that you can process
-using Seurat.</p>
+<p>Internally, there are two steps here. First KRAKEN2 taxonomically
+classifies each read. In the second step, we count the taxonomic reads
+for each cell. This ends up being a rather small count matrix that you
+can process using Seurat.</p>
 </div>
 <div class="section level2">
 <h2 id="postprocessing-with-signacseurat">Postprocessing with Signac/Seurat<a class="anchor" aria-label="anchor" href="#postprocessing-with-signacseurat"></a>
@@ -137,7 +117,7 @@ the <a href="https://anndata.readthedocs.io/en/stable/fileformat-prose.html" cla
 file format</a>. To load these, use the following command that loads the
 files and concatenates them into a single matrix. It can then be loaded
 into Seurat:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadBascetCountMatrix.html">ReadBascetCountMatrix</a></span><span class="op">(</span><span class="va">bascetRoot</span>,<span class="st">"kraken"</span>, verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">taxid_ob</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateAssayObject.html" class="external-link">CreateAssayObject</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span><span class="op">)</span> <span class="co">#t() needed to conform from anndata to seurat</span></span>
@@ -145,29 +125,31 @@ into Seurat:</p>
 <p>You then most likely want to know which cell is which species. Zorn
 can annotate species by simply picking the dominant species, phylum and
 group for each cell:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Look up taxonomy consensus data given taxonomyID counts for each cell</span></span>
 <span><span class="va">kraken_taxid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/KrakenFindConsensusTaxonomy.html">KrakenFindConsensusTaxonomy</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Add KRAKEN consensus taxonomy to metadata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">kraken_taxid</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">kraken_taxid</span><span class="op">$</span><span class="va">cell_id</span></span>
-<span><span class="va">kraken_taxid</span> <span class="op">&lt;-</span> <span class="va">kraken_taxid</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"taxid"</span>,<span class="st">"phylum"</span>,<span class="st">"class"</span>,<span class="st">"order"</span>,<span class="st">"family"</span>,<span class="st">"genus"</span>,<span class="st">"species"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">kraken_taxid</span> <span class="op">&lt;-</span> <span class="va">kraken_taxid</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"taxid"</span>,<span class="st">"phylum"</span>,<span class="st">"class"</span>,<span class="st">"order"</span>,<span class="st">"family"</span>,<span class="st">"genus"</span>,<span class="st">"species"</span><span class="op">)</span><span class="op">]</span> <span class="co">#optional subsetting</span></span>
 <span><span class="va">adata</span><span class="op">@</span><span class="va">meta.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
 <span>  <span class="va">adata</span><span class="op">@</span><span class="va">meta.data</span>,</span>
 <span>  <span class="va">kraken_taxid</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"taxid"</span>,<span class="st">"phylum"</span>,<span class="st">"class"</span>,<span class="st">"order"</span>,<span class="st">"family"</span>,<span class="st">"genus"</span>,<span class="st">"species"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>You will need to filter low-abundance cells. To do this, first
 investigate a kneeplot of each species. As different species are
-differently hard to lyse, you will likely have different kneeplot
+differently hard to lyse, you will likely have phylum-specific kneeplot
 patterns.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">showNumSpecies</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span><span class="fu"><a href="../reference/KrakenKneePlot.html">KrakenKneePlot</a></span><span class="op">(</span><span class="va">adata</span>, groupby <span class="op">=</span> <span class="st">"phylum"</span>, showNumSpecies<span class="op">=</span><span class="va">showNumSpecies</span><span class="op">)</span></span></code></pre></div>
+<p>You can then proceed to filter out cells with few reads. Note that a
+general cutoff is nonideal as different phyla have different amount of
+DNA (due to different genome sizes &amp; lysis biases); the best way to
+handle this is an open research question (e.g. you could also consider
+different cutoffs for different species). This is however the most basic
+filtering you can perform:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/KrakenKneePlot.html">KrakenKneePlot</a></span><span class="op">(</span><span class="va">adata</span>, groupby <span class="op">=</span> <span class="st">"phylum"</span>, showNumSpecies<span class="op">=</span><span class="va">showNumSpecies</span><span class="op">)</span></span></code></pre></div>
-<p>You can then proceed to filter out cells with few reads. Note that
-the cutoff will induce biases if the cells have different DNA content;
-the best way to handle this is an open research question (e.g. you could
-also consider different cutoffs for different species). This is however
-the most basic filtering you can perform:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">keep_cells</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">$</span><span class="va">nCount_RNA</span> <span class="op">&gt;</span> <span class="fl">10000</span> <span class="co">#10k reads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">keep_cells</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">[</span>,<span class="va">keep_cells</span><span class="op">]</span></span></code></pre></div>
@@ -176,7 +158,7 @@ of a UMAP. See the tutorials for <a href="https://satijalab.org/seurat/" class="
 summarize the required command below, where you can apply either an
 RNA-seq or ATAC-seq dimensional reduction depending on what you think is
 appropriate.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="co">#ATAC-seq style analysis</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stuart-lab/signac" class="external-link">Signac</a></span><span class="op">)</span></span>
@@ -195,7 +177,7 @@ appropriate.</p>
 <span><span class="op">}</span></span></code></pre></div>
 <p>You can now plot a UMAP with your cells! Here colored by genus, but
 you can also try other levels of annotation:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">adata</span>, label <span class="op">=</span> <span class="cn">TRUE</span>, group.by <span class="op">=</span> <span class="st">"genus"</span>, reduction <span class="op">=</span> <span class="st">"kraken_umap"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://satijalab.org/seurat/reference/SeuratTheme.html" class="external-link">NoLegend</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">xlab</span><span class="op">(</span><span class="st">"KRAKEN1"</span><span class="op">)</span> <span class="op">+</span> </span>

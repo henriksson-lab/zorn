@@ -44,14 +44,14 @@
     <li><a class="dropdown-item" href="../articles/kmer.html">Informative KMER-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/countsketch.html">Count sketch KMER-based workflow</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
-    <li><a class="dropdown-item" href="../articles/bascet_files.html">Working with Bascet files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_fastq.html">Working with Bascet-FASTQ</a></li>
     <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
     <li><a class="dropdown-item" href="../articles/example_data.html">Example data</a></li>
   </ul>
@@ -89,7 +89,8 @@ wish to run these steps on a SLURM cluster, see separate vignette and
 adapt accordingly.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span> <span class="co">#Assuming Linux</span></span>
 <span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <p>The first step in data processing is take the raw FASTQ files and
 identify which read belongs to which cell. Zorn can automatically figure
@@ -152,6 +153,11 @@ the next stage.</p>
 and any UMI information. The only thing you additionally need to specify
 is what type of data you have, where “atrandi_wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.</p>
+<p>Note that Bascet performs trimming of reads during the GetRaw stage.
+This includes: * For RNA-seq: PolyA trimming and trimming at adapters *
+For Atrandi WGS: A specialized algorithm to detect overlap and remove
+adapters accordingly Regular users should thus not need to worry about
+this</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetGetRaw.html">BascetGetRaw</a></span><span class="op">(</span></span>
@@ -169,8 +175,7 @@ using the following command:</p>
 <code class="sourceCode R"><span><span class="va">debstat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PrepareSharding.html">PrepareSharding</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName<span class="op">=</span><span class="st">"debarcoded"</span>,</span>
-<span>  bascetInstance<span class="op">=</span><span class="va">bascet_instance.default</span>,</span>
-<span>  minQuantile<span class="op">=</span><span class="fl">0.99</span></span>
+<span>  minQuantile<span class="op">=</span><span class="fl">0.95</span>                         <span class="co">#Lower number keeps more cells; do more thorough filtering later</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Before you proceed, you should perform a kneeplot analysis to see
 which cells you keep:</p>
@@ -181,7 +186,7 @@ which cells you keep:</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>This is just a histogram of reads per barcode. (downsampling for
 speed causes cells of low indices to not be shown, worry not!) The
-didagram however tells you * how many cells you have * how much
+diagram however tells you * how many cells you have * how much
 free-floating RNA/DNA you have in your background (empty droplets/SPCs)
 * how distinct cells are from background</p>
 <p>An example kneeplot for Parse biosciences RNA-seq data is shown
@@ -205,45 +210,8 @@ it is more likely to cause mistakes.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
 <span>  <span class="va">debstat</span>,</span>
-<span>  numOutputShards <span class="op">=</span> <span class="fl">1</span>, <span class="co">#shards per library; increase to spread the workload over more computers</span></span>
-<span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span><span class="va">bascet_runner.default</span>, ncpu<span class="op">=</span><span class="st">"4"</span><span class="op">)</span></span>
+<span>  numOutputShards <span class="op">=</span> <span class="fl">10</span> <span class="co">#Shards per library; increase to spread the workload over more computers</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="additional-trimming">Additional trimming<a class="anchor" aria-label="anchor" href="#additional-trimming"></a>
-</h2>
-<p>Bascet only does rudimentary trimming. We recommend trimming the
-reads further. To do this, first convert your data to FASTQ format:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
-<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,   <span class="co">#default; can omit</span></span>
-<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
-<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Now use FASTP to perform the trimming:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Get reads in fastq format for BWA</span></span>
-<span><span class="fu"><a href="../reference/BascetRunFASTP.html">BascetRunFASTP</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  numLocalThreads<span class="op">=</span><span class="fl">10</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
-<span>  outputName<span class="op">=</span><span class="st">"fastp"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>If your plan is to perform alignment, then the resulting fastp FASTQ
-files can be used as input (don’t forget to specify inputName=“fastp”!).
-If you want to instead get a TIRP file, you can convert it back:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"fastp"</span>,</span>
-<span>  <span class="st">"new_filtered"</span>,</span>
-<span>  out_format<span class="op">=</span><span class="st">"tirp.gz"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>You now have a TIRP file again, equivalent to the first shardified
-output. Don’t forget to specify inputName=“new_filtered” to later
-commands, as the default is to use “filtered”</p>
-</div>
 <div class="section level2">
 <h2 id="onward">Onward<a class="anchor" aria-label="anchor" href="#onward"></a>
 </h2>
@@ -252,9 +220,10 @@ critical steps in the workflow!</p>
 <p>How you proceed depends on your use case. If you are doing
 single-cell metagenomics of a sample of unknown composition then we
 recommend the KRAKEN2 workflow next.</p>
+<p>Advanced users may wish to get FASTQ files as input for other tools.
+<a href="slurm.html">(SLURM-compatible step)</a></p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
+  </main>
 </div>
 
 

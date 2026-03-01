@@ -24,7 +24,7 @@ permissible default timeout time:
 
 ``` r
 ## Set the new default runner. Note that the name should not be changed!
-bascet_runner.default <- SlurmRunner(
+bascetRunner.default <- SlurmRunner(
   partition="shared", 
   account="name_of_your_project", 
   time="0-24:00:00"
@@ -45,11 +45,12 @@ are used. This is the suggested method, where only relevant settings are
 overridden on a per-job basis:
 
 ``` r
-BascetGetRawAtrandiWGS(
+BascetGetRaw(
   bascetRoot,
   rawmeta,
+  chemistry="atrandi-wgs",
   runner=SlurmRunner(
-    bascet_runner.default,
+    bascetRunner.default,
     ncpu=5,
     mem="5g")
 )
@@ -82,9 +83,9 @@ differently:
 
 ``` r
 ## Set the new default runner. Note that the name should not be changed!
-bascet_runner.default <- SlurmRunner(
+bascetRunner.default <- SlurmRunner(
   ... #previous settings
-  direct=FALSE ## new! asynchronous mode
+  direct=FALSE ## NEW! this enables asynchronous mode
 )
 
 ## get a Bascet instance as usual; this is a separate concern from the runner
@@ -95,11 +96,12 @@ Whenever you run a job, you now want to catch a handle to the job in a
 variable:
 
 ``` r
-my_job <- BascetGetRawAtrandiWGS(  #note, store job in a variable
+my_job <- BascetGetRaw(  #note, store job in a variable
   bascetRoot,
   rawmeta,
+  chemistry="atrandi-wgs",
   runner=SlurmRunner(
-    bascet_runner.default,
+    bascetRunner.default,
     ncpu=5,
     mem="5g")
 )

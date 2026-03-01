@@ -44,14 +44,14 @@
     <li><a class="dropdown-item" href="../articles/kmer.html">Informative KMER-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/countsketch.html">Count sketch KMER-based workflow</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
-    <li><a class="dropdown-item" href="../articles/bascet_files.html">Working with Bascet files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_fastq.html">Working with Bascet-FASTQ</a></li>
     <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
     <li><a class="dropdown-item" href="../articles/example_data.html">Example data</a></li>
   </ul>
@@ -89,7 +89,8 @@ run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span> <span class="co">#Assuming Linux</span></span>
 <span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
@@ -151,7 +152,7 @@ into Seurat:</p>
 <span><span class="va">cnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadBascetCountMatrix.html">ReadBascetCountMatrix</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="st">"kmer_counts"</span></span>
-<span>  <span class="co">#TODO note that the is a maximum count by default</span></span>
+<span>  <span class="co">#TODO note that the ,,,,,,,,,,,,,,,,,,,,,,,TODO,,,, is a maximum count by default</span></span>
 <span><span class="op">)</span> </span></code></pre></div>
 <p>Most likely you will have to filter out the low abundant cells. Note
 that with this workflow, the cutoff is based on the number of KMERs

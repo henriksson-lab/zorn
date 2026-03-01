@@ -114,10 +114,11 @@ each cell. Here, “\*” means to get everything. Asking for less means
 higher performance
 
 ``` console
+--missing-file-mode
 ```
 
-–missing-file-mode The Bascet what to do if the files are missing.
-“skip” means to just proceed with the next cell
+The Bascet what to do if the files are missing. “skip” means to just
+proceed with the next cell
 
 ``` console
 --compression-mode

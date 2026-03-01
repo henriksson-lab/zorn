@@ -44,14 +44,14 @@
     <li><a class="dropdown-item" href="../articles/kmer.html">Informative KMER-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/countsketch.html">Count sketch KMER-based workflow</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
-    <li><a class="dropdown-item" href="../articles/bascet_files.html">Working with Bascet files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_fastq.html">Working with Bascet-FASTQ</a></li>
     <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
     <li><a class="dropdown-item" href="../articles/example_data.html">Example data</a></li>
   </ul>
@@ -109,7 +109,7 @@ partition to submit to, and the name of your account. You can also set a
 permissible default timeout time:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Set the new default runner. Note that the name should not be changed!</span></span>
-<span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
+<span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
 <span>  partition<span class="op">=</span><span class="st">"shared"</span>, </span>
 <span>  account<span class="op">=</span><span class="st">"name_of_your_project"</span>, </span>
 <span>  time<span class="op">=</span><span class="st">"0-24:00:00"</span></span>
@@ -124,11 +124,12 @@ a login node of your cluster.</p>
 cores are used. This is the suggested method, where only relevant
 settings are overridden on a per-job basis:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BascetGetRawAtrandiWGS</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetGetRaw.html">BascetGetRaw</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="va">rawmeta</span>,</span>
+<span>  chemistry<span class="op">=</span><span class="st">"atrandi-wgs"</span>,</span>
 <span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
-<span>    <span class="va">bascet_runner.default</span>,</span>
+<span>    <span class="va">bascetRunner.default</span>,</span>
 <span>    ncpu<span class="op">=</span><span class="fl">5</span>,</span>
 <span>    mem<span class="op">=</span><span class="st">"5g"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -159,9 +160,9 @@ the job.</p>
 <p>To set up this mode of running, you create the SLURM runner slightly
 differently:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="do">## Set the new default runner. Note that the name should not be changed!</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>bascet_runner.default <span class="ot">&lt;-</span> <span class="fu">SlurmRunner</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>bascetRunner.default <span class="ot">&lt;-</span> <span class="fu">SlurmRunner</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  ... <span class="co">#previous settings</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">direct=</span><span class="cn">FALSE</span> <span class="do">## new! asynchronous mode</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">direct=</span><span class="cn">FALSE</span> <span class="do">## NEW! this enables asynchronous mode</span></span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="do">## get a Bascet instance as usual; this is a separate concern from the runner</span></span>
@@ -169,11 +170,12 @@ differently:</p>
 <p>Whenever you run a job, you now want to catch a handle to the job in
 a variable:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_job</span> <span class="op">&lt;-</span> <span class="fu">BascetGetRawAtrandiWGS</span><span class="op">(</span>  <span class="co">#note, store job in a variable</span></span>
+<code class="sourceCode R"><span><span class="va">my_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetGetRaw.html">BascetGetRaw</a></span><span class="op">(</span>  <span class="co">#note, store job in a variable</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="va">rawmeta</span>,</span>
+<span>  chemistry<span class="op">=</span><span class="st">"atrandi-wgs"</span>,</span>
 <span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
-<span>    <span class="va">bascet_runner.default</span>,</span>
+<span>    <span class="va">bascetRunner.default</span>,</span>
 <span>    ncpu<span class="op">=</span><span class="fl">5</span>,</span>
 <span>    mem<span class="op">=</span><span class="st">"5g"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>

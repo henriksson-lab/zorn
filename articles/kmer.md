@@ -6,7 +6,8 @@ accordingly.
 
 ``` r
 library(Zorn)
-bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
@@ -88,7 +89,7 @@ library(Seurat)
 cnt <- ReadBascetCountMatrix(
   bascetRoot,
   "kmer_counts"
-  #TODO note that the is a maximum count by default
+  #TODO note that the ,,,,,,,,,,,,,,,,,,,,,,,TODO,,,, is a maximum count by default
 ) 
 ```
 

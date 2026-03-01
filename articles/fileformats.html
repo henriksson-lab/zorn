@@ -44,14 +44,14 @@
     <li><a class="dropdown-item" href="../articles/kmer.html">Informative KMER-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/countsketch.html">Count sketch KMER-based workflow</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/clustering.html">Clustering</a></li>
     <li><a class="dropdown-item" href="../articles/assembly.html">De novo assembly</a></li>
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
-    <li><a class="dropdown-item" href="../articles/bascet_files.html">Working with Bascet files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
+    <li><a class="dropdown-item" href="../articles/bascet_fastq.html">Working with Bascet-FASTQ</a></li>
     <li><a class="dropdown-item" href="../articles/for_developers.html">For developers</a></li>
     <li><a class="dropdown-item" href="../articles/example_data.html">Example data</a></li>
   </ul>
@@ -121,22 +121,32 @@ conventions:</p>
 future tools. Thus avoid storing files starting with </em> in their
 name</li>
 </ul>
+<p>See <a href="bascet_zip.html">(separate section for how to work with
+Bascet-ZIP)</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="bascet-fastq--r1-fq-gz-and--r2-fq-gz">Bascet-FASTQ (.R1.fq.gz and .R2.fq.gz)<a class="anchor" aria-label="anchor" href="#bascet-fastq--r1-fq-gz-and--r2-fq-gz"></a>
 </h2>
 <p>Some tools require FASTQ as input or output. To keep track of the
 cell origin of reads, the reads have a special naming convention:</p>
-<p>“BASCET_” cellID “:” UMI “:” read_number “:” read_index</p>
+<p>“BASCET_” cellID “:” UMI “:” read_number</p>
 <p>where * cellID is the name of the cell. As FASTQ only supports some
 characters, names will be mangled in the future (to be implemented) *
 UMI is the unique molecular identifier * read_number is just a number,
 with the same number for R1 and R2. it can be used to track read
-correspondence if reads are filtered, multimapped etc. * read_index is 1
-or 2, for R1 and R2</p>
-<p>Reads in Bascet-FASTQ are typically sorted by cellID, read_number and
+correspondence if reads are filtered, multimapped etc.</p>
+<p>Reads in Bascet-FASTQ should be sorted by cellID, read_number and
 read_index, in this order. This makes it easy to read all reads for one
 cell without having to scan through the entire file.</p>
+Example:
+<pre>
+@BASCET_cell1:AAAA:1
+ATCGATCGATCG
++
+FFFFFFFFFFFF
+</pre>
+<p>See <a href="bascet_fastq.html">(separate section for how to work
+with Bascet-FASTQ)</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="bascet-bam--bam">Bascet-BAM (.bam)<a class="anchor" aria-label="anchor" href="#bascet-bam--bam"></a>
@@ -163,7 +173,7 @@ UMIs.</p>
 <p>This is a sparse matrix HDF5 file, aimed to store counts from
 KRAKEN2. As KRAKEN2 outputs taxonomy IDs (starting from 0), these are
 used as column indices in this matrix format.</p>
-<p>More details to follow</p>
+<p>More details to follow TODO TODO TODO TODO TODO TODO TODO</p>
 </div>
 <div class="section level2">
 <h2 id="bascet-hdf5--hd5">Bascet-HDF5 (.hd5)<a class="anchor" aria-label="anchor" href="#bascet-hdf5--hd5"></a>
@@ -172,7 +182,7 @@ used as column indices in this matrix format.</p>
 needs to store other types of data, these files will likely deviate from
 the standard in the future. Thus, do not expect to be able to load them
 with regular anndata-compatible software.</p>
-<p>More details to follow</p>
+<p>More details to followTODO TODO TODO TODO TODO TODO TODO TODO</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

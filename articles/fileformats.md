@@ -34,23 +34,35 @@ conventions:
 - Overall, files named XX/*YY are reserved as special output from future
   tools. Thus avoid storing files starting with* in their name
 
+See [(separate section for how to work with
+Bascet-ZIP)](https://henriksson-lab.github.io/zorn/articles/bascet_zip.md).
+
 ## Bascet-FASTQ (.R1.fq.gz and .R2.fq.gz)
 
 Some tools require FASTQ as input or output. To keep track of the cell
 origin of reads, the reads have a special naming convention:
 
-“BASCET\_” cellID “:” UMI “:” read_number “:” read_index
+“BASCET\_” cellID “:” UMI “:” read_number
 
 where \* cellID is the name of the cell. As FASTQ only supports some
 characters, names will be mangled in the future (to be implemented) \*
 UMI is the unique molecular identifier \* read_number is just a number,
 with the same number for R1 and R2. it can be used to track read
-correspondence if reads are filtered, multimapped etc. \* read_index is
-1 or 2, for R1 and R2
+correspondence if reads are filtered, multimapped etc.
 
-Reads in Bascet-FASTQ are typically sorted by cellID, read_number and
+Reads in Bascet-FASTQ should be sorted by cellID, read_number and
 read_index, in this order. This makes it easy to read all reads for one
 cell without having to scan through the entire file.
+
+Example:
+
+    @BASCET_cell1:AAAA:1
+    ATCGATCGATCG
+    +
+    FFFFFFFFFFFF
+
+See [(separate section for how to work with
+Bascet-FASTQ)](https://henriksson-lab.github.io/zorn/articles/bascet_fastq.md).
 
 ## Bascet-BAM (.bam)
 
@@ -76,7 +88,7 @@ This is a sparse matrix HDF5 file, aimed to store counts from KRAKEN2.
 As KRAKEN2 outputs taxonomy IDs (starting from 0), these are used as
 column indices in this matrix format.
 
-More details to follow
+More details to follow TODO TODO TODO TODO TODO TODO TODO
 
 ## Bascet-HDF5 (.hd5)
 
@@ -86,4 +98,4 @@ store other types of data, these files will likely deviate from the
 standard in the future. Thus, do not expect to be able to load them with
 regular anndata-compatible software.
 
-More details to follow
+More details to followTODO TODO TODO TODO TODO TODO TODO TODO

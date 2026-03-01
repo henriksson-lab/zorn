@@ -403,8 +403,10 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   workflow](https://henriksson-lab.github.io/zorn/articles/alignment.md):
 - [De novo
   assembly](https://henriksson-lab.github.io/zorn/articles/assembly.md):
-- [Working with Bascet
-  files](https://henriksson-lab.github.io/zorn/articles/bascet_files.md):
+- [Working with
+  Bascet-FASTQ](https://henriksson-lab.github.io/zorn/articles/bascet_fastq.md):
+- [Working with Bascet-ZIP
+  files](https://henriksson-lab.github.io/zorn/articles/bascet_zip.md):
 - [Clustering](https://henriksson-lab.github.io/zorn/articles/clustering.md):
 - [Count sketch KMER-based
   workflow](https://henriksson-lab.github.io/zorn/articles/countsketch.md):

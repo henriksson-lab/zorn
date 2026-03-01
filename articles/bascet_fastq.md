@@ -1,0 +1,89 @@
+# Working with Bascet-FASTQ
+
+Advanced users may wish to process the reads using custom software. As
+such software typically ingests FASTQ-files, we provide Bascet-FASTQ.
+These files are regular [(pairwise FASTQ-files with a naming
+scheme)](https://henriksson-lab.github.io/zorn/articles/fileformats.md).
+
+There are a few things you can do with these: \* Special trimming (but
+Bascet already performs rudimentary trimming) \* Use alternative
+aligners (the output BAM files retains read names and can thus be
+ingested by Bascet again) \* Extract special sequences for separate
+analysis (perturb-seq sgRNAs; CITE-seq; etc) \* Deposit the FASTQ into
+archives (but read separate section!)
+
+We assume that you have set up for Instance and Runner for the following
+commands to work.
+
+## Raw FASTQ depositing
+
+Bascet-FASTQ is possibly suitable for depositing raw data. The data will
+take less space as trimming and barcode identification has already been
+performed. The sorting also improves compression ratio. The presorting
+further reduces work for reproducing the analysis.
+
+*However, there is a major caveat:* FASTQ-files submitted to SRA will
+have the names of reads removed in their “light” format (i.e., which
+cell the read belongs to). It will still be possible to get the fully
+raw files using the cold storage retrieval option, but users may have to
+pay for this, and download takes longer times.
+
+We are working toward a solution, but users are currently better off
+submitting raw data to Zenodo or other general depository. In such a
+case, you might as well submit the native TIRP files, but we currently
+do not make any recommendation.
+
+## Conversion to Bascet-FASTQ
+
+The following command converts any Bascet file containing reads to
+Bascet-FASTQ:
+
+``` r
+### Get reads in FASTQ format
+BascetMapTransform(
+  bascetRoot,
+  inputName="filtered",
+  outputName="asfq",
+  outFormat="R1.fq.gz"
+)
+```
+
+## Trimming with FASTP
+
+[(FASTP)](https://github.com/OpenGene/fastp) is a fast trimmer. We
+however don’t recommend it for de novo assembly as it seems to leave too
+many adapters - *this is why we already perform our own trimming during
+GetRaw*. In either case, FASTP can be run directly through Zorn. If you
+wish to use other software, you can apply it in any other way to the
+FASTQ files.
+
+``` r
+### Get reads in fastq format
+BascetRunFASTP(
+  bascetRoot,
+  numLocalThreads=10,
+  inputName="asfq",
+  outputName="fastp"
+)
+```
+
+## Conversion from Bascet-FASTQ to TIRP
+
+We recommend keeping reads in TIRP files as this is what commands are
+optimized for; and TIRP offers direct extraction of reads from a cell,
+via indexing, unlike FASTQ. The following command performs the
+conversion
+
+``` r
+#Convert FASTQ to TIRP
+BascetMapTransform(
+  bascetRoot,
+  "fastp",
+  "new_filtered",
+  outFormat="tirp.gz"
+)
+```
+
+You now have a TIRP file again, equivalent to the first shardified
+output. !!! Don’t forget to specify inputName=“new_filtered” to later
+commands, as the default is to use “filtered”
