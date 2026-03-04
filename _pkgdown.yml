@@ -29,8 +29,6 @@ navbar:
         - text: "Count sketch KMER-based workflow"
           href: articles/countsketch.html
         - text: -------
-        - text: "Clustering"
-          href: articles/clustering.html
         - text: "De novo assembly"
           href: articles/assembly.html
         - text: "Genome annotation"
@@ -42,8 +40,10 @@ navbar:
         - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html
-        - text: "Working with Bascet files"
-          href: articles/bascet_files.html
+        - text: "The types of Bascet-ZIP files"
+          href: articles/bascet_zip.html
+        - text: "Working with Bascet-FASTQ"
+          href: articles/bascet_fastq.html
         - text: "For developers"
           href: articles/for_developers.html
         - text: "Example data"

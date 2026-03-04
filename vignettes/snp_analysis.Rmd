@@ -111,52 +111,52 @@ snp_ad <- ReadCellSNPmatrix(
 Create a Seurat object from the counts:
 
 ```{r, eval=F, echo=T}
-pbmc <- CreateSeuratObject(counts = t(snp_ad), project = "pbmc3k", min.cells = 3, min.features = 0)
+adata <- CreateSeuratObject(counts = t(snp_ad), project = "adata3k", min.cells = 3, min.features = 0)
 
 #only keep selected cells (optional)
-pbmc <- pbmc[,colnames(pbmc) %in% list_cell_mutans]
+adata <- adata[,colnames(adata) %in% list_cell_mutans]
 
 #transfer count metadata (optional)
-pbmc$frac_mapped <-  cnt_mutans$obs[colnames(pbmc),]$frac_mapped
-pbmc$tot_reads <-  cnt_mutans$obs[colnames(pbmc),]$tot_reads
+adata$frac_mapped <-  cnt_mutans$obs[colnames(adata),]$frac_mapped
+adata$tot_reads <-  cnt_mutans$obs[colnames(adata),]$tot_reads
 ```
 
 Do the usual transformations and clustering:
 
 ```{r, eval=F, echo=T}
 ### Normalize data, PCA etc
-pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
-pbmc <- NormalizeData(pbmc)
-pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
-all.genes <- rownames(pbmc)
-pbmc <- ScaleData(pbmc, features = all.genes) ########## todo should normalize by sequencing depth of original cell! not SNP count
+adata <- NormalizeData(adata, normalization.method = "LogNormalize", scale.factor = 10000)
+adata <- NormalizeData(adata)
+adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
+all.genes <- rownames(adata)
+adata <- ScaleData(adata, features = all.genes) ########## todo should normalize by sequencing depth of original cell! not SNP count
 
-pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+adata <- RunPCA(adata, features = VariableFeatures(object = adata))
 
-pbmc <- FindNeighbors(pbmc, dims = 1:10)
-pbmc <- FindClusters(pbmc, resolution = 0.5)
+adata <- FindNeighbors(adata, dims = 1:10)
+adata <- FindClusters(adata, resolution = 0.5)
 
-pbmc <- RunUMAP(pbmc, dims = 1:10)
+adata <- RunUMAP(adata, dims = 1:10)
 
-pbmc$snp_count <- rowSums(pbmc@assays$RNA@layers$counts)
+adata$snp_count <- rowSums(adata@assays$RNA@layers$counts)
 ```
 
 Do some quick plots to check for clusters:
 
 ```{r, eval=F, echo=T}
-DimPlot(pbmc, reduction = "umap")
-FeaturePlot(pbmc, reduction = "umap", features = c("snp_count"))
-FeaturePlot(pbmc, reduction = "umap", features = c("frac_mapped"))
-FeaturePlot(pbmc, reduction = "umap", features = c("tot_reads"))
+DimPlot(adata, reduction = "umap")
+FeaturePlot(adata, reduction = "umap", features = c("snp_count"))
+FeaturePlot(adata, reduction = "umap", features = c("frac_mapped"))
+FeaturePlot(adata, reduction = "umap", features = c("tot_reads"))
 
 ```
 
 Find differential SNPs using the Seurat marker tools
 
 ```{r, eval=F, echo=T}
-pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
+adata.markers <- FindAllMarkers(adata, only.pos = TRUE)
 
-pbmc.markers %>%
+adata.markers %>%
   group_by(cluster) %>%
   dplyr::filter(avg_log2FC > 2) %>%
   slice_head(n = 100) %>%
@@ -168,7 +168,7 @@ as.data.frame(top10)
 
 Plot SNPs to your liking
 ```{r, eval=F, echo=T}
-FeaturePlot(pbmc, reduction = "umap", features = c("NZ-CP077404.1-7148-T-to-C"))
+FeaturePlot(adata, reduction = "umap", features = c("NZ-CP077404.1-7148-T-to-C"))
 ```
 
 That's it!
