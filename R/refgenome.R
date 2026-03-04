@@ -469,8 +469,8 @@ BascetFilterAlignment <- function(
 #' @param useReference Name of the BWA reference to use
 #' @param numThreads Number of threads to use for each runner. Default is the maximum, taken from runner settings
 #' @param inputName Name of input shard
-#' @param outputNameBAMunsorted Name of unsorted BAMs
-#' @param outputNameBAMsorted Name of sorted BAMs (if generated)
+#' @param outputNameBAMcell Name of unsorted BAMs
+#' @param outputNameBAMcoord Name of sorted BAMs (if generated)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -480,9 +480,9 @@ BascetAlignToReference <- function(
     bascetRoot, 
     useReference,
     numThreads=NULL,
-    inputName="filtered", 
-    outputNameBAMunsorted="unsorted_aligned", 
-    outputNameBAMsorted="aligned",
+    inputName="filtered",
+    outputNameBAMcell="aligned_cell", 
+    outputNameBAMcoord="aligned_coord",
     overwrite=FALSE,
     aligner=c(NULL, "BWA", "bowtie2", "STAR"),
     runner=GetDefaultBascetRunner(), 
@@ -497,8 +497,8 @@ BascetAlignToReference <- function(
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.valid.shardname(inputName))
-  stopifnot(is.valid.shardname(outputNameBAMunsorted))
-  stopifnot(is.valid.shardname(outputNameBAMsorted))
+  stopifnot(is.valid.shardname(outputNameBAMcell))
+  stopifnot(is.valid.shardname(outputNameBAMcoord))
   stopifnot(is.logical(overwrite))
   
   aligner <- match.arg(aligner)
@@ -515,8 +515,8 @@ BascetAlignToReference <- function(
     stop("No input files")
   }
   inputFiles <- file.path(bascetRoot, input_shards)
-  outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMunsorted, "bam", num_shards)
-  outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMsorted,   "bam", num_shards)
+  outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMcell,  "bam", num_shards)
+  outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMcoord, "bam", num_shards)
   
   if(aligner=="BWA"){
     if(!file.exists(useReference)){
@@ -538,7 +538,7 @@ BascetAlignToReference <- function(
   }
   
   
-  if(bascetCheckOverwriteOutput(outputNameBAMsorted, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputNameBAMcoord, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -547,7 +547,7 @@ BascetAlignToReference <- function(
       cmd = c(
         shellscriptMakeBashArray("files_in", inputFiles),
         shellscriptMakeBashArray("files_out_unsorted", outputFilesBAMunsorted),
-        shellscriptMakeBashArray("files_out_sorted", outputFilesBAMsorted),
+        shellscriptMakeBashArray("files_out_sorted",   outputFilesBAMsorted),
         
         ### Abort early if needed    
         if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_sorted[$TASK_ID]}"),
