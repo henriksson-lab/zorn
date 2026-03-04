@@ -469,8 +469,8 @@ BascetFilterAlignment <- function(
 #' @param useReference Name of the BWA reference to use
 #' @param numThreads Number of threads to use for each runner. Default is the maximum, taken from runner settings
 #' @param inputName Name of input shard
-#' @param outputNameBAMcell Name of unsorted BAMs
-#' @param outputNameBAMcoord Name of sorted BAMs (if generated)
+#' @param outputNameBAMcell Name of cell-sorted BAMs
+#' @param outputNameBAMpos Name of pos-sorted BAMs (if generated)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -482,7 +482,7 @@ BascetAlignToReference <- function(
     numThreads=NULL,
     inputName="filtered",
     outputNameBAMcell="aligned_cell", 
-    outputNameBAMcoord="aligned_coord",
+    outputNameBAMpos="aligned_pos",  #TODO make optional
     overwrite=FALSE,
     aligner=c(NULL, "BWA", "bowtie2", "STAR"),
     runner=GetDefaultBascetRunner(), 
@@ -498,7 +498,7 @@ BascetAlignToReference <- function(
   stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputNameBAMcell))
-  stopifnot(is.valid.shardname(outputNameBAMcoord))
+  stopifnot(is.valid.shardname(outputNameBAMpos))
   stopifnot(is.logical(overwrite))
   
   aligner <- match.arg(aligner)
@@ -516,7 +516,7 @@ BascetAlignToReference <- function(
   }
   inputFiles <- file.path(bascetRoot, input_shards)
   outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMcell,  "bam", num_shards)
-  outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMcoord, "bam", num_shards)
+  outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMpos, "bam", num_shards)
   
   if(aligner=="BWA"){
     if(!file.exists(useReference)){
@@ -538,7 +538,7 @@ BascetAlignToReference <- function(
   }
   
   
-  if(bascetCheckOverwriteOutput(outputNameBAMcoord, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputNameBAMpos, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 

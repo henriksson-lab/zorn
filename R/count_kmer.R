@@ -78,7 +78,6 @@ BascetMakeMinhashHistogram <- function(
   #check arguments
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.shardname(inputName))
-  stopifnot(is.valid.shardname(outputName))
   stopifnot(is.valid.listcells(includeCells))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))

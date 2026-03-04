@@ -162,7 +162,7 @@ setMethod(
   signature ="SlurmRunner",
   definition = function(runner, jobname, bascetInstance, cmd, arraysize) {
     
-    print("Running job with slurm")
+    cat("Running job with slurm\n")
     
     ## Set up SBATCH settings
     scriptcontent <- c("#!/usr/bin/env bash")
@@ -250,7 +250,7 @@ setMethod(
     print(ret)
 
     if(length(ret)==0){
-      print("Failed to start job")
+      cat("Failed to start job!\n")
       print(slurm_script)
       return(NULL)
     }
@@ -431,6 +431,7 @@ setMethod(
 #      cli::cli_progress_update(set = 20)
       if(num_completed==num_total) {
         #Need to break early or cli call fails. Poor design of the library!
+        cat("\nDone\n")
         break
       } else {
         cli::cli_progress_update(set = num_completed)
