@@ -344,7 +344,7 @@ BascetGetRaw <- function(
           
           "--r1=${files_r1[$TASK_ID]}",
           "--r2=${files_r2[$TASK_ID]}",
-#########          if(add_libnames) "--libname=${libnames[$TASK_ID]}",
+          if(add_libnames) "--library=${libnames[$TASK_ID]}",
           "--out=${files_out[$TASK_ID]}",                 #Each job produces a single output
           chemistry,
           if(!is.null(subchemistry)) paste0("--subchemistry=",subchemistry)

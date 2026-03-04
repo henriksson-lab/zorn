@@ -484,7 +484,7 @@ BascetAlignToReference <- function(
     outputNameBAMunsorted="unsorted_aligned", 
     outputNameBAMsorted="aligned",
     overwrite=FALSE,
-    aligner=c(NULL, "bowtie2", "BWA","STAR"),
+    aligner=c(NULL, "BWA", "bowtie2", "STAR"),
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
