@@ -115,6 +115,8 @@ BascetMakeMinhashHistogram <- function(
         paste0("-o=", outputFile)
       ))
     )
+
+print(cmd)
   
     #Run the job
     RunJob(

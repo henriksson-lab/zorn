@@ -290,7 +290,7 @@ getFastqR2fromR1 <- function(
 #' @export
 BascetAlignmentToBigwig <- function(  
     bascetRoot, 
-    inputName="aligned", 
+    inputName="aligned_pos", 
     outputName="pileup",
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
@@ -603,7 +603,7 @@ BascetAlignToReference <- function(
 #' @export
 BascetBam2Fragments <- function(
     bascetRoot, 
-    inputName="aligned",
+    inputName="aligned_pos",
     outputName="fragments", 
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
@@ -674,7 +674,7 @@ BascetBam2Fragments <- function(
 #' @export
 BascetCountChrom <- function(
     bascetRoot,
-    inputName="aligned",
+    inputName="aligned_pos",
     outputName="chromcount", 
     minMatching=0,
     removeDuplicates=TRUE,
@@ -993,7 +993,7 @@ CountGrangeFeatures <- function(
 #' @export
 BascetCountFeature <- function(
     bascetRoot,
-    inputName="aligned",
+    inputName="aligned_pos",
     outputName="featurecount", 
     gffFile,
     useFeature="gene",
@@ -1100,7 +1100,7 @@ BascetCountFeature <- function(
 #' @export
 BascetRunCellSNP <- function(  
     bascetRoot, 
-    inputName="aligned", 
+    inputName="aligned_pos", 
     outputName="cellsnp", 
     numThreads=NULL,
     overwrite=FALSE,
