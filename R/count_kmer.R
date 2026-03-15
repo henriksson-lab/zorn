@@ -116,7 +116,7 @@ BascetMakeMinhashHistogram <- function(
       ))
     )
 
-print(cmd)
+    #print(cmd)
   
     #Run the job
     RunJob(
@@ -202,7 +202,7 @@ BascetQueryFq <- function( #666
         
         shellscriptMakeOneFileExpander("KMERFILE", useKMERs), 
         assembleBascetCommand(bascetInstance, c(
-          "query-fq",
+          "detect-kmer-fq",
           "-t=$BASCET_TEMPDIR",
           paste0("-m=", format(maxReads, scientific=FALSE)),
           "-f=$KMERFILE",

@@ -123,7 +123,6 @@ setMethod(
     
     cmd <- stringr::str_flatten(cmd,"\n")
     
-    print("----------- arg")
     if(runner@showScript){
       print("=============== final local script start =================")
       writeLines(cmd)
