@@ -252,11 +252,109 @@ getBascetDockerImage <- function(
 
 
 ###############################################
+#' Get and install a Bascet podman image. 
+#' It will be cached to avoid downloading it each the time the function is called
+#' 
+#' @param storeAt Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory
+#' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
+#' @param forceInstall Set to true to overwrite any existing Podman image
+#' @param mapDirs Directories to map through to the container
+#' @param verbose Print additional information, primarily to help troubleshooting
+#' 
+#' @return A Bascet instance
+#' @export
+getBascetPodmanImage <- function(
+    storeAt=getwd(),
+    tempdir=NULL,
+    forceInstall=FALSE,
+    mapDirs=NULL,
+    verbose=FALSE,
+    logLevel="info"
+){
+  #check arguments
+  stopifnot(dir.exists(storeAt))
+  stopifnot(is.logical(forceInstall))
+  stopifnot(is.logical(verbose))
+  
+  #figure out where temporary files should go
+  if(is.null(tempdir)){
+    tempdir <- "./temp"
+    dir.create(tempdir, showWarnings = FALSE)
+  } else {
+    stopifnot(dir.exists(tempdir))
+  }
+  
+  #check if podman is installed
+  ret <- system("podman ps", ignore.stdout = !verbose, ignore.stderr = !verbose)
+  if(ret==0) {
+    ret <- system("podman image inspect henriksson-lab/bascet:latest", ignore.stdout = !verbose, ignore.stderr = !verbose)
+    
+    if(ret!=0 || forceInstall) {
+      print("No podman image present; downloading")
+      
+      file_bascet_image <- file.path(storeAt, "bascet.tar.gz")
+      file_bascet_image_tar <- file.path(storeAt, "bascet.tar")
+      safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.tar.gz", file_bascet_image)
+
+      print("Decompressing")
+      R.utils::gunzip(file_bascet_image)
+      
+      print("Loading image into Podman")
+      system(paste("podman load -i ", file_bascet_image_tar))
+      
+      print(paste("The large image at", file_bascet_image_tar, "can now be removed if the installation worked. You can otherwise try to install it manually using Podman"))
+    } else {
+      print(paste("Found existing Bascet Podman image"))
+    }
+    
+    #Add default mapdirs 
+    if(is.null(mapDirs) && Sys.info()["sysname"] == "Darwin") {
+      mapDirs <- c("/Users", "/Volumes")
+    }
+
+    #Check which directories to map through actually exist
+    mapDirs_filtered <- c()
+    for(d in mapDirs) {
+      if(dir.exists(d)) {
+        mapDirs_filtered <- c(mapDirs_filtered, d)
+      }
+    }
+
+    #Generate map-through flags
+    mapDirs_cmd <- paste0("--mount type=bind,src=", mapDirs_filtered, ",dst=", mapDirs_filtered)
+    mapDirs_cmd_all <- paste(mapDirs_cmd, collapse = " ")
+    prependCmd <- paste("podman run ", mapDirs_cmd_all, " henriksson-lab/bascet ")
+    
+    
+    BascetInstance(
+      bin="bascet",
+      tempdir=tempdir,
+      prependCmd=prependCmd,
+      containerMem="10GB",
+      logLevel=logLevel
+    ) 
+    
+  } else {
+    stop("Podman is not installed or cannot be run")
+  } 
+}
+
+
+###############################################
 #' Remove current Bascet docker image 
 #' 
 #' @export
 removeBascetDockerImage <- function(){
   system("docker image rm -f henriksson-lab/bascet")
+}
+
+
+###############################################
+#' Remove current Bascet podman image 
+#' 
+#' @export
+removeBascetPodmanImage <- function(){
+  system("podman image rm -f henriksson-lab/bascet")
 }
 
 
