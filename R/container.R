@@ -218,8 +218,12 @@ getBascetDockerImage <- function(
     }
     
     #Add default mapdirs 
-    if(is.null(mapDirs) && Sys.info()["sysname"] == "Darwin") {
-      mapDirs <- c("/Users","/Volumes")
+    if(is.null(mapDirs)) {
+      if(Sys.info()["sysname"] == "Darwin") {
+        mapDirs <- c("/Users","/Volumes")
+      } else if(Sys.info()["sysname"] == "Linux") {
+        mapDirs <- c("/home","/mnt","/media")
+      }
     }
 
     #Check which directories to map through actually exist
@@ -308,8 +312,12 @@ getBascetPodmanImage <- function(
     }
     
     #Add default mapdirs 
-    if(is.null(mapDirs) && Sys.info()["sysname"] == "Darwin") {
-      mapDirs <- c("/Users", "/Volumes")
+    if(is.null(mapDirs)) {
+      if(Sys.info()["sysname"] == "Darwin") {
+        mapDirs <- c("/Users", "/Volumes")
+      } else if(Sys.info()["sysname"] == "Linux") {
+        mapDirs <- c("/home","/mnt","/media")
+      }
     }
 
     #Check which directories to map through actually exist
