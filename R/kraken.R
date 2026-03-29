@@ -65,6 +65,7 @@ SpeciesCorrMatrix <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param useKrakenDB Path to KRAKEN2 database
 #' @param numThreads Number of threads for one KRAKEN instance
+#' @param totalMem Total memory to allocate
 #' @param inputName Name of input shard (FASTQ)
 #' @param outputRawName Name of output shard (kraken raw output)
 #' @param outputName Name of output shard (kraken count table data)
@@ -78,6 +79,7 @@ BascetRunKraken <- function(
     bascetRoot,
     useKrakenDB=NULL, #"/data/henlab/kraken/standard-8",
     numThreads=NULL,
+    totalMem=NULL,
     inputName="filtered",
     outputRawName="kraken_raw",
     outputName="kraken_mat",
@@ -111,6 +113,20 @@ BascetRunKraken <- function(
   outputFilesRaw <- makeOutputShardNames(bascetRoot, outputRawName, "kraken_out", num_shards) 
   outputFilesMatrix <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards) 
   
+  #Check memory sizes
+  if(!is.null(totalMem)) {
+    totalMem <- parse_size_string(totalMem)
+    stopifnot(totalMem > fs::fs_bytes("1Gb"))
+  } else {
+    #Take memory from runner if possible
+    if(runner@mem!="") {
+      totalMem <- parse_size_string(runner@mem) - fs::fs_bytes(bascetInstance@containerMem)
+      stopifnot(totalMem > fs::fs_bytes("1Gb"))
+    } else {
+      print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
+    }
+  }
+  
   if(bascetCheckOverwriteOutput(outputFilesMatrix, overwrite)) {
     #Run the job
     RunJob(
@@ -132,6 +148,7 @@ BascetRunKraken <- function(
           "--out-matrix=${files_out_matrix[$TASK_ID]}",
           "--temp=$BASCET_TEMPDIR",
           paste0("--db=", useKrakenDB), ################################ TODO might have whitespace
+          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
           paste0("--threads=", numThreads)
         ))
       ),

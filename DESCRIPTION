@@ -46,6 +46,7 @@ Collate:
   'job_general.R'
   'job_local.R'
   'job_slurm.R'
+  'countmatrix.R'
   'zorn.R'
   'bascet_file.R'
   'debarcoding.R'

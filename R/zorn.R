@@ -120,6 +120,32 @@ formatPlainNumber <- function(s) {
 #}
 
 
+###############################################
+#' Helper for functions. Set total memory argument based on container and
+#' runner, if not user specified
+#' 
+#' @param totalMem TODO
+checkTotalMemArg <- function(
+    totalMem, 
+    runner, 
+    bascetInstance
+) {
+  #Check memory sizes
+  if(!is.null(totalMem)) {
+    totalMem <- parse_size_string(totalMem)
+    stopifnot(totalMem > fs::fs_bytes("1Gb"))
+  } else {
+    #Take memory from runner if possible
+    if(runner@mem!="") {
+      totalMem <- parse_size_string(runner@mem) - fs::fs_bytes(bascetInstance@containerMem)
+      stopifnot(totalMem > fs::fs_bytes("1Gb"))
+    } else {
+      print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
+    }
+  }
+  totalMem
+}
+
 
 ################################################################################
 ################ Helper functions: check if call is correct ####################
@@ -675,151 +701,6 @@ BascetRunFASTP <- function(
 
 
 
-################################################################################
-############################# Count matrix / anndata ###########################
-################################################################################
 
 
-
-### Internal helper function
-ReadBascetCountMatrix_one <- function(
-    fname,
-    verbose=FALSE
-){
-  #check arguments
-  stopifnot(file.exists(fname))
-  stopifnot(is.logical(verbose))
-  
-  #fname <- "/husky/henriksson/atrandi//v4_wgs_novaseq1/chromcount.1.h5"
-  #fname <- "/home/mahogny/test/cnt_feature.hdf5"
-  #fname <- "/husky/henriksson/atrandi//v4_wgs_novaseq1/kmer_counts.1.h5"
-  
-  h5f <- rhdf5::H5Fopen(fname)
-  indices <- h5f$X$indices + 1 
-  indptr <-  h5f$X$indptr
-  dat <- h5f$X$data
-  shape <- h5f$X$shape
-  
-  #shape
-  #print(indices)
-  
-  #print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
-  mat <- Matrix::sparseMatrix(  
-    j=indices,   #i??   was j when fine
-    p=indptr,
-    x=dat,
-    dims=h5f$X$shape
-  )
-  
-  rownames(mat) <- h5f$obs$`_index`  #names of cells
-  colnames(mat) <- h5f$var$`_index`  #feature names
-  
-  ### Read obs matrix
-  
-  #print(666)
-  #print(names(h5f$obs))
-  #list_obs_col <- setdiff(names(h5f$obs),"_index")
-  #print(h5f$obs["_unmapped"])
-  
-  #df_obs <- data.frame(row.names=h5f$obs$`_index`)
-  df_obs <- as.data.frame(h5f$obs)
-  colnames(df_obs) <- names(h5f$obs)
-  #print(head(df_obs))
-  
-  rhdf5::H5close()
-  
-  list(
-    obs=df_obs,
-    X=mat
-  )
-  #mat
-}
-
-
-###############################################
-#' Read a count matrix as produced by Bascet (hdf5 format).
-#' This can be output from both BascetQueryFq and BascetCountChrom
-#' 
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of input shard
-#' @param verbose Print additional information, primarily to help troubleshooting
-#' 
-#' @return Count matrix as sparseMatrix
-#' @export
-ReadBascetCountMatrix <- function(
-    bascetRoot, 
-    inputName,
-    verbose=FALSE
-){
-  #check arguments
-  stopifnot(dir.exists(bascetRoot))
-  stopifnot(is.valid.shardname(inputName))
-  stopifnot(is.logical(verbose))
-
-  print("Loading HDF5 files")
-  
-  #Figure out input file names  
-  input_shards <- detectShardsForFile(bascetRoot, inputName)
-  num_shards <- length(input_shards)
-  if(num_shards==0){
-    stop("No input files")
-  }
-  inputFiles <- file.path(bascetRoot, input_shards)
-  if(tools::file_ext(inputFiles[1])!="h5"){
-    stop("Wrong input format. should be hd5")
-  }
-
-  #Show a progress bar  
-  pbar <- progress::progress_bar$new(total = length(inputFiles)*2)
-  pbar$tick(0)
-  
-  #Load individual matrices. Sizes may not match
-  list_mat <- list()
-  list_obs <- list()
-  for(f in inputFiles){
-    list_one <- ReadBascetCountMatrix_one(f)
-    
-    if(verbose){
-      print(dim(list_one$X))
-    }
-    list_mat[[f]] <- list_one$X
-    list_obs[[f]] <- list_one$obs
-    pbar$tick()
-  }
-  
-  #Find union of features  
-  all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
-  if(verbose){
-    print(all_colnames)
-  }
-  num_col <- length(all_colnames)
-  map_name_to_i <- data.frame(row.names = all_colnames, ind=1:length(all_colnames))
-  if(verbose){
-    print(map_name_to_i)
-  }
-  
-  #Make sizes compatible
-  list_resized_mat <- list()
-  for(f in inputFiles){
-    mat <- list_mat[[f]]
-    new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "R", dtype = "d")
-    new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column names!  #here, x[.,.] <- val : x being coerced from Tsparse* to CsparseMatrix
-    rownames(new_mat) <- rownames(mat)
-    colnames(new_mat) <- all_colnames
-    # print(dim(new_mat))
-    list_resized_mat[[f]] <- new_mat
-    pbar$tick()
-  }
-  
-  #Concatenate matrices
-  allmat <- do.call(rbind, list_resized_mat) #TODO check that above worked properly!
-  
-  #Concat obs
-  allobs <- do.call(rbind, list_obs)
- 
-  list(
-    X=allmat,
-    obs=allobs
-  ) 
-}
 
