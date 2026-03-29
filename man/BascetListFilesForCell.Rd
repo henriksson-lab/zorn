@@ -17,6 +17,8 @@ BascetListFilesForCell(
 \item{cellID}{Name of the cell}
 
 \item{bascetInstance}{A Bascet instance}
+
+\item{superVerbose}{Enable extra verbose output for deep debugging}
 }
 \value{
 A data.frame with list of all the files

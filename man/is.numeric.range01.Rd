@@ -6,6 +6,9 @@
 \usage{
 \method{is.numeric}{range01}(x)
 }
+\arguments{
+\item{x}{A numeric value}
+}
 \description{
 Check that parameter is a number between 0..1
 }

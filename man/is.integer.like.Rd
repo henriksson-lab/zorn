@@ -6,6 +6,9 @@
 \usage{
 is.integer.like(x)
 }
+\arguments{
+\item{x}{A numeric value}
+}
 \description{
 Check that parameter is castable to an integer
 }

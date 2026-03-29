@@ -6,6 +6,11 @@
 \usage{
 ListDatabaseAbricate(dbdir, bascetInstance = GetDefaultBascetInstance())
 }
+\arguments{
+\item{dbdir}{Path to database directory (string)}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \value{
 List of database names
 }

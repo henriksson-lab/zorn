@@ -21,6 +21,8 @@ BascetAggregateAriba(
 
 \item{verbose}{Show debug output}
 
+\item{includeCells}{Character vector of cell names to include, or NULL for all cells}
+
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
 \item{bascetInstance}{A Bascet instance}

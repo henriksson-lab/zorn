@@ -7,7 +7,7 @@
 MapListAsDataFrame(mylist)
 }
 \arguments{
-\item{mylist}{TODO}
+\item{mylist}{Named list of data.frames, keyed by cell ID}
 }
 \value{
 A data.frame

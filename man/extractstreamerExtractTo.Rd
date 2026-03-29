@@ -11,7 +11,7 @@ extractstreamerExtractTo(p, fname, outpath)
 
 \item{fname}{Name of file}
 
-\item{verbose}{Print additional information, primarily to help troubleshooting}
+\item{outpath}{Path to write the extracted file to}
 }
 \value{
 0 if ok

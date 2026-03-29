@@ -35,6 +35,8 @@ BascetShardify(
 
 \item{streamArenaMem}{Advanced settings: How much memory to use for streaming arena (fraction, given as e.g. "10\%")}
 
+\item{streamBufferSize}{Advanced setting: Stream buffer size (fraction, given as e.g. "10\%")}
+
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
 \item{bascetInstance}{A Bascet instance}

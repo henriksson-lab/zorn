@@ -4,7 +4,7 @@
 #'
 #' TODO is this function used? export
 #'
-#' @param adata description 
+#' @param adata A Seurat object with the DefaultAssay having counts per species
 #' 
 #' @return A ggplot object
 SpeciesCorrMatrix <- function(

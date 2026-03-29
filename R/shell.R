@@ -24,7 +24,7 @@
 
 ###############################################
 #' Check that parameter is a valid environment variable name
-#' @param x TODO
+#' @param x A string representing an environment variable name
 is.valid.env.variable <- function(x) {
   #TODO check that the name has no weird symbols
   is.character(x)

@@ -6,6 +6,9 @@
 \usage{
 is.percent.string(s)
 }
+\arguments{
+\item{s}{A string to test for percent format (e.g. "10\%")}
+}
 \description{
 Check that parameter is in the form "xxx\%"
 }

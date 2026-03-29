@@ -6,6 +6,9 @@
 \usage{
 MapCellMultiListAsDataFrame(mylist)
 }
+\arguments{
+\item{mylist}{Named list of data.frames, keyed by cell ID}
+}
 \value{
 TODO
 }

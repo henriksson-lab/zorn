@@ -6,6 +6,9 @@
 \usage{
 is.existing.fasta(x)
 }
+\arguments{
+\item{x}{A file path string pointing to a FASTA file}
+}
 \description{
 Check that parameter is a valid shard name
 }

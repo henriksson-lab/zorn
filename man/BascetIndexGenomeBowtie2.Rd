@@ -14,6 +14,8 @@ BascetIndexGenomeBowtie2(
 \arguments{
 \item{genomeFile}{Name of FASTA file holding genome sequence}
 
+\item{numThreads}{Number of threads to use. Default is the maximum, taken from runner settings}
+
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
 \item{bascetInstance}{A Bascet instance}

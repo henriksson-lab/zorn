@@ -19,6 +19,8 @@ BascetAggregateFASTQC(
 
 \item{inputName}{Name of input shard}
 
+\item{includeCells}{Character vector of cell names to include, or NULL for all cells}
+
 \item{verbose}{Show debug output}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}

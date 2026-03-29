@@ -24,6 +24,8 @@ getBascetDockerImage(
 \item{mapDirs}{Directories to map through to the container}
 
 \item{verbose}{Print additional information, primarily to help troubleshooting}
+
+\item{logLevel}{Log level for the Bascet instance (e.g. "info", "debug", "warn")}
 }
 \value{
 A Bascet instance

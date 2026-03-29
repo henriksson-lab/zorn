@@ -6,6 +6,9 @@
 \usage{
 is.valid.shardname(x)
 }
+\arguments{
+\item{x}{A string representing a shard name}
+}
 \description{
 Check that parameter is a valid shard name
 }

@@ -6,6 +6,9 @@
 \usage{
 is.runner(x)
 }
+\arguments{
+\item{x}{An object to test for Runner class}
+}
 \description{
 Check that parameter is a valid runner
 }

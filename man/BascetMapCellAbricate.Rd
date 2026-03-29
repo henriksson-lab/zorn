@@ -22,6 +22,8 @@ BascetMapCellAbricate(
 
 \item{outputName}{Name of output shard}
 
+\item{db}{Name of ABRicate database to use (string)}
+
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}

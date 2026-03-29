@@ -7,6 +7,8 @@
 GetFASTQCpassfailStats(aggrFastqData, readnum = c(1, 2))
 }
 \arguments{
+\item{aggrFastqData}{Aggregated FASTQC data list from BascetAggregateFASTQC}
+
 \item{readnum}{1 or 2, for R1 or R2}
 }
 \value{

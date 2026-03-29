@@ -155,7 +155,7 @@ setMethod(
 
 ###############################################
 #' Check that parameter is a valid runner
-#' @param x TODO
+#' @param x An object to test for Runner class
 is.runner <- function(x) {
   stringr::str_detect(as.character(class(x)),"Runner")
 }

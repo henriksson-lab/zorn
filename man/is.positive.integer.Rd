@@ -6,6 +6,9 @@
 \usage{
 is.positive.integer(x)
 }
+\arguments{
+\item{x}{A numeric value}
+}
 \description{
 Check that parameter is an integer and >0
 }

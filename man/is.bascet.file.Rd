@@ -6,6 +6,9 @@
 \usage{
 is.bascet.file(f)
 }
+\arguments{
+\item{f}{An object to test for Bascet class}
+}
 \description{
 Check that parameter is a valid bascet file
 }

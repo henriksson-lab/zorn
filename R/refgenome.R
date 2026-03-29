@@ -95,7 +95,7 @@ BascetIndexGenomeBWA <- function(
 #' Index a genome using Bowtie2 such that it can be used for alignment
 #' 
 #' @param genomeFile Name of FASTA file holding genome sequence
-#' @param numThreads TODO
+#' @param numThreads Number of threads to use. Default is the maximum, taken from runner settings
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -471,7 +471,7 @@ BascetFilterAlignment <- function(
 #' @param outputNameBAMcell Name of cell-sorted BAMs
 #' @param outputNameBAMpos Name of pos-sorted BAMs (if generated)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param aligner TODO
+#' @param aligner Which aligner to use: "BWA", "bowtie2", or "STAR"
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'

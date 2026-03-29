@@ -58,7 +58,7 @@ BascetInstance <- function(
 
 ###############################################
 #' Check that parameter is a valid bascet instance
-#' @param x TODO
+#' @param x An object to test for BascetInstance class
 is.bascet.instance <- function(x) {
   stringr::str_detect(as.character(class(x)),"BascetInstance")
 }
@@ -115,7 +115,7 @@ GetBascetTempDir <- function(
 #' 
 #' @param storeAt Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory
 #' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
-#' @param logLevel TODO
+#' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
 #'
 #' @return A Bascet instance
 #' @export
@@ -170,7 +170,7 @@ if(FALSE){
 #' @param forceInstall Set to true to overwrite any existing Docker image
 #' @param mapDirs Directories to map through to the container
 #' @param verbose Print additional information, primarily to help troubleshooting
-#' @param logLevel TODO
+#' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
 #'
 #' @return A Bascet instance
 #' @export

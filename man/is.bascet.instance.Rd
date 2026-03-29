@@ -6,6 +6,9 @@
 \usage{
 is.bascet.instance(x)
 }
+\arguments{
+\item{x}{An object to test for BascetInstance class}
+}
 \description{
 Check that parameter is a valid bascet instance
 }

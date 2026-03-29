@@ -15,8 +15,8 @@ setClass("BascetCountMatrix", slots=list(
 ###############################################
 #' Create new BascetCountMatrix
 #'
-#' @param X The matrix
-#' @param obs The observable
+#' @param X Sparse count matrix (dgCMatrix or similar)
+#' @param obs Data frame of observation metadata, one row per cell
 #' 
 #' @return A Bascet count matrix object
 NewBascetCountMatrix <- function(

@@ -35,6 +35,8 @@ BascetAlignToReference(
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
+\item{aligner}{Which aligner to use: "BWA", "bowtie2", or "STAR"}
+
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
 \item{bascetInstance}{A Bascet instance}

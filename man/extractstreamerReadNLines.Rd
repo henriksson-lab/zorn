@@ -9,6 +9,8 @@ extractstreamerReadNLines(p, n_lines, verbose = FALSE)
 \arguments{
 \item{p}{Streamer process}
 
+\item{n_lines}{Number of lines to read}
+
 \item{verbose}{Print additional information, primarily to help troubleshooting}
 }
 \value{

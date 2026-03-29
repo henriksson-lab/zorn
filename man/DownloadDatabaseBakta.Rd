@@ -10,6 +10,13 @@ DownloadDatabaseBakta(
   bascetInstance = GetDefaultBascetInstance()
 )
 }
+\arguments{
+\item{dbdir}{Directory path to download database to (string)}
+
+\item{dbtype}{Database type: "light" or "full"}
+
+\item{bascetInstance}{A Bascet instance}
+}
 \description{
 Download a database for Bakta
 }

@@ -116,26 +116,27 @@ DetectRawFileMeta <- function(
 #' @param maxShardSize Estimated maximum size of output shard. Can be set higher but as sorting is also performed during sharding, it can be overall more efficient to only do partial sorting during this command
 #' @param outputName Name output files: Debarcoded reads
 #' @param chemistry The type of data to be parsed
+#' @param subchemistry Sub-chemistry variant, if applicable
 #' @param barcodeTolerance Optional: Number of mismatches allowed in the barcode for it to still be considered valid
-#' 
+#'
 #' @param numThreads Number of threads to use per job. Default is the number from the runner
-#' @param numReadThreads Advanced setting: Number of threads for reading 
+#' @param numReadThreads Advanced setting: Number of threads for reading
 #' @param numDebarcodeThreads Advanced setting: Number of threads for debarcoding
 #' @param numSortingThreads Advanced setting: Number of threads for sorting, first phase
 #' @param numMergeSortingThreads Advanced setting: Number of threads for sorting, second phase
 #' @param numWriteThreads Advanced setting: Number of threads for writing
 #' @param numCompressThreads Advanced setting: Number of threads for compressing
-#' 
+#'
 #' @param totalMem Total memory to allocate
 #' @param streamBufferSize Advanced setting: Stream buffer size (fraction, given as e.g. "10%")
 #' @param sortBufferSize Advanced setting: Sort buffer size (fraction, given as e.g. "10%")
-#' @param pageBufferSize Advanced setting: Page buffer size (fraction, given as e.g. "10%")
+#' @param compressBufferSize Advanced setting: Compress buffer size (fraction, given as e.g. "10%")
+#' @param compressRawBufferSize Advanced setting: Raw compress buffer size (fraction, given as e.g. "10%")
+#'
 #' @param compressionLevel Advanced setting: Compression level (0..12)
-#' 
-#' @param compressBufferSize TODO
-#' @param compressRawBufferSize TODO
-#' @param numMergeStreams TODO
-#' @param subchemistry TODO
+#'
+#' @param numMergeStreams Advanced setting: Number of merge streams (must be >= 2)
+#'
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -594,15 +595,15 @@ DebarcodedKneePlot <- function(
 #' @param numOutputShards How many shards to generate /for each input prefix/
 #' @param outputName Name of the output file: Properly sharded debarcoded reads
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @param numThreads Number of threads to use per job. Default is the number from the runner
 #' @param numWriterThreads Advanced settings: Number of writer threads to use per job
-#' 
 #' @param totalMem How much memory to use. Extracted from runner if set
 #' @param streamArenaMem Advanced settings: How much memory to use for streaming arena (fraction, given as e.g. "10%")
-#' @param streamBufferSize TODO
+#' @param streamBufferSize Advanced setting: Stream buffer size (fraction, given as e.g. "10%")
+#'
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A runner job (details depends on runner)
 #' @export

@@ -6,6 +6,9 @@
 \usage{
 is.streamer(streamer)
 }
+\arguments{
+\item{streamer}{An object to test for streamer validity}
+}
 \description{
 Check that parameter is a valid streamer
 }

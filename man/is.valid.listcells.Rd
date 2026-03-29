@@ -6,6 +6,9 @@
 \usage{
 is.valid.listcells(x)
 }
+\arguments{
+\item{x}{A character vector of cell names, or NULL}
+}
 \description{
 Check that parameter is a valid list of cells
 }

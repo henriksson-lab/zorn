@@ -6,6 +6,9 @@
 \usage{
 is.valid.env.variable(x)
 }
+\arguments{
+\item{x}{A string representing an environment variable name}
+}
 \description{
 Check that parameter is a valid environment variable name
 }

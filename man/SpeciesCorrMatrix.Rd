@@ -7,7 +7,7 @@
 SpeciesCorrMatrix(adata)
 }
 \arguments{
-\item{adata}{description}
+\item{adata}{A Seurat object with the DefaultAssay having counts per species}
 }
 \value{
 A ggplot object

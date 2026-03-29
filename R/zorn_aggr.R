@@ -100,8 +100,8 @@ BascetMapCell <- function(
 ###############################################
 #' Convenience function; alternative is to somehow implement as.data.frame.
 #' 
-#' @param mylist TODO
-#' 
+#' @param mylist Named list of data.frames, keyed by cell ID
+#'
 #' @return A data.frame
 #' @export
 MapListAsDataFrame <- function(
@@ -148,7 +148,7 @@ MapListAsDataFrame <- function(
 #' 
 #' FUTURE possible make this the new MapListAsDataFrame
 #'
-#' @param mylist TODO
+#' @param mylist Named list of data.frames, keyed by cell ID
 #'
 #' @return TODO
 #' @export

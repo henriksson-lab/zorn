@@ -7,6 +7,10 @@
 GetFASTQCassembledDF(aggrFastqData, section, readnum = c(1, 2))
 }
 \arguments{
+\item{aggrFastqData}{Aggregated FASTQC data list from BascetAggregateFASTQC}
+
+\item{section}{Name of the FASTQC section to extract (string)}
+
 \item{readnum}{1 or 2, for R1 and R2}
 }
 \value{

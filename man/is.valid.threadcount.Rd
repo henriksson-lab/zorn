@@ -6,6 +6,9 @@
 \usage{
 is.valid.threadcount(x)
 }
+\arguments{
+\item{x}{A numeric thread count}
+}
 \description{
 Check that parameter is a valid thread count
 }

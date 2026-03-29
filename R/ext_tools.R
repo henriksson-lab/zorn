@@ -92,7 +92,7 @@ aggr.quast <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param verbose Show debug output
-#' @param includeCells TODO
+#' @param includeCells Character vector of cell names to include, or NULL for all cells
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -170,7 +170,7 @@ BascetMapCellFASTQC <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param verbose Show debug output
-#' @param includeCells TODO
+#' @param includeCells Character vector of cell names to include, or NULL for all cells
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -367,8 +367,8 @@ ShowFASTQCforCell <- function(
 ###############################################
 #' Get a data frame for one type of FASTQ statistics across across all cells
 #'
-#' @param aggrFastqData TODO
-#' @param section TODO
+#' @param aggrFastqData Aggregated FASTQC data list from BascetAggregateFASTQC
+#' @param section Name of the FASTQC section to extract (string)
 #' @param readnum 1 or 2, for R1 and R2
 #'
 #' @return TODO
@@ -476,7 +476,7 @@ GetFASTQCbasicStats <- function(
 ###############################################
 #' From aggregated FASTQC data, get overall pass-fail statistics for overlay on UMAP etc
 #' 
-#' @param aggrFastqData TODO
+#' @param aggrFastqData Aggregated FASTQC data list from BascetAggregateFASTQC
 #' @param readnum 1 or 2, for R1 or R2
 #'
 #' @return A data.frame
@@ -575,7 +575,7 @@ aggr.abricate <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
-#' @param db TODO
+#' @param db Name of ABRicate database to use (string)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -610,8 +610,8 @@ BascetMapCellAbricate <- function(
 ###############################################
 #' List installed databases available for Abricate
 #'
-#' @param dbdir TODO
-#' @param bascetInstance TODO
+#' @param dbdir Path to database directory (string)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return List of database names
 #' @export
@@ -642,7 +642,7 @@ ListDatabaseAbricate <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param verbose Show debug output
-#' @param includeCells TODO
+#' @param includeCells Character vector of cell names to include, or NULL for all cells
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -715,9 +715,9 @@ BascetMapCellBakta <- function(
 ###############################################
 #' Download a database for Bakta
 #'
-#' @param dbdir TODO
-#' @param dbtype TODO
-#' @param bascetInstance TODO
+#' @param dbdir Directory path to download database to (string)
+#' @param dbtype Database type: "light" or "full"
+#' @param bascetInstance A Bascet instance
 #'
 #' @export
 DownloadDatabaseBakta <- function(
@@ -870,7 +870,7 @@ aggr.ariba <- function(bascetFile, cellID, bascetInstance){
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param verbose Show debug output
-#' @param includeCells TODO
+#' @param includeCells Character vector of cell names to include, or NULL for all cells
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -1008,8 +1008,8 @@ aggr.amrfinder <- function(
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
-#' @param includeCells TODO
-#' @param getColumn TODO
+#' @param includeCells Character vector of cell names to include, or NULL for all cells
+#' @param getColumn Column name from AMRfinder output to use as feature (string)
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -1108,7 +1108,7 @@ aggr.gecco <- function(
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
-#' @param includeCells TODO
+#' @param includeCells Character vector of cell names to include, or NULL for all cells
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'

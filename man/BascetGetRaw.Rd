@@ -42,6 +42,8 @@ BascetGetRaw(
 
 \item{chemistry}{The type of data to be parsed}
 
+\item{subchemistry}{Sub-chemistry variant, if applicable}
+
 \item{barcodeTolerance}{Optional: Number of mismatches allowed in the barcode for it to still be considered valid}
 
 \item{numThreads}{Number of threads to use per job. Default is the number from the runner}
@@ -64,15 +66,19 @@ BascetGetRaw(
 
 \item{sortBufferSize}{Advanced setting: Sort buffer size (fraction, given as e.g. "10\%")}
 
+\item{compressBufferSize}{Advanced setting: Compress buffer size (fraction, given as e.g. "10\%")}
+
+\item{compressRawBufferSize}{Advanced setting: Raw compress buffer size (fraction, given as e.g. "10\%")}
+
 \item{compressionLevel}{Advanced setting: Compression level (0..12)}
 
-\item{overwrite}{}
+\item{numMergeStreams}{Advanced setting: Number of merge streams (must be >= 2)}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
 \item{bascetInstance}{A Bascet instance}
-
-\item{pageBufferSize}{Advanced setting: Page buffer size (fraction, given as e.g. "10\%")}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings

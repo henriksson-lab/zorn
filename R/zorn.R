@@ -124,9 +124,9 @@ formatPlainNumber <- function(s) {
 #' Helper for functions. Set total memory argument based on container and
 #' runner, if not user specified
 #' 
-#' @param totalMem TODO
-#' @param runner TODO
-#' @param bascetInstance TODO
+#' @param totalMem Total memory to allocate, as a string (e.g. "8g"). If NULL, derived from runner
+#' @param runner The job runner, used to extract memory settings if totalMem is NULL
+#' @param bascetInstance A Bascet instance, used to subtract container memory overhead
 checkTotalMemArg <- function(
     totalMem,
     runner,
@@ -155,9 +155,9 @@ checkTotalMemArg <- function(
 
 ###############################################
 #' Check that parameter is in the form "xxx%"
-#' @param s TODO
+#' @param s A string to test for percent format (e.g. "10%")
 is.percent.string <- function(s) {
-  if(!is.null(x)) {
+  if(!is.null(s)) {
     pref <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
     last_c <- stringr::str_sub(s, stringr::str_length(s))
     
@@ -173,7 +173,7 @@ is.percent.string <- function(s) {
 
 ###############################################
 #' Check that parameter is a valid memory size
-#' @param x TODO
+#' @param x A string representing a memory size (e.g. "8g")
 is.valid.memsize <- function(x) {
   !is.na(parse_size_string(x))
 }
@@ -181,7 +181,7 @@ is.valid.memsize <- function(x) {
 
 ###############################################
 #' Check that parameter is a valid thread count
-#' @param x TODO
+#' @param x A numeric thread count
 is.valid.threadcount <- function(x) {
   #Note: not calling is.positive.integer to ensure we get a proper error message
   round(x)==x & x>0
@@ -189,21 +189,21 @@ is.valid.threadcount <- function(x) {
 
 ###############################################
 #' Check that parameter is an integer and >0
-#' @param x TODO
+#' @param x A numeric value
 is.positive.integer <- function(x) {
   round(x)==x & x>0
 }
 
 ###############################################
 #' Check that parameter is castable to an integer
-#' @param x TODO
+#' @param x A numeric value
 is.integer.like <- function(x) {
   round(x)==x
 }
 
 ###############################################
 #' Check that parameter is a valid shard name
-#' @param x TODO
+#' @param x A string representing a shard name
 is.valid.shardname <- function(x) {
   # can expand upon this
   is.character(x) && !stringr::str_detect(x,stringr::fixed("."))
@@ -212,7 +212,7 @@ is.valid.shardname <- function(x) {
 
 ###############################################
 #' Check that parameter is a valid list of cells
-#' @param x TODO
+#' @param x A character vector of cell names, or NULL
 is.valid.listcells <- function(x) {
   is.null(x) || is.character(x)
 }
@@ -220,7 +220,7 @@ is.valid.listcells <- function(x) {
 
 ###############################################
 #' Check that parameter is a valid shard name
-#' @param x TODO
+#' @param x A file path string pointing to a FASTA file
 is.existing.fasta <- function(x) {
   is_fasta <- 
     stringr::str_ends(x,stringr::fixed(".fa")) ||
@@ -233,7 +233,7 @@ is.existing.fasta <- function(x) {
 
 ###############################################
 #' Check that parameter is a number between 0..1
-#' @param x TODO
+#' @param x A numeric value
 is.numeric.range01 <- function(x) {
   is.numeric(x) && x>=0 && x<=1
 }
@@ -612,13 +612,13 @@ BarnyardPlotMatrix <- function(
 #'
 #'
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param numLocalThreads Number of threads to use for FASTP. Default is the maximum, taken from runner settings
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
+#' @param numLocalThreads Number of threads to use for FASTP. Default is the maximum, taken from runner settings
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetRunFASTP <- function(

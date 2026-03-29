@@ -22,7 +22,7 @@ setClass("Bascet", slots=list(
 
 ###############################################
 #' Check that parameter is a valid bascet file
-#' @param f TODO
+#' @param f An object to test for Bascet class
 is.bascet.file <- function(f) {
   as.character(class(x))=="Bascet"
 }
@@ -294,7 +294,7 @@ BascetReadFile <- function(
 #' @param bascetFile Bascet file object
 #' @param cellID Name of the cell
 #' @param bascetInstance A Bascet instance
-#' @param superVerbose TODO
+#' @param superVerbose Enable extra verbose output for deep debugging
 #'
 #' @return A data.frame with list of all the files
 #' @export
@@ -611,7 +611,7 @@ if(FALSE){
 
 ###############################################
 #' Check that parameter is a valid streamer
-#' @param streamer TODO
+#' @param streamer An object to test for streamer validity
 is.streamer <- function(streamer) {
   #TODO
   TRUE
@@ -811,7 +811,7 @@ extractstreamerReadOneLine <- function(
 #' extract streamer: helper function to read N lines
 #'
 #' @param p Streamer process
-#' @param n_lines TODO
+#' @param n_lines Number of lines to read
 #' @param verbose Print additional information, primarily to help troubleshooting
 #'
 #' @return All the lines
@@ -924,7 +924,7 @@ extractstreamerOpen <- function(
 #' 
 #' @param p Streamer process
 #' @param fname Name of file
-#' @param outpath TODO
+#' @param outpath Path to write the extracted file to
 #'
 #' @return 0 if ok
 extractstreamerExtractTo <- function(
