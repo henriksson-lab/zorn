@@ -22,6 +22,7 @@ setClass("Bascet", slots=list(
 
 ###############################################
 #' Check that parameter is a valid bascet file
+#' @param f TODO
 is.bascet.file <- function(f) {
   as.character(class(x))=="Bascet"
 }
@@ -293,12 +294,13 @@ BascetReadFile <- function(
 #' @param bascetFile Bascet file object
 #' @param cellID Name of the cell
 #' @param bascetInstance A Bascet instance
-#' 
+#' @param superVerbose TODO
+#'
 #' @return A data.frame with list of all the files
 #' @export
 BascetListFilesForCell <- function(
-    bascetFile, 
-    cellID, 
+    bascetFile,
+    cellID,
     bascetInstance=GetDefaultBascetInstance(),
     superVerbose=FALSE
 ){
@@ -609,6 +611,7 @@ if(FALSE){
 
 ###############################################
 #' Check that parameter is a valid streamer
+#' @param streamer TODO
 is.streamer <- function(streamer) {
   #TODO
   TRUE
@@ -806,14 +809,15 @@ extractstreamerReadOneLine <- function(
 
 ###############################################
 #' extract streamer: helper function to read N lines
-#' 
+#'
 #' @param p Streamer process
+#' @param n_lines TODO
 #' @param verbose Print additional information, primarily to help troubleshooting
-#' 
+#'
 #' @return All the lines
 extractstreamerReadNLines <- function(
-    p, 
-    n_lines, 
+    p,
+    n_lines,
     verbose=FALSE
 ){
   #Check arguments
@@ -920,12 +924,12 @@ extractstreamerOpen <- function(
 #' 
 #' @param p Streamer process
 #' @param fname Name of file
-#' @param verbose Print additional information, primarily to help troubleshooting
-#' 
+#' @param outpath TODO
+#'
 #' @return 0 if ok
 extractstreamerExtractTo <- function(
-    p, 
-    fname, 
+    p,
+    fname,
     outpath
 ) {
   #Check arguments

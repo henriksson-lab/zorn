@@ -147,7 +147,9 @@ MapListAsDataFrame <- function(
 #' This one puts cellID as a new column
 #' 
 #' FUTURE possible make this the new MapListAsDataFrame
-#' 
+#'
+#' @param mylist TODO
+#'
 #' @return TODO
 #' @export
 MapCellMultiListAsDataFrame <- function(mylist){

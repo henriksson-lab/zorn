@@ -10,6 +10,7 @@ BascetQueryFq(
   outputName = "kmer_counts",
   useKMERs,
   maxReads = 1e+06,
+  numThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -25,6 +26,8 @@ BascetQueryFq(
 \item{useKMERs}{List of KMERs to query}
 
 \item{maxReads}{The maximum number of reads per cell to sample}
+
+\item{numThreads}{Number of threads to use per job. Default is the number from the runner}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

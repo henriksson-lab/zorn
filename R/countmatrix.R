@@ -13,9 +13,9 @@ setClass("BascetCountMatrix", slots=list(
 
 
 ###############################################
-#' Create new local runner instance
-#' 
-#' @param mat The matrix
+#' Create new BascetCountMatrix
+#'
+#' @param X The matrix
 #' @param obs The observable
 #' 
 #' @return A Bascet count matrix object

@@ -9,9 +9,10 @@ BascetRunKraken(
   bascetRoot,
   useKrakenDB = NULL,
   numThreads = NULL,
+  totalMem = NULL,
   inputName = "filtered",
   outputRawName = "kraken_raw",
-  outputMatrixName = "kraken_mat",
+  outputName = "kraken_mat",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -24,11 +25,13 @@ BascetRunKraken(
 
 \item{numThreads}{Number of threads for one KRAKEN instance}
 
+\item{totalMem}{Total memory to allocate}
+
 \item{inputName}{Name of input shard (FASTQ)}
 
 \item{outputRawName}{Name of output shard (kraken raw output)}
 
-\item{outputMatrixName}{Name of output shard (kraken count table data)}
+\item{outputName}{Name of output shard (kraken count table data)}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

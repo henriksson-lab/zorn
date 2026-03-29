@@ -6,7 +6,7 @@
 \usage{
 BascetCountChrom(
   bascetRoot,
-  inputName = "aligned",
+  inputName = "aligned_pos",
   outputName = "chromcount",
   minMatching = 0,
   removeDuplicates = TRUE,

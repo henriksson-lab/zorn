@@ -92,13 +92,14 @@ aggr.quast <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param verbose Show debug output
+#' @param includeCells TODO
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return Aggregated data
 #' @export
-BascetAggregateQUAST <- function( 
-    bascetRoot, 
+BascetAggregateQUAST <- function(
+    bascetRoot,
     inputName="quast",
     #cacheFile=NULL, #option
     includeCells=NULL,
@@ -169,13 +170,14 @@ BascetMapCellFASTQC <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param verbose Show debug output
+#' @param includeCells TODO
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return Aggregated data
 #' @export
-BascetAggregateFASTQC <- function( 
-    bascetRoot, 
+BascetAggregateFASTQC <- function(
+    bascetRoot,
     inputName="fastqc",
     #cacheFile=NULL, #option
     includeCells=NULL,
@@ -364,14 +366,16 @@ ShowFASTQCforCell <- function(
 # Helper for FASTQC: get a data.frame across all cells for a section and read ############### what happen??
 ###############################################
 #' Get a data frame for one type of FASTQ statistics across across all cells
-#' 
+#'
+#' @param aggrFastqData TODO
+#' @param section TODO
 #' @param readnum 1 or 2, for R1 and R2
-#' 
+#'
 #' @return TODO
 #' @export
 GetFASTQCassembledDF <- function(
-    aggrFastqData, 
-    section, 
+    aggrFastqData,
+    section,
     readnum=c(1,2)
 ) {
   #check arguments
@@ -472,8 +476,9 @@ GetFASTQCbasicStats <- function(
 ###############################################
 #' From aggregated FASTQC data, get overall pass-fail statistics for overlay on UMAP etc
 #' 
+#' @param aggrFastqData TODO
 #' @param readnum 1 or 2, for R1 or R2
-#' 
+#'
 #' @return A data.frame
 #' @export
 GetFASTQCpassfailStats <- function(
@@ -570,16 +575,17 @@ aggr.abricate <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
+#' @param db TODO
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @export
-BascetMapCellAbricate <- function( 
-    bascetRoot, 
+BascetMapCellAbricate <- function(
+    bascetRoot,
     inputName="contigs",
-    outputName="abricate", 
+    outputName="abricate",
     db="ncbi",
     #includeCells=NULL,
     overwrite=FALSE,
@@ -603,7 +609,10 @@ BascetMapCellAbricate <- function(
 
 ###############################################
 #' List installed databases available for Abricate
-#' 
+#'
+#' @param dbdir TODO
+#' @param bascetInstance TODO
+#'
 #' @return List of database names
 #' @export
 ListDatabaseAbricate <- function(
@@ -633,13 +642,14 @@ ListDatabaseAbricate <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param verbose Show debug output
+#' @param includeCells TODO
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return Aggregated data
 #' @export
-BascetAggregateAbricate <- function( 
-    bascetRoot, 
+BascetAggregateAbricate <- function(
+    bascetRoot,
     inputName="abricate",
     #cacheFile=NULL, #option
     includeCells=NULL,
@@ -704,6 +714,11 @@ BascetMapCellBakta <- function(
 
 ###############################################
 #' Download a database for Bakta
+#'
+#' @param dbdir TODO
+#' @param dbtype TODO
+#' @param bascetInstance TODO
+#'
 #' @export
 DownloadDatabaseBakta <- function(
     dbdir,
@@ -855,13 +870,14 @@ aggr.ariba <- function(bascetFile, cellID, bascetInstance){
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param verbose Show debug output
+#' @param includeCells TODO
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return Aggregated data
 #' @export
-BascetAggregateAriba <- function( 
-    bascetRoot, 
+BascetAggregateAriba <- function(
+    bascetRoot,
     inputName="ariba",
     #cacheFile=NULL, #option
     verbose=NULL,
@@ -992,14 +1008,15 @@ aggr.amrfinder <- function(
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
-#' @param verbose Show debug output
+#' @param includeCells TODO
+#' @param getColumn TODO
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return Aggregated data
 #' @export
-BascetAggregateAMRfinder <- function( 
-    bascetRoot, 
+BascetAggregateAMRfinder <- function(
+    bascetRoot,
     inputName="AMRfinder",
     #cacheFile=NULL, #option
     includeCells=NULL,
@@ -1091,13 +1108,14 @@ aggr.gecco <- function(
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
+#' @param includeCells TODO
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return Aggregated data
 #' @export
-BascetAggregateGECCO <- function( 
-    bascetRoot, 
+BascetAggregateGECCO <- function(
+    bascetRoot,
     inputName="gecco",
     #cacheFile=NULL, #option
     includeCells=NULL,

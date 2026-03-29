@@ -95,12 +95,13 @@ BascetIndexGenomeBWA <- function(
 #' Index a genome using Bowtie2 such that it can be used for alignment
 #' 
 #' @param genomeFile Name of FASTA file holding genome sequence
+#' @param numThreads TODO
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @export
-BascetIndexGenomeBowtie2 <- function(  
-    genomeFile, 
+BascetIndexGenomeBowtie2 <- function(
+    genomeFile,
     numThreads=NULL,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -470,9 +471,10 @@ BascetFilterAlignment <- function(
 #' @param outputNameBAMcell Name of cell-sorted BAMs
 #' @param outputNameBAMpos Name of pos-sorted BAMs (if generated)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param aligner TODO
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @export
 BascetAlignToReference <- function(
     bascetRoot, 
@@ -536,14 +538,8 @@ BascetAlignToReference <- function(
     stop(paste("Unknown aligner: ", aligner))
   }
   
-  
   #Check memory sizes
   totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
-
-
-      
-
-  
   
   if(bascetCheckOverwriteOutput(outputNameBAMpos, overwrite)) {
     #Produce the script and run the job

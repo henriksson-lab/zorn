@@ -6,7 +6,7 @@
 \usage{
 BascetBam2Fragments(
   bascetRoot,
-  inputName = "aligned",
+  inputName = "aligned_pos",
   outputName = "fragments",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),

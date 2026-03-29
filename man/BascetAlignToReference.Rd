@@ -8,11 +8,12 @@ BascetAlignToReference(
   bascetRoot,
   useReference,
   numThreads = NULL,
+  totalMem = NULL,
   inputName = "filtered",
-  outputNameBAMunsorted = "unsorted_aligned",
-  outputNameBAMsorted = "aligned",
+  outputNameBAMcell = "aligned_cell",
+  outputNameBAMpos = "aligned_pos",
   overwrite = FALSE,
-  aligner = c(NULL, "bowtie2", "BWA", "STAR"),
+  aligner = c(NULL, "BWA", "bowtie2", "STAR"),
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -24,11 +25,13 @@ BascetAlignToReference(
 
 \item{numThreads}{Number of threads to use for each runner. Default is the maximum, taken from runner settings}
 
+\item{totalMem}{Total memory to allocate}
+
 \item{inputName}{Name of input shard}
 
-\item{outputNameBAMunsorted}{Name of unsorted BAMs}
+\item{outputNameBAMcell}{Name of cell-sorted BAMs}
 
-\item{outputNameBAMsorted}{Name of sorted BAMs (if generated)}
+\item{outputNameBAMpos}{Name of pos-sorted BAMs (if generated)}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

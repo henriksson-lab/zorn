@@ -132,10 +132,14 @@ DetectRawFileMeta <- function(
 #' @param pageBufferSize Advanced setting: Page buffer size (fraction, given as e.g. "10%")
 #' @param compressionLevel Advanced setting: Compression level (0..12)
 #' 
-#' @param overwrite 
+#' @param compressBufferSize TODO
+#' @param compressRawBufferSize TODO
+#' @param numMergeStreams TODO
+#' @param subchemistry TODO
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetGetRaw <- function(
@@ -216,18 +220,7 @@ BascetGetRaw <- function(
   stopifnot(is.null(sortBufferSize) || is.percent.string(sortBufferSize))
   stopifnot(is.null(compressBufferSize) || is.percent.string(compressBufferSize))
   stopifnot(is.null(compressRawBufferSize) || is.percent.string(compressRawBufferSize))
-  if(!is.null(totalMem)) {
-    totalMem <- parse_size_string(totalMem)
-    stopifnot(totalMem > fs::fs_bytes("1Gb"))
-  } else {
-    #Take memory from runner if possible
-    if(runner@mem!="") {
-      totalMem <- parse_size_string(runner@mem) - fs::fs_bytes(bascetInstance@containerMem)
-      stopifnot(totalMem > fs::fs_bytes("1Gb"))
-    } else {
-      print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
-    }
-  }
+  totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
 
   #Convert size to bytes and check argument
   maxShardSize <- parse_size_string(maxShardSize)
@@ -609,7 +602,8 @@ DebarcodedKneePlot <- function(
 #' 
 #' @param totalMem How much memory to use. Extracted from runner if set
 #' @param streamArenaMem Advanced settings: How much memory to use for streaming arena (fraction, given as e.g. "10%")
-#' 
+#' @param streamBufferSize TODO
+#'
 #' @return A runner job (details depends on runner)
 #' @export
 BascetShardify <- function(
@@ -649,18 +643,7 @@ BascetShardify <- function(
   
   
   #Figure out memory usage
-  if(!is.null(totalMem)) {
-    totalMem <- parse_size_string(totalMem)
-    stopifnot(totalMem > fs::fs_bytes("1Gb"))
-  } else {
-    #Take memory from runner if possible
-    if(runner@mem!="") {
-      totalMem <- parse_size_string(runner@mem) - fs::fs_bytes(bascetInstance@containerMem)
-      stopifnot(totalMem > fs::fs_bytes("1Gb"))
-    } else {
-      print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
-    }
-  }
+  totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
   
   
   #Figure out mapping input vs output shards

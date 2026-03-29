@@ -114,18 +114,7 @@ BascetRunKraken <- function(
   outputFilesMatrix <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards) 
   
   #Check memory sizes
-  if(!is.null(totalMem)) {
-    totalMem <- parse_size_string(totalMem)
-    stopifnot(totalMem > fs::fs_bytes("1Gb"))
-  } else {
-    #Take memory from runner if possible
-    if(runner@mem!="") {
-      totalMem <- parse_size_string(runner@mem) - fs::fs_bytes(bascetInstance@containerMem)
-      stopifnot(totalMem > fs::fs_bytes("1Gb"))
-    } else {
-      print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
-    }
-  }
+  totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
   
   if(bascetCheckOverwriteOutput(outputFilesMatrix, overwrite)) {
     #Run the job

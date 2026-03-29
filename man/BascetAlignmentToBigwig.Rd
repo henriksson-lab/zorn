@@ -7,7 +7,7 @@ is responsible for sorting the BAM first}
 \usage{
 BascetAlignmentToBigwig(
   bascetRoot,
-  inputName = "aligned",
+  inputName = "aligned_pos",
   outputName = "pileup",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),

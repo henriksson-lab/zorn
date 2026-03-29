@@ -6,7 +6,7 @@
 \usage{
 BascetCountFeature(
   bascetRoot,
-  inputName = "aligned",
+  inputName = "aligned_pos",
   outputName = "featurecount",
   gffFile,
   useFeature = "gene",

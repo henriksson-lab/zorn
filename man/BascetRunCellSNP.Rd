@@ -6,7 +6,7 @@
 \usage{
 BascetRunCellSNP(
   bascetRoot,
-  inputName = "aligned",
+  inputName = "aligned_pos",
   outputName = "cellsnp",
   numThreads = NULL,
   overwrite = FALSE,

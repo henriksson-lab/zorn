@@ -2,7 +2,7 @@
 % Please edit documentation in R/zorn.R
 \name{is.percent.string}
 \alias{is.percent.string}
-\title{Given memory amount in mb, format it in a format suitable for Rust parsing}
+\title{Check that parameter is in the form "xxx\%"}
 \usage{
 is.percent.string(s)
 }

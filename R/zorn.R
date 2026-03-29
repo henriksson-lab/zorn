@@ -125,9 +125,11 @@ formatPlainNumber <- function(s) {
 #' runner, if not user specified
 #' 
 #' @param totalMem TODO
+#' @param runner TODO
+#' @param bascetInstance TODO
 checkTotalMemArg <- function(
-    totalMem, 
-    runner, 
+    totalMem,
+    runner,
     bascetInstance
 ) {
   #Check memory sizes
@@ -153,6 +155,7 @@ checkTotalMemArg <- function(
 
 ###############################################
 #' Check that parameter is in the form "xxx%"
+#' @param s TODO
 is.percent.string <- function(s) {
   if(!is.null(x)) {
     pref <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
@@ -170,6 +173,7 @@ is.percent.string <- function(s) {
 
 ###############################################
 #' Check that parameter is a valid memory size
+#' @param x TODO
 is.valid.memsize <- function(x) {
   !is.na(parse_size_string(x))
 }
@@ -177,6 +181,7 @@ is.valid.memsize <- function(x) {
 
 ###############################################
 #' Check that parameter is a valid thread count
+#' @param x TODO
 is.valid.threadcount <- function(x) {
   #Note: not calling is.positive.integer to ensure we get a proper error message
   round(x)==x & x>0
@@ -184,18 +189,21 @@ is.valid.threadcount <- function(x) {
 
 ###############################################
 #' Check that parameter is an integer and >0
+#' @param x TODO
 is.positive.integer <- function(x) {
   round(x)==x & x>0
 }
 
 ###############################################
 #' Check that parameter is castable to an integer
+#' @param x TODO
 is.integer.like <- function(x) {
   round(x)==x
 }
 
 ###############################################
 #' Check that parameter is a valid shard name
+#' @param x TODO
 is.valid.shardname <- function(x) {
   # can expand upon this
   is.character(x) && !stringr::str_detect(x,stringr::fixed("."))
@@ -204,6 +212,7 @@ is.valid.shardname <- function(x) {
 
 ###############################################
 #' Check that parameter is a valid list of cells
+#' @param x TODO
 is.valid.listcells <- function(x) {
   is.null(x) || is.character(x)
 }
@@ -211,6 +220,7 @@ is.valid.listcells <- function(x) {
 
 ###############################################
 #' Check that parameter is a valid shard name
+#' @param x TODO
 is.existing.fasta <- function(x) {
   is_fasta <- 
     stringr::str_ends(x,stringr::fixed(".fa")) ||
@@ -223,6 +233,7 @@ is.existing.fasta <- function(x) {
 
 ###############################################
 #' Check that parameter is a number between 0..1
+#' @param x TODO
 is.numeric.range01 <- function(x) {
   is.numeric(x) && x>=0 && x<=1
 }
