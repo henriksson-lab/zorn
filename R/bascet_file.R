@@ -24,7 +24,7 @@ setClass("Bascet", slots=list(
 #' Check that parameter is a valid bascet file
 #' @param f An object to test for Bascet class
 is.bascet.file <- function(f) {
-  as.character(class(x))=="Bascet"
+  as.character(class(f))=="Bascet"
 }
 
 

@@ -96,6 +96,7 @@ BascetIndexGenomeBWA <- function(
 #' 
 #' @param genomeFile Name of FASTA file holding genome sequence
 #' @param numThreads Number of threads to use. Default is the maximum, taken from runner settings
+#' @param overwrite Force overwriting of existing files. The default is to do nothing if files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -103,7 +104,8 @@ BascetIndexGenomeBWA <- function(
 BascetIndexGenomeBowtie2 <- function(
     genomeFile,
     numThreads=NULL,
-    runner=GetDefaultBascetRunner(), 
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
@@ -131,7 +133,7 @@ BascetIndexGenomeBowtie2 <- function(
           "bowtie2-build",
           "--threads",numThreads,
           genomeFile,
-          indexFile
+          indexName
         )
       ),
       arraysize = 1
@@ -192,7 +194,7 @@ BascetIndexGenomeSTAR <- function(
     bascetInstance = bascetInstance,
     cmd = c(
       paste(
-        "mdkir -p", outDir
+        "mkdir -p", outDir
       ),
       paste(
         bascetInstance@prependCmd,
