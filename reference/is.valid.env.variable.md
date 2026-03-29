@@ -7,3 +7,9 @@ Check that parameter is a valid environment variable name
 ``` r
 is.valid.env.variable(x)
 ```
+
+## Arguments
+
+- x:
+
+  A string representing an environment variable name

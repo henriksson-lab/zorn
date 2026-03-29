@@ -11,6 +11,10 @@ GetFASTQCpassfailStats(aggrFastqData, readnum = c(1, 2))
 
 ## Arguments
 
+- aggrFastqData:
+
+  Aggregated FASTQC data list from BascetAggregateFASTQC
+
 - readnum:
 
   1 or 2, for R1 or R2

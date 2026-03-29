@@ -1,4 +1,4 @@
-# Given memory amount in mb, format it in a format suitable for Rust parsing
+# Check that parameter is in the form "xxx%"
 
 Check that parameter is in the form "xxx%"
 
@@ -7,3 +7,9 @@ Check that parameter is in the form "xxx%"
 ``` r
 is.percent.string(s)
 ```
+
+## Arguments
+
+- s:
+
+  A string to test for percent format (e.g. "10%")

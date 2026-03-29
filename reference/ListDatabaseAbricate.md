@@ -8,6 +8,16 @@ List installed databases available for Abricate
 ListDatabaseAbricate(dbdir, bascetInstance = GetDefaultBascetInstance())
 ```
 
+## Arguments
+
+- dbdir:
+
+  Path to database directory (string)
+
+- bascetInstance:
+
+  A Bascet instance
+
 ## Value
 
 List of database names

@@ -8,6 +8,12 @@ This one puts cellID as a new column
 MapCellMultiListAsDataFrame(mylist)
 ```
 
+## Arguments
+
+- mylist:
+
+  Named list of data.frames, keyed by cell ID
+
 ## Value
 
 TODO

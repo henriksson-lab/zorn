@@ -8,3 +8,9 @@ Check that parameter is a number between 0..1
 # S3 method for class 'range01'
 is.numeric(x)
 ```
+
+## Arguments
+
+- x:
+
+  A numeric value

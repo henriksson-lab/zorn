@@ -26,6 +26,14 @@ BascetAggregateAMRfinder(
 
   Name of input shard
 
+- includeCells:
+
+  Character vector of cell names to include, or NULL for all cells
+
+- getColumn:
+
+  Column name from AMRfinder output to use as feature (string)
+
 - runner:
 
   The job manager, specifying how the command will be run (e.g. locally,
@@ -34,10 +42,6 @@ BascetAggregateAMRfinder(
 - bascetInstance:
 
   A Bascet instance
-
-- verbose:
-
-  Show debug output
 
 ## Value
 

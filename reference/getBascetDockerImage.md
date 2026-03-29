@@ -40,6 +40,10 @@ getBascetDockerImage(
 
   Print additional information, primarily to help troubleshooting
 
+- logLevel:
+
+  Log level for the Bascet instance (e.g. "info", "debug", "warn")
+
 ## Value
 
 A Bascet instance

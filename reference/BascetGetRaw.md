@@ -57,6 +57,10 @@ BascetGetRaw(
 
   The type of data to be parsed
 
+- subchemistry:
+
+  Sub-chemistry variant, if applicable
+
 - barcodeTolerance:
 
   Optional: Number of mismatches allowed in the barcode for it to still
@@ -103,11 +107,27 @@ BascetGetRaw(
 
   Advanced setting: Sort buffer size (fraction, given as e.g. "10%")
 
+- compressBufferSize:
+
+  Advanced setting: Compress buffer size (fraction, given as e.g. "10%")
+
+- compressRawBufferSize:
+
+  Advanced setting: Raw compress buffer size (fraction, given as e.g.
+  "10%")
+
 - compressionLevel:
 
   Advanced setting: Compression level (0..12)
 
+- numMergeStreams:
+
+  Advanced setting: Number of merge streams (must be \>= 2)
+
 - overwrite:
+
+  Force overwriting of existing files. The default is to do nothing
+  files exist
 
 - runner:
 
@@ -117,10 +137,6 @@ BascetGetRaw(
 - bascetInstance:
 
   A Bascet instance
-
-- pageBufferSize:
-
-  Advanced setting: Page buffer size (fraction, given as e.g. "10%")
 
 ## Value
 

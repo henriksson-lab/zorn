@@ -30,6 +30,10 @@ BascetAggregateAriba(
 
   Show debug output
 
+- includeCells:
+
+  Character vector of cell names to include, or NULL for all cells
+
 - runner:
 
   The job manager, specifying how the command will be run (e.g. locally,

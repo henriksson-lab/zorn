@@ -67,11 +67,12 @@
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="va">useReference</span>,</span>
 <span>  numThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  totalMem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputNameBAMunsorted <span class="op">=</span> <span class="st">"unsorted_aligned"</span>,</span>
-<span>  outputNameBAMsorted <span class="op">=</span> <span class="st">"aligned"</span>,</span>
+<span>  outputNameBAMcell <span class="op">=</span> <span class="st">"aligned_cell"</span>,</span>
+<span>  outputNameBAMpos <span class="op">=</span> <span class="st">"aligned_pos"</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  aligner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="st">"bowtie2"</span>, <span class="st">"BWA"</span>, <span class="st">"STAR"</span><span class="op">)</span>,</span>
+<span>  aligner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="st">"BWA"</span>, <span class="st">"bowtie2"</span>, <span class="st">"STAR"</span><span class="op">)</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -93,20 +94,28 @@
 <dd><p>Number of threads to use for each runner. Default is the maximum, taken from runner settings</p></dd>
 
 
+<dt id="arg-totalmem">totalMem<a class="anchor" aria-label="anchor" href="#arg-totalmem"></a></dt>
+<dd><p>Total memory to allocate</p></dd>
+
+
 <dt id="arg-inputname">inputName<a class="anchor" aria-label="anchor" href="#arg-inputname"></a></dt>
 <dd><p>Name of input shard</p></dd>
 
 
-<dt id="arg-outputnamebamunsorted">outputNameBAMunsorted<a class="anchor" aria-label="anchor" href="#arg-outputnamebamunsorted"></a></dt>
-<dd><p>Name of unsorted BAMs</p></dd>
+<dt id="arg-outputnamebamcell">outputNameBAMcell<a class="anchor" aria-label="anchor" href="#arg-outputnamebamcell"></a></dt>
+<dd><p>Name of cell-sorted BAMs</p></dd>
 
 
-<dt id="arg-outputnamebamsorted">outputNameBAMsorted<a class="anchor" aria-label="anchor" href="#arg-outputnamebamsorted"></a></dt>
-<dd><p>Name of sorted BAMs (if generated)</p></dd>
+<dt id="arg-outputnamebampos">outputNameBAMpos<a class="anchor" aria-label="anchor" href="#arg-outputnamebampos"></a></dt>
+<dd><p>Name of pos-sorted BAMs (if generated)</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
 <dd><p>Force overwriting of existing files. The default is to do nothing files exist</p></dd>
+
+
+<dt id="arg-aligner">aligner<a class="anchor" aria-label="anchor" href="#arg-aligner"></a></dt>
+<dd><p>Which aligner to use: "BWA", "bowtie2", or "STAR"</p></dd>
 
 
 <dt id="arg-runner">runner<a class="anchor" aria-label="anchor" href="#arg-runner"></a></dt>

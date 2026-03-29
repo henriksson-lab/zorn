@@ -63,6 +63,10 @@ BascetShardify(
   Advanced settings: How much memory to use for streaming arena
   (fraction, given as e.g. "10%")
 
+- streamBufferSize:
+
+  Advanced setting: Stream buffer size (fraction, given as e.g. "10%")
+
 - runner:
 
   The job manager, specifying how the command will be run (e.g. locally,

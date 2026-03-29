@@ -70,9 +70,10 @@ Then produce a count matrix of taxonomy IDs from the output</p>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  useKrakenDB <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  numThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  totalMem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
 <span>  outputRawName <span class="op">=</span> <span class="st">"kraken_raw"</span>,</span>
-<span>  outputMatrixName <span class="op">=</span> <span class="st">"kraken_mat"</span>,</span>
+<span>  outputName <span class="op">=</span> <span class="st">"kraken_mat"</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -95,6 +96,10 @@ Then produce a count matrix of taxonomy IDs from the output</p>
 <dd><p>Number of threads for one KRAKEN instance</p></dd>
 
 
+<dt id="arg-totalmem">totalMem<a class="anchor" aria-label="anchor" href="#arg-totalmem"></a></dt>
+<dd><p>Total memory to allocate</p></dd>
+
+
 <dt id="arg-inputname">inputName<a class="anchor" aria-label="anchor" href="#arg-inputname"></a></dt>
 <dd><p>Name of input shard (FASTQ)</p></dd>
 
@@ -103,7 +108,7 @@ Then produce a count matrix of taxonomy IDs from the output</p>
 <dd><p>Name of output shard (kraken raw output)</p></dd>
 
 
-<dt id="arg-outputmatrixname">outputMatrixName<a class="anchor" aria-label="anchor" href="#arg-outputmatrixname"></a></dt>
+<dt id="arg-outputname">outputName<a class="anchor" aria-label="anchor" href="#arg-outputname"></a></dt>
 <dd><p>Name of output shard (kraken count table data)</p></dd>
 
 

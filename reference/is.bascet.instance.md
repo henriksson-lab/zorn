@@ -7,3 +7,9 @@ Check that parameter is a valid bascet instance
 ``` r
 is.bascet.instance(x)
 ```
+
+## Arguments
+
+- x:
+
+  An object to test for BascetInstance class

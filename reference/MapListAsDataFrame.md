@@ -12,7 +12,7 @@ MapListAsDataFrame(mylist)
 
 - mylist:
 
-  TODO
+  Named list of data.frames, keyed by cell ID
 
 ## Value
 

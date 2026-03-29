@@ -11,3 +11,17 @@ DownloadDatabaseBakta(
   bascetInstance = GetDefaultBascetInstance()
 )
 ```
+
+## Arguments
+
+- dbdir:
+
+  Directory path to download database to (string)
+
+- dbtype:
+
+  Database type: "light" or "full"
+
+- bascetInstance:
+
+  A Bascet instance

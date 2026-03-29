@@ -7,3 +7,9 @@ Check that parameter is a valid memory size
 ``` r
 is.valid.memsize(x)
 ```
+
+## Arguments
+
+- x:
+
+  A string representing a memory size (e.g. "8g")

@@ -31,6 +31,10 @@ BascetMapCellAbricate(
 
   Name of output shard
 
+- db:
+
+  Name of ABRicate database to use (string)
+
 - overwrite:
 
   Force overwriting of existing files. The default is to do nothing

@@ -10,9 +10,10 @@ BascetRunKraken(
   bascetRoot,
   useKrakenDB = NULL,
   numThreads = NULL,
+  totalMem = NULL,
   inputName = "filtered",
   outputRawName = "kraken_raw",
-  outputMatrixName = "kraken_mat",
+  outputName = "kraken_mat",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -33,6 +34,10 @@ BascetRunKraken(
 
   Number of threads for one KRAKEN instance
 
+- totalMem:
+
+  Total memory to allocate
+
 - inputName:
 
   Name of input shard (FASTQ)
@@ -41,7 +46,7 @@ BascetRunKraken(
 
   Name of output shard (kraken raw output)
 
-- outputMatrixName:
+- outputName:
 
   Name of output shard (kraken count table data)
 

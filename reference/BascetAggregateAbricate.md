@@ -26,6 +26,10 @@ BascetAggregateAbricate(
 
   Name of input shard
 
+- includeCells:
+
+  Character vector of cell names to include, or NULL for all cells
+
 - verbose:
 
   Show debug output

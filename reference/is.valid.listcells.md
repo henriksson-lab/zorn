@@ -7,3 +7,9 @@ Check that parameter is a valid list of cells
 ``` r
 is.valid.listcells(x)
 ```
+
+## Arguments
+
+- x:
+
+  A character vector of cell names, or NULL

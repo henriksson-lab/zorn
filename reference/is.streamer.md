@@ -7,3 +7,9 @@ Check that parameter is a valid streamer
 ``` r
 is.streamer(streamer)
 ```
+
+## Arguments
+
+- streamer:
+
+  An object to test for streamer validity

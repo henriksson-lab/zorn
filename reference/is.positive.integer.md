@@ -7,3 +7,9 @@ Check that parameter is an integer and \>0
 ``` r
 is.positive.integer(x)
 ```
+
+## Arguments
+
+- x:
+
+  A numeric value

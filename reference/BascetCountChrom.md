@@ -7,7 +7,7 @@ From aligned BAM file, compute counts per chromosome
 ``` r
 BascetCountChrom(
   bascetRoot,
-  inputName = "aligned",
+  inputName = "aligned_pos",
   outputName = "chromcount",
   minMatching = 0,
   removeDuplicates = TRUE,

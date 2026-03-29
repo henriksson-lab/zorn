@@ -18,9 +18,9 @@ extractstreamerExtractTo(p, fname, outpath)
 
   Name of file
 
-- verbose:
+- outpath:
 
-  Print additional information, primarily to help troubleshooting
+  Path to write the extracted file to
 
 ## Value
 

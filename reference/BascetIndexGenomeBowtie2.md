@@ -19,6 +19,11 @@ BascetIndexGenomeBowtie2(
 
   Name of FASTA file holding genome sequence
 
+- numThreads:
+
+  Number of threads to use. Default is the maximum, taken from runner
+  settings
+
 - runner:
 
   The job manager, specifying how the command will be run (e.g. locally,

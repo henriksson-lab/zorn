@@ -7,3 +7,9 @@ Check that parameter is a valid thread count
 ``` r
 is.valid.threadcount(x)
 ```
+
+## Arguments
+
+- x:
+
+  A numeric thread count

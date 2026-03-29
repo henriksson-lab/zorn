@@ -25,4 +25,4 @@ ReadBascetCountMatrix(bascetRoot, inputName, verbose = FALSE)
 
 ## Value
 
-Count matrix as sparseMatrix
+BascetCountMatrix

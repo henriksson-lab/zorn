@@ -14,6 +14,10 @@ extractstreamerReadNLines(p, n_lines, verbose = FALSE)
 
   Streamer process
 
+- n_lines:
+
+  Number of lines to read
+
 - verbose:
 
   Print additional information, primarily to help troubleshooting

@@ -22,6 +22,10 @@ getBascetSingularityImage(storeAt = getwd(), tempdir = NULL, logLevel = "info")
   Default is to create a directory for temporary files in the current
   directory. Place it on a fast disk if possible
 
+- logLevel:
+
+  Log level for the Bascet instance (e.g. "info", "debug", "warn")
+
 ## Value
 
 A Bascet instance

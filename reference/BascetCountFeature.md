@@ -7,7 +7,7 @@ From aligned BAM file, compute counts per feature
 ``` r
 BascetCountFeature(
   bascetRoot,
-  inputName = "aligned",
+  inputName = "aligned_pos",
   outputName = "featurecount",
   gffFile,
   useFeature = "gene",

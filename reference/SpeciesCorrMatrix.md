@@ -12,7 +12,7 @@ SpeciesCorrMatrix(adata)
 
 - adata:
 
-  description
+  A Seurat object with the DefaultAssay having counts per species
 
 ## Value
 

@@ -28,6 +28,10 @@ BascetListFilesForCell(
 
   A Bascet instance
 
+- superVerbose:
+
+  Enable extra verbose output for deep debugging
+
 ## Value
 
 A data.frame with list of all the files

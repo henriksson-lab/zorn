@@ -7,3 +7,9 @@ Check that parameter is castable to an integer
 ``` r
 is.integer.like(x)
 ```
+
+## Arguments
+
+- x:
+
+  A numeric value

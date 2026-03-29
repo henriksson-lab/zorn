@@ -102,6 +102,8 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/LocalRunner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/MapCellMultiListAsDataFrame.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/MapListAsDataFrame.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/MergeBascetCountMatrix.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/NewBascetCountMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/NoRunner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/OpenBascet.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotFASTQCadapterContent.html</loc></url>
@@ -127,6 +129,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.rawtext.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/assembleBascetCommand.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/bascetCheckOverwriteOutput.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/checkTotalMemArg.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/createSlurmJobFromExisting.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/detectShardsForFile.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerExit.html</loc></url>

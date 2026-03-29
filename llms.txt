@@ -223,6 +223,10 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`MapListAsDataFrame()`](https://henriksson-lab.github.io/zorn/reference/MapListAsDataFrame.md)
   : Convenience function; alternative is to somehow implement
   as.data.frame.
+- [`MergeBascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/MergeBascetCountMatrix.md)
+  : Merge a list of count matrices as produced by Bascet
+- [`NewBascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/NewBascetCountMatrix.md)
+  : Create new BascetCountMatrix
 - [`NoRunner()`](https://henriksson-lab.github.io/zorn/reference/NoRunner.md)
   : Create new no-runner instance, used for debugging
 - [`OpenBascet()`](https://henriksson-lab.github.io/zorn/reference/OpenBascet.md)
@@ -287,6 +291,9 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Prepare Bascet command given arguments
 - [`bascetCheckOverwriteOutput()`](https://henriksson-lab.github.io/zorn/reference/bascetCheckOverwriteOutput.md)
   : Detect metadata for raw input FASTQ files
+- [`checkTotalMemArg()`](https://henriksson-lab.github.io/zorn/reference/checkTotalMemArg.md)
+  : Given memory amount in mb, format it in a format suitable for Rust
+  parsing
 - [`createSlurmJobFromExisting()`](https://henriksson-lab.github.io/zorn/reference/createSlurmJobFromExisting.md)
   : This creates a job object, linking to a running command. Mainly used
   for development but can be used in case a Zorn session died and you
@@ -338,8 +345,7 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`is.numeric(`*`<range01>`*`)`](https://henriksson-lab.github.io/zorn/reference/is.numeric.range01.md)
   : Check that parameter is a number between 0..1
 - [`is.percent.string()`](https://henriksson-lab.github.io/zorn/reference/is.percent.string.md)
-  : Given memory amount in mb, format it in a format suitable for Rust
-  parsing
+  : Check that parameter is in the form "xxx%"
 - [`is.positive.integer()`](https://henriksson-lab.github.io/zorn/reference/is.positive.integer.md)
   : Check that parameter is an integer and \>0
 - [`is.runner()`](https://henriksson-lab.github.io/zorn/reference/is.runner.md)

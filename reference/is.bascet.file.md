@@ -7,3 +7,9 @@ Check that parameter is a valid bascet file
 ``` r
 is.bascet.file(f)
 ```
+
+## Arguments
+
+- f:
+
+  An object to test for Bascet class
