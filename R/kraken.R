@@ -67,7 +67,7 @@ SpeciesCorrMatrix <- function(
 #' @param numThreads Number of threads for one KRAKEN instance
 #' @param inputName Name of input shard (FASTQ)
 #' @param outputRawName Name of output shard (kraken raw output)
-#' @param outputMatrixName Name of output shard (kraken count table data)
+#' @param outputName Name of output shard (kraken count table data)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -80,7 +80,7 @@ BascetRunKraken <- function(
     numThreads=NULL,
     inputName="filtered",
     outputRawName="kraken_raw",
-    outputMatrixName="kraken_mat",
+    outputName="kraken_mat",
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
@@ -96,7 +96,7 @@ BascetRunKraken <- function(
   stopifnot(is.valid.threadcount(numThreads))  
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputRawName))
-  stopifnot(is.valid.shardname(outputMatrixName))
+  stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -109,7 +109,7 @@ BascetRunKraken <- function(
   }
   inputFiles <- file.path(bascetRoot, input_shards)
   outputFilesRaw <- makeOutputShardNames(bascetRoot, outputRawName, "kraken_out", num_shards) 
-  outputFilesMatrix <- makeOutputShardNames(bascetRoot, outputMatrixName, "h5", num_shards) 
+  outputFilesMatrix <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards) 
   
   if(bascetCheckOverwriteOutput(outputFilesMatrix, overwrite)) {
     #Run the job

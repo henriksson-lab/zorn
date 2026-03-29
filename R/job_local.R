@@ -83,7 +83,7 @@ LocalRunner <- function(
     }
   } else {
     #Check that memory can be parsed and is some bare minimum
-    stopifnot(parse_size_to_mb(mem)>1000)
+    stopifnot(parse_size_string(mem)>1e8)
   }
   
   new(
