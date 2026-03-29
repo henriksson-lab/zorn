@@ -85,9 +85,6 @@ BascetIndexGenomeBWA <- function(
       ),
       arraysize = 1
     )
-#  } else {
-#    new_no_job()
-#  }
 }
 
 
@@ -468,6 +465,7 @@ BascetFilterAlignment <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param useReference Name of the BWA reference to use
 #' @param numThreads Number of threads to use for each runner. Default is the maximum, taken from runner settings
+#' @param totalMem Total memory to allocate
 #' @param inputName Name of input shard
 #' @param outputNameBAMcell Name of cell-sorted BAMs
 #' @param outputNameBAMpos Name of pos-sorted BAMs (if generated)
@@ -480,6 +478,7 @@ BascetAlignToReference <- function(
     bascetRoot, 
     useReference,
     numThreads=NULL,
+    totalMem=NULL,
     inputName="filtered",
     outputNameBAMcell="aligned_cell", 
     outputNameBAMpos="aligned_pos",  #TODO make optional
@@ -538,6 +537,21 @@ BascetAlignToReference <- function(
   }
   
   
+  #Check memory sizes
+  if(!is.null(totalMem)) {
+    totalMem <- parse_size_string(totalMem)
+    stopifnot(totalMem > fs::fs_bytes("1Gb"))
+  } else {
+    #Take memory from runner if possible
+    if(runner@mem!="") {
+      totalMem <- parse_size_string(runner@mem) - fs::fs_bytes(bascetInstance@containerMem)
+      stopifnot(totalMem > fs::fs_bytes("1Gb"))
+    } else {
+      print("Warning: Total memory was not specified. We strongly encourage doing this to ensure performance")
+    }
+  }
+  
+  
   if(bascetCheckOverwriteOutput(outputNameBAMpos, overwrite)) {
     #Produce the script and run the job
     RunJob(
@@ -559,6 +573,7 @@ BascetAlignToReference <- function(
           "--sorted=${files_out_sorted[$TASK_ID]}",
           "--temp=$BASCET_TEMPDIR",
           paste0("--genome=",useReference),
+          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
           if(!is.null(numThreads)) paste0("--threads=",numThreads),
           paste0("--aligner=",aligner)
         ))

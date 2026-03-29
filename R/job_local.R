@@ -80,6 +80,7 @@ LocalRunner <- function(
     } else {
       bram_gb <- round(as.double(bram)/1000000000)
       mem <- paste0(bram_gb,"g")
+      print(paste("==== mem ",mem))
     }
   } else {
     #Check that memory can be parsed and is some bare minimum
