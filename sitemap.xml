@@ -144,6 +144,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/formatPlainNumber.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/format_size_bascet.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetDockerImage.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetPodmanImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getFastqR2fromR1.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/index.html</loc></url>
@@ -169,6 +170,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/new_no_job.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/parse_size_string.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetPodmanImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptCancelJobIfFileExists.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeBashArray.html</loc></url>

@@ -43,7 +43,19 @@ workspace, as multiple workspaces can share the same image
 bascetInstance.default <- getBascetSingularityImage(storeAt="/somewhere/on/your/disk/")
 ```
 
-### Install Bascet via Docker (Singularity is recommended for Linux)
+### Install Bascet via Podman
+
+First [install Podman](https://podman.io/getting-started/installation).
+
+Once installed, Zorn can then pull down the latest Podman image for you.
+We recommend keeping it in a separate directory from your workspace, as
+multiple workspaces can share the same image
+
+``` r
+bascetInstance.default <- getBascetPodmanImage(storeAt="/somewhere/on/your/disk/")
+```
+
+### Install Bascet via Docker (Singularity or Podman are recommended for Linux)
 
 First [install Docker](https://docs.docker.com/get-started/).
 

@@ -121,15 +121,26 @@ workspace, as multiple workspaces can share the same image</p>
 <code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="install-bascet-via-docker-singularity-is-recommended-for-linux">Install Bascet via Docker (Singularity is recommended for
-Linux)<a class="anchor" aria-label="anchor" href="#install-bascet-via-docker-singularity-is-recommended-for-linux"></a>
+<h3 id="install-bascet-via-podman">Install Bascet via Podman<a class="anchor" aria-label="anchor" href="#install-bascet-via-podman"></a>
+</h3>
+<p>First <a href="https://podman.io/getting-started/installation" class="external-link">install
+Podman</a>.</p>
+<p>Once installed, Zorn can then pull down the latest Podman image for
+you. We recommend keeping it in a separate directory from your
+workspace, as multiple workspaces can share the same image</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetPodmanImage.html">getBascetPodmanImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="install-bascet-via-docker-singularity-or-podman-are-recommended-for-linux">Install Bascet via Docker (Singularity or Podman are recommended for
+Linux)<a class="anchor" aria-label="anchor" href="#install-bascet-via-docker-singularity-or-podman-are-recommended-for-linux"></a>
 </h3>
 <p>First <a href="https://docs.docker.com/get-started/" class="external-link">install
 Docker</a>.</p>
 <p>Once installed, Zorn can then pull down the latest Docker image for
 you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetDockerImage.html">getBascetDockerImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -137,7 +148,7 @@ workspace, as multiple workspaces can share the same image</p>
 <h2 id="step-3-test-the-installation">Step 3: Test the installation<a class="anchor" aria-label="anchor" href="#step-3-test-the-installation"></a>
 </h2>
 <p>Run the following and see if you get “ok” before proceeding:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascetInstance.default</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
