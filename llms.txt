@@ -89,6 +89,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : From aligned BAM file, compute counts per chromosome
 - [`BascetCountFeature()`](https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.md)
   : From aligned BAM file, compute counts per feature
+- [`BascetCountMatrixToAssay()`](https://henriksson-lab.github.io/zorn/reference/BascetCountMatrixToAssay.md)
+  : Convert a BascetCountMatrix to a Seurat Assay
 - [`BascetDumpContigs()`](https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.md)
   : Store all contigs in an output directory, as cell_id.fa
 - [`BascetFilterAlignment()`](https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.md)
@@ -241,6 +243,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`PrepareSharding()`](https://henriksson-lab.github.io/zorn/reference/PrepareSharding.md)
   : Prepare to shard reads by collecting statistics about each barcode,
   and filtering out cells with few reads
+- [`PrependBascetCountMatrixName()`](https://henriksson-lab.github.io/zorn/reference/PrependBascetCountMatrixName.md)
+  : Prefix names of cells in a count matrix
 - [`ReadBascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/ReadBascetCountMatrix.md)
   : Read a count matrix as produced by Bascet (hdf5 format). This can be
   output from both BascetQueryFq and BascetCountChrom
@@ -294,6 +298,12 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`checkTotalMemArg()`](https://henriksson-lab.github.io/zorn/reference/checkTotalMemArg.md)
   : Given memory amount in mb, format it in a format suitable for Rust
   parsing
+- [`colSums(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/colSums-BascetCountMatrix-method.md)
+  : Column sums of a BascetCountMatrix (counts per feature)
+- [`colnames(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/colnames-BascetCountMatrix-method.md)
+  : Column names of a BascetCountMatrix (feature names)
+- [`` `colnames<-`( ``*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/colnames-set-BascetCountMatrix-method.md)
+  : Set column names of a BascetCountMatrix (feature names)
 - [`createSlurmJobFromExisting()`](https://henriksson-lab.github.io/zorn/reference/createSlurmJobFromExisting.md)
   : This creates a job object, linking to a running command. Mainly used
   for development but can be used in case a Zorn session died and you
@@ -301,6 +311,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`detectShardsForFile()`](https://henriksson-lab.github.io/zorn/reference/detectShardsForFile.md)
   : Helper function: Figure out which shards belong together given root
   input name and extension i.e. root/name.##.ext
+- [`dim(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/dim-BascetCountMatrix-method.md)
+  : Dimensions of a BascetCountMatrix
 - [`extractstreamerExit()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerExit.md)
   : extract streamer: end an instance. the object should no longer be
   used after calling this function
@@ -337,6 +349,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   is called
 - [`getFastqR2fromR1()`](https://henriksson-lab.github.io/zorn/reference/getFastqR2fromR1.md)
   : Get corresponding R2 file. Assumes that the input file is R1
+- [`is.BascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/is.BascetCountMatrix.md)
+  : Check that parameter is a BascetCountMatrix
 - [`is.bascet.file()`](https://henriksson-lab.github.io/zorn/reference/is.bascet.file.md)
   : Check that parameter is a valid bascet file
 - [`is.bascet.instance()`](https://henriksson-lab.github.io/zorn/reference/is.bascet.instance.md)
@@ -386,6 +400,12 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Remove current Bascet docker image
 - [`removeBascetPodmanImage()`](https://henriksson-lab.github.io/zorn/reference/removeBascetPodmanImage.md)
   : Remove current Bascet podman image
+- [`rowSums(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/rowSums-BascetCountMatrix-method.md)
+  : Row sums of a BascetCountMatrix (counts per cell)
+- [`rownames(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/rownames-BascetCountMatrix-method.md)
+  : Row names of a BascetCountMatrix (cell names)
+- [`` `rownames<-`( ``*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/rownames-set-BascetCountMatrix-method.md)
+  : Set row names of a BascetCountMatrix (cell names)
 - [`safeDownloadMD5()`](https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.md)
   : Download a file, check MD5 to ensure success. This assumes a
   file.md5 is stored on the server
@@ -405,6 +425,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`shellscriptSplitArrayIntoListRandomly()`](https://henriksson-lab.github.io/zorn/reference/shellscriptSplitArrayIntoListRandomly.md)
   : Helper function to take an array of elements and split it randomly
   into a number of subset lists
+- [`` `[`( ``*`<BascetCountMatrix>`*`,`*`<ANY>`*`,`*`<ANY>`*`,`*`<ANY>`*`)`](https://henriksson-lab.github.io/zorn/reference/sub-BascetCountMatrix-ANY-ANY-ANY-method.md)
+  : Subset a BascetCountMatrix
 
 # Articles
 

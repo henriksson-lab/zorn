@@ -5,7 +5,7 @@ Merge a list of count matrices as produced by Bascet
 ## Usage
 
 ``` r
-MergeBascetCountMatrix(listInput, verbose = FALSE)
+MergeBascetCountMatrix(listInput, prependName = FALSE, verbose = FALSE)
 ```
 
 ## Arguments
@@ -13,6 +13,10 @@ MergeBascetCountMatrix(listInput, verbose = FALSE)
 - listInput:
 
   List of count matrices
+
+- prependName:
+
+  If TRUE, prepend name of data in list to each cell
 
 - verbose:
 

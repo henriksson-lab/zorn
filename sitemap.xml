@@ -46,6 +46,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetComputeMinhash.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountChrom.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountMatrixToAssay.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGatherCountSketch.html</loc></url>
@@ -110,6 +111,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotJohnsonLindenstraussMinDim.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PrepareSharding.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/PrependBascetCountMatrixName.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadBascetCountMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadCellSNPmatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadHistogram.html</loc></url>
@@ -130,8 +132,12 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/assembleBascetCommand.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/bascetCheckOverwriteOutput.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/checkTotalMemArg.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/colSums-BascetCountMatrix-method.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/colnames-BascetCountMatrix-method.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/colnames-set-BascetCountMatrix-method.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/createSlurmJobFromExisting.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/detectShardsForFile.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/dim-BascetCountMatrix-method.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerExit.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerExtractTo.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerListCellsAnyFile.html</loc></url>
@@ -148,6 +154,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getFastqR2fromR1.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/index.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/is.BascetCountMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.bascet.file.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.bascet.instance.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/is.existing.fasta.html</loc></url>
@@ -171,6 +178,9 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/parse_size_string.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/removeBascetPodmanImage.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/rowSums-BascetCountMatrix-method.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/rownames-BascetCountMatrix-method.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/rownames-set-BascetCountMatrix-method.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptCancelJobIfFileExists.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeBashArray.html</loc></url>
@@ -178,5 +188,6 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeFilesExpander.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptMakeOneFileExpander.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/shellscriptSplitArrayIntoListRandomly.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/sub-BascetCountMatrix-ANY-ANY-ANY-method.html</loc></url>
 </urlset>
 

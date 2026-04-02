@@ -13,7 +13,7 @@ KrakenFindConsensusTaxonomy(mat)
 
 - mat:
 
-  A count matrix, typically in sparse format
+  A BascetCountMatrix object
 
 ## Value
 

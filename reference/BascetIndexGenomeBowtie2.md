@@ -8,6 +8,7 @@ Index a genome using Bowtie2 such that it can be used for alignment
 BascetIndexGenomeBowtie2(
   genomeFile,
   numThreads = NULL,
+  overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -23,6 +24,11 @@ BascetIndexGenomeBowtie2(
 
   Number of threads to use. Default is the maximum, taken from runner
   settings
+
+- overwrite:
+
+  Force overwriting of existing files. The default is to do nothing if
+  files exist
 
 - runner:
 

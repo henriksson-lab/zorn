@@ -46,7 +46,7 @@ Seurat:
 ``` r
 mat <- ReadBascetCountMatrix(bascetRoot,"kraken", verbose=FALSE)
 
-taxid_ob <- CreateAssayObject(t(mat)) #t() needed to conform from anndata to seurat
+taxid_ob <- BascetCountMatrixToAssay(X)
 adata <- CreateSeuratObject(counts = taxid_ob, project = "proj", min.cells = 0, min.features = 0) 
 ```
 
