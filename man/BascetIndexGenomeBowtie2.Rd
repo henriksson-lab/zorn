@@ -7,6 +7,7 @@
 BascetIndexGenomeBowtie2(
   genomeFile,
   numThreads = NULL,
+  overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -15,6 +16,8 @@ BascetIndexGenomeBowtie2(
 \item{genomeFile}{Name of FASTA file holding genome sequence}
 
 \item{numThreads}{Number of threads to use. Default is the maximum, taken from runner settings}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing if files exist}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

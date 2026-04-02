@@ -143,7 +143,7 @@ library(Seurat)
 cnt <- ReadBascetCountMatrix(bascetRoot,"chromcount", verbose=FALSE)
 
 adata <- CreateSeuratObject(
-  counts = CreateAssayObject(t(cnt$X)), ## according to anndata standard, there should be a transpose here
+  counts = BascetCountMatrixToAssay(cnt),
   assay = "chrom_cnt"
 ) 
 ```
@@ -241,7 +241,7 @@ library(Seurat)
 cnt <- ReadBascetCountMatrix(bascetRoot,"featurecount", verbose=FALSE)
 
 adata <- CreateSeuratObject(
-  counts = CreateAssayObject(t(cnt$X)) ## according to anndata standard, there should be a transpose here
+  counts = BascetCountMatrixToAssay(cnt)
 ) 
 ```
 

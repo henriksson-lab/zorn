@@ -154,24 +154,19 @@ BascetRunKraken <- function(
 
 ###############################################
 #' For a KRAKEN2 count matrix, return consensus taxID for each cell as metadata
-#' 
-#' @param mat A count matrix, typically in sparse format
-#' 
+#'
+#' @param mat A BascetCountMatrix object
+#'
 #' @return A data.frame holding cellID and consensus taxID
 #' @export
 KrakenFindConsensusTaxonomy <- function(
     mat
 ){
   #check arguments
-  #TODO
-  
-  #taxid 135 9167  7942
-  
-  
-  #turn into triplet representation
-  library(Matrix)
-  #M <- Matrix::Matrix(mat, sparse = TRUE)
-  M <- as(mat, "TsparseMatrix")
+  stopifnot(is.BascetCountMatrix(mat))
+
+  #Extract sparse matrix from BascetCountMatrix
+  M <- as(mat@X, "TsparseMatrix")
   
   #Note that indices are zero-based within Matrix package
   df <- data.frame(
@@ -206,7 +201,7 @@ KrakenFindConsensusTaxonomy <- function(
   #Add info to each cell
   taxid_class_per_cell <- merge(max_taxid_per_cell, df_taxid, all.x=TRUE)
 
-  taxid_class_per_cell$cell_id <- rownames(mat)[taxid_class_per_cell$cell_index]
+  taxid_class_per_cell$cell_id <- rownames(mat@X)[taxid_class_per_cell$cell_index]
   taxid_class_per_cell
 }
 

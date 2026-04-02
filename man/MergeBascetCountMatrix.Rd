@@ -4,10 +4,12 @@
 \alias{MergeBascetCountMatrix}
 \title{Merge a list of count matrices as produced by Bascet}
 \usage{
-MergeBascetCountMatrix(listInput, verbose = FALSE)
+MergeBascetCountMatrix(listInput, prependName = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{listInput}{List of count matrices}
+
+\item{prependName}{If TRUE, prepend name of data in list to each cell}
 
 \item{verbose}{Print additional information, primarily to help troubleshooting}
 }

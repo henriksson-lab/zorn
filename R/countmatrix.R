@@ -8,8 +8,30 @@ setClass("BascetCountMatrix", slots=list(
   X="ANY", #sparse matrix
   obs="ANY"  #data frame
 )
-) 
+)
 
+
+###############################################
+#' Check that parameter is a BascetCountMatrix
+#' 
+#' @param x An object to test
+#' @export
+is.BascetCountMatrix <- function(x) {
+  is(x, "BascetCountMatrix")
+}
+
+
+###############################################
+#' Convert a BascetCountMatrix to a Seurat Assay
+#'
+#' @param mat A BascetCountMatrix object
+#'
+#' @return A Seurat AssayObject
+#' @export
+BascetCountMatrixToAssay <- function(mat) {
+  stopifnot(is.BascetCountMatrix(mat))
+  CreateAssayObject(counts = t(mat@X))
+}
 
 
 ###############################################
@@ -24,7 +46,6 @@ NewBascetCountMatrix <- function(
     obs
 ){
   stopifnot(nrow(obs)==nrow(X))
-  
   new(
     "BascetCountMatrix", 
     X=X,
@@ -44,14 +65,116 @@ setMethod("show", "BascetCountMatrix", function(object) {
 })
 
 
+###############################################
+#' Row names of a BascetCountMatrix (cell names)
+#'
+#' @param x A BascetCountMatrix object
+#'
+#' @return Character vector of row names
+#' @export
+setMethod("rownames", signature(x="BascetCountMatrix"), function(x) {
+  rownames(x@X)
+})
 
 
-if(FALSE){
-  NewBascetCountMatrix(
-    mat_saliva1$X,
-    mat_saliva1$obs
-  )
-}
+###############################################
+#' Set row names of a BascetCountMatrix (cell names)
+#'
+#' @param x A BascetCountMatrix object
+#' @param value Character vector of new row names
+#'
+#' @return The modified BascetCountMatrix
+#' @export
+setMethod("rownames<-", signature(x="BascetCountMatrix"), function(x, value) {
+  rownames(x@X) <- value
+  x@obs$`_index` <- value
+  x
+})
+
+
+###############################################
+#' Column names of a BascetCountMatrix (feature names)
+#'
+#' @param x A BascetCountMatrix object
+#'
+#' @return Character vector of column names
+#' @export
+setMethod("colnames", signature(x="BascetCountMatrix"), function(x) {
+  colnames(x@X)
+})
+
+
+###############################################
+#' Set column names of a BascetCountMatrix (feature names)
+#'
+#' @param x A BascetCountMatrix object
+#' @param value Character vector of new column names
+#'
+#' @return The modified BascetCountMatrix
+#' @export
+setMethod("colnames<-", signature(x="BascetCountMatrix"), function(x, value) {
+  colnames(x@X) <- value
+  x
+})
+
+
+###############################################
+#' Dimensions of a BascetCountMatrix
+#'
+#' @param x A BascetCountMatrix object
+#'
+#' @return Integer vector of length 2 (rows, columns) of the count matrix
+#' @export
+setMethod("dim", signature(x="BascetCountMatrix"), function(x) {
+  dim(x@X)
+})
+
+
+###############################################
+#' Row sums of a BascetCountMatrix (counts per cell)
+#'
+#' @param x A BascetCountMatrix object
+#'
+#' @return Named numeric vector of row sums
+#' @export
+setMethod("rowSums", signature(x="BascetCountMatrix"), function(x) {
+  Matrix::rowSums(x@X)
+})
+
+
+###############################################
+#' Column sums of a BascetCountMatrix (counts per feature)
+#'
+#' @param x A BascetCountMatrix object
+#'
+#' @return Named numeric vector of column sums
+#' @export
+setMethod("colSums", signature(x="BascetCountMatrix"), function(x) {
+  Matrix::colSums(x@X)
+})
+
+
+###############################################
+#' Subset a BascetCountMatrix
+#'
+#' @param x A BascetCountMatrix object
+#' @param i Row (cell) indices: numeric, logical, or character vector
+#' @param j Column (feature) indices: numeric, logical, or character vector
+#' @param drop Ignored (kept for S4 signature compatibility)
+#'
+#' @return A BascetCountMatrix
+#' @export
+setMethod("[", signature(x="BascetCountMatrix"), function(x, i, j, ..., drop=FALSE) {
+  if(!missing(i) && !missing(j)) {
+    NewBascetCountMatrix(X=x@X[i, j, drop=FALSE], obs=x@obs[i, , drop=FALSE])
+  } else if(!missing(i)) {
+    NewBascetCountMatrix(X=x@X[i, , drop=FALSE], obs=x@obs[i, , drop=FALSE])
+  } else if(!missing(j)) {
+    NewBascetCountMatrix(X=x@X[, j, drop=FALSE], obs=x@obs)
+  } else {
+    x
+  }
+})
 
 
 
@@ -171,58 +294,54 @@ ReadBascetCountMatrix <- function(
     listInput,
     verbose=verbose
   )
-  # 
-  # 
-  # #Find union of features  
-  # all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
-  # if(verbose){
-  #   print(all_colnames)
-  # }
-  # num_col <- length(all_colnames)
-  # map_name_to_i <- data.frame(row.names = all_colnames, ind=1:length(all_colnames))
-  # if(verbose){
-  #   print(map_name_to_i)
-  # }
-  # 
-  # #Make sizes compatible
-  # list_resized_mat <- list()
-  # for(f in inputFiles){
-  #   mat <- list_mat[[f]]
-  #   new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "R", dtype = "d")
-  #   new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column names!  #here, x[.,.] <- val : x being coerced from Tsparse* to CsparseMatrix
-  #   rownames(new_mat) <- rownames(mat)
-  #   colnames(new_mat) <- all_colnames
-  #   # print(dim(new_mat))
-  #   list_resized_mat[[f]] <- new_mat
-  #   pbar$tick()
-  # }
-  # 
-  # #Concatenate matrices
-  # allmat <- do.call(rbind, list_resized_mat) #TODO check that above worked properly!
-  # 
-  # #Concat obs
-  # allobs <- do.call(rbind, list_obs)
-  # 
-  # list(
-  #   X=allmat,
-  #   obs=allobs
-  # ) 
 }
+
+
+###############################################
+#' Prefix names of cells in a count matrix
+#' 
+PrependBascetCountMatrixName <- function(
+    mat,
+    prependName
+){
+  rownames(mat@X) <- paste0(prependName, "_", rownames(mat@X))
+  mat@obs$`_index` <- rownames(mat@X)
+  mat
+}
+
 
 
 ###############################################
 #' Merge a list of count matrices as produced by Bascet
 #' 
 #' @param listInput List of count matrices
+#' @param prependName If TRUE, prepend name of data in list to each cell
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return BascetCountMatrix
 #' @export
 MergeBascetCountMatrix <- function(
     listInput,
+    prependName=FALSE,
     verbose=FALSE
-){
+) {
   numFiles <- length(listInput)
+  
+  #Prepend names to each cell before mering, if requested
+  stopifnot(is.logical(prependName))
+  
+  if(prependName) {
+    stopifnot(!is.null(names(listInput)))
+    for(i in 1:numFiles) {
+      prep_name <- names(listInput)[i]
+      listInput[[i]] <- PrependBascetCountMatrixName(
+        listInput[[i]],
+        prep_name
+      )
+      listInput[[i]]@obs$source <- prep_name
+    }
+  }
+  
   list_mat <- lapply(listInput, function(x) x@X)
   list_obs <- lapply(listInput, function(x) x@obs)
   
@@ -245,7 +364,7 @@ MergeBascetCountMatrix <- function(
   list_resized_mat <- list()
   for(f in 1:length(list_mat)){ # inputFiles
     mat <- list_mat[[f]]
-    new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "R", dtype = "d")
+    new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "C", dtype = "d")  #was format=R. but C is better, or we get warnings all the time. faster?
     new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column n>
     rownames(new_mat) <- rownames(mat)
     colnames(new_mat) <- all_colnames
@@ -259,14 +378,11 @@ MergeBascetCountMatrix <- function(
   
   #Concat obs
   allobs <- do.call(rbind, list_obs)
+  rownames(allobs) <- NULL
   
   NewBascetCountMatrix(
     X=allmat,
     obs=allobs
   )
-  #list(
-  #  X=allmat,
-  #  obs=allobs
-  #)
 }
 

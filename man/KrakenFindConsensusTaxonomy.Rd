@@ -7,7 +7,7 @@
 KrakenFindConsensusTaxonomy(mat)
 }
 \arguments{
-\item{mat}{A count matrix, typically in sparse format}
+\item{mat}{A BascetCountMatrix object}
 }
 \value{
 A data.frame holding cellID and consensus taxID
