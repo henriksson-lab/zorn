@@ -254,13 +254,11 @@ internal_parse_fastqc_data <- function(lines){
     lines <- lines[lines!=">>END_MODULE" & lines!=""]
     section_start <- which(stringr::str_detect(lines,stringr::fixed(">>")))
     section_end <- c(section_start[-1], length(lines))
-    for(i in 1:length(section_start)) {
+    for(i in seq_along(section_start)) {
       subsection <- lines[section_start[i]:(section_end[i]-1)]
-      
+
       if(length(subsection)>1){
-        zz <- textConnection(subsection[-1])
-        dat <- read.delim(zz)
-        close(zz)
+        dat <- read.delim(text = subsection[-1])
       } else {
         dat <- data.frame()
       }
@@ -552,10 +550,8 @@ aggr.abricate <- function(
   
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/stupid.tsv")
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/abricate/salmonella_SRR33219394_ncbi.tsv")
-  zz <- textConnection(tmp)
-  dat <- read.delim(zz)
-  close(zz)
-  
+  dat <- read.delim(text = tmp)
+
   if(nrow(dat)>0){
     dat$cellID <- cellID  #needed? could make this general  ---- think no longer used!
   }
@@ -855,9 +851,7 @@ DownloadDatabaseAriba <- function(
 aggr.ariba <- function(bascetFile, cellID, bascetInstance){
   tmp <- BascetReadFile(bascetFile, cellID, "report.tsv", as="text", bascetInstance=bascetInstance)
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/ariba/report.tsv")
-  zz <- textConnection(tmp)
-  dat <- read.delim(zz)
-  close(zz)
+  dat <- read.delim(text = tmp)
   dat
 }
 
@@ -988,11 +982,9 @@ aggr.amrfinder <- function(
     bascetInstance
 ){
   tmp <- BascetReadFile(bascetFile, cellID, "amrfinder.tsv", as="text", bascetInstance=bascetInstance)
-  
+
   #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/amrfinder/salmonella_SRR33219394_amrfinder.tsv")
-  zz <- textConnection(tmp)
-  dat <- read.delim(zz)
-  close(zz)
+  dat <- read.delim(text = tmp)
   
   #if(nrow(dat)>0){
   #  dat$cellID <- cellID  #needed? could make this general  -- think no longer used
@@ -1094,9 +1086,7 @@ aggr.gecco <- function(
   
   tmp <- BascetReadFile(bascetFile, cellID, "gecco_out/clusters.tsv", as="text", bascetInstance=bascetInstance)
   tmp <- readLines("/home/mahogny/github/zorn/test_aggr/gecco/salmonella_SRR33219394.clusters.tsv")
-  zz <- textConnection(tmp)
-  dat <- read.delim(zz)
-  close(zz)
+  dat <- read.delim(text = tmp)
   dat
 }
 

@@ -123,13 +123,8 @@ MapListAsDataFrame <- function(
 
   #Some functions return multiple, or no, lines. figure out count
   num_entry <- sapply(mylist, nrow)
-  final_row_name <- rep(-1, nrow(out))
-  cur_row <- 1
-  for(i in 1:length(num_entry)){
-    final_row_name[cur_row:(cur_row-1+num_entry[i])] <- i
-    cur_row <- cur_row+num_entry[i]
-  }
-  
+  final_row_name <- rep(seq_along(num_entry), times=num_entry)
+
   #Set row names based on index
   rownames(out) <- names(mylist)[final_row_name]
   #names(mylist)[!is.null(mylist)]
@@ -201,7 +196,8 @@ CountDataFrameToSparseMatrix <- function(
     col=dat[,colname],
     row=dat[,rowname]
   )
-  red_dat <- sqldf::sqldf("select col, row, count(*) as cnt from red_dat group by col, row") 
+  dt <- data.table::as.data.table(red_dat)
+  red_dat <- as.data.frame(dt[, .(cnt = .N), by = .(col, row)])
   
   red_dat$col <- factor(red_dat$col)
   red_dat$row <- factor(red_dat$row)
@@ -248,14 +244,11 @@ BascetAggregateMap <- function(
   stopifnot(is.bascet.instance(bascetInstance))
   
   
-  #Get file coordinates of all objects in zip file
-  cellname_coord <- BascetCellNames(bascetRoot, inputName, bascetInstance)  ############## todo: avoid opening streamer twice
-  
-  #Open the file, prep for reading
+  #Open the file, prep for reading (cell names are retrieved inside OpenBascet)
   if(verbose){
     print("Creating extract streamer session")
   }
-  bascetFile <- OpenBascet(bascetRoot, inputName)
+  bascetFile <- OpenBascet(bascetRoot, inputName, bascetInstance)
   if(verbose){
     print("Extract streamer session ok")
   }

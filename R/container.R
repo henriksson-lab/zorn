@@ -230,12 +230,7 @@ getBascetDockerImage <- function(
     }
 
     #Check which directories to map through actually exist
-    mapDirs_filtered <- c()
-    for(d in mapDirs) {
-      if(dir.exists(d)) {
-        mapDirs_filtered <- c(mapDirs_filtered, d)
-      }
-    }
+    mapDirs_filtered <- mapDirs[vapply(mapDirs, dir.exists, logical(1))]
 
     #Generate map-through flags
     mapDirs_cmd <- paste0("--mount type=bind,src=",mapDirs_filtered,",dst=",mapDirs_filtered)
@@ -324,12 +319,7 @@ getBascetPodmanImage <- function(
     }
 
     #Check which directories to map through actually exist
-    mapDirs_filtered <- c()
-    for(d in mapDirs) {
-      if(dir.exists(d)) {
-        mapDirs_filtered <- c(mapDirs_filtered, d)
-      }
-    }
+    mapDirs_filtered <- mapDirs[vapply(mapDirs, dir.exists, logical(1))]
 
     #Generate map-through flags
     mapDirs_cmd <- paste0("--mount type=bind,src=", mapDirs_filtered, ",dst=", mapDirs_filtered)

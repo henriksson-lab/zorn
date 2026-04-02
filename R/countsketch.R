@@ -12,7 +12,8 @@
 #' @param kmerSize KMER length to use
 #' @param sketchSize Size of the count sketch. Must be a power of two
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param numLocalThreads Number of threads to use per job. Default is the number from the runner
+#' @param numThreads Number of threads to use per job. Default is the number from the runner
+#' @param totalMem Total memory to allocate
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
@@ -28,16 +29,17 @@ BascetGatherCountSketch <- function(
     kmerSize=31,
     sketchSize=4096,
     overwrite=FALSE,
-    numLocalThreads=NULL,
+    numThreads=NULL,
+    totalMem=NULL,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
   
   #Set number of threads if not given
-  if(is.null(numLocalThreads)) {
-    numLocalThreads <- as.integer(runner@ncpu)
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
   }
-  stopifnot(is.valid.threadcount(numLocalThreads))
+  stopifnot(is.valid.threadcount(numThreads))
   
   #Check input arguments
   stopifnot(dir.exists(bascetRoot))
@@ -65,11 +67,12 @@ BascetGatherCountSketch <- function(
   produce_cell_list <- !is.null(includeCells)
   if(produce_cell_list) {
     #Currently using the same cell list for all shards (good idea?)
-    list_cell_for_shard <- list()
-    for(i in 1:length(inputFiles)){
-      list_cell_for_shard[[i]] <- includeCells
-    }
+    list_cell_for_shard <- rep(list(includeCells), length(inputFiles))
   }
+  
+  #Check memory sizes
+  totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
+  
   
   if(bascetCheckOverwriteOutput(outputFile, overwrite)) {
     #Make the command
@@ -79,7 +82,8 @@ BascetGatherCountSketch <- function(
       assembleBascetCommand(bascetInstance, c(
         "countsketch",
         if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
-        paste0("-@=", numLocalThreads), 
+        if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
+        paste0("-@=", numThreads), 
         paste0("-i=", shellscriptMakeCommalist(inputFiles)),
         paste0("--kmer-size=",kmerSize),
         paste0("--sketch-size=",sketchSize),
@@ -116,12 +120,12 @@ BascetGatherCountSketch <- function(
 #' @export
 BascetLoadCountSketchMatrix <- function(
     bascetRoot,
-    inputName="countsketch_mat.csv"
+    inputName="countsketch_mat.csv" ################ could be feather! or dense hdf5. but don't want it loaded as counts. not ideal that we specify ending - detect
 ) {
   fname <- file.path(bascetRoot, inputName)
   #mat <- as.data.frame(data.table::fread(fname)) #fread package cannot be used
-  mat <- as.data.frame(read.csv2(fname, header=FALSE, sep=","))
-  mat[1:5,1:5]
+  mat <- read.csv(fname, header=FALSE)
+  #mat[1:5,1:5]
   #mat <- read.csv2("/husky/henriksson/atrandi/v6_251128_jyoti_mock_bulk/countsketch_mat.csv", sep=",", header = FALSE)
 #  mat <- read.csv2("/husky/henriksson/atrandi/v6_251128_jyoti_mock_bulk/countsketch_mat.sub.csv", sep=",", header = FALSE)
   
@@ -156,7 +160,7 @@ CreateSeuratObjectWithReduction <- function(
     assay="RNA"
 ){
   
-  m <- matrix(nrow=2, ncol=ncol(Q))  
+  m <- Matrix::Matrix(0, nrow=2, ncol=ncol(Q), sparse=TRUE)
   colnames(m) <- colnames(Q)
   
   # as dgCMatrix 

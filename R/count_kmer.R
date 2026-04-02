@@ -97,10 +97,7 @@ BascetMakeMinhashHistogram <- function(
   produce_cell_list <- !is.null(includeCells)
   if(produce_cell_list) {
     #Currently using the same cell list for all shards (good idea?)
-    list_cell_for_shard <- list()
-    for(i in 1:length(inputFiles)){
-      list_cell_for_shard[[i]] <- includeCells
-    }
+    list_cell_for_shard <- rep(list(includeCells), length(inputFiles))
   }
 
   if(bascetCheckOverwriteOutput(outputFile, overwrite)) {

@@ -132,12 +132,11 @@ setMethod(
     
     
     #### Concatenate all scripts over all TASK_ID
-    all_cmd <- c()
+    all_cmd <- vector("character", arraysize)
     for(i in seq_len(arraysize)){
       this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),i-1)  #0... TASK_ID -1
       this_cmd <- stringr::str_replace_all(this_cmd,stringr::fixed("${TASK_ID}"),i-1)  #0... TASK_ID -1
-      ##  onep <- processx::process$new(this_cmd)
-      all_cmd <- c(all_cmd,this_cmd)
+      all_cmd[i] <- this_cmd
     }
     
     

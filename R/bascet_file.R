@@ -94,13 +94,8 @@ BascetCellNames_withstreamer <- function(
     print(cur_file) 
     #print(streamer)
     allfiles <- extractstreamerListCellsAnyFile(streamer, cur_file)
-    
-    df <- data.frame(
-      cell=allfiles
-    )
-    #df <- data.frame(cell=unique(stringr::str_split_i(allfiles,"/",1)))   
-    df$shard <- i - 1
-    cellnames[[i]] <- df
+
+    cellnames[[i]] <- data.frame(cell=allfiles, shard=i - 1L)
   }
   do.call(rbind, cellnames)
 }
@@ -411,7 +406,8 @@ ReadHistogram <- function(
   }
   
   #Add up cells across barcodes. Do the sorting right away to reduce calls
-  dat <- sqldf::sqldf("select cellid, sum(count) as count from dat group by cellid order by count DESC")
+  dt <- data.table::as.data.table(dat)
+  dat <- as.data.frame(dt[, .(count = sum(count)), by = cellid][order(-count)])
   
   #It might be beneficial to keep track of origin; this could mean less work during sharding later on
   
@@ -661,36 +657,39 @@ extractstreamerStart <- function(
     all_cmd_split[-1],
     stdin="|", stdout = "|", stderr = "|"
   )
-  all_out <- c()
+  all_out <- list()
+  out_idx <- 0L
   while(TRUE){
     if(!p$is_alive()){
       print(p$read_all_error())
       stop("Streamer unexpectedly died")
     }
-    
+
     newlines <- p$read_output_lines()
-    all_out <- c(all_out, newlines)
+    if(length(newlines) > 0) {
+      out_idx <- out_idx + 1L
+      all_out[[out_idx]] <- newlines
+    } else {
+      Sys.sleep(0.001)
+      next
+    }
     if(verbose){
       print(newlines)
     }
-    
-    
-    
-    if(length(all_out)>0) {
-      last_line <- all_out[length(all_out)] 
-      if(last_line=="ready"){
-        
-        #TODO: would be great to capture Bascet version here, to be able to check in the future
-        #bascet_version <- ""
-        #lines_bascet_version <- all_out[stringr::str_starts(all_out, "bascet_version")]
-        #terminal_version:xxx
-        #bascet_version:xxx
-        
-        return(p)
-      } else if(stringr::str_starts(last_line,"error")) {
-        print(paste("error from extract streamer start:",last_line))
-        break
-      }
+
+    last_line <- newlines[length(newlines)]
+    if(last_line=="ready"){
+
+      #TODO: would be great to capture Bascet version here, to be able to check in the future
+      #bascet_version <- ""
+      #lines_bascet_version <- all_out[stringr::str_starts(all_out, "bascet_version")]
+      #terminal_version:xxx
+      #bascet_version:xxx
+
+      return(p)
+    } else if(stringr::str_starts(last_line,"error")) {
+      print(paste("error from extract streamer start:",last_line))
+      break
     }
   }
   p
@@ -803,6 +802,7 @@ extractstreamerReadOneLine <- function(
       }
       return(newlines)
     }
+    Sys.sleep(0.001)
   }
 }
 
@@ -835,6 +835,10 @@ extractstreamerReadNLines <- function(
       stop("process unexpectedly died")
     }
     newlines <- p$read_output_lines()
+    if(length(newlines)==0) {
+      Sys.sleep(0.001)
+      next
+    }
     sofar <- sofar + length(newlines)
     if(verbose){
       #print("got more lines:")

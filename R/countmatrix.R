@@ -30,7 +30,25 @@ is.BascetCountMatrix <- function(x) {
 #' @export
 BascetCountMatrixToAssay <- function(mat) {
   stopifnot(is.BascetCountMatrix(mat))
-  CreateAssayObject(counts = t(mat@X))
+  CreateAssayObject(counts = Matrix::t(mat@X))
+}
+
+
+###############################################
+#' Create a Seurat object from a BascetCountMatrix
+#'
+#' @param counts A BascetCountMatrix object
+#' @param ... Additional arguments passed to the default CreateSeuratObject method
+#'
+#' @return A Seurat object
+#' @rawNamespace S3method(SeuratObject::CreateSeuratObject, BascetCountMatrix)
+#' @export
+CreateSeuratObject.BascetCountMatrix <- function(counts, ...) {
+  SeuratObject::CreateSeuratObject(
+    counts = Matrix::t(counts@X),
+    meta.data = counts@obs,
+    ...
+  )
 }
 
 
@@ -71,6 +89,7 @@ setMethod("show", "BascetCountMatrix", function(object) {
 #' @param x A BascetCountMatrix object
 #'
 #' @return Character vector of row names
+#' @importFrom BiocGenerics rownames
 #' @export
 setMethod("rownames", signature(x="BascetCountMatrix"), function(x) {
   rownames(x@X)
@@ -84,6 +103,7 @@ setMethod("rownames", signature(x="BascetCountMatrix"), function(x) {
 #' @param value Character vector of new row names
 #'
 #' @return The modified BascetCountMatrix
+#' @importFrom BiocGenerics `rownames<-`
 #' @export
 setMethod("rownames<-", signature(x="BascetCountMatrix"), function(x, value) {
   rownames(x@X) <- value
@@ -98,6 +118,7 @@ setMethod("rownames<-", signature(x="BascetCountMatrix"), function(x, value) {
 #' @param x A BascetCountMatrix object
 #'
 #' @return Character vector of column names
+#' @importFrom BiocGenerics colnames
 #' @export
 setMethod("colnames", signature(x="BascetCountMatrix"), function(x) {
   colnames(x@X)
@@ -111,6 +132,7 @@ setMethod("colnames", signature(x="BascetCountMatrix"), function(x) {
 #' @param value Character vector of new column names
 #'
 #' @return The modified BascetCountMatrix
+#' @importFrom BiocGenerics `colnames<-`
 #' @export
 setMethod("colnames<-", signature(x="BascetCountMatrix"), function(x, value) {
   colnames(x@X) <- value
@@ -191,10 +213,12 @@ ReadBascetCountMatrix_one <- function(
   #fname <- "/home/mahogny/test/cnt_feature.hdf5"
   #fname <- "/husky/henriksson/atrandi//v4_wgs_novaseq1/kmer_counts.1.h5"
   
-  indices <- rhdf5::h5read(fname, "X/indices") + 1L
-  indptr <-  rhdf5::h5read(fname, "X/indptr")
-  dat <-     rhdf5::h5read(fname, "X/data")
-  shape <-   rhdf5::h5read(fname, "X/shape")
+  h5f <- rhdf5::H5Fopen(fname)
+
+  indices <- h5f$X$indices + 1L
+  indptr <-  h5f$X$indptr
+  dat <-     h5f$X$data
+  shape <-   h5f$X$shape
 
   mat <- Matrix::sparseMatrix(
     j=indices,
@@ -203,11 +227,10 @@ ReadBascetCountMatrix_one <- function(
     dims=shape
   )
 
-  rownames(mat) <- rhdf5::h5read(fname, "obs/_index")  #names of cells
-  colnames(mat) <- rhdf5::h5read(fname, "var/_index")  #feature names
+  rownames(mat) <- h5f$obs$`_index`  #names of cells
+  colnames(mat) <- h5f$var$`_index`  #feature names
 
   ### Read obs matrix
-  h5f <- rhdf5::H5Fopen(fname)
   df_obs <- as.data.frame(h5f$obs)
   colnames(df_obs) <- names(h5f$obs)
   rownames(df_obs) <- NULL
@@ -313,6 +336,8 @@ MergeBascetCountMatrix <- function(
   #Prepend names to each cell before mering, if requested
   stopifnot(is.logical(prependName))
   
+  print("Merging count matrices")
+  
   if(prependName) {
     stopifnot(!is.null(names(listInput)))
     for(i in 1:numFiles) {
@@ -354,7 +379,8 @@ MergeBascetCountMatrix <- function(
     mat <- list_mat[[f]]
     triplet <- Matrix::summary(mat)
     all_i[[f]] <- triplet$i + row_offset
-    all_j[[f]] <- col_map[colnames(mat)[triplet$j]]
+    col_remap <- col_map[colnames(mat)]
+    all_j[[f]] <- col_remap[triplet$j]
     all_x[[f]] <- triplet$x
     all_rownames[[f]] <- rownames(mat)
     row_offset <- row_offset + nrow(mat)

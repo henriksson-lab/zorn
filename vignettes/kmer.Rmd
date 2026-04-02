@@ -103,7 +103,7 @@ number of reads.
   keep_cells <- rowSums(cnt)>20000 #this cutoff is based on the number of KMERs, not read count!
   sum(keep_cells)
   adata <- CreateSeuratObject(
-    counts = BascetCountMatrixToAssay(cnt[keep_cells,]),  ##TODO check if ok
+    cnt[keep_cells,],
     assay = "infokmer"
   )
 ```

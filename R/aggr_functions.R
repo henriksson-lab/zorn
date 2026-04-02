@@ -23,9 +23,7 @@ aggr.example <- function(
     my_data <- BascetReadFile(bascetFile, cellID, "out.csv", as="text")   #equivalent to readLines() i.e. one big string returned (or get a list, one per line?)
     
     # If you do option #2, you can do this to parse the lines using common table readers
-    zz <- textConnection(my_data)
-    dat <- read.delim(zz)
-    close(zz)    
+    dat <- read.delim(text = my_data)
   }  
 
   ###### Do something with the data and return ideally as a one-line data.frame (multiple lines if multiple outputs).

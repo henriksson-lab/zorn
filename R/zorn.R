@@ -1,6 +1,8 @@
 
 
 
+.datatable.aware = TRUE
+
 ################################################################################
 ################ Helper functions: memory size #################################
 ################################################################################
@@ -380,10 +382,7 @@ BascetMapTransform <- function(
   produce_cell_list <- !is.null(includeCells)
   if(produce_cell_list) {
     #Figure out which cell goes into which shard   TODO, using the same cell list for all shards
-    list_cell_for_shard <- list()
-    for(i in 1:length(inputFiles)){
-      list_cell_for_shard[[i]] <- includeCells
-    }
+    list_cell_for_shard <- rep(list(includeCells), length(inputFiles))
   }
   
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {

@@ -86,9 +86,7 @@ DetectRawFileMeta <- function(
   if(length(unique_prefix)>1){
     #Sanitize prefixes. Some characters will break BAM tags etc
     meta$prefix <- meta$possible_prefix
-    meta$prefix <- stringr::str_remove_all(meta$prefix, " ")
-    meta$prefix <- stringr::str_remove_all(meta$prefix, "/")
-    meta$prefix <- stringr::str_remove_all(meta$prefix, "\"")
+    meta$prefix <- stringr::str_remove_all(meta$prefix, '[ /"]')
     
     print("Detected multiple libraries")    
   } else {
@@ -228,12 +226,9 @@ BascetGetRaw <- function(
 
   #Figure out how many output files are needed.
   #Do this by checking size of input files
-  rawmeta$filesize <- NA
-  for(i in 1:nrow(rawmeta)){
-    size_r1 <- file.info(file.path(rawmeta$dir, rawmeta$r1[i]))$size
-    size_r2 <- file.info(file.path(rawmeta$dir, rawmeta$r2[i]))$size
-    rawmeta$filesize[i] <- fs::as_fs_bytes(size_r1+size_r2)
-  }
+  size_r1 <- file.info(file.path(rawmeta$dir, rawmeta$r1))$size
+  size_r2 <- file.info(file.path(rawmeta$dir, rawmeta$r2))$size
+  rawmeta$filesize <- fs::as_fs_bytes(size_r1 + size_r2)
   rawmeta$need_num_outputs <- ceiling(rawmeta$filesize/maxShardSize)
   
 
@@ -263,28 +258,25 @@ BascetGetRaw <- function(
 #print("---")
 
   #Duplicate rawmeta for each output file
-  rawmeta_tostore <- NULL
+  list_rawmeta <- vector("list", nrow(rawmeta))
+  list_outputFiles <- character(nrow(rawmeta))
   cur_start_shard <- 0
-  arg_outputFiles <- NULL
-  for(i in 1:nrow(rawmeta)) {
+  for(i in seq_len(nrow(rawmeta))) {
     rawmeta_one <- rawmeta[i,,drop=FALSE]
     cur_ids <- cur_start_shard + (1:rawmeta_one$need_num_outputs)
-#    print(cur_ids)
     rawmeta_one <- rawmeta_one[rep(1, length(cur_ids)),,drop=FALSE] #replicate rows
     rawmeta_one$shard <- cur_ids
     rownames(rawmeta_one) <- NULL
-#print(rawmeta_one)
-    rawmeta_tostore <- rbind(rawmeta_tostore, rawmeta_one)
-    
+    list_rawmeta[[i]] <- rawmeta_one
+
     #Also create a ,-separated file list for running Bascet
-    arg_outputFiles <- cbind(
-      arg_outputFiles,
-      stringr::str_flatten(outputFilesComplete[cur_ids], collapse = ",")
-    )
-    
+    list_outputFiles[i] <- stringr::str_flatten(outputFilesComplete[cur_ids], collapse = ",")
+
     #Move to next set of outputs
     cur_start_shard <- cur_start_shard + rawmeta_one$need_num_outputs
   }
+  rawmeta_tostore <- do.call(rbind, list_rawmeta)
+  arg_outputFiles <- matrix(list_outputFiles, nrow=1)
 
   print(rawmeta_tostore)
   #  print(rawmeta)
@@ -418,7 +410,7 @@ PrepareSharding <- function(
   
   ### Read BC info for each file
   list_hist <- list()
-  for(cur_i in 1:length(inputFiles)) {
+  for(cur_i in seq_along(inputFiles)) {
     hist_f <- paste0(file.path(bascetRoot, inputFiles[cur_i]),".hist") ## only support TIRP for now
     dat <- readr::read_tsv(  ### use some data.table alternative?
       file = hist_f,

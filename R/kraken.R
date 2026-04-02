@@ -19,35 +19,28 @@ SpeciesCorrMatrix <- function(
   list_species <- rownames(cnt)
   print(list_species)
   
-  all_comp <- NULL
+  all_comp <- vector("list", length(list_species) * (length(list_species) - 1))
+  idx <- 0L
   for(i in seq_along(list_species)){
     for(j in seq_along(list_species)){
-      #print(paste(i,j))
-      if(i==j) {
-        
-      } else {
-        
-        df <- data.frame(
-          x=factor(cnt[i,]>0, levels=c("TRUE","FALSE")),
-          y=factor(cnt[j,]>0, levels=c("TRUE","FALSE"))
-        )
-        
+      if(i!=j) {
         df <- data.frame(
           x=factor(cnt[i,]>median(cnt[i,]), levels=c("TRUE","FALSE")),
           y=factor(cnt[j,]>median(cnt[j,]), levels=c("TRUE","FALSE"))
         )
-        
+
         ft <- fisher.test(table(df))
-        
-        all_comp <- rbind(all_comp,
-                          data.frame(
-                            i=list_species[i], 
-                            j=list_species[j], 
-                            p=ft$p.value
-                          ))
+
+        idx <- idx + 1L
+        all_comp[[idx]] <- data.frame(
+          i=list_species[i],
+          j=list_species[j],
+          p=ft$p.value
+        )
       }
     }
   }
+  all_comp <- do.call(rbind, all_comp)
   ggplot(all_comp, aes(i,j,fill = -log(p))) + geom_tile() + theme_bw()
   #all_comp
   #egg::ggarrange(plots = all_plots, nrow = nrow(cnt))  
@@ -165,17 +158,16 @@ KrakenFindConsensusTaxonomy <- function(
   #check arguments
   stopifnot(is.BascetCountMatrix(mat))
 
-  #Extract sparse matrix from BascetCountMatrix
-  M <- as(mat@X, "TsparseMatrix")
-  
-  #Note that indices are zero-based within Matrix package
+  #Extract sparse matrix triplets from BascetCountMatrix
+  triplet <- Matrix::summary(mat@X)
+
   df <- data.frame(
-    cell_index = M@i + 1,
-    taxid_index = M@j + 1,
-    cnt = M@x
+    cell_index = triplet$i,
+    taxid_index = triplet$j,
+    cnt = triplet$x
   )
   
-  col_taxid <- stringr::str_remove(colnames(M),"taxid_")
+  col_taxid <- stringr::str_remove(colnames(mat@X),"taxid_")
   df$taxid <- col_taxid[df$taxid_index]
   
   #Not all taxid's will map. so we need to look them up first, then discard some of them
@@ -192,7 +184,9 @@ KrakenFindConsensusTaxonomy <- function(
   
   #Get taxid with most counts per cell. Only keep those that are for species. Note that more than one taxid can be reported!
   df <- df[df$taxid %in% df_taxid$taxid,]
-  max_taxid_per_cell <- merge(df,sqldf::sqldf("select max(cnt) as cnt, cell_index from df group by cell_index"))
+  dt <- data.table::as.data.table(df)
+  max_cnt <- dt[, .(cnt = max(cnt)), by = cell_index]
+  max_taxid_per_cell <- merge(df, as.data.frame(max_cnt))
   
   #Keep first taxid per cell
   max_taxid_per_cell <- max_taxid_per_cell[!duplicated(max_taxid_per_cell$cell_index),]
@@ -201,7 +195,8 @@ KrakenFindConsensusTaxonomy <- function(
   #Add info to each cell
   taxid_class_per_cell <- merge(max_taxid_per_cell, df_taxid, all.x=TRUE)
 
-  taxid_class_per_cell$cell_id <- rownames(mat@X)[taxid_class_per_cell$cell_index]
+  #taxid_class_per_cell$cell_id <- rownames(mat@X)[taxid_class_per_cell$cell_index]
+  rownames(taxid_class_per_cell) <- rownames(mat@X)[taxid_class_per_cell$cell_index]
   taxid_class_per_cell
 }
 
@@ -335,12 +330,12 @@ KrakenKneePlot <- function(
   taxid_class_per_cell
   
   #Turn count matrix into long format
-  current_assay <- adata@assays[[DefaultAssay(adata)]]
-  M <- as(current_assay@counts, "TsparseMatrix")
+  count_mat <- SeuratObject::GetAssayData(adata, layer = "counts")
+  triplet <- Matrix::summary(count_mat)
   M.df <- data.frame(
-    taxid_index=use_row[M@i+1],
-    cell_index=M@j+1, 
-    cnt=M@x
+    taxid_index=use_row[triplet$i],
+    cell_index=triplet$j,
+    cnt=triplet$x
   )
   
   #Decide how to reduce count matrix
@@ -355,7 +350,8 @@ KrakenKneePlot <- function(
   taxid_M <- merge(M.df, taxid_tomerge)
   
   #Sum up counts per cell and group
-  toplot <- sqldf("select sum(cnt) as cnt, grp, cell_index from taxid_M group by grp, cell_index")
+  dt_taxid_M <- data.table::as.data.table(taxid_M)
+  toplot <- as.data.frame(dt_taxid_M[, .(cnt = sum(cnt)), by = .(grp, cell_index)])
   toplot <- toplot[order(toplot$cnt, decreasing = TRUE),]
   
   #Set indices for plot
@@ -365,8 +361,8 @@ KrakenKneePlot <- function(
     toplot$index[this_index] <- 1:length(this_index)
   }
   
-  #Abundance for each group?  
-  cnt_per_grp <- sqldf("select sum(cnt) as cnt, grp from taxid_M group by grp order by cnt desc")
+  #Abundance for each group?
+  cnt_per_grp <- as.data.frame(dt_taxid_M[, .(cnt = sum(cnt)), by = grp][order(-cnt)])
   #cnt_per_grp
   
   #Produce the plot

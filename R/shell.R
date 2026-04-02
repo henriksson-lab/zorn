@@ -64,14 +64,14 @@ shellscriptMakeFilesExpander <- function(
   dir.create(path_tmp, showWarnings = FALSE)
   
   #Create each temp file
-  all_files <- c()
-  for(i in 1:length(list_content)){
+  all_files <- character(length(list_content))
+  for(i in seq_along(list_content)){
     one_tmp <- file.path(path_tmp, paste0(ts,"-",i))
     if(file.exists(one_tmp)) {
       stop(paste0("Attempting to create file ",one_tmp,", but it already exists"))
     }
     writeLines(con = one_tmp, text = list_content[[i]])
-    all_files <- c(all_files, one_tmp)
+    all_files[i] <- one_tmp
   }
   
   #Create an array
