@@ -46,8 +46,8 @@ BascetGatherCountSketch <- function(
   stopifnot(is.character(outputName))
   stopifnot(is.character(inputName))
   #includeCells todo
-
-## todo check sketch size is power of two. check int. and kmerSize is int!?
+  stopifnot(is.numeric(kmerSize) && kmerSize == as.integer(kmerSize) && kmerSize > 0)
+  stopifnot(is.numeric(sketchSize) && sketchSize == as.integer(sketchSize) && sketchSize > 0 && bitwAnd(sketchSize, sketchSize - 1) == 0)
 
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
@@ -123,12 +123,8 @@ BascetLoadCountSketchMatrix <- function(
     inputName="countsketch_mat.csv" ################ could be feather! or dense hdf5. but don't want it loaded as counts. not ideal that we specify ending - detect
 ) {
   fname <- file.path(bascetRoot, inputName)
-  #mat <- as.data.frame(data.table::fread(fname)) #fread package cannot be used
-  mat <- read.csv(fname, header=FALSE)
-  #mat[1:5,1:5]
-  #mat <- read.csv2("/husky/henriksson/atrandi/v6_251128_jyoti_mock_bulk/countsketch_mat.csv", sep=",", header = FALSE)
-#  mat <- read.csv2("/husky/henriksson/atrandi/v6_251128_jyoti_mock_bulk/countsketch_mat.sub.csv", sep=",", header = FALSE)
-  
+  mat <- data.table::fread(fname, header=FALSE, data.table=FALSE)
+
   cellid <- mat[,1]
   celldepth <- mat[,2]
   
@@ -162,9 +158,7 @@ CreateSeuratObjectWithReduction <- function(
   
   m <- Matrix::Matrix(0, nrow=2, ncol=ncol(Q), sparse=TRUE)
   colnames(m) <- colnames(Q)
-  
-  # as dgCMatrix 
-  
+
   pbmc <- CreateSeuratObject(counts = m, project = "a", min.cells = 0, min.features = 0)
   pbmc@reductions[[reductionName]] <- CreateDimReducObject(
     embeddings = sign(t(Q)),  ####################################### postpone??

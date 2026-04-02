@@ -1,0 +1,25 @@
+[package]
+name = "fastumap"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "fastumap"
+path = "src/main.rs"
+
+[lib]
+name = "fastumap"
+path = "src/lib.rs"
+
+[dependencies]
+cudarc = { version = "0.19", features = ["cublas", "nvrtc", "driver", "cuda-12080"] }
+csv = "1.3"
+clap = { version = "4", features = ["derive"] }
+ndarray = "0.16"
+rand = "0.8"
+rand_pcg = "0.3"
+rayon = "1.10"
+ordered-float = "4"
+log = "0.4"
+env_logger = "0.11"
+anyhow = "1"
