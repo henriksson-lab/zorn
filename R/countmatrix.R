@@ -191,49 +191,32 @@ ReadBascetCountMatrix_one <- function(
   #fname <- "/home/mahogny/test/cnt_feature.hdf5"
   #fname <- "/husky/henriksson/atrandi//v4_wgs_novaseq1/kmer_counts.1.h5"
   
-  h5f <- rhdf5::H5Fopen(fname)
-  indices <- h5f$X$indices + 1 
-  indptr <-  h5f$X$indptr
-  dat <- h5f$X$data
-  shape <- h5f$X$shape
-  
-  #shape
-  #print(indices)
-  
-  #print(paste0("Assembling matrix, size: ", shape[1],"x",shape[2]))
-  mat <- Matrix::sparseMatrix(  
-    j=indices,   #i??   was j when fine
+  indices <- rhdf5::h5read(fname, "X/indices") + 1L
+  indptr <-  rhdf5::h5read(fname, "X/indptr")
+  dat <-     rhdf5::h5read(fname, "X/data")
+  shape <-   rhdf5::h5read(fname, "X/shape")
+
+  mat <- Matrix::sparseMatrix(
+    j=indices,
     p=indptr,
     x=dat,
-    dims=h5f$X$shape
+    dims=shape
   )
-  
-  rownames(mat) <- h5f$obs$`_index`  #names of cells
-  colnames(mat) <- h5f$var$`_index`  #feature names
-  
+
+  rownames(mat) <- rhdf5::h5read(fname, "obs/_index")  #names of cells
+  colnames(mat) <- rhdf5::h5read(fname, "var/_index")  #feature names
+
   ### Read obs matrix
-  
-  #print(666)
-  #print(names(h5f$obs))
-  #list_obs_col <- setdiff(names(h5f$obs),"_index")
-  #print(h5f$obs["_unmapped"])
-  
-  #df_obs <- data.frame(row.names=h5f$obs$`_index`)
+  h5f <- rhdf5::H5Fopen(fname)
   df_obs <- as.data.frame(h5f$obs)
   colnames(df_obs) <- names(h5f$obs)
-  #print(head(df_obs))
-  
-  rhdf5::H5close()
+  rownames(df_obs) <- NULL
+  rhdf5::H5Fclose(h5f)
   
   NewBascetCountMatrix(
     X=mat,
     obs=df_obs
   )
-  #list(
-  #  obs=df_obs,
-  #  X=mat
-  #)
-  #mat
 }
 
 
@@ -349,32 +332,44 @@ MergeBascetCountMatrix <- function(
   pbar <- progress::progress_bar$new(total = numFiles)
   pbar$tick(0)
   
-  #Find union of features  
+  #Find union of features
   all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
   if(verbose){
     print(all_colnames)
   }
   num_col <- length(all_colnames)
-  map_name_to_i <- data.frame(row.names = all_colnames, ind=1:length(all_colnames))
+  col_map <- setNames(seq_along(all_colnames), all_colnames)
   if(verbose){
-    print(map_name_to_i)
+    print(col_map)
   }
-  
-  #Make sizes compatible
-  list_resized_mat <- list()
-  for(f in 1:length(list_mat)){ # inputFiles
+
+  #Collect all triplets with remapped column indices
+  all_i <- vector("list", length(list_mat))
+  all_j <- vector("list", length(list_mat))
+  all_x <- vector("list", length(list_mat))
+  all_rownames <- vector("list", length(list_mat))
+  row_offset <- 0L
+  total_rows <- 0L
+  for(f in seq_along(list_mat)){
     mat <- list_mat[[f]]
-    new_mat <- MatrixExtra::emptySparse(nrow = nrow(mat), ncol = num_col, format = "C", dtype = "d")  #was format=R. but C is better, or we get warnings all the time. faster?
-    new_mat[1:nrow(mat), map_name_to_i[colnames(mat),]] <- MatrixExtra::as.csr.matrix(mat)  #manually look up column n>
-    rownames(new_mat) <- rownames(mat)
-    colnames(new_mat) <- all_colnames
-    # print(dim(new_mat))
-    list_resized_mat[[f]] <- new_mat
+    triplet <- Matrix::summary(mat)
+    all_i[[f]] <- triplet$i + row_offset
+    all_j[[f]] <- col_map[colnames(mat)[triplet$j]]
+    all_x[[f]] <- triplet$x
+    all_rownames[[f]] <- rownames(mat)
+    row_offset <- row_offset + nrow(mat)
+    total_rows <- total_rows + nrow(mat)
     pbar$tick()
   }
-  
-  #Concatenate matrices
-  allmat <- do.call(rbind, list_resized_mat) #TODO check that above worked properly!
+
+  #Build merged sparse matrix from triplets
+  allmat <- Matrix::sparseMatrix(
+    i=unlist(all_i),
+    j=unlist(all_j),
+    x=unlist(all_x),
+    dims=c(total_rows, num_col),
+    dimnames=list(unlist(all_rownames), all_colnames)
+  )
   
   #Concat obs
   allobs <- do.call(rbind, list_obs)
