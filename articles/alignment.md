@@ -134,9 +134,9 @@ library(Seurat)
 cnt <- ReadBascetCountMatrix(bascetRoot,"chromcount", verbose=FALSE)
 
 adata <- CreateSeuratObject(
-  counts = BascetCountMatrixToAssay(cnt),
+  cnt,
   assay = "chrom_cnt"
-) 
+)
 ```
 
 Most likely, some cells will have to be discarded. Initially we
@@ -234,9 +234,7 @@ library(Seurat)
 
 cnt <- ReadBascetCountMatrix(bascetRoot,"featurecount", verbose=FALSE)
 
-adata <- CreateSeuratObject(
-  counts = BascetCountMatrixToAssay(cnt)
-) 
+adata <- CreateSeuratObject(cnt)
 ```
 
 From here, you can follow an [RNA-seq tutorial for

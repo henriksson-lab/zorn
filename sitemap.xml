@@ -80,6 +80,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CloseBascet.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CountDataFrameToSparseMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CountGrangeFeatures.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/CreateSeuratObject.BascetCountMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CreateSeuratObjectWithReduction.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/DebarcodedKneePlot.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/DetectRawFileMeta.html</loc></url>

@@ -169,6 +169,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`CountGrangeFeatures()`](https://henriksson-lab.github.io/zorn/reference/CountGrangeFeatures.md)
   : Obtain a feature matrix (as seurat object) given an seurat object
   having Fragments associated
+- [`CreateSeuratObject.BascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/CreateSeuratObject.BascetCountMatrix.md)
+  : Create a Seurat object from a BascetCountMatrix
 - [`CreateSeuratObjectWithReduction()`](https://henriksson-lab.github.io/zorn/reference/CreateSeuratObjectWithReduction.md)
   : Create a seurat object from e.g. count sketch reduction
 - [`DebarcodedKneePlot()`](https://henriksson-lab.github.io/zorn/reference/DebarcodedKneePlot.md)

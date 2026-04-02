@@ -46,8 +46,7 @@ Seurat:
 ``` r
 mat <- ReadBascetCountMatrix(bascetRoot,"kraken", verbose=FALSE)
 
-taxid_ob <- BascetCountMatrixToAssay(X)
-adata <- CreateSeuratObject(counts = taxid_ob, project = "proj", min.cells = 0, min.features = 0) 
+adata <- CreateSeuratObject(mat, project = "proj", min.cells = 0, min.features = 0)
 ```
 
 You then most likely want to know which cell is which species. Zorn can
@@ -59,12 +58,7 @@ group for each cell:
 kraken_taxid <- KrakenFindConsensusTaxonomy(mat)
 
 ## Add KRAKEN consensus taxonomy to metadata
-rownames(kraken_taxid) <- kraken_taxid$cell_id
-kraken_taxid <- kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")] #optional subsetting
-adata@meta.data <- cbind(
-  adata@meta.data,
-  kraken_taxid[colnames(adata),c("taxid","phylum","class","order","family","genus","species")]
-)
+adata <- AddMetaData(adata, kraken_taxid)
 ```
 
 You will need to filter low-abundance cells. To do this, first
