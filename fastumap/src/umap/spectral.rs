@@ -107,7 +107,7 @@ pub fn spectral_layout(graph: &FuzzyGraph, seed: u64) -> Vec<[f32; 2]> {
     result
 }
 
-fn random_layout(n: usize, seed: u64) -> Vec<[f32; 2]> {
+pub fn random_layout(n: usize, seed: u64) -> Vec<[f32; 2]> {
     let mut rng = Pcg64::seed_from_u64(seed + 1);
     (0..n)
         .map(|_| {

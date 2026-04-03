@@ -28,6 +28,17 @@ struct Cli {
 
     #[arg(long, default_value = "0")]
     gpu_device: usize,
+
+    #[arg(long, default_value = "false")]
+    random_init: bool,
+
+    /// Feature transform: none, sign, log
+    #[arg(long, default_value = "none")]
+    transform: String,
+
+    /// Distance metric: cosine, hamming
+    #[arg(long, default_value = "cosine")]
+    metric: String,
 }
 
 fn main() -> Result<()> {
@@ -36,7 +47,7 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     log::info!("Reading input: {}", cli.input.display());
-    let (names, data) = fastumap::csv_io::read_csv(&cli.input)?;
+    let (names, data) = fastumap::csv_io::read_csv(&cli.input, &cli.transform)?;
 
     let params = fastumap::UmapParams {
         n_neighbors: cli.n_neighbors,
@@ -45,6 +56,9 @@ fn main() -> Result<()> {
         learning_rate: cli.learning_rate,
         seed: cli.seed,
         gpu_device: cli.gpu_device,
+        random_init: cli.random_init,
+        metric: cli.metric,
+        transform: cli.transform,
         ..Default::default()
     };
 

@@ -14,6 +14,9 @@ pub struct UmapParams {
     pub negative_sample_rate: usize,
     pub seed: u64,
     pub gpu_device: usize,
+    pub random_init: bool,
+    pub metric: String,
+    pub transform: String,
 }
 
 impl Default for UmapParams {
@@ -27,6 +30,9 @@ impl Default for UmapParams {
             negative_sample_rate: 5,
             seed: 42,
             gpu_device: 0,
+            random_init: false,
+            metric: "cosine".to_string(),
+            transform: "none".to_string(),
         }
     }
 }
@@ -42,19 +48,34 @@ pub fn run_umap(data: &Array2<f32>, params: &UmapParams) -> Result<UmapResult> {
     // Step 1: GPU-accelerated k-NN
     let gpu_ctx = gpu::context::GpuContext::new(params.gpu_device)?;
     let flat_data = data.as_slice().expect("Data must be contiguous");
-    let knn = gpu::cosine_knn::compute_cosine_knn(
-        &gpu_ctx,
-        flat_data,
-        n_rows,
-        n_cols,
-        params.n_neighbors,
-    )?;
+    let normalize = params.transform != "sign2";
+    let knn = match params.metric.as_str() {
+        "hamming" => gpu::cosine_knn::compute_hamming_knn(
+            &gpu_ctx,
+            flat_data,
+            n_rows,
+            n_cols,
+            params.n_neighbors,
+        )?,
+        _ => gpu::cosine_knn::compute_cosine_knn(
+            &gpu_ctx,
+            flat_data,
+            n_rows,
+            n_cols,
+            params.n_neighbors,
+            normalize,
+        )?,
+    };
 
     // Step 2: Fuzzy simplicial set
-    let graph = umap::fuzzy_set::fuzzy_simplicial_set(&knn);
+    let graph = umap::fuzzy_set::fuzzy_simplicial_set(&knn, params.seed);
 
-    // Step 3: Spectral initialization
-    let mut embedding = umap::spectral::spectral_layout(&graph, params.seed);
+    // Step 3: Initialization
+    let mut embedding = if params.random_init {
+        umap::spectral::random_layout(graph.n_points, params.seed)
+    } else {
+        umap::spectral::spectral_layout(&graph, params.seed)
+    };
 
     // Step 4: SGD optimization
     let layout_params = umap::layout::LayoutParams {

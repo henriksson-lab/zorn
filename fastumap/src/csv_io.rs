@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use ndarray::Array2;
 use std::path::Path;
 
-pub fn read_csv(path: &Path) -> Result<(Vec<String>, Array2<f32>)> {
+pub fn read_csv(path: &Path, transform: &str) -> Result<(Vec<String>, Array2<f32>)> {
     let mut reader = csv::ReaderBuilder::new()
         .has_headers(false)
         .from_path(path)
@@ -20,7 +20,15 @@ pub fn read_csv(path: &Path) -> Result<(Vec<String>, Array2<f32>)> {
         let features: Vec<f32> = record
             .iter()
             .skip(2)
-            .map(|s| s.trim().parse::<f32>().unwrap_or(0.0))
+            .map(|s| {
+                let v: f32 = s.trim().parse().unwrap_or(0.0);
+                match transform {
+                    "sign" => v.signum(),
+                    "sign2" => if v >= 0.0 { 1.0 } else { -1.0 },
+                    "log" => v.signum() * (v.abs()).ln_1p(),
+                    _ => v,
+                }
+            })
             .collect();
         data.push(features);
     }

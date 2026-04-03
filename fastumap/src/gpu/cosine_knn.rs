@@ -14,6 +14,7 @@ pub fn compute_cosine_knn(
     n_rows: usize,
     n_cols: usize,
     k: usize,
+    normalize: bool,
 ) -> Result<KnnGraph> {
     log::info!(
         "Computing cosine k-NN on GPU: {} x {}, k={}",
@@ -28,7 +29,7 @@ pub fn compute_cosine_knn(
         .clone_htod(data)
         .context("Failed to upload data to GPU")?;
 
-    // Compute row norms
+    // Compute row norms (needed for output normalization)
     let mut d_norms = gpu.stream.alloc_zeros::<f32>(n_rows)?;
     {
         let block_size = 256u32;
@@ -47,9 +48,10 @@ pub fn compute_cosine_knn(
         builder.arg(&n_cols_i);
         unsafe { builder.launch(cfg) }.context("Failed to launch compute_row_norms")?;
     }
+    let norms: Vec<f32> = gpu.stream.clone_dtoh(&d_norms)?;
 
-    // Normalize rows in-place
-    {
+    if normalize {
+        // Normalize rows in-place (classic cosine path)
         let block_size = 256u32;
         let grid_y = ((n_cols as u32) + block_size - 1) / block_size;
         let cfg = LaunchConfig {
@@ -111,7 +113,7 @@ pub fn compute_cosine_knn(
     // Extract top-k neighbors per row (excluding self)
     // sim is column-major n_rows x n_rows: element (i,j) is at sim[i + j*n_rows]
     log::info!("Extracting top-{} neighbors...", k);
-    let (indices, distances) = extract_topk(&sim, n_rows, k);
+    let (indices, distances) = extract_topk(&sim, n_rows, k, if normalize { None } else { Some(&norms) });
 
     Ok(KnnGraph {
         n_points: n_rows,
@@ -121,15 +123,116 @@ pub fn compute_cosine_knn(
     })
 }
 
-fn extract_topk(sim: &[f32], n: usize, k: usize) -> (Vec<Vec<usize>>, Vec<Vec<f32>>) {
+pub fn compute_hamming_knn(
+    gpu: &GpuContext,
+    data: &[f32],
+    n_rows: usize,
+    n_cols: usize,
+    k: usize,
+) -> Result<KnnGraph> {
+    log::info!(
+        "Computing Hamming k-NN on GPU: {} x {}, k={}",
+        n_rows,
+        n_cols,
+        k
+    );
+
+    let d_data = gpu
+        .stream
+        .clone_htod(data)
+        .context("Failed to upload data to GPU")?;
+
+    let mut d_dist = gpu
+        .stream
+        .alloc_zeros::<f32>(n_rows * n_rows)
+        .context("Failed to allocate distance matrix")?;
+
+    {
+        let total = (n_rows * n_rows) as u32;
+        let block_size = 256u32;
+        let grid_size = (total + block_size - 1) / block_size;
+        let cfg = LaunchConfig {
+            block_dim: (block_size, 1, 1),
+            grid_dim: (grid_size, 1, 1),
+            shared_mem_bytes: 0,
+        };
+        let n_rows_i = n_rows as i32;
+        let n_cols_i = n_cols as i32;
+        let mut builder = gpu.stream.launch_builder(&gpu.compute_hamming_matrix_fn);
+        builder.arg(&d_data);
+        builder.arg(&mut d_dist);
+        builder.arg(&n_rows_i);
+        builder.arg(&n_cols_i);
+        unsafe { builder.launch(cfg) }.context("Failed to launch compute_hamming_matrix")?;
+    }
+
+    log::info!("Downloading distance matrix from GPU...");
+    let dist: Vec<f32> = gpu
+        .stream
+        .clone_dtoh(&d_dist)
+        .context("Failed to download distance matrix")?;
+
+    log::info!("Extracting top-{} neighbors...", k);
+    let (indices, distances) = extract_topk_dist(&dist, n_rows, k);
+
+    Ok(KnnGraph {
+        n_points: n_rows,
+        n_neighbors: k,
+        indices,
+        distances,
+    })
+}
+
+/// Extract top-k from a distance matrix (smallest distances = nearest neighbors)
+fn extract_topk_dist(dist: &[f32], n: usize, k: usize) -> (Vec<Vec<usize>>, Vec<Vec<f32>>) {
+    let (indices, distances): (Vec<_>, Vec<_>) = (0..n)
+        .into_par_iter()
+        .map(|i| {
+            // Row-major: element (i,j) at dist[i * n + j]
+            let mut pairs: Vec<(f32, usize)> = (0..n)
+                .filter(|&j| j != i)
+                .map(|j| (dist[i * n + j], j))
+                .collect();
+
+            // Partial sort: smallest distances first
+            if pairs.len() > k {
+                pairs.select_nth_unstable_by(k - 1, |a, b| {
+                    a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal)
+                });
+                pairs.truncate(k);
+            }
+            pairs.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+
+            let idx: Vec<usize> = pairs.iter().map(|p| p.1).collect();
+            let d: Vec<f32> = pairs.iter().map(|p| p.0.max(0.0)).collect();
+            (idx, d)
+        })
+        .unzip();
+
+    (indices, distances)
+}
+
+fn extract_topk(sim: &[f32], n: usize, k: usize, norms: Option<&[f32]>) -> (Vec<Vec<usize>>, Vec<Vec<f32>>) {
     let (indices, distances): (Vec<_>, Vec<_>) = (0..n)
         .into_par_iter()
         .map(|i| {
             // Collect (similarity, index) pairs, excluding self
             // Column-major: element (i,j) at sim[i + j*n]
+            // If norms provided, normalize dot products to cosine: sim / (norm_i * norm_j)
+            let norm_i = norms.map(|n| n[i]).unwrap_or(1.0);
             let mut pairs: Vec<(f32, usize)> = (0..n)
                 .filter(|&j| j != i)
-                .map(|j| (sim[i + j * n], j))
+                .map(|j| {
+                    let dot = sim[i + j * n];
+                    let cosine = match norms {
+                        Some(ns) => {
+                            let denom = norm_i * ns[j];
+                            if denom > 1e-10 { dot / denom } else { 0.0 }
+                        }
+                        None => dot,
+                    };
+                    (cosine, j)
+                })
                 .collect();
 
             // Partial sort to get top-k by similarity (highest first)

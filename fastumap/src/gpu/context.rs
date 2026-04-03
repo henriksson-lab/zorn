@@ -12,6 +12,7 @@ pub struct GpuContext {
     pub module: Arc<CudaModule>,
     pub compute_row_norms_fn: CudaFunction,
     pub row_l2_normalize_fn: CudaFunction,
+    pub compute_hamming_matrix_fn: CudaFunction,
 }
 
 impl GpuContext {
@@ -33,6 +34,9 @@ impl GpuContext {
         let row_l2_normalize_fn = module
             .load_function("row_l2_normalize")
             .context("Failed to load row_l2_normalize kernel")?;
+        let compute_hamming_matrix_fn = module
+            .load_function("compute_hamming_matrix")
+            .context("Failed to load compute_hamming_matrix kernel")?;
 
         Ok(Self {
             ctx,
@@ -41,6 +45,7 @@ impl GpuContext {
             module,
             compute_row_norms_fn,
             row_l2_normalize_fn,
+            compute_hamming_matrix_fn,
         })
     }
 }

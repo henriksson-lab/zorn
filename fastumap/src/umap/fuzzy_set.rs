@@ -1,3 +1,6 @@
+use rand::seq::SliceRandom;
+use rand::SeedableRng;
+use rand_pcg::Pcg64;
 use rayon::prelude::*;
 use std::collections::HashMap;
 
@@ -14,7 +17,7 @@ pub struct FuzzyGraph {
     pub edges: Vec<SparseEdge>,
 }
 
-pub fn fuzzy_simplicial_set(knn: &KnnGraph) -> FuzzyGraph {
+pub fn fuzzy_simplicial_set(knn: &KnnGraph, seed: u64) -> FuzzyGraph {
     let n = knn.n_points;
     let k = knn.n_neighbors;
     let target = (k as f32).ln() / (2.0f32).ln(); // log2(k)
@@ -68,23 +71,23 @@ pub fn fuzzy_simplicial_set(knn: &KnnGraph) -> FuzzyGraph {
         }
     }
 
-    let edges: Vec<SparseEdge> = sym_map
-        .into_iter()
-        .flat_map(|((i, j), w)| {
-            vec![
-                SparseEdge {
-                    row: i,
-                    col: j,
-                    weight: w,
-                },
-                SparseEdge {
-                    row: j,
-                    col: i,
-                    weight: w,
-                },
-            ]
-        })
-        .collect();
+    // Build both directions, then sort by (row, col) to match reference COO ordering
+    let mut edges: Vec<SparseEdge> = Vec::with_capacity(sym_map.len() * 2);
+    for ((i, j), w) in &sym_map {
+        edges.push(SparseEdge {
+            row: *i,
+            col: *j,
+            weight: *w,
+        });
+        edges.push(SparseEdge {
+            row: *j,
+            col: *i,
+            weight: *w,
+        });
+    }
+    // Deterministic shuffle to distribute updates evenly across points
+    let mut rng = Pcg64::seed_from_u64(seed + 100);
+    edges.shuffle(&mut rng);
 
     log::info!("Fuzzy graph: {} edges", edges.len());
 

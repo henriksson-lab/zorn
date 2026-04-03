@@ -34,9 +34,6 @@ pub fn optimize_layout(
         .map(|e| e.weight)
         .fold(0.0f32, f32::max);
 
-    // epochs_per_sample: how many epochs between samples of this edge.
-    // Highest-weight edges are sampled every epoch (=1.0).
-    // Lower-weight edges are sampled less frequently.
     let epochs_per_sample: Vec<f32> = graph
         .edges
         .iter()
@@ -54,8 +51,8 @@ pub fn optimize_layout(
         .map(|&e| e / params.negative_sample_rate as f32)
         .collect();
 
-    let mut epoch_of_next_sample: Vec<f32> = epochs_per_sample.clone();
-    let mut epoch_of_next_negative_sample: Vec<f32> = epochs_per_negative_sample.clone();
+    let mut epoch_of_next_sample: Vec<f32> = vec![0.0; epochs_per_sample.len()];
+    let mut epoch_of_next_negative_sample: Vec<f32> = vec![0.0; epochs_per_negative_sample.len()];
 
     let mut rng = Pcg64::seed_from_u64(seed);
 
@@ -74,19 +71,17 @@ pub fn optimize_layout(
             let dy = embedding[i][1] - embedding[j][1];
             let dist_sq = dx * dx + dy * dy;
 
-            // Attractive force: gradient of UMAP kernel w.r.t. embedding coords
-            let grad_coeff = if dist_sq > 0.0 {
-                -2.0 * a * b * dist_sq.powf(b - 1.0) / (1.0 + a * dist_sq.powf(b))
-            } else {
-                0.0
-            };
-            let grad_x = clip(grad_coeff * dx);
-            let grad_y = clip(grad_coeff * dy);
-
-            embedding[i][0] += alpha * grad_x;
-            embedding[i][1] += alpha * grad_y;
-            embedding[j][0] -= alpha * grad_x;
-            embedding[j][1] -= alpha * grad_y;
+            // Attractive force (move both head and tail)
+            if dist_sq > 0.0 {
+                let grad_coeff =
+                    -2.0 * a * b * dist_sq.powf(b - 1.0) / (1.0 + a * dist_sq.powf(b));
+                let grad_x = clip(grad_coeff * dx);
+                let grad_y = clip(grad_coeff * dy);
+                embedding[i][0] += alpha * grad_x;
+                embedding[i][1] += alpha * grad_y;
+                embedding[j][0] -= alpha * grad_x;
+                embedding[j][1] -= alpha * grad_y;
+            }
 
             // Repulsive forces (negative sampling)
             let n_neg = ((epoch as f32 - epoch_of_next_negative_sample[edge_idx])
@@ -104,16 +99,14 @@ pub fn optimize_layout(
                 let dy = embedding[i][1] - embedding[k][1];
                 let dist_sq = dx * dx + dy * dy;
 
-                let grad_coeff = if dist_sq > 0.0 {
-                    2.0 * b / ((0.001 + dist_sq) * (1.0 + a * dist_sq.powf(b)))
-                } else {
-                    0.0
-                };
-                let grad_x = clip(grad_coeff * dx);
-                let grad_y = clip(grad_coeff * dy);
-
-                embedding[i][0] += alpha * grad_x;
-                embedding[i][1] += alpha * grad_y;
+                if dist_sq > 0.0 {
+                    let grad_coeff =
+                        2.0 * b / ((0.001 + dist_sq) * (1.0 + a * dist_sq.powf(b)));
+                    let grad_x = clip(grad_coeff * dx);
+                    let grad_y = clip(grad_coeff * dy);
+                    embedding[i][0] += alpha * grad_x;
+                    embedding[i][1] += alpha * grad_y;
+                }
             }
 
             epoch_of_next_sample[edge_idx] += epochs_per_sample[edge_idx];
@@ -131,10 +124,6 @@ fn clip(val: f32) -> f32 {
 }
 
 fn find_ab_params(spread: f32, min_dist: f32) -> (f32, f32) {
-    // Curve fit: (1 + a * d^(2b))^(-1) should approximate
-    // 1.0 for d <= min_dist, exp(-(d - min_dist) / spread) for d > min_dist
-    //
-    // Use f64 for fitting precision, then convert back to f32.
     let spread = spread as f64;
     let min_dist = min_dist as f64;
 
@@ -150,23 +139,24 @@ fn find_ab_params(spread: f32, min_dist: f32) -> (f32, f32) {
         })
         .collect();
 
-    // Fine grid search
+    let cost = |a: f64, b: f64| -> f64 {
+        xs.iter()
+            .zip(&targets)
+            .map(|(&d, &t)| {
+                let y = 1.0 / (1.0 + a * d.powf(2.0 * b));
+                (y - t) * (y - t)
+            })
+            .sum()
+    };
+
     let mut best_a = 1.0f64;
     let mut best_b = 1.0f64;
     let mut best_err = f64::INFINITY;
-
-    for ai in 1..500 {
-        let a = ai as f64 * 0.05;
-        for bi in 1..200 {
-            let b = bi as f64 * 0.01;
-            let err: f64 = xs
-                .iter()
-                .zip(&targets)
-                .map(|(&d, &t)| {
-                    let y = 1.0 / (1.0 + a * d.powf(2.0 * b));
-                    (y - t) * (y - t)
-                })
-                .sum();
+    for ai in 1..100 {
+        let a = ai as f64 * 0.25;
+        for bi in 1..40 {
+            let b = bi as f64 * 0.05;
+            let err = cost(a, b);
             if err < best_err {
                 best_err = err;
                 best_a = a;
@@ -175,14 +165,42 @@ fn find_ab_params(spread: f32, min_dist: f32) -> (f32, f32) {
         }
     }
 
+    let mut a = best_a;
+    let mut b = best_b;
+    let h = 1e-7;
+    let mut lr = 0.1;
+
+    for _ in 0..2000 {
+        let c0 = cost(a, b);
+        let da = (cost(a + h, b) - c0) / h;
+        let db = (cost(a, b + h) - c0) / h;
+
+        let new_a = (a - lr * da).max(1e-3);
+        let new_b = (b - lr * db).max(1e-3);
+        let new_c = cost(new_a, new_b);
+
+        if new_c < c0 {
+            a = new_a;
+            b = new_b;
+            lr *= 1.05;
+        } else {
+            lr *= 0.5;
+        }
+
+        if lr < 1e-12 {
+            break;
+        }
+    }
+
+    let err = cost(a, b);
     log::info!(
         "find_ab_params(spread={}, min_dist={}): a={:.4}, b={:.4}, err={:.6}",
         spread,
         min_dist,
-        best_a,
-        best_b,
-        best_err
+        a,
+        b,
+        err
     );
 
-    (best_a as f32, best_b as f32)
+    (a as f32, b as f32)
 }
