@@ -295,16 +295,16 @@ getBascetPodmanImage <- function(
       print("No podman image present; downloading")
       
       file_bascet_image <- file.path(storeAt, "bascet.tar.gz")
-      file_bascet_image_tar <- file.path(storeAt, "bascet.tar")
+      #file_bascet_image_tar <- file.path(storeAt, "bascet.tar")
       safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.tar.gz", file_bascet_image)
 
-      print("Decompressing")
-      R.utils::gunzip(file_bascet_image)
+      #print("Decompressing")
+      #R.utils::gunzip(file_bascet_image)
       
       print("Loading image into Podman")
-      system(paste("podman load -i ", file_bascet_image_tar))
+      system(paste("podman load -i ", file_bascet_image))
       
-      print(paste("The large image at", file_bascet_image_tar, "can now be removed if the installation worked. You can otherwise try to install it manually using Podman"))
+      print(paste("The large image at", file_bascet_image, "can now be removed if the installation worked. You can otherwise try to install it manually using Podman"))
     } else {
       print(paste("Found existing Bascet Podman image"))
     }
