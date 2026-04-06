@@ -9,9 +9,7 @@ BascetAggregateAbricate(
   bascetRoot,
   inputName = "abricate",
   includeCells = NULL,
-  verbose = FALSE,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 }
 \arguments{
@@ -21,11 +19,7 @@ BascetAggregateAbricate(
 
 \item{includeCells}{Character vector of cell names to include, or NULL for all cells}
 
-\item{verbose}{Show debug output}
-
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
+\item{...}{Additional arguments passed to \code{\link{BascetAggregateMap}}}
 }
 \value{
 Aggregated data
@@ -33,4 +27,7 @@ Aggregated data
 \description{
 Aggregate data from Abricate
 This is a thin wrapper around BascetAggregateMap
+}
+\seealso{
+\code{\link{BascetAggregateMap}}
 }

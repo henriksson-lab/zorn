@@ -10,8 +10,7 @@ BascetAggregateAMRfinder(
   inputName = "AMRfinder",
   includeCells = NULL,
   getColumn = "Element.symbol",
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 }
 \arguments{
@@ -23,9 +22,7 @@ BascetAggregateAMRfinder(
 
 \item{getColumn}{Column name from AMRfinder output to use as feature (string)}
 
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
+\item{...}{Additional arguments passed to \code{\link{BascetAggregateMap}}}
 }
 \value{
 Aggregated data
@@ -33,4 +30,7 @@ Aggregated data
 \description{
 Aggregate data from AMRfinder
 This is a thin wrapper around BascetAggregateMap
+}
+\seealso{
+\code{\link{BascetAggregateMap}}
 }

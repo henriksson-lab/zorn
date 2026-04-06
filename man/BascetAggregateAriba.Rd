@@ -5,27 +5,16 @@
 \title{Aggregate data from Ariba
 This is a thin wrapper around BascetAggregateMap}
 \usage{
-BascetAggregateAriba(
-  bascetRoot,
-  inputName = "ariba",
-  verbose = NULL,
-  includeCells = NULL,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
-)
+BascetAggregateAriba(bascetRoot, inputName = "ariba", includeCells = NULL, ...)
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
 \item{inputName}{Name of input shard}
 
-\item{verbose}{Show debug output}
-
 \item{includeCells}{Character vector of cell names to include, or NULL for all cells}
 
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
+\item{...}{Additional arguments passed to \code{\link{BascetAggregateMap}}}
 }
 \value{
 Aggregated data
@@ -33,4 +22,7 @@ Aggregated data
 \description{
 Aggregate data from Ariba
 This is a thin wrapper around BascetAggregateMap
+}
+\seealso{
+\code{\link{BascetAggregateMap}}
 }

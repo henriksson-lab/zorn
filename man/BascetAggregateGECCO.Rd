@@ -5,13 +5,7 @@
 \title{Aggregate data from GECCO
 This is a thin wrapper around BascetAggregateMap}
 \usage{
-BascetAggregateGECCO(
-  bascetRoot,
-  inputName = "gecco",
-  includeCells = NULL,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
-)
+BascetAggregateGECCO(bascetRoot, inputName = "gecco", includeCells = NULL, ...)
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
@@ -20,9 +14,7 @@ BascetAggregateGECCO(
 
 \item{includeCells}{Character vector of cell names to include, or NULL for all cells}
 
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
+\item{...}{Additional arguments passed to \code{\link{BascetAggregateMap}}}
 }
 \value{
 Aggregated data
@@ -30,4 +22,7 @@ Aggregated data
 \description{
 Aggregate data from GECCO
 This is a thin wrapper around BascetAggregateMap
+}
+\seealso{
+\code{\link{BascetAggregateMap}}
 }

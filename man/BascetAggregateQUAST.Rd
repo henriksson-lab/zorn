@@ -5,14 +5,7 @@
 \title{Aggregate data from QUAST
 This is a thin wrapper around BascetAggregateMap}
 \usage{
-BascetAggregateQUAST(
-  bascetRoot,
-  inputName = "quast",
-  includeCells = NULL,
-  verbose = FALSE,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
-)
+BascetAggregateQUAST(bascetRoot, inputName = "quast", includeCells = NULL, ...)
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
@@ -21,11 +14,7 @@ BascetAggregateQUAST(
 
 \item{includeCells}{Character vector of cell names to include, or NULL for all cells}
 
-\item{verbose}{Show debug output}
-
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
+\item{...}{Additional arguments passed to \code{\link{BascetAggregateMap}}}
 }
 \value{
 Aggregated data
@@ -33,4 +22,7 @@ Aggregated data
 \description{
 Aggregate data from QUAST
 This is a thin wrapper around BascetAggregateMap
+}
+\seealso{
+\code{\link{BascetAggregateMap}}
 }

@@ -9,9 +9,7 @@ BascetMapCellFASTQC(
   bascetRoot,
   inputName = "filtered",
   outputName = "fastqc",
-  overwrite = FALSE,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 }
 \arguments{
@@ -21,11 +19,7 @@ BascetMapCellFASTQC(
 
 \item{outputName}{Name of output shard}
 
-\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
-
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
+\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
@@ -33,4 +27,7 @@ A job to be executed, or being executed, depending on runner settings
 \description{
 Run FASTQC on reads of all cells.
 This is a thin wrapper around BascetMapCell
+}
+\seealso{
+\code{\link{BascetMapCell}}
 }

@@ -9,11 +9,9 @@ BascetComputeMinhash(
   bascetRoot,
   inputName = "filtered",
   outputName = "minhash",
-  overwrite = FALSE,
   maxReads = 1e+05,
   kmerSize = 31,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 }
 \arguments{
@@ -23,15 +21,11 @@ BascetComputeMinhash(
 
 \item{outputName}{Name of output shard}
 
-\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
-
 \item{maxReads}{The maximum number of reads per cell to sample}
 
 \item{kmerSize}{The KMER size for the hashing}
 
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
+\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
@@ -39,4 +33,7 @@ A job to be executed, or being executed, depending on runner settings
 \description{
 Compute minhashes for each cell.
 This is a thin wrapper around BascetMapCell
+}
+\seealso{
+\code{\link{BascetMapCell}}
 }

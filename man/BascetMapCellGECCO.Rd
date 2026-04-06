@@ -2,16 +2,14 @@
 % Please edit documentation in R/ext_tools.R
 \name{BascetMapCellGECCO}
 \alias{BascetMapCellGECCO}
-\title{Run GEECCO on contigs of all cells.
+\title{Run GECCO on contigs of all cells.
 This is a thin wrapper around BascetMapCell}
 \usage{
 BascetMapCellGECCO(
   bascetRoot,
   inputName = "contigs",
   outputName = "gecco",
-  overwrite = FALSE,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 }
 \arguments{
@@ -21,16 +19,15 @@ BascetMapCellGECCO(
 
 \item{outputName}{Name of output shard}
 
-\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
-
-\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
-
-\item{bascetInstance}{A Bascet instance}
+\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
 }
 \description{
-Run GEECCO on contigs of all cells.
+Run GECCO on contigs of all cells.
 This is a thin wrapper around BascetMapCell
+}
+\seealso{
+\code{\link{BascetMapCell}}
 }

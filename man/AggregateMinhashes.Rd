@@ -4,18 +4,23 @@
 \alias{AggregateMinhashes}
 \title{Aggregate frequency of minhashes across cells}
 \usage{
-AggregateMinhashes(bascetRoot, inputName = "minhash", bascetInstance)
+AggregateMinhashes(bascetRoot, inputName = "minhash", includeCells = NULL, ...)
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
 \item{inputName}{Name of input shard (Container of minhashes)}
 
-\item{bascetInstance}{A Bascet instance}
+\item{includeCells}{Character vector of cell names to include, or NULL for all cells}
+
+\item{...}{Additional arguments passed to \code{\link{BascetAggregateMap}}}
 }
 \value{
 Data.frame of KMERs and frequencies
 }
 \description{
 Aggregate frequency of minhashes across cells
+}
+\seealso{
+\code{\link{BascetAggregateMap}}
 }
