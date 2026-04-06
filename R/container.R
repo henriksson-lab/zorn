@@ -286,8 +286,8 @@ getBascetPodmanImage <- function(
     stopifnot(dir.exists(tempdir))
   }
   
-  #check if podman is installed
-  ret <- system("podman ps", ignore.stdout = !verbose, ignore.stderr = !verbose)
+  #check if podman is installed ("podman ps" does not work on a fresh install on OSX)
+  ret <- system("podman system connection list", ignore.stdout = !verbose, ignore.stderr = !verbose)
   if(ret==0) {
     ret <- system("podman image inspect henriksson-lab/bascet:latest", ignore.stdout = !verbose, ignore.stderr = !verbose)
     

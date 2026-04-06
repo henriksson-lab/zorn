@@ -41,7 +41,7 @@ is.bascet.file <- function(f) {
 BascetCellNames <- function(
     bascetRoot, 
     bascetName,  #rather inputName?
-    bascetInstance
+    bascetInstance=GetDefaultBascetInstance()
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
