@@ -58,7 +58,7 @@ group for each cell:
 kraken_taxid <- KrakenFindConsensusTaxonomy(mat)
 
 ## Add KRAKEN consensus taxonomy to metadata
-adata <- AddMetaData(adata, kraken_taxid)
+adata <- BascetAddMetaData(adata, kraken_taxid)
 ```
 
 You will need to filter low-abundance cells. To do this, first

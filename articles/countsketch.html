@@ -156,13 +156,7 @@ the dimensions, and compute fewer in the first steps if you want to
 reduce. The following code produces a UMAP, setting the dimension to all
 available dimensions in the reduction:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">reduction_name</span> <span class="op">&lt;-</span> <span class="st">"kmersketch"</span></span>
-<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span></span>
-<span>  <span class="va">adata</span>,</span>
-<span>  dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">adata</span><span class="op">@</span><span class="va">reductions</span><span class="op">[[</span><span class="va">reduction_name</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">cell.embeddings</span><span class="op">)</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="va">reduction_name</span>,</span>
-<span>  metric <span class="op">=</span> <span class="st">"cosine"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu">CountSketchUMAP</span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></code></pre></div>
 <p>The result can be visualized:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></code></pre></div>

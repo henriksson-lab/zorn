@@ -13,6 +13,8 @@
   another, for all combinations of species.
 - [`Bascet-class`](https://henriksson-lab.github.io/zorn/reference/Bascet-class.md)
   : A bascet, along with all the shards
+- [`BascetAddMetaData()`](https://henriksson-lab.github.io/zorn/reference/BascetAddMetaData.md)
+  : Add metadata to a Seurat object, handling cell mismatches
 - [`BascetAggregateAMRfinder()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateAMRfinder.md)
   : Aggregate data from AMRfinder This is a thin wrapper around
   BascetAggregateMap

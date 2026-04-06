@@ -9,7 +9,8 @@ KrakenKneePlot(
   adata,
   groupby = c("phylum", "class", "order", "family", "genus", "species"),
   showNumSpecies = 15,
-  sortByName = FALSE
+  sortByName = FALSE,
+  includeTotal = TRUE
 )
 ```
 
@@ -30,6 +31,10 @@ KrakenKneePlot(
 - sortByName:
 
   Sort by name
+
+- includeTotal:
+
+  Show also a total count kneeplot
 
 ## Value
 

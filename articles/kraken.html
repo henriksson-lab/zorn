@@ -129,7 +129,7 @@ group for each cell:</p>
 <span><span class="va">kraken_taxid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/KrakenFindConsensusTaxonomy.html">KrakenFindConsensusTaxonomy</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Add KRAKEN consensus taxonomy to metadata</span></span>
-<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/AddMetaData.html" class="external-link">AddMetaData</a></span><span class="op">(</span><span class="va">adata</span>, <span class="va">kraken_taxid</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetAddMetaData.html">BascetAddMetaData</a></span><span class="op">(</span><span class="va">adata</span>, <span class="va">kraken_taxid</span><span class="op">)</span></span></code></pre></div>
 <p>You will need to filter low-abundance cells. To do this, first
 investigate a kneeplot of each species. As different species are
 differently hard to lyse, you will likely have phylum-specific kneeplot

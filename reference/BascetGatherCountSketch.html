@@ -71,7 +71,8 @@
 <span>  kmerSize <span class="op">=</span> <span class="fl">31</span>,</span>
 <span>  sketchSize <span class="op">=</span> <span class="fl">4096</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  numLocalThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  numThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  totalMem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -109,8 +110,12 @@
 <dd><p>Force overwriting of existing files. The default is to do nothing files exist</p></dd>
 
 
-<dt id="arg-numlocalthreads">numLocalThreads<a class="anchor" aria-label="anchor" href="#arg-numlocalthreads"></a></dt>
+<dt id="arg-numthreads">numThreads<a class="anchor" aria-label="anchor" href="#arg-numthreads"></a></dt>
 <dd><p>Number of threads to use per job. Default is the number from the runner</p></dd>
+
+
+<dt id="arg-totalmem">totalMem<a class="anchor" aria-label="anchor" href="#arg-totalmem"></a></dt>
+<dd><p>Total memory to allocate</p></dd>
 
 
 <dt id="arg-runner">runner<a class="anchor" aria-label="anchor" href="#arg-runner"></a></dt>

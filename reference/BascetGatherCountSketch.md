@@ -13,7 +13,8 @@ BascetGatherCountSketch(
   kmerSize = 31,
   sketchSize = 4096,
   overwrite = FALSE,
-  numLocalThreads = NULL,
+  numThreads = NULL,
+  totalMem = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -50,10 +51,14 @@ BascetGatherCountSketch(
   Force overwriting of existing files. The default is to do nothing
   files exist
 
-- numLocalThreads:
+- numThreads:
 
   Number of threads to use per job. Default is the number from the
   runner
+
+- totalMem:
+
+  Total memory to allocate
 
 - runner:
 

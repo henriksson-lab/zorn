@@ -86,13 +86,7 @@ produces a UMAP, setting the dimension to all available dimensions in
 the reduction:
 
 ``` r
-reduction_name <- "kmersketch"
-adata <- RunUMAP(
-  adata,
-  dims = 1:ncol(adata@reductions[[reduction_name]]@cell.embeddings),
-  reduction = reduction_name,
-  metric = "cosine"
-)
+adata <- CountSketchUMAP(adata)
 ```
 
 The result can be visualized:
