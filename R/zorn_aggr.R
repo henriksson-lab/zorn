@@ -274,7 +274,7 @@ BascetAggregateMap <- function(
   #End associated bascet session
   CloseBascet(bascetFile)
   
-  output
+  invisible(output)
 }
 
 

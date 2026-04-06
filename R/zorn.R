@@ -306,11 +306,11 @@ BascetCacheComputation <- function(
   fname <- file.path(bascetRoot,paste0(fname,".RDS"))
   if(file.exists(fname)){
     print("Found previously cached value")
-    readRDS(fname)
+    invisible(readRDS(fname))
   } else {
     print("Running calculation and caching value")
     saveRDS(value, fname) 
-    value
+    invisible(value)
   }
 }
 

@@ -197,6 +197,27 @@ KrakenFindConsensusTaxonomy <- function(
 
   #taxid_class_per_cell$cell_id <- rownames(mat@X)[taxid_class_per_cell$cell_index]
   rownames(taxid_class_per_cell) <- rownames(mat@X)[taxid_class_per_cell$cell_index]
+
+  #Include cells with 0 counts as "Unknown"
+  all_cells <- rownames(mat@X)
+  missing_cells <- setdiff(all_cells, rownames(taxid_class_per_cell))
+  if(length(missing_cells) > 0) {
+    unknown_df <- data.frame(
+      cell_index = match(missing_cells, all_cells),
+      taxid_index = NA_integer_,
+      cnt = 0,
+      taxid = "32644",
+      phylum = "Unknown",
+      class = "Unknown",
+      order = "Unknown",
+      family = "Unknown",
+      genus = "Unknown",
+      species = "Unknown",
+      row.names = missing_cells
+    )
+    taxid_class_per_cell <- rbind(taxid_class_per_cell, unknown_df)
+  }
+
   taxid_class_per_cell
 }
 
@@ -304,6 +325,7 @@ SetTaxonomyNamesFeatures <- function(
 #' @param groupby Which taxonomic level to group cells by
 #' @param showNumSpecies Max number of species to show
 #' @param sortByName Sort by name
+#' @param includeTotal Show also a total count kneeplot
 #' 
 #' @return A ggplot object
 #' @export
@@ -311,7 +333,8 @@ KrakenKneePlot <- function(
     adata, 
     groupby=c("phylum", "class", "order", "family", "genus","species"), 
     showNumSpecies=15, 
-    sortByName=FALSE
+    sortByName=FALSE,
+    includeTotal=TRUE
 ) {
   #check arguments
   #TODO adata
@@ -338,23 +361,37 @@ KrakenKneePlot <- function(
     cnt=triplet$x
   )
   
-  #Decide how to reduce count matrix
+  #Decide how to reduce count matrix by making a map taxid -> grp
   taxid_tomerge <- unique(data.frame(
     taxid_index=taxid_class_per_cell$taxid_index,
     grp=factor(taxid_class_per_cell[,groupby])
   ))
+  
+  #Remove NA taxid
+  taxid_tomerge <- taxid_tomerge[!is.na(taxid_tomerge$taxid_index),]  
   rownames(taxid_tomerge) <- taxid_tomerge$taxid_index
   
-  taxid_tomerge <- taxid_tomerge[!is.na(taxid_tomerge$grp),]  ## not every taxonomy ID has a group
+  #not every taxonomy ID has a group. remove these counts
+  taxid_tomerge <- taxid_tomerge[!is.na(taxid_tomerge$grp),]  
   
+  #extend count matrix with grp info
   taxid_M <- merge(M.df, taxid_tomerge)
   
   #Sum up counts per cell and group
   dt_taxid_M <- data.table::as.data.table(taxid_M)
   toplot <- as.data.frame(dt_taxid_M[, .(cnt = sum(cnt)), by = .(grp, cell_index)])
+
+  #Sum up counts per cell total
+  if(includeTotal){
+    toplot_total <- as.data.frame(dt_taxid_M[, .(cnt = sum(cnt)), by = .(cell_index)])
+    toplot_total$grp <- "ALL"
+    toplot <- rbind(toplot, toplot_total)
+  }
+  
+  #Order by counts .. should check if needed
   toplot <- toplot[order(toplot$cnt, decreasing = TRUE),]
   
-  #Set indices for plot
+  #Set cell indices for each group (X axis)
   toplot$index <- NA
   for(cur_grp in unique(toplot$grp)){
     this_index <- which(toplot$grp==cur_grp)
@@ -363,15 +400,23 @@ KrakenKneePlot <- function(
   
   #Abundance for each group?
   cnt_per_grp <- as.data.frame(dt_taxid_M[, .(cnt = sum(cnt)), by = grp][order(-cnt)])
-  #cnt_per_grp
+
+  #Order groups
+  toplot_sub <- toplot[toplot$grp %in% cnt_per_grp$grp[1:showNumSpecies] | toplot$grp=="ALL",]
+  if(sortByName){
+    toplot_sub$grp <- factor(toplot_sub$grp, levels = sort(unique(as.character(toplot_sub$grp))))
+  } else {
+    toplot_sub$grp <- factor(toplot_sub$grp, levels = unique(as.character(toplot_sub$grp)))
+  }
+  
+  # Build palette with black for first level, alphabet for the rest
+  n_groups <- nlevels(toplot_sub$grp)
+  hue_colors <- scales::hue_pal()(n_groups - 1)
+  set.seed(42)
+  custom_colors <- c("black", sample(hue_colors))
+  names(custom_colors) <- levels(toplot_sub$grp)
   
   #Produce the plot
-  toplot_sub <- toplot[toplot$grp %in% cnt_per_grp$grp[1:showNumSpecies],]
-  if(sortByName){
-    toplot_sub$grp <- factor(toplot_sub$grp, levels = sort(unique(cnt_per_grp$grp)))
-  } else {
-    toplot_sub$grp <- factor(toplot_sub$grp, levels = cnt_per_grp$grp)
-  }
   ggplot(
     toplot_sub, aes(index, cnt, color=grp)) + 
     geom_line() + 
@@ -379,7 +424,8 @@ KrakenKneePlot <- function(
     scale_y_log10() +
     xlab("Cell index") +
     ylab("Read counts") + 
-    guides(color=guide_legend(title=stringr::str_to_title(groupby))) +
+    scale_colour_manual(name = groupby, values = custom_colors) +
+    #guides(color=guide_legend(title=stringr::str_to_title(groupby))) +
     theme_bw()
 }
 

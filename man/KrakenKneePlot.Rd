@@ -8,7 +8,8 @@ KrakenKneePlot(
   adata,
   groupby = c("phylum", "class", "order", "family", "genus", "species"),
   showNumSpecies = 15,
-  sortByName = FALSE
+  sortByName = FALSE,
+  includeTotal = TRUE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ KrakenKneePlot(
 \item{showNumSpecies}{Max number of species to show}
 
 \item{sortByName}{Sort by name}
+
+\item{includeTotal}{Show also a total count kneeplot}
 }
 \value{
 A ggplot object

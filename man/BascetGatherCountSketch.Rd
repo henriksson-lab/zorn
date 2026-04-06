@@ -12,7 +12,8 @@ BascetGatherCountSketch(
   kmerSize = 31,
   sketchSize = 4096,
   overwrite = FALSE,
-  numLocalThreads = NULL,
+  numThreads = NULL,
+  totalMem = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -32,7 +33,9 @@ BascetGatherCountSketch(
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
-\item{numLocalThreads}{Number of threads to use per job. Default is the number from the runner}
+\item{numThreads}{Number of threads to use per job. Default is the number from the runner}
+
+\item{totalMem}{Total memory to allocate}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

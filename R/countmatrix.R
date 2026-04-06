@@ -407,3 +407,61 @@ MergeBascetCountMatrix <- function(
   )
 }
 
+
+###############################################
+#' Add metadata to a Seurat object, handling cell mismatches
+#'
+#' Unlike Seurat's AddMetaData, this function handles the case where
+#' the metadata data.frame has fewer or more rows than cells in the object.
+#' Missing cells get NA values.
+#'
+#' @param adata A Seurat object
+#' @param metadata A data.frame with rownames matching cell names
+#' @param columns Columns to add. Default: all except cell_index, taxid_index, cnt
+#' @param subsetCommon If TRUE, subset the Seurat object to only cells present in both adata and metadata
+#'
+#' @return The Seurat object with added metadata columns
+#' @export
+BascetAddMetaData <- function(adata, metadata, columns=NULL, subsetCommon=FALSE) {
+  if(is.null(columns)) {
+    columns <- setdiff(colnames(metadata), c("cell_index","taxid_index","cnt"))
+  }
+
+  cells_in_adata <- colnames(adata)
+  cells_in_meta <- rownames(metadata)
+
+  extra_in_meta <- length(setdiff(cells_in_meta, cells_in_adata))
+  extra_in_adata <- length(setdiff(cells_in_adata, cells_in_meta))
+
+  if(subsetCommon) {
+    common_cells <- intersect(cells_in_adata, cells_in_meta)
+    adata <- adata[, common_cells]
+    cells_in_adata <- common_cells
+  } else {
+    if(extra_in_meta > 0) {
+      dropped <- setdiff(cells_in_meta, cells_in_adata)
+      shown <- paste(utils::head(dropped, 10), collapse=", ")
+      warning(paste0("BascetAddMetaData: ", extra_in_meta,
+                     " cells in metadata not found in Seurat object (will be dropped): ", shown))
+    }
+    if(extra_in_adata > 0) {
+      missing <- setdiff(cells_in_adata, cells_in_meta)
+      shown <- paste(utils::head(missing, 10), collapse=", ")
+      warning(paste0("BascetAddMetaData: ", extra_in_adata,
+                     " cells in Seurat object not found in metadata (will be NA): ", shown))
+    }
+  }
+
+  sub <- metadata[cells_in_adata, columns, drop=FALSE]
+
+  existing_cols <- intersect(columns, colnames(adata@meta.data))
+  if(length(existing_cols) > 0) {
+    warning(paste0("BascetAddMetaData: replacing existing columns: ",
+                   paste(existing_cols, collapse=", ")))
+    adata@meta.data[, existing_cols] <- NULL
+  }
+
+  adata@meta.data <- cbind(adata@meta.data, sub)
+  adata
+}
+

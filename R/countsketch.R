@@ -169,6 +169,20 @@ CreateSeuratObjectWithReduction <- function(
 }
 
 
+###############################################
+#' Run UMAP on a count sketch reduction
+#'
+#' @param adata A Seurat object with a count sketch reduction
+#' @param reduction Name of the reduction to use
+#'
+#' @return Seurat object with UMAP computed
+#' @export
+CountSketchUMAP <- function(adata, reduction="kmersketch", metric="cosine", ...) {
+  dims <- 1:ncol(adata@reductions[[reduction]]@cell.embeddings)
+  RunUMAP(adata, dims=dims, reduction=reduction, metric=metric, ...)
+}
+
+
 
 ###############################################
 #' logarithmic spaced sequence; taken from emdbook library

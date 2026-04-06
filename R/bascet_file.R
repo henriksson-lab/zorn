@@ -628,7 +628,7 @@ extractstreamerStart <- function(
     bascetInstance=GetDefaultBascetInstance()
 ) {
   #Check arguments
-  stopifnot(file.exists(fname) || is.null(fname))
+  stopifnot(is.null(fname) || file.exists(fname))
   stopifnot(is.bascet.instance(bascetInstance))
   stopifnot(is.logical(verbose))
   

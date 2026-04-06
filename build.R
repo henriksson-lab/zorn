@@ -15,6 +15,7 @@ if(FALSE){
   source("R/kraken.R")
   source("R/container.R")
   source("R/ext_tools.R")
+  source("R/countmatrix.R")
   
 } else {
   library(Zorn)
