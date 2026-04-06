@@ -210,7 +210,7 @@ getBascetDockerImage <- function(
       safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.tar.gz",file_bascet_image)
 
       print("Decompressing")
-      R.utils::gunzip(file_bascet_image)
+      R.utils::gunzip(file_bascet_image, overwrite=TRUE)
       
       print("Loading image into Docker")
       system(paste("docker load -i ", file_bascet_image_tar))

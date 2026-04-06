@@ -1,5 +1,38 @@
 
 ################################################################################
+################ SKESA #########################################################
+################################################################################
+
+
+###############################################
+#' Run SKESA on reads of all cells.
+#' This is a thin wrapper around BascetMapCell
+#'
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#'
+#' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
+#' @export
+BascetMapCellSKESA <- function(
+    bascetRoot,
+    inputName="filtered",
+    outputName="contigs",
+    ...
+){
+  BascetMapCell(
+    bascetRoot=bascetRoot,
+    withfunction="_skesa",
+    inputName=inputName,
+    outputName=outputName,
+    ...
+  )
+}
+
+
+################################################################################
 ################ QUAST #########################################################
 ################################################################################
 
@@ -8,34 +41,27 @@
 ###############################################
 #' Run QUAST on reads of all cells.
 #' This is a thin wrapper around BascetMapCell
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
 #' @export
-BascetMapCellQUAST <- function( 
-    bascetRoot, 
+BascetMapCellQUAST <- function(
+    bascetRoot,
     inputName="filtered",
-    outputName="quast", 
-    #includeCells=NULL,
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    outputName="quast",
+    ...
 ){
   BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_quast", 
-    inputName=inputName, 
+    bascetRoot=bascetRoot,
+    withfunction="_quast",
+    inputName=inputName,
     outputName=outputName,
-    #includeCells=includeCells
-    overwrite=overwrite,
-    runner=runner,
-    bascetInstance=bascetInstance
+    ...
   )
 }
 
@@ -88,31 +114,27 @@ aggr.quast <- function(
 ###############################################
 #' Aggregate data from QUAST
 #' This is a thin wrapper around BascetAggregateMap
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
-#' @param verbose Show debug output
 #' @param includeCells Character vector of cell names to include, or NULL for all cells
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
+#' @param ... Additional arguments passed to \code{\link{BascetAggregateMap}}
 #'
 #' @return Aggregated data
+#' @seealso \code{\link{BascetAggregateMap}}
 #' @export
 BascetAggregateQUAST <- function(
     bascetRoot,
     inputName="quast",
-    #cacheFile=NULL, #option
     includeCells=NULL,
-    verbose=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   BascetAggregateMap(
     bascetRoot,
     inputName,
     aggr.quast,
-    verbose=verbose,
-    includeCells=includeCells
+    includeCells=includeCells,
+    ...
   )
 }
 
@@ -129,34 +151,27 @@ BascetAggregateQUAST <- function(
 ###############################################
 #' Run FASTQC on reads of all cells.
 #' This is a thin wrapper around BascetMapCell
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
 #' @export
-BascetMapCellFASTQC <- function( 
-    bascetRoot, 
+BascetMapCellFASTQC <- function(
+    bascetRoot,
     inputName="filtered",
-    outputName="fastqc", 
-    #includeCells=NULL,
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    outputName="fastqc",
+    ...
 ){
   BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_fastqc", 
-    inputName=inputName, 
+    bascetRoot=bascetRoot,
+    withfunction="_fastqc",
+    inputName=inputName,
     outputName=outputName,
-    #includeCells=includeCells
-    overwrite=overwrite,
-    runner=runner,
-    bascetInstance=bascetInstance
+    ...
   )
 }
 
@@ -169,28 +184,24 @@ BascetMapCellFASTQC <- function(
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
-#' @param verbose Show debug output
 #' @param includeCells Character vector of cell names to include, or NULL for all cells
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
+#' @param ... Additional arguments passed to \code{\link{BascetAggregateMap}}
 #'
 #' @return Aggregated data
+#' @seealso \code{\link{BascetAggregateMap}}
 #' @export
 BascetAggregateFASTQC <- function(
     bascetRoot,
     inputName="fastqc",
-    #cacheFile=NULL, #option
     includeCells=NULL,
-    verbose=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   BascetAggregateMap(
     bascetRoot,
     inputName,
     aggr.fastqc,
-    verbose=verbose,
-    includeCells=includeCells
+    includeCells=includeCells,
+    ...
   )
   #print(666)
   #CountDataFrameToSparseMatrix(m)
@@ -567,37 +578,30 @@ aggr.abricate <- function(
 ###############################################
 #' Run Abricate on contigs of all cells.
 #' This is a thin wrapper around BascetMapCell
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param db Name of ABRicate database to use (string)
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
 #' @export
 BascetMapCellAbricate <- function(
     bascetRoot,
     inputName="contigs",
     outputName="abricate",
     db="ncbi",
-    #includeCells=NULL,
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_abricate", 
-    inputName=inputName, 
+    bascetRoot=bascetRoot,
+    withfunction="_abricate",
+    inputName=inputName,
     outputName=outputName,
-    #includeCells=includeCells
-    overwrite=overwrite,
     args = list(DATABASE_DIR=db),
-    runner=runner,
-    bascetInstance=bascetInstance
+    ...
   )
 }
 
@@ -637,28 +641,24 @@ ListDatabaseAbricate <- function(
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
-#' @param verbose Show debug output
 #' @param includeCells Character vector of cell names to include, or NULL for all cells
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
+#' @param ... Additional arguments passed to \code{\link{BascetAggregateMap}}
 #'
 #' @return Aggregated data
+#' @seealso \code{\link{BascetAggregateMap}}
 #' @export
 BascetAggregateAbricate <- function(
     bascetRoot,
     inputName="abricate",
-    #cacheFile=NULL, #option
     includeCells=NULL,
-    verbose=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   CountDataFrameToSparseMatrix(MapCellMultiListAsDataFrame(BascetAggregateMap(
     bascetRoot,
     inputName,
     aggr.abricate,
     includeCells=includeCells,
-    verbose = verbose
+    ...
   )), "cellID","GENE")
 }
 
@@ -671,37 +671,30 @@ BascetAggregateAbricate <- function(
 ###############################################
 #' Run Bakta on contigs of all cells.
 #' This is a thin wrapper around BascetMapCell
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param db Path to database
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
 #' @export
-BascetMapCellBakta <- function( 
-    bascetRoot, 
+BascetMapCellBakta <- function(
+    bascetRoot,
     inputName="contigs",
-    outputName="bakta", 
+    outputName="bakta",
     db,
-    #includeCells=NULL,
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_bakta", 
-    inputName=inputName, 
+    bascetRoot=bascetRoot,
+    withfunction="_bakta",
+    inputName=inputName,
     outputName=outputName,
-    #includeCells=includeCells
-    overwrite=overwrite,
     args = list(DATABASE_DIR=db),
-    runner=runner,
-    bascetInstance=bascetInstance
+    ...
   )
 }
 
@@ -745,37 +738,30 @@ DownloadDatabaseBakta <- function(
 ###############################################
 #' Run Ariba on reads of all cells.
 #' This is a thin wrapper around BascetMapCell
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param db Path to database
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
 #' @export
-BascetMapCellAriba <- function( 
-    bascetRoot, 
+BascetMapCellAriba <- function(
+    bascetRoot,
     inputName="filtered",
-    outputName="ariba", 
+    outputName="ariba",
     db,
-    #includeCells=NULL,
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_ariba", 
-    inputName=inputName, 
+    bascetRoot=bascetRoot,
+    withfunction="_ariba",
+    inputName=inputName,
     outputName=outputName,
-    #includeCells=includeCells
-    overwrite=overwrite,
     args = list(DATABASE_DIR=db),
-    runner=runner,
-    bascetInstance=bascetInstance
+    ...
   )
 }
 
@@ -863,28 +849,24 @@ aggr.ariba <- function(bascetFile, cellID, bascetInstance){
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
-#' @param verbose Show debug output
 #' @param includeCells Character vector of cell names to include, or NULL for all cells
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
+#' @param ... Additional arguments passed to \code{\link{BascetAggregateMap}}
 #'
 #' @return Aggregated data
+#' @seealso \code{\link{BascetAggregateMap}}
 #' @export
 BascetAggregateAriba <- function(
     bascetRoot,
     inputName="ariba",
-    #cacheFile=NULL, #option
-    verbose=NULL,
     includeCells=NULL,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   CountDataFrameToSparseMatrix(MapCellMultiListAsDataFrame(BascetAggregateMap(
     bascetRoot=bascetRoot,
     inputName=inputName,
     aggr.ariba,
-    verbose=verbose,
-    includeCells=includeCells
+    includeCells=includeCells,
+    ...
   )), "cellID","cluster")
 }
 
@@ -899,37 +881,30 @@ BascetAggregateAriba <- function(
 ###############################################
 #' Run AMRfinder on contigs of all cells.
 #' This is a thin wrapper around BascetMapCell
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param db Path to database
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
 #' @export
-BascetMapCellAMRfinder <- function( 
-    bascetRoot, 
+BascetMapCellAMRfinder <- function(
+    bascetRoot,
     inputName="contigs",
-    outputName="AMRfinder", 
+    outputName="AMRfinder",
     db,
-    #includeCells=NULL,
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_amrfinder", 
-    inputName=inputName, 
+    bascetRoot=bascetRoot,
+    withfunction="_amrfinder",
+    inputName=inputName,
     outputName=outputName,
-    #includeCells=includeCells
-    overwrite=overwrite,
     args = list(DATABASE_DIR=db),
-    runner=runner,
-    bascetInstance=bascetInstance
+    ...
   )
 }
 
@@ -983,13 +958,14 @@ aggr.amrfinder <- function(
 ){
   tmp <- BascetReadFile(bascetFile, cellID, "amrfinder.tsv", as="text", bascetInstance=bascetInstance)
 
-  #tmp <- readLines("/home/mahogny/github/zorn/test_aggr/amrfinder/salmonella_SRR33219394_amrfinder.tsv")
-  dat <- read.delim(text = tmp)
-  
-  #if(nrow(dat)>0){
-  #  dat$cellID <- cellID  #needed? could make this general  -- think no longer used
-  #}
-  
+  dat <- tryCatch(
+   read.delim(text = tmp),
+   error = function(e) {
+     warning(paste0("aggr.amrfinder: failed to parse output for cell ", cellID, ": ", e$message))
+     return(c())
+   }
+ )
+
   dat
 }
 
@@ -1002,26 +978,27 @@ aggr.amrfinder <- function(
 #' @param inputName Name of input shard
 #' @param includeCells Character vector of cell names to include, or NULL for all cells
 #' @param getColumn Column name from AMRfinder output to use as feature (string)
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
+#' @param ... Additional arguments passed to \code{\link{BascetAggregateMap}}
 #'
 #' @return Aggregated data
+#' @seealso \code{\link{BascetAggregateMap}}
 #' @export
 BascetAggregateAMRfinder <- function(
     bascetRoot,
     inputName="AMRfinder",
-    #cacheFile=NULL, #option
     includeCells=NULL,
     getColumn="Element.symbol",  #Element.name is an option, if one also want full name
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
-  CountDataFrameToSparseMatrix(MapCellMultiListAsDataFrame(BascetAggregateMap(
+  inp <- BascetAggregateMap(
     bascetRoot=bascetRoot,
     inputName=inputName,
-    aggr.abricate,
-    includeCells=includeCells
-  )), "cellID",getColumn)
+    aggr.amrfinder,
+    includeCells=includeCells,
+    ...
+  )
+  MapCellMultiListAsDataFrame(inp)
+  #CountDataFrameToSparseMatrix(MapCellMultiListAsDataFrame(inp), "cellID",getColumn)
 }
 
 
@@ -1034,36 +1011,29 @@ BascetAggregateAMRfinder <- function(
 
 
 ###############################################
-#' Run GEECCO on contigs of all cells.
+#' Run GECCO on contigs of all cells.
 #' This is a thin wrapper around BascetMapCell
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
 #' @export
-BascetMapCellGECCO <- function( 
-    bascetRoot, 
+BascetMapCellGECCO <- function(
+    bascetRoot,
     inputName="contigs",
-    outputName="gecco", 
-    #includeCells=NULL,
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    outputName="gecco",
+    ...
 ){
   BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_gecco", 
-    inputName=inputName, 
+    bascetRoot=bascetRoot,
+    withfunction="_gecco",
+    inputName=inputName,
     outputName=outputName,
-    #includeCells=includeCells
-    overwrite=overwrite,
-    runner=runner,
-    bascetInstance=bascetInstance
+    ...
   )
 }
 
@@ -1099,24 +1069,23 @@ aggr.gecco <- function(
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param includeCells Character vector of cell names to include, or NULL for all cells
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
+#' @param ... Additional arguments passed to \code{\link{BascetAggregateMap}}
 #'
 #' @return Aggregated data
+#' @seealso \code{\link{BascetAggregateMap}}
 #' @export
 BascetAggregateGECCO <- function(
     bascetRoot,
     inputName="gecco",
-    #cacheFile=NULL, #option
     includeCells=NULL,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
   BascetAggregateMap(
     bascetRoot=bascetRoot,
     inputName=inputName,
     aggr.gecco,
-    includeCells=includeCells
+    includeCells=includeCells,
+    ...
   )
 }
 

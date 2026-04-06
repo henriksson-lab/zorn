@@ -8,46 +8,39 @@
 ###############################################
 #' Compute minhashes for each cell.
 #' This is a thin wrapper around BascetMapCell
-#' 
+#'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
-#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param maxReads The maximum number of reads per cell to sample
 #' @param kmerSize The KMER size for the hashing
-#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
-#' @param bascetInstance A Bascet instance
-#' 
+#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#'
 #' @return A job to be executed, or being executed, depending on runner settings
+#' @seealso \code{\link{BascetMapCell}}
 #' @export
-BascetComputeMinhash <- function( 
-    bascetRoot, 
-    inputName="filtered", 
-    outputName="minhash", 
-    overwrite=FALSE,
-    maxReads=100000,  #This is most likely enough to get an overall histogram
+BascetComputeMinhash <- function(
+    bascetRoot,
+    inputName="filtered",
+    outputName="minhash",
+    maxReads=100000,
     kmerSize=31,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
+    ...
 ){
-  #check arguments
   stopifnot(is.integer.like(kmerSize))
   stopifnot(is.integer.like(maxReads))
-  
-  #most arguments checked in thgis call
+
   BascetMapCell(
-    bascetRoot=bascetRoot, 
-    withfunction="_minhash_fq", 
-    inputName=inputName, 
+    bascetRoot=bascetRoot,
+    withfunction="_minhash_fq",
+    inputName=inputName,
     outputName=outputName,
-    #includeCells=includeCells
     args = list(
       KMER_SIZE=format(kmerSize, scientific=FALSE),
       MAX_READS=format(maxReads, scientific=FALSE)
     ),
-    overwrite=overwrite,
-    runner=runner,
-    bascetInstance=bascetInstance)
+    ...
+  )
 }
 
 

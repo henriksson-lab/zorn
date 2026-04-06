@@ -17,11 +17,10 @@ Assembly can then performed using SKESA, via the MapCell system:
 
 ```{r, eval=F, echo=T}
 ### Assemble all genomes
-BascetMapCell(
+BascetMapCellSKESA(
   bascetRoot,
-  withfunction = "_skesa",
   inputName = "filtered",
-  outputName = "skesa"
+  outputName = "contigs"
 )
 ```
 

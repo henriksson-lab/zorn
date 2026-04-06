@@ -76,21 +76,25 @@ aggr.minhash <- function(
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard (Container of minhashes)
-#' @param bascetInstance A Bascet instance
-#' 
+#' @param includeCells Character vector of cell names to include, or NULL for all cells
+#' @param ... Additional arguments passed to \code{\link{BascetAggregateMap}}
+#'
 #' @return Data.frame of KMERs and frequencies
+#' @seealso \code{\link{BascetAggregateMap}}
 #' @export
 AggregateMinhashes <- function(
     bascetRoot,
     inputName="minhash",
-    bascetInstance
+    includeCells=NULL,
+    ...
 ) {
   #Arguments checked in called function
   minhash_aggr <- BascetAggregateMap(
     bascetRoot=bascetRoot,
     inputName=inputName,
     aggr.minhash,
-    bascetInstance=bascetInstance
+    includeCells=includeCells,
+    ...
   )
 
   #Put KMERs into a data frame
