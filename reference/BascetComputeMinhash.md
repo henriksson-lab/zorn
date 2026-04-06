@@ -10,11 +10,9 @@ BascetComputeMinhash(
   bascetRoot,
   inputName = "filtered",
   outputName = "minhash",
-  overwrite = FALSE,
   maxReads = 1e+05,
   kmerSize = 31,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 ```
 
@@ -32,11 +30,6 @@ BascetComputeMinhash(
 
   Name of output shard
 
-- overwrite:
-
-  Force overwriting of existing files. The default is to do nothing
-  files exist
-
 - maxReads:
 
   The maximum number of reads per cell to sample
@@ -45,15 +38,15 @@ BascetComputeMinhash(
 
   The KMER size for the hashing
 
-- runner:
+- ...:
 
-  The job manager, specifying how the command will be run (e.g. locally,
-  or via SLURM)
-
-- bascetInstance:
-
-  A Bascet instance
+  Additional arguments passed to
+  [`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)
 
 ## Value
 
 A job to be executed, or being executed, depending on runner settings
+
+## See also
+
+[`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)

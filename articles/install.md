@@ -11,6 +11,12 @@ if (!requireNamespace("devtools", quietly = TRUE))
 devtools::install_github("henriksson-lab/zorn")
 ```
 
+or newer method (above is becoming deprecated):
+
+``` r
+pak::pkg_install("henriksson-lab/zorn")
+```
+
 You can then load it:
 
 ``` r

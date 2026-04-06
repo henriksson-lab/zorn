@@ -6,14 +6,7 @@ BascetAggregateMap
 ## Usage
 
 ``` r
-BascetAggregateAriba(
-  bascetRoot,
-  inputName = "ariba",
-  verbose = NULL,
-  includeCells = NULL,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
-)
+BascetAggregateAriba(bascetRoot, inputName = "ariba", includeCells = NULL, ...)
 ```
 
 ## Arguments
@@ -26,23 +19,19 @@ BascetAggregateAriba(
 
   Name of input shard
 
-- verbose:
-
-  Show debug output
-
 - includeCells:
 
   Character vector of cell names to include, or NULL for all cells
 
-- runner:
+- ...:
 
-  The job manager, specifying how the command will be run (e.g. locally,
-  or via SLURM)
-
-- bascetInstance:
-
-  A Bascet instance
+  Additional arguments passed to
+  [`BascetAggregateMap`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.md)
 
 ## Value
 
 Aggregated data
+
+## See also
+
+[`BascetAggregateMap`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.md)

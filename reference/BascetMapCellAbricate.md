@@ -11,9 +11,7 @@ BascetMapCellAbricate(
   inputName = "contigs",
   outputName = "abricate",
   db = "ncbi",
-  overwrite = FALSE,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 ```
 
@@ -35,20 +33,15 @@ BascetMapCellAbricate(
 
   Name of ABRicate database to use (string)
 
-- overwrite:
+- ...:
 
-  Force overwriting of existing files. The default is to do nothing
-  files exist
-
-- runner:
-
-  The job manager, specifying how the command will be run (e.g. locally,
-  or via SLURM)
-
-- bascetInstance:
-
-  A Bascet instance
+  Additional arguments passed to
+  [`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)
 
 ## Value
 
 A job to be executed, or being executed, depending on runner settings
+
+## See also
+
+[`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)

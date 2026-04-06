@@ -11,8 +11,7 @@ BascetAggregateAMRfinder(
   inputName = "AMRfinder",
   includeCells = NULL,
   getColumn = "Element.symbol",
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 ```
 
@@ -34,15 +33,15 @@ BascetAggregateAMRfinder(
 
   Column name from AMRfinder output to use as feature (string)
 
-- runner:
+- ...:
 
-  The job manager, specifying how the command will be run (e.g. locally,
-  or via SLURM)
-
-- bascetInstance:
-
-  A Bascet instance
+  Additional arguments passed to
+  [`BascetAggregateMap`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.md)
 
 ## Value
 
 Aggregated data
+
+## See also
+
+[`BascetAggregateMap`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.md)

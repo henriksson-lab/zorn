@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,11 +89,10 @@
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Assemble all genomes</span></span>
-<span><span class="fu"><a href="../reference/BascetMapCell.html">BascetMapCell</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/BascetMapCellSKESA.html">BascetMapCellSKESA</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  withfunction <span class="op">=</span> <span class="st">"_skesa"</span>,</span>
 <span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"skesa"</span></span>
+<span>  outputName <span class="op">=</span> <span class="st">"contigs"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>This produce contigs for each cell, all grouped together in “skesa”.
 Note that both skesa and spades only assembles cells for which there are

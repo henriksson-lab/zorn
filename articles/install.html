@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,8 +93,11 @@ and install from source:</p>
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"devtools"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"henriksson-lab/zorn"</span><span class="op">)</span></span></code></pre></div>
-<p>You can then load it:</p>
+<p>or newer method (above is becoming deprecated):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"henriksson-lab/zorn"</span><span class="op">)</span></span></code></pre></div>
+<p>You can then load it:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -117,7 +120,7 @@ avoid this, edit /etc/singularity/singularity.conf to below:</p>
 <p>Once installed, Zorn can then pull down the latest Singularity image
 for you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -128,7 +131,7 @@ Podman</a>.</p>
 <p>Once installed, Zorn can then pull down the latest Podman image for
 you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetPodmanImage.html">getBascetPodmanImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -140,7 +143,7 @@ Docker</a>.</p>
 <p>Once installed, Zorn can then pull down the latest Docker image for
 you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetDockerImage.html">getBascetDockerImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -148,7 +151,7 @@ workspace, as multiple workspaces can share the same image</p>
 <h2 id="step-3-test-the-installation">Step 3: Test the installation<a class="anchor" aria-label="anchor" href="#step-3-test-the-installation"></a>
 </h2>
 <p>Run the following and see if you get “ok” before proceeding:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascetInstance.default</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

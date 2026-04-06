@@ -9,11 +9,10 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
 ### Assemble all genomes
-BascetMapCell(
+BascetMapCellSKESA(
   bascetRoot,
-  withfunction = "_skesa",
   inputName = "filtered",
-  outputName = "skesa"
+  outputName = "contigs"
 )
 ```
 

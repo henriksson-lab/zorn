@@ -67,6 +67,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellFASTQC.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellGECCO.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESA.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadFile.html</loc></url>
@@ -81,6 +82,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CloseBascet.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CountDataFrameToSparseMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CountGrangeFeatures.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/CountSketchUMAP.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CreateSeuratObject.BascetCountMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CreateSeuratObjectWithReduction.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/DebarcodedKneePlot.html</loc></url>

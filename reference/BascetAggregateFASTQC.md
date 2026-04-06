@@ -10,9 +10,7 @@ BascetAggregateFASTQC(
   bascetRoot,
   inputName = "fastqc",
   includeCells = NULL,
-  verbose = FALSE,
-  runner = GetDefaultBascetRunner(),
-  bascetInstance = GetDefaultBascetInstance()
+  ...
 )
 ```
 
@@ -30,19 +28,15 @@ BascetAggregateFASTQC(
 
   Character vector of cell names to include, or NULL for all cells
 
-- verbose:
+- ...:
 
-  Show debug output
-
-- runner:
-
-  The job manager, specifying how the command will be run (e.g. locally,
-  or via SLURM)
-
-- bascetInstance:
-
-  A Bascet instance
+  Additional arguments passed to
+  [`BascetAggregateMap`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.md)
 
 ## Value
 
 Aggregated data
+
+## See also
+
+[`BascetAggregateMap`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.md)

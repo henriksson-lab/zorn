@@ -100,10 +100,13 @@
   : Run FASTQC on reads of all cells. This is a thin wrapper around
   BascetMapCell
 - [`BascetMapCellGECCO()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellGECCO.md)
-  : Run GEECCO on contigs of all cells. This is a thin wrapper around
+  : Run GECCO on contigs of all cells. This is a thin wrapper around
   BascetMapCell
 - [`BascetMapCellQUAST()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.md)
   : Run QUAST on reads of all cells. This is a thin wrapper around
+  BascetMapCell
+- [`BascetMapCellSKESA()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESA.md)
+  : Run SKESA on reads of all cells. This is a thin wrapper around
   BascetMapCell
 - [`BascetMapTransform()`](https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.md)
   : Transform data
@@ -138,6 +141,8 @@
 - [`CountGrangeFeatures()`](https://henriksson-lab.github.io/zorn/reference/CountGrangeFeatures.md)
   : Obtain a feature matrix (as seurat object) given an seurat object
   having Fragments associated
+- [`CountSketchUMAP()`](https://henriksson-lab.github.io/zorn/reference/CountSketchUMAP.md)
+  : Run UMAP on a count sketch reduction
 - [`CreateSeuratObject.BascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/CreateSeuratObject.BascetCountMatrix.md)
   : Create a Seurat object from a BascetCountMatrix
 - [`CreateSeuratObjectWithReduction()`](https://henriksson-lab.github.io/zorn/reference/CreateSeuratObjectWithReduction.md)

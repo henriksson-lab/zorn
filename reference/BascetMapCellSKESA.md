@@ -1,16 +1,15 @@
-# Run Bakta on contigs of all cells. This is a thin wrapper around BascetMapCell
+# Run SKESA on reads of all cells. This is a thin wrapper around BascetMapCell
 
-Run Bakta on contigs of all cells. This is a thin wrapper around
+Run SKESA on reads of all cells. This is a thin wrapper around
 BascetMapCell
 
 ## Usage
 
 ``` r
-BascetMapCellBakta(
+BascetMapCellSKESA(
   bascetRoot,
-  inputName = "contigs",
-  outputName = "bakta",
-  db,
+  inputName = "filtered",
+  outputName = "contigs",
   ...
 )
 ```
@@ -28,10 +27,6 @@ BascetMapCellBakta(
 - outputName:
 
   Name of output shard
-
-- db:
-
-  Path to database
 
 - ...:
 
