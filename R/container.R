@@ -235,8 +235,16 @@ getBascetDockerImage <- function(
     #Generate map-through flags
     mapDirs_cmd <- paste0("--mount type=bind,src=",mapDirs_filtered,",dst=",mapDirs_filtered)
     mapDirs_cmd_all <- paste(mapDirs_cmd, collapse = " ")
-    prependCmd <- paste("docker run ", mapDirs_cmd_all, " henriksson-lab/bascet ")
+    prependCmd <- paste("docker run -i ", mapDirs_cmd_all, " henriksson-lab/bascet ")
+    #The -i enables piping
     
+    if(verbose) {
+      print("This will be the prepend-command")
+      print(prependCmd)
+    }
+    
+    print("The following directories are mapped through. If you have difficulity accessing files, you may have to add more")
+    print(mapDirs)
     
     BascetInstance(
       bin="bascet",
@@ -286,59 +294,101 @@ getBascetPodmanImage <- function(
     stopifnot(dir.exists(tempdir))
   }
   
-  #check if podman is installed ("podman ps" does not work on a fresh install on OSX)
-  ret <- system("podman system connection list", ignore.stdout = !verbose, ignore.stderr = !verbose)
-  if(ret==0) {
-    ret <- system("podman image inspect henriksson-lab/bascet:latest", ignore.stdout = !verbose, ignore.stderr = !verbose)
+  #Check if we have Podman
+  if(!PodmanIsInstalled()) {
+    stop("Podman is not installed, or not reachable by CLI")
+  }
+  
+  #Start podman, and check if it is there
+  print("Init and start of Podman, if not already ready")
+  PodmanInit()
+  PodmanStart()
+  
+  #Check if we need to get an image
+  imageExists <- system("podman image inspect henriksson-lab/bascet:latest", ignore.stdout = !verbose, ignore.stderr = !verbose) == 0
+  if(!imageExists || forceInstall) {
+    print("Removing any previous bascet image")
+    system("podman rmi henriksson-lab/bascet -f", intern = FALSE)
     
-    if(ret!=0 || forceInstall) {
-      print("No podman image present; downloading")
-      
-      file_bascet_image <- file.path(storeAt, "bascet.tar.gz")
-      #file_bascet_image_tar <- file.path(storeAt, "bascet.tar")
-      safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.tar.gz", file_bascet_image)
+    print("No podman image present; downloading")
+    file_bascet_image <- file.path(storeAt, "bascet.tar.gz")
+    safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.tar.gz", file_bascet_image)
 
-      #print("Decompressing")
-      #R.utils::gunzip(file_bascet_image)
-      
-      print("Loading image into Podman")
-      system(paste("podman load -i ", file_bascet_image))
-      
-      print(paste("The large image at", file_bascet_image, "can now be removed if the installation worked. You can otherwise try to install it manually using Podman"))
-    } else {
-      print(paste("Found existing Bascet Podman image"))
-    }
+    print("Loading image into Podman. This will take minutes")
+    system(paste("podman load -i ", file_bascet_image))
     
-    #Add default mapdirs 
-    if(is.null(mapDirs)) {
-      if(Sys.info()["sysname"] == "Darwin") {
-        mapDirs <- c("/Users", "/Volumes")
-      } else if(Sys.info()["sysname"] == "Linux") {
-        mapDirs <- c("/home","/mnt","/media")
-      }
-    }
-
-    #Check which directories to map through actually exist
-    mapDirs_filtered <- mapDirs[vapply(mapDirs, dir.exists, logical(1))]
-
-    #Generate map-through flags
-    mapDirs_cmd <- paste0("--mount type=bind,src=", mapDirs_filtered, ",dst=", mapDirs_filtered)
-    mapDirs_cmd_all <- paste(mapDirs_cmd, collapse = " ")
-    prependCmd <- paste("podman run ", mapDirs_cmd_all, " henriksson-lab/bascet ")
-    
-    
-    BascetInstance(
-      bin="bascet",
-      tempdir=tempdir,
-      prependCmd=prependCmd,
-      containerMem="10GB",
-      logLevel=logLevel
-    ) 
-    
+    print(paste("The large image at", file_bascet_image, "can now be removed if the installation worked. You can otherwise try to install it manually using Podman"))
   } else {
-    stop("Podman is not installed or cannot be run")
-  } 
+    print(paste("Found existing Bascet Podman image"))
+  }
+  
+  #Add default mapdirs 
+  if(is.null(mapDirs)) {
+    if(Sys.info()["sysname"] == "Darwin") {
+      mapDirs <- c("/Users")  #Only /Users is prepared to be passed through with Podman. No easy way of adding more on the fly, nor detecting
+    } else if(Sys.info()["sysname"] == "Linux") {
+      mapDirs <- c("/home","/mnt","/media")
+    }
+  }
+
+  #Check which directories to map through actually exist
+  mapDirs_filtered <- mapDirs[vapply(mapDirs, dir.exists, logical(1))]
+
+  #Generate map-through flags
+  mapDirs_cmd <- paste0("--mount type=bind,src=", mapDirs_filtered, ",dst=", mapDirs_filtered)
+  mapDirs_cmd_all <- paste(mapDirs_cmd, collapse = " ")
+  prependCmd <- paste("podman run -i ", mapDirs_cmd_all, " henriksson-lab/bascet ")
+  #The -i is essential as it opens an interactive terminal
+  
+  if(verbose) {
+    print("This will be the prepend-command")
+    print(prependCmd)
+  }
+
+  print("The following directories are mapped through. If you have difficulity accessing files, you may have to add more")
+  print(mapDirs)
+  
+  BascetInstance(
+    bin="bascet",
+    tempdir=tempdir,
+    prependCmd=prependCmd,
+    containerMem="10GB",
+    logLevel=logLevel
+  ) 
 }
+
+
+PodmanIsRunning <- function() {
+  list_running <- system("podman machine list | grep running", intern = TRUE)
+  length(list_running)>0
+}
+
+PodmanStart <- function() {
+  if(!PodmanIsRunning()) {
+    system("podman machine start")
+  }
+}
+
+PodmanStop <- function() {
+  system("podman machine stop")
+}
+
+
+PodmanInit <- function() {
+  if (!PodmanMachineExists()) {
+    system("podman machine init 2>/dev/null", intern = TRUE, ignore.stderr = TRUE)
+  }
+}
+
+PodmanMachineExists <- function() {
+  machines <- system("podman machine list --format '{{.Name}}'", intern = TRUE)
+  length(machines)>0
+}
+
+PodmanIsInstalled <- function() {
+  nchar(Sys.which("podman")) > 0
+}
+
 
 
 ###############################################

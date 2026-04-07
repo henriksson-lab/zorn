@@ -41,6 +41,7 @@ is.bascet.file <- function(f) {
 BascetCellNames <- function(
     bascetRoot, 
     bascetName,  #rather inputName?
+    verbose=FALSE,
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Check arguments
@@ -49,14 +50,24 @@ BascetCellNames <- function(
   stopifnot(is.bascet.instance(bascetInstance))
 
   #Use streamer to complete the task  
-  streamer <- extractstreamerStart(bascetInstance = bascetInstance)
+  if(verbose){
+    print("Starting streamer")
+  }
+  streamer <- extractstreamerStart(bascetInstance = bascetInstance, verbose = verbose)
   
+  if(verbose){
+    print("Getting cell names")
+  }
   ret <- BascetCellNames_withstreamer(
     bascetRoot,
     bascetName,
-    streamer
+    streamer,
+    verbose=verbose
   )
   
+  if(verbose){
+    print("Closing streamer")
+  }
   extractstreamerExit(streamer)
   
   ret
@@ -75,7 +86,8 @@ BascetCellNames <- function(
 BascetCellNames_withstreamer <- function(
     bascetRoot, 
     bascetName,
-    streamer
+    streamer,
+    verbose=FALSE
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
@@ -93,7 +105,7 @@ BascetCellNames_withstreamer <- function(
     cur_file <- file.path(bascetRoot,shards[i])
     print(cur_file) 
     #print(streamer)
-    allfiles <- extractstreamerListCellsAnyFile(streamer, cur_file)
+    allfiles <- extractstreamerListCellsAnyFile(streamer, cur_file, verbose=verbose)
 
     cellnames[[i]] <- data.frame(cell=allfiles, shard=i - 1L)
   }
@@ -507,7 +519,8 @@ AtrandiBarcodeStats <- function(
 #' @return List of files that correspond to the shard
 detectShardsForFile <- function(
     bascetRoot, 
-    inputName
+    inputName,
+    verbose=FALSE
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
@@ -745,8 +758,14 @@ extractstreamerListCellsAnyFile <- function(
   stopifnot(is.logical(verbose))
   
   #Perform streamer command
+  if(verbose) {
+    print("=> listcellsanyfile")
+  }
   p$write_input(paste0("listcellsanyfile ",fname,"\n"))
   
+  if(verbose) {
+    print("<= expecting data")
+  }
   #Figure out how many lines to get
   newlines <- extractstreamerReadOneLine(p)
   if(stringr::str_starts(newlines,"error")) {
@@ -756,7 +775,14 @@ extractstreamerListCellsAnyFile <- function(
     if(verbose){
       print(paste("Number of cells in file",n_lines))
     }
-    extractstreamerReadNLines(p, n_lines, verbose)
+    lines <- extractstreamerReadNLines(p, n_lines, verbose)
+    if(verbose){
+      print(lines)
+    }
+    if(verbose){
+      print("<= got lines")
+    }
+    return(lines)
   }
 }
 
