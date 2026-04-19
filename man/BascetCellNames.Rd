@@ -4,7 +4,12 @@
 \alias{BascetCellNames}
 \title{Get list of cells in a Bascet}
 \usage{
-BascetCellNames(bascetRoot, bascetName, bascetInstance)
+BascetCellNames(
+  bascetRoot,
+  bascetName,
+  verbose = FALSE,
+  bascetInstance = GetDefaultBascetInstance()
+)
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}

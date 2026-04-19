@@ -9,7 +9,8 @@ setClass("BascetInstance", slots=list(
   tempdir="character",
   prependCmd="character",
   containerMem="character",
-  logLevel="character"
+  logLevel="character",
+  logToFile="logical"
 )
 ) 
 
@@ -34,14 +35,17 @@ BascetInstance <- function(
     tempdir, 
     prependCmd="",
     containerMem="0B",
-    logLevel="info"			#TODO check options. info, debug, warn
+    logLevel=c("info", "debug", "warn"),
+    logToFile=TRUE
 ){
   #check arguments
+  logLevel <- match.arg(logLevel)
+
   if(!is.null(tempdir) & !file.exists(tempdir)){
     stop(sprintf("temp directory %s does not exist", tempdir))
   }
   #cannot check other arguments; need to trust user
-  
+
   stopifnot(is.valid.memsize(containerMem))
   
   #Generate instance
@@ -51,7 +55,8 @@ BascetInstance <- function(
     tempdir=tempdir,
     prependCmd=prependCmd,
     containerMem=containerMem,
-    logLevel=logLevel
+    logLevel=logLevel,
+    logToFile=logToFile
   )
 }
 
@@ -122,7 +127,7 @@ GetBascetTempDir <- function(
 getBascetSingularityImage <- function(
     storeAt=getwd(),
     tempdir=NULL,
-    logLevel="info"                    #TODO check options. info, debug, warn
+    logLevel="info"
 ){
   #Check arguments
   stopifnot(dir.exists(storeAt))
@@ -180,7 +185,7 @@ getBascetDockerImage <- function(
     forceInstall=FALSE,
     mapDirs=NULL, #c("/Users","/Volumes","/home"),
     verbose=FALSE,
-    logLevel="info"                    #TODO check options. info, debug, warn
+    logLevel="info"
 ){
   #check arguments
   stopifnot(dir.exists(storeAt))
@@ -198,22 +203,26 @@ getBascetDockerImage <- function(
   # docker image inspect busybox:latest >/dev/null 2>&1 && echo yes || echo no
   
   #check if docker is installed
-  ret <- system("docker ps", ignore.stdout = !verbose, ignore.stderr = !verbose)
+  ret <- system2("docker", "ps",
+                 stdout = if(verbose) "" else FALSE,
+                 stderr = if(verbose) "" else FALSE)
   if(ret==0) {
-    ret <- system("docker image inspect henriksson-lab/bascet:latest", ignore.stdout = !verbose, ignore.stderr = !verbose)
-    
+    ret <- system2("docker", c("image", "inspect", "henriksson-lab/bascet:latest"),
+                   stdout = if(verbose) "" else FALSE,
+                   stderr = if(verbose) "" else FALSE)
+
     if(ret!=0 || forceInstall) {
       print("No docker image present; downloading")
-      
+
       file_bascet_image <- file.path(storeAt, "bascet.tar.gz")
       file_bascet_image_tar <- file.path(storeAt, "bascet.tar")
       safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.tar.gz",file_bascet_image)
 
       print("Decompressing")
       R.utils::gunzip(file_bascet_image, overwrite=TRUE)
-      
+
       print("Loading image into Docker")
-      system(paste("docker load -i ", file_bascet_image_tar))
+      system2("docker", c("load", "-i", file_bascet_image_tar))
       
       print(paste("The large image at",file_bascet_image_tar,"can now be removed if the installation worked. You can otherwise try to install it manually using Docker"))
     } else {
@@ -232,17 +241,16 @@ getBascetDockerImage <- function(
     #Check which directories to map through actually exist
     mapDirs_filtered <- mapDirs[vapply(mapDirs, dir.exists, logical(1))]
 
+    
     #Generate map-through flags
     mapDirs_cmd <- paste0("--mount type=bind,src=",mapDirs_filtered,",dst=",mapDirs_filtered)
     mapDirs_cmd_all <- paste(mapDirs_cmd, collapse = " ")
-    prependCmd <- paste("docker run -i ", mapDirs_cmd_all, " henriksson-lab/bascet ")
+    prependCmd <- paste("docker run", .make_docker_podman_pwd(), "-i ", mapDirs_cmd_all, " henriksson-lab/bascet ")
     #The -i enables piping
     
-    if(verbose) {
-      print("This will be the prepend-command")
-      print(prependCmd)
-    }
-    
+    print("This will be the prepend-command")
+    print(prependCmd)
+
     print("The following directories are mapped through. If you have difficulity accessing files, you may have to add more")
     print(mapDirs)
     
@@ -259,6 +267,15 @@ getBascetDockerImage <- function(
   } 
 }
 
+
+.make_docker_podman_pwd <- function() {
+  #Generate setting to get Docker/Podman to current dir
+  if (.Platform$OS.type == "windows") {
+    "-w \"%cd%\" -v \"%cd%:%cd%\""
+  } else {
+    "-w \"$PWD\" -v \"$PWD:$PWD\""
+  }
+}
 
 
 ###############################################
@@ -279,7 +296,8 @@ getBascetPodmanImage <- function(
     forceInstall=FALSE,
     mapDirs=NULL,
     verbose=FALSE,
-    logLevel="info"
+    logLevel="info",
+    logToFile=FALSE
 ){
   #check arguments
   stopifnot(dir.exists(storeAt))
@@ -305,17 +323,19 @@ getBascetPodmanImage <- function(
   PodmanStart()
   
   #Check if we need to get an image
-  imageExists <- system("podman image inspect henriksson-lab/bascet:latest", ignore.stdout = !verbose, ignore.stderr = !verbose) == 0
+  imageExists <- system2("podman", c("image", "inspect", "henriksson-lab/bascet:latest"),
+                         stdout = if(verbose) "" else FALSE,
+                         stderr = if(verbose) "" else FALSE) == 0
   if(!imageExists || forceInstall) {
     print("Removing any previous bascet image")
-    system("podman rmi henriksson-lab/bascet -f", intern = FALSE)
-    
+    system2("podman", c("rmi", "henriksson-lab/bascet", "-f"))
+
     print("No podman image present; downloading")
     file_bascet_image <- file.path(storeAt, "bascet.tar.gz")
     safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.tar.gz", file_bascet_image)
 
     print("Loading image into Podman. This will take minutes")
-    system(paste("podman load -i ", file_bascet_image))
+    system2("podman", c("load", "-i", file_bascet_image))
     
     print(paste("The large image at", file_bascet_image, "can now be removed if the installation worked. You can otherwise try to install it manually using Podman"))
   } else {
@@ -337,7 +357,7 @@ getBascetPodmanImage <- function(
   #Generate map-through flags
   mapDirs_cmd <- paste0("--mount type=bind,src=", mapDirs_filtered, ",dst=", mapDirs_filtered)
   mapDirs_cmd_all <- paste(mapDirs_cmd, collapse = " ")
-  prependCmd <- paste("podman run -i ", mapDirs_cmd_all, " henriksson-lab/bascet ")
+  prependCmd <- paste("podman run ",.make_docker_podman_pwd(),"-i", mapDirs_cmd_all, " henriksson-lab/bascet ")
   #The -i is essential as it opens an interactive terminal
   
   if(verbose) {
@@ -353,35 +373,36 @@ getBascetPodmanImage <- function(
     tempdir=tempdir,
     prependCmd=prependCmd,
     containerMem="10GB",
-    logLevel=logLevel
+    logLevel=logLevel,
+    logToFile=logToFile
   ) 
 }
 
 
 PodmanIsRunning <- function() {
-  list_running <- system("podman machine list | grep running", intern = TRUE)
-  length(list_running)>0
+  list_running <- system2("podman", c("machine", "list"), stdout = TRUE)
+  any(grepl("running", list_running))
 }
 
 PodmanStart <- function() {
   if(!PodmanIsRunning()) {
-    system("podman machine start")
+    system2("podman", c("machine", "start"))
   }
 }
 
 PodmanStop <- function() {
-  system("podman machine stop")
+  system2("podman", c("machine", "stop"))
 }
 
 
 PodmanInit <- function() {
   if (!PodmanMachineExists()) {
-    system("podman machine init 2>/dev/null", intern = TRUE, ignore.stderr = TRUE)
+    system2("podman", c("machine", "init"), stdout = TRUE, stderr = FALSE)
   }
 }
 
 PodmanMachineExists <- function() {
-  machines <- system("podman machine list --format '{{.Name}}'", intern = TRUE)
+  machines <- system2("podman", c("machine", "list", "--format", "{{.Name}}"), stdout = TRUE)
   length(machines)>0
 }
 
@@ -396,7 +417,7 @@ PodmanIsInstalled <- function() {
 #' 
 #' @export
 removeBascetDockerImage <- function(){
-  system("docker image rm -f henriksson-lab/bascet")
+  system2("docker", c("image", "rm", "-f", "henriksson-lab/bascet"))
 }
 
 
@@ -405,7 +426,7 @@ removeBascetDockerImage <- function(){
 #' 
 #' @export
 removeBascetPodmanImage <- function(){
-  system("podman image rm -f henriksson-lab/bascet")
+  system2("podman", c("image", "rm", "-f", "henriksson-lab/bascet"))
 }
 
 
@@ -423,14 +444,20 @@ TestBascetInstance <- function(
   #check arguments
   stopifnot(is.bascet.instance(bascetInstance))
 
-  #run bascet, just checking current version  
+  #run bascet, just checking current version
   cmd <- paste(
     bascetInstance@prependCmd,
     bascetInstance@bin,
     "-V"
   )
 
-  ret <- system(cmd, intern = TRUE)
+  #prependCmd is a pre-built shell string (contains $PWD/%cd% expansion and
+  #container map flags), so it must be interpreted by a shell.
+  if (.Platform$OS.type == "windows") {
+    ret <- system2("cmd", c("/c", cmd), stdout = TRUE)
+  } else {
+    ret <- system2("sh", c("-c", cmd), stdout = TRUE)
+  }
 
   #Print version number (if it works)
   print(ret)
@@ -519,7 +546,7 @@ assembleBascetCommand <- function(bascetInstance, params) {
     c(
       bascetInstance@prependCmd,
       bascetInstance@bin,
-      "--log-mode=$BASCET_LOGFILE",
+      if(bascetInstance@logToFile) "--log-mode=$BASCET_LOGFILE",
       paste0("--log-level=",bascetInstance@logLevel),
       params
     )

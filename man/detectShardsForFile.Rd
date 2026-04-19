@@ -5,7 +5,7 @@
 \title{Helper function: Figure out which shards belong together given root input name and extension
 i.e. root/name.##.ext}
 \usage{
-detectShardsForFile(bascetRoot, inputName)
+detectShardsForFile(bascetRoot, inputName, verbose = FALSE)
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}

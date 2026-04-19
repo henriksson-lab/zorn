@@ -583,7 +583,10 @@ aggr.abricate <- function(
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param db Name of ABRicate database to use (string)
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#' @param args Additional arguments passed to Bascet (list)
+#' @param overwrite Whether to overwrite existing output (logical)
+#' @param runner A runner object (e.g. LocalRunner, SlurmRunner)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @seealso \code{\link{BascetMapCell}}
@@ -593,15 +596,20 @@ BascetMapCellAbricate <- function(
     inputName="contigs",
     outputName="abricate",
     db="ncbi",
-    ...
+    args=list(),
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot,
     withfunction="_abricate",
     inputName=inputName,
     outputName=outputName,
-    args = list(DATABASE_DIR=db),
-    ...
+    args = c(list(DATABASE_DIR=db), args),
+    overwrite=overwrite,
+    runner=runner,
+    bascetInstance=bascetInstance
   )
 }
 
@@ -676,7 +684,10 @@ BascetAggregateAbricate <- function(
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param db Path to database
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#' @param args Additional arguments passed to Bascet (list)
+#' @param overwrite Whether to overwrite existing output (logical)
+#' @param runner A runner object (e.g. LocalRunner, SlurmRunner)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @seealso \code{\link{BascetMapCell}}
@@ -686,15 +697,20 @@ BascetMapCellBakta <- function(
     inputName="contigs",
     outputName="bakta",
     db,
-    ...
+    args=list(),
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot,
     withfunction="_bakta",
     inputName=inputName,
     outputName=outputName,
-    args = list(DATABASE_DIR=db),
-    ...
+    args = c(list(DATABASE_DIR=db), args),
+    overwrite=overwrite,
+    runner=runner,
+    bascetInstance=bascetInstance
   )
 }
 
@@ -743,7 +759,10 @@ DownloadDatabaseBakta <- function(
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param db Path to database
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#' @param args Additional arguments passed to Bascet (list)
+#' @param overwrite Whether to overwrite existing output (logical)
+#' @param runner A runner object (e.g. LocalRunner, SlurmRunner)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @seealso \code{\link{BascetMapCell}}
@@ -753,15 +772,20 @@ BascetMapCellAriba <- function(
     inputName="filtered",
     outputName="ariba",
     db,
-    ...
+    args=list(),
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot,
     withfunction="_ariba",
     inputName=inputName,
     outputName=outputName,
-    args = list(DATABASE_DIR=db),
-    ...
+    args = c(list(DATABASE_DIR=db), args),
+    overwrite=overwrite,
+    runner=runner,
+    bascetInstance=bascetInstance
   )
 }
 
@@ -886,7 +910,10 @@ BascetAggregateAriba <- function(
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param db Path to database
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#' @param args Additional arguments passed to Bascet (list)
+#' @param overwrite Whether to overwrite existing output (logical)
+#' @param runner A runner object (e.g. LocalRunner, SlurmRunner)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @seealso \code{\link{BascetMapCell}}
@@ -896,15 +923,20 @@ BascetMapCellAMRfinder <- function(
     inputName="contigs",
     outputName="AMRfinder",
     db,
-    ...
+    args=list(),
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
 ){
   BascetMapCell(
     bascetRoot=bascetRoot,
     withfunction="_amrfinder",
     inputName=inputName,
     outputName=outputName,
-    args = list(DATABASE_DIR=db),
-    ...
+    args = c(list(DATABASE_DIR=db), args),
+    overwrite=overwrite,
+    runner=runner,
+    bascetInstance=bascetInstance
   )
 }
 

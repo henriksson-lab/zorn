@@ -15,7 +15,7 @@ shellscriptMakeFilesExpander(for_variable, list_content)
 Part of a shell script
 }
 \description{
-The name of each file will be in VARIABLE\link{TASK_ID} where TASK_ID starts from 0
+The name of each file will be in VARIABLE[TASK_ID] where TASK_ID starts from 0
 }
 \details{
 Note that there must be one file per task, or each task deletes its own file. This will result in race conditions

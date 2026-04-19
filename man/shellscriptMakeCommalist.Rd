@@ -2,7 +2,7 @@
 % Please edit documentation in R/shell.R
 \name{shellscriptMakeCommalist}
 \alias{shellscriptMakeCommalist}
-\title{Helper function, taking a list of elements such as \link{a,b}, and returning "a,b"}
+\title{Helper function, taking a list of elements such as [a,b], and returning "a,b"}
 \usage{
 shellscriptMakeCommalist(f)
 }
@@ -13,5 +13,5 @@ shellscriptMakeCommalist(f)
 Formatted list
 }
 \description{
-Helper function, taking a list of elements such as \link{a,b}, and returning "a,b"
+Helper function, taking a list of elements such as [a,b], and returning "a,b"
 }

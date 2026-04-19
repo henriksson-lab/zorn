@@ -41,8 +41,9 @@ LocalRunner <- function(
     settings=NULL,
     ncpu=NULL, 
     mem=NULL,
-    direct=TRUE, 
-    showScript=FALSE
+    direct=NULL, 
+    showScript=NULL
+#    logToFile=NULL
 ){
   #Bring in defaults
   if(!is.null(settings) & is.null(ncpu)) {
@@ -87,6 +88,14 @@ LocalRunner <- function(
     stopifnot(parse_size_string(mem)>1e8)
   }
   
+  if(is.null(showScript)) {
+    showScript <- FALSE
+  }
+  
+  if(is.null(direct)) {
+    direct <- TRUE
+  }
+  
   new(
     "LocalRunner", 
     ncpu=ncpu, 
@@ -116,11 +125,13 @@ setMethod(
     )
 
     ## Decide on a log location; different for each job. Create the directory
-    cmd <- c(
-      "mkdir -p logs",
-      paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${TASK_ID}.log")),
-      cmd
-    )
+    if(bascetInstance@logToFile) {
+      cmd <- c(
+        "mkdir -p logs",
+        paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${TASK_ID}.log")),
+        cmd
+      )
+    } 
     
     cmd <- stringr::str_flatten(cmd,"\n")
     
@@ -154,7 +165,6 @@ setMethod(
       paste("trap \"rm -rf ",tfile,"\" EXIT"),
       all_cmd
     )
-    
     
     #Write script file
     writeLines(con=tfile,c(

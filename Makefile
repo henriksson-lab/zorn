@@ -6,7 +6,7 @@ build_site:
 	Rscript -e "pkgdown::build_site()"
 
 install: build
-	Rscript -e "install.packages(\"Zorn_0.5.5.tar.gz\", repos = NULL, type = 'source')"
+	Rscript -e "install.packages(\"Zorn_0.5.13.tar.gz\", repos = NULL, type = 'source')"
 
 gitaddall:
 	git add man

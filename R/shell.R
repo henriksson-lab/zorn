@@ -34,7 +34,7 @@ is.valid.env.variable <- function(x) {
 ###############################################
 #' Generate a shell script command to produce a file of list of strings
 #' 
-#' The name of each file will be in VARIABLE[TASK_ID] where TASK_ID starts from 0
+#' The name of each file will be in VARIABLE\[TASK_ID\] where TASK_ID starts from 0
 #' 
 #' Note that there must be one file per task, or each task deletes its own file. This will result in race conditions
 #' 
@@ -101,7 +101,7 @@ shellscriptMakeFilesExpander <- function(
 
 
 ###############################################
-#' Helper function, taking a list of elements such as [a,b], and returning "a,b"
+#' Helper function, taking a list of elements such as \[a,b\], and returning "a,b"
 #' 
 #' @param f List of elements
 #' 

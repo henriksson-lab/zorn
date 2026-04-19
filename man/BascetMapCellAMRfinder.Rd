@@ -10,7 +10,10 @@ BascetMapCellAMRfinder(
   inputName = "contigs",
   outputName = "AMRfinder",
   db,
-  ...
+  args = list(),
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
@@ -22,7 +25,13 @@ BascetMapCellAMRfinder(
 
 \item{db}{Path to database}
 
-\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
+\item{args}{Additional arguments passed to Bascet (list)}
+
+\item{overwrite}{Whether to overwrite existing output (logical)}
+
+\item{runner}{A runner object (e.g. LocalRunner, SlurmRunner)}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings

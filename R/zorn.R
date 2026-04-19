@@ -1,6 +1,6 @@
 
 
-
+### This is needed for data table functions to work in a library
 .datatable.aware = TRUE
 
 ################################################################################
@@ -266,9 +266,12 @@ bascetCheckOverwriteOutput <- function(
   overwrite
 ){
   if(all(file.exists(outputFiles)) & !overwrite){
-    print("All files to write already exist; skipping. To change this behaviour, set overwrite=TRUE")
+    print("All files to write already exist; skipping job. To change this behaviour, set overwrite=TRUE")
     FALSE
   } else {
+    if(any(file.exists(outputFiles)) & !all(file.exists(outputFiles))) {
+      print("Some of the output files exist, but not all(!). Job will be submitted")
+    }
     TRUE
   }
 }

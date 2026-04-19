@@ -4,7 +4,7 @@
 \alias{BascetCellNames_withstreamer}
 \title{Get list of cells in a Bascet -- streamer provided}
 \usage{
-BascetCellNames_withstreamer(bascetRoot, bascetName, streamer)
+BascetCellNames_withstreamer(bascetRoot, bascetName, streamer, verbose = FALSE)
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}

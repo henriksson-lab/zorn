@@ -10,7 +10,8 @@ BascetInstance(
   tempdir,
   prependCmd = "",
   containerMem = "0B",
-  logLevel = "info"
+  logLevel = c("info", "debug", "warn"),
+  logToFile = TRUE
 )
 }
 \arguments{
