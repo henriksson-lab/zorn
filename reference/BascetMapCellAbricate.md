@@ -11,7 +11,10 @@ BascetMapCellAbricate(
   inputName = "contigs",
   outputName = "abricate",
   db = "ncbi",
-  ...
+  args = list(),
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 ```
 
@@ -33,10 +36,21 @@ BascetMapCellAbricate(
 
   Name of ABRicate database to use (string)
 
-- ...:
+- args:
 
-  Additional arguments passed to
-  [`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)
+  Additional arguments passed to Bascet (list)
+
+- overwrite:
+
+  Whether to overwrite existing output (logical)
+
+- runner:
+
+  A runner object (e.g. LocalRunner, SlurmRunner)
+
+- bascetInstance:
+
+  A Bascet instance
 
 ## Value
 

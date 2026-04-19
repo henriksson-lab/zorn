@@ -5,7 +5,7 @@ Get list of cells in a Bascet – streamer provided
 ## Usage
 
 ``` r
-BascetCellNames_withstreamer(bascetRoot, bascetName, streamer)
+BascetCellNames_withstreamer(bascetRoot, bascetName, streamer, verbose = FALSE)
 ```
 
 ## Arguments

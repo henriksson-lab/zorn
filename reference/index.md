@@ -391,7 +391,7 @@
   : Helper function: Create array of values in bash scripts example:
   myArray=("cat" "dog" "mouse" "frog")
 - [`shellscriptMakeCommalist()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeCommalist.md)
-  : Helper function, taking a list of elements such as a,b, and
+  : Helper function, taking a list of elements such as \[a,b\], and
   returning "a,b"
 - [`shellscriptMakeFilesExpander()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeFilesExpander.md)
   : Generate a shell script command to produce a file of list of strings

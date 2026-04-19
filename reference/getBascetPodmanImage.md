@@ -12,7 +12,8 @@ getBascetPodmanImage(
   forceInstall = FALSE,
   mapDirs = NULL,
   verbose = FALSE,
-  logLevel = "info"
+  logLevel = "info",
+  logToFile = FALSE
 )
 ```
 

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,6 +85,21 @@
     
     
 <div class="section level2">
+<h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
+</h2>
+<p>We strive to support Linux, OSX and Windows. We see two type of
+users: * Users who do heavy preprocessing. Our tools are designed to
+maximally benefit from a beefy computer, ideally an HPC cluster. But a
+16GB RAM laptop is technically enough * Users who do postprocessing in
+R. Any computer should be enough, but most single-cell users will likely
+have 32 or 64GB installed to be able to run Seurat on large modern
+datasets (and Zorn integrates with Seurat)</p>
+<p>Bascet is compiled with the assumption that your CPU supports the BMI
+instruction set. Any computer past 2015 should have it. If for some odd
+reason your computer does not have, you will need to compile Bascet
+yourself</p>
+</div>
+<div class="section level2">
 <h2 id="step-1-install-zorn">Step 1: Install Zorn<a class="anchor" aria-label="anchor" href="#step-1-install-zorn"></a>
 </h2>
 <p>Zorn is under active development, so just get it straight from GitHub
@@ -109,7 +124,8 @@ Singularity or Docker; instructions for each are described below.
 Singularity is for Linux users, while OSX and Windows users have to use
 Docker.</p>
 <div class="section level3">
-<h3 id="install-bascet-via-singularity-linux-only">Install Bascet via Singularity (Linux only)<a class="anchor" aria-label="anchor" href="#install-bascet-via-singularity-linux-only"></a>
+<h3 id="install-bascet-via-singularity-linux-only-likely-the-best-option-for-hpc-environments">Install Bascet via Singularity (Linux only; likely the best option
+for HPC environments)<a class="anchor" aria-label="anchor" href="#install-bascet-via-singularity-linux-only-likely-the-best-option-for-hpc-environments"></a>
 </h3>
 <p>First <a href="https://docs.sylabs.io/guides/3.0/user-guide/installation.html" class="external-link">install
 Singularity</a>.</p>
@@ -129,10 +145,12 @@ workspace, as multiple workspaces can share the same image</p>
 <p>First <a href="https://podman.io/getting-started/installation" class="external-link">install
 Podman</a>.</p>
 <p>Once installed, Zorn can then pull down the latest Podman image for
-you. We recommend keeping it in a separate directory from your
-workspace, as multiple workspaces can share the same image</p>
+you. It can be deleted once it has been loaded into Podman.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetPodmanImage.html">getBascetPodmanImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
+<p>Note that Podman only exposes certain directories, listed upon start.
+You may have to add more directories depending on where your data is
+located.</p>
 </div>
 <div class="section level3">
 <h3 id="install-bascet-via-docker-singularity-or-podman-are-recommended-for-linux">Install Bascet via Docker (Singularity or Podman are recommended for
@@ -145,6 +163,12 @@ you. We recommend keeping it in a separate directory from your
 workspace, as multiple workspaces can share the same image</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetDockerImage.html">getBascetDockerImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
+<p>Note that Docker only exposes certain directories, listed upon start.
+You may have to add more directories depending on where your data is
+located.</p>
+<p>Also note that you need to have Docker desktop running (OSX/Windows)
+whenever you use the conainer. If you don’t like this, pick Podman or
+Singularity instead.</p>
 </div>
 </div>
 <div class="section level2">

@@ -1,7 +1,7 @@
 # Generate a shell script command to produce a file of list of strings
 
-The name of each file will be in VARIABLETASK_ID where TASK_ID starts
-from 0
+The name of each file will be in VARIABLE\[TASK_ID\] where TASK_ID
+starts from 0
 
 ## Usage
 

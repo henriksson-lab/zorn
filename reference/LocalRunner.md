@@ -9,8 +9,8 @@ LocalRunner(
   settings = NULL,
   ncpu = NULL,
   mem = NULL,
-  direct = TRUE,
-  showScript = FALSE
+  direct = NULL,
+  showScript = NULL
 )
 ```
 

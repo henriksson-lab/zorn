@@ -6,7 +6,7 @@ input name and extension i.e. root/name.##.ext
 ## Usage
 
 ``` r
-detectShardsForFile(bascetRoot, inputName)
+detectShardsForFile(bascetRoot, inputName, verbose = FALSE)
 ```
 
 ## Arguments

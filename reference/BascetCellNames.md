@@ -5,7 +5,12 @@ Get list of cells in a Bascet
 ## Usage
 
 ``` r
-BascetCellNames(bascetRoot, bascetName, bascetInstance)
+BascetCellNames(
+  bascetRoot,
+  bascetName,
+  verbose = FALSE,
+  bascetInstance = GetDefaultBascetInstance()
+)
 ```
 
 ## Arguments

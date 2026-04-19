@@ -1,5 +1,20 @@
 # Installation
 
+## Requirements
+
+We strive to support Linux, OSX and Windows. We see two type of users:
+\* Users who do heavy preprocessing. Our tools are designed to maximally
+benefit from a beefy computer, ideally an HPC cluster. But a 16GB RAM
+laptop is technically enough \* Users who do postprocessing in R. Any
+computer should be enough, but most single-cell users will likely have
+32 or 64GB installed to be able to run Seurat on large modern datasets
+(and Zorn integrates with Seurat)
+
+Bascet is compiled with the assumption that your CPU supports the BMI
+instruction set. Any computer past 2015 should have it. If for some odd
+reason your computer does not have, you will need to compile Bascet
+yourself
+
 ## Step 1: Install Zorn
 
 Zorn is under active development, so just get it straight from GitHub
@@ -30,7 +45,7 @@ Most users will find it easiest to run Bascet through Singularity or
 Docker; instructions for each are described below. Singularity is for
 Linux users, while OSX and Windows users have to use Docker.
 
-### Install Bascet via Singularity (Linux only)
+### Install Bascet via Singularity (Linux only; likely the best option for HPC environments)
 
 First [install
 Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html).
@@ -54,12 +69,15 @@ bascetInstance.default <- getBascetSingularityImage(storeAt="/somewhere/on/your/
 First [install Podman](https://podman.io/getting-started/installation).
 
 Once installed, Zorn can then pull down the latest Podman image for you.
-We recommend keeping it in a separate directory from your workspace, as
-multiple workspaces can share the same image
+It can be deleted once it has been loaded into Podman.
 
 ``` r
 bascetInstance.default <- getBascetPodmanImage(storeAt="/somewhere/on/your/disk/")
 ```
+
+Note that Podman only exposes certain directories, listed upon start.
+You may have to add more directories depending on where your data is
+located.
 
 ### Install Bascet via Docker (Singularity or Podman are recommended for Linux)
 
@@ -72,6 +90,14 @@ multiple workspaces can share the same image
 ``` r
 bascetInstance.default <- getBascetDockerImage(storeAt="/somewhere/on/your/disk/")
 ```
+
+Note that Docker only exposes certain directories, listed upon start.
+You may have to add more directories depending on where your data is
+located.
+
+Also note that you need to have Docker desktop running (OSX/Windows)
+whenever you use the conainer. If you don’t like this, pick Podman or
+Singularity instead.
 
 ## Step 3: Test the installation
 
