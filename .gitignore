@@ -1,3 +1,10 @@
 docs
 file*
 .Rproj.user
+**/.Rproj.user
+
+.Rhistory
+**/.Rhistory
+
+.DS_Store
+**/.DS_Store
