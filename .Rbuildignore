@@ -22,3 +22,5 @@
 ^Zorn_
 \.sif$
 CLAUDE.md
+^.*\.Rproj$
+^\.Rproj\.user$

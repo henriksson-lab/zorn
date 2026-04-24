@@ -30,7 +30,6 @@ cd bascet
 make
 ```
 
-
 # Editing the Bascet code
 
 To modify the code, we recommend [VSCode](https://code.visualstudio.com/Download)
