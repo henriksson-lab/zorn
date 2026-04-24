@@ -91,22 +91,27 @@ required command below, where you can apply either an RNA-seq or
 ATAC-seq dimensional reduction depending on what you think is
 appropriate.
 
+ATAC-seq style analysis
+
 ``` r
-if(TRUE){
-  #ATAC-seq style analysis
-  library(Signac)
-  adata <- RunTFIDF(adata)
-  adata <- FindTopFeatures(adata, min.cutoff = 'q0')
-  adata <- RunSVD(adata)
-  DepthCor(adata)
-  adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "kraken_umap")  
-} else {
-  #RNA-seq style analysis
-  adata <- NormalizeData(adata)
-  adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
-  adata <- ScaleData(adata, features = rownames(adata))
-  adata <- RunPCA(adata, features = VariableFeatures(object = adata))
-  adata <- RunUMAP(adata, dims = 1:20, reduction.name = "kraken_umap")
+#ATAC-seq style analysis
+library(Signac)
+adata <- RunTFIDF(adata)
+adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+adata <- RunSVD(adata)
+DepthCor(adata)
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "kraken_umap")  
+```
+
+RNA-seq style analysis
+
+``` r
+#RNA-seq style analysis
+adata <- NormalizeData(adata)
+adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
+adata <- ScaleData(adata, features = rownames(adata))
+adata <- RunPCA(adata, features = VariableFeatures(object = adata))
+adata <- RunUMAP(adata, dims = 1:20, reduction.name = "kraken_umap")
 }
 ```
 

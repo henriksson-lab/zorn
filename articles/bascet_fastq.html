@@ -103,15 +103,19 @@ following commands to work.</p>
 will take less space as trimming and barcode identification has already
 been performed. The sorting also improves compression ratio. The
 presorting further reduces work for reproducing the analysis.</p>
-<p><em>However, there is a major caveat:</em> FASTQ-files submitted to
-SRA will have the names of reads removed in their “light” format (i.e.,
-which cell the read belongs to). It will still be possible to get the
-fully raw files using the cold storage retrieval option, but users may
-have to pay for this, and download takes longer times.</p>
+<blockquote>
+<p>⚠️ FASTQ-files submitted to SRA will have the names of reads removed
+in their “light” format (i.e., which cell the read belongs to). It will
+still be possible to get the fully raw files using the cold storage
+retrieval option, but users may have to pay for this, and download takes
+longer times.</p>
+</blockquote>
+<blockquote>
 <p>We are working toward a solution, but users are currently better off
 submitting raw data to Zenodo or other general depository. In such a
 case, you might as well submit the native TIRP files, but we currently
 do not make any recommendation.</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="conversion-to-bascet-fastq">Conversion to Bascet-FASTQ<a class="anchor" aria-label="anchor" href="#conversion-to-bascet-fastq"></a>
@@ -132,8 +136,8 @@ Bascet-FASTQ:</p>
 </h2>
 <p><a href="https://github.com/OpenGene/fastp" class="external-link">(FASTP)</a> is a fast
 trimmer. We however don’t recommend it for de novo assembly as it seems
-to leave too many adapters - <em>this is why we already perform our own
-trimming during GetRaw</em>. In either case, FASTP can be run directly
+to leave too many adapters (<em>this is why we already perform our own
+trimming during GetRaw</em>). In either case, FASTP can be run directly
 through Zorn. If you wish to use other software, you can apply it in any
 other way to the FASTQ files.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -161,8 +165,8 @@ conversion</p>
 <span>  outFormat<span class="op">=</span><span class="st">"tirp.gz"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>You now have a TIRP file again, equivalent to the first shardified
-output. !!! Don’t forget to specify inputName=“new_filtered” to later
-commands, as the default is to use “filtered”</p>
+output. &gt; ⚠️ Don’t forget to specify inputName=“new_filtered” to
+later commands, as the default &gt; is to use “filtered”</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

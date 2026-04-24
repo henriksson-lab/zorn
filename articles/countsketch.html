@@ -95,7 +95,26 @@ accordingly.</p>
 <div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h2>
-<p>Count sketching relies on the following ideas: * Genomes can be
+<p>To first compute the CountSketch, we will use the
+BascetGatherCountSketch-command. The length of KMERs, and number of
+reduced dimensions, is set at this stage: - 31 bp is a common choice of
+KMER lengths as it fits well in 32-bit registers of a CPU, while being
+rather unique. k=31 is used by default. The KMER length should typically
+be odd, to remove KMERs symmetric under reverse complement (e.g., AATT).
+- <strong>⚠️ The reduced number of dimensions must be a power of
+two</strong>, such as 2048, 4096, 8192, 16384 etc. This restriction is
+due to the choice of underlying algorithm. The amount of dimensions
+controls how pairwise distances between cells are preserved in the
+sketch, following the Johnson-Lindenstrauss lemma. Higher dimensions
+yield more accurate distance estimates and generally improve
+clustering.</p>
+<p>The following command computes a countsketch matrix. The input is
+here the raw reads, which is suitable for metatranscriptomics, and works
+for metagenomics as well. For higher precision, you can also use the
+<em>de novo</em> assembly commands to extract unique KMERs as input for
+sketching (not shown here).</p>
+<blockquote>
+<p>ℹ️ Count sketching relies on the following ideas: * Genomes can be
 represented as a vector of KMER counts. If these KMERs are long enough,
 they exist nearly-only once in a genome, and seldom in genomes of
 different origins * Angles between KMER count vectors ignore sequencing
@@ -105,22 +124,11 @@ is preserved also after random linear projection into a lower
 dimensional space (lower, but still high-dimensional) * The random
 projection matrix can be represented implicitly, avoiding the need for
 the original full KMER vectors</p>
+</blockquote>
+<blockquote>
 <p>Note that these linear projections are different from Min-Hashes, and
 have further nice properties beyond the description here.</p>
-<p>To first compute the project KMER counts, we will use the
-BascetGatherCountSketch-command. The length of KMERs, and number of
-reduced dimensions, is set at this stage * 31 bp is a common choice of
-KMER lengths as it fits well in 32-bit registers of a CPU, while being
-rather unique. <em>The KMER length is typically odd</em>, to remove
-KMERs symmetric under reverse complement (e.g., AATT) * <em>The reduced
-number of dimensions must be a power of two</em>, such as 2**n. Or:
-2048, 4096, 8192, 16384 etc. This restriction is due to the choice of
-underlying algorithm.</p>
-<p>The following command computes a countsketch matrix. The input is
-here the raw reads, which is suitable for metatranscriptomics, and works
-for metagenomics as well. For higher precision, you can also use the
-<em>de novo</em> assembly commands to extract unique KMERs as input for
-sketching (not shown here).</p>
+</blockquote>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Gather count sketches into a single matrix file</span></span>

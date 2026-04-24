@@ -22,16 +22,16 @@ take less space as trimming and barcode identification has already been
 performed. The sorting also improves compression ratio. The presorting
 further reduces work for reproducing the analysis.
 
-*However, there is a major caveat:* FASTQ-files submitted to SRA will
-have the names of reads removed in their “light” format (i.e., which
-cell the read belongs to). It will still be possible to get the fully
-raw files using the cold storage retrieval option, but users may have to
-pay for this, and download takes longer times.
+> ⚠️ FASTQ-files submitted to SRA will have the names of reads removed
+> in their “light” format (i.e., which cell the read belongs to). It
+> will still be possible to get the fully raw files using the cold
+> storage retrieval option, but users may have to pay for this, and
+> download takes longer times.
 
-We are working toward a solution, but users are currently better off
-submitting raw data to Zenodo or other general depository. In such a
-case, you might as well submit the native TIRP files, but we currently
-do not make any recommendation.
+> We are working toward a solution, but users are currently better off
+> submitting raw data to Zenodo or other general depository. In such a
+> case, you might as well submit the native TIRP files, but we currently
+> do not make any recommendation.
 
 ## Conversion to Bascet-FASTQ
 
@@ -52,8 +52,8 @@ BascetMapTransform(
 
 [(FASTP)](https://github.com/OpenGene/fastp) is a fast trimmer. We
 however don’t recommend it for de novo assembly as it seems to leave too
-many adapters - *this is why we already perform our own trimming during
-GetRaw*. In either case, FASTP can be run directly through Zorn. If you
+many adapters (*this is why we already perform our own trimming during
+GetRaw*). In either case, FASTP can be run directly through Zorn. If you
 wish to use other software, you can apply it in any other way to the
 FASTQ files.
 
@@ -85,5 +85,5 @@ BascetMapTransform(
 ```
 
 You now have a TIRP file again, equivalent to the first shardified
-output. !!! Don’t forget to specify inputName=“new_filtered” to later
-commands, as the default is to use “filtered”
+output. \> ⚠️ Don’t forget to specify inputName=“new_filtered” to later
+commands, as the default \> is to use “filtered”

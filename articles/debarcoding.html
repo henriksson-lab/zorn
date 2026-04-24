@@ -153,11 +153,13 @@ the next stage.</p>
 and any UMI information. The only thing you additionally need to specify
 is what type of data you have, where “atrandi_wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.</p>
-<p>Note that Bascet performs trimming of reads during the GetRaw stage.
-This includes: * For RNA-seq: PolyA trimming and trimming at adapters *
-For Atrandi WGS: A specialized algorithm to detect overlap and remove
-adapters accordingly Regular users should thus not need to worry about
-this</p>
+<blockquote>
+<p>⚠️ Note that Bascet performs trimming of reads during the GetRaw
+stage. This includes: - For RNA-seq: PolyA trimming and trimming at
+adapters - For Atrandi WGS: A specialized algorithm to detect overlap
+and remove adapters accordingly Regular users should thus not need to
+worry about this</p>
+</blockquote>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetGetRaw.html">BascetGetRaw</a></span><span class="op">(</span></span>
@@ -186,16 +188,16 @@ which cells you keep:</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>This is just a histogram of reads per barcode. (downsampling for
 speed causes cells of low indices to not be shown, worry not!) The
-diagram however tells you * how many cells you have * how much
+diagram however tells you - how many cells you have - how much
 free-floating RNA/DNA you have in your background (empty droplets/SPCs)
-* how distinct cells are from background</p>
+- how distinct cells are from background</p>
 <p>An example kneeplot for Parse biosciences RNA-seq data is shown
-below. You want to to include slightly more cells than the knee
-indicates. For Atrandi microbial WGS data, knee plots cannot be trusted,
-and you may want a fair bit more to account for lysis differences (see
-our manuscript). Including too many cells will slow down later steps but
-you can reduce the number of cells at any point. Adjust the cutoff using
-the previously set minQuantile parameter.</p>
+below. You want to include slightly more cells than the knee indicates.
+For Atrandi microbial WGS data, knee plots cannot be trusted, and you
+may want a fair bit more to account for lysis differences (see our
+manuscript). Including too many cells will slow down later steps but you
+can reduce the number of cells at any point. Adjust the cutoff using the
+previously set minQuantile parameter.</p>
 <div class="float">
 <img src="debarcoding_kneeplot.png" alt="Kneeplot"><div class="figcaption">Kneeplot</div>
 </div>

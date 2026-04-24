@@ -18,10 +18,11 @@ bascetInstance <- getBascetSingularityImage(...)
 TestBascetInstance(bascetInstance)
 ```
 
-You can now open a file. Internally, this creates an instance of Bascet
-running in a separate thread, which R can send commands to. This design
-is necessary to avoid the startup cost of Docker and Singularity, such
-that you pay the cost only once; but reading many files is very fast.
+You can now open a file (here named “skesa”). Internally, this creates
+an instance of Bascet running in a separate thread, which R can send
+commands to. This design is necessary to avoid the startup cost of
+Docker and Singularity, such that you pay the cost only once; but
+reading many files is very fast.
 
 ``` r
 skesa_file <- OpenBascet(

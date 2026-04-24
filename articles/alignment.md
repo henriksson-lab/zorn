@@ -175,23 +175,27 @@ required command below, where you can apply either an RNA-seq or
 ATAC-seq dimensional reduction depending on what you think is
 appropriate.
 
+ATAC-seq style analysis:
+
 ``` r
-if(FALSE){
-  #ATAC-seq style analysis
-  library(Signac)
-  adata <- RunTFIDF(adata)
-  adata <- FindTopFeatures(adata, min.cutoff = 'q0')
-  adata <- RunSVD(adata)
-  DepthCor(adata)
-  adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:(nrow(adata)-1), reduction.name = "chrom_umap")  
-} else {
-  #RNA-seq style analysis
-  adata <- NormalizeData(adata)
-  adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = nrow(adata))
-  adata <- ScaleData(adata, features = rownames(adata))
-  adata <- RunPCA(adata, features = VariableFeatures(object = adata))
-  adata <- RunUMAP(adata, dims = 1:(nrow(adata)-1), reduction.name = "chrom_umap")
-}
+#ATAC-seq style analysis
+library(Signac)
+adata <- RunTFIDF(adata)
+adata <- FindTopFeatures(adata, min.cutoff = 'q0')
+adata <- RunSVD(adata)
+DepthCor(adata)
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:(nrow(adata)-1), reduction.name = "chrom_umap")  
+```
+
+RNA-seq style analysis:
+
+``` r
+#RNA-seq style analysis
+adata <- NormalizeData(adata)
+adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = nrow(adata))
+adata <- ScaleData(adata, features = rownames(adata))
+adata <- RunPCA(adata, features = VariableFeatures(object = adata))
+adata <- RunUMAP(adata, dims = 1:(nrow(adata)-1), reduction.name = "chrom_umap")
 ```
 
 Finally, you can plot your UMAP. If you also extracted the dominant

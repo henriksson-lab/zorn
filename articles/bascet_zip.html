@@ -97,11 +97,11 @@ this is the approach to take.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascetInstance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascetInstance</span><span class="op">)</span></span></code></pre></div>
-<p>You can now open a file. Internally, this creates an instance of
-Bascet running in a separate thread, which R can send commands to. This
-design is necessary to avoid the startup cost of Docker and Singularity,
-such that you pay the cost only once; but reading many files is very
-fast.</p>
+<p>You can now open a file (here named “skesa”). Internally, this
+creates an instance of Bascet running in a separate thread, which R can
+send commands to. This design is necessary to avoid the startup cost of
+Docker and Singularity, such that you pay the cost only once; but
+reading many files is very fast.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">skesa_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/OpenBascet.html">OpenBascet</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>, </span>

@@ -47,11 +47,11 @@ and any UMI information. The only thing you additionally need to specify
 is what type of data you have, where “atrandi_wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.
 
-Note that Bascet performs trimming of reads during the GetRaw stage.
-This includes: \* For RNA-seq: PolyA trimming and trimming at adapters
-\* For Atrandi WGS: A specialized algorithm to detect overlap and remove
-adapters accordingly Regular users should thus not need to worry about
-this
+> ⚠️ Note that Bascet performs trimming of reads during the GetRaw
+> stage. This includes: - For RNA-seq: PolyA trimming and trimming at
+> adapters - For Atrandi WGS: A specialized algorithm to detect overlap
+> and remove adapters accordingly Regular users should thus not need to
+> worry about this
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
@@ -91,12 +91,12 @@ DebarcodedKneePlot(
 
 This is just a histogram of reads per barcode. (downsampling for speed
 causes cells of low indices to not be shown, worry not!) The diagram
-however tells you \* how many cells you have \* how much free-floating
-RNA/DNA you have in your background (empty droplets/SPCs) \* how
-distinct cells are from background
+however tells you - how many cells you have - how much free-floating
+RNA/DNA you have in your background (empty droplets/SPCs) - how distinct
+cells are from background
 
 An example kneeplot for Parse biosciences RNA-seq data is shown below.
-You want to to include slightly more cells than the knee indicates. For
+You want to include slightly more cells than the knee indicates. For
 Atrandi microbial WGS data, knee plots cannot be trusted, and you may
 want a fair bit more to account for lysis differences (see our
 manuscript). Including too many cells will slow down later steps but you

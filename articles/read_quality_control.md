@@ -91,7 +91,7 @@ mystats <- GetFASTQCassembledDF(
 Possible values of section are:
 
 - “Basic Statistics”
-- “Per base sequence quality”
+- “Per base sequence quality” d
 - “Per sequence quality scores”
 - “Per base sequence content”
 - “Per sequence GC content”

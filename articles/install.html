@@ -87,17 +87,27 @@
 <div class="section level2">
 <h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
 </h2>
-<p>We strive to support Linux, OSX and Windows. We see two type of
-users: * Users who do heavy preprocessing. Our tools are designed to
-maximally benefit from a beefy computer, ideally an HPC cluster. But a
-16GB RAM laptop is technically enough * Users who do postprocessing in
-R. Any computer should be enough, but most single-cell users will likely
-have 32 or 64GB installed to be able to run Seurat on large modern
-datasets (and Zorn integrates with Seurat)</p>
-<p>Bascet is compiled with the assumption that your CPU supports the BMI
-instruction set. Any computer past 2015 should have it. If for some odd
-reason your computer does not have, you will need to compile Bascet
-yourself</p>
+<p>We see two types of users and requirements: - <strong>Users who do
+heavy preprocessing</strong> Our tools are designed to maximally benefit
+from a beefy computer, ideally an HPC cluster. But a 16GB RAM laptop is
+technically enough. - <strong>Users who do postprocessing in R</strong>
+Any computer should be enough, but most single-cell users will likely
+want to have 32 or 64GB installed to be able to run Seurat on large
+modern datasets. Bascet integrates with Seurat.</p>
+<p>We strive to support Linux, OSX and Windows.</p>
+<blockquote>
+<p>⚠️ Bascet is compiled with the assumption that your CPU supports the
+BMI instruction set. Any computer past 2015 should have it. You will
+need to <a href="for_developers.html">compile Bascet yourself</a>
+if:</p>
+<ul>
+<li>Your CPU does not support the BMI instruction set (uncommon for
+machines past 2015)</li>
+<li>You are running OSX, where our Docker/Podman/Singularity images
+currently only run via Apple’s x86 emulation layer for Apple Silicon.
+For native Apple Silicon support you will need to <a href="for_developers.html">compile Bascet yourself</a>.</li>
+</ul>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="step-1-install-zorn">Step 1: Install Zorn<a class="anchor" aria-label="anchor" href="#step-1-install-zorn"></a>
@@ -129,9 +139,12 @@ for HPC environments)<a class="anchor" aria-label="anchor" href="#install-bascet
 </h3>
 <p>First <a href="https://docs.sylabs.io/guides/3.0/user-guide/installation.html" class="external-link">install
 Singularity</a>.</p>
-<p>Note one possibly annoying default setting! We could not read Bascet
-files on some file systems, because they were invisible to Bascet. To
-avoid this, edit /etc/singularity/singularity.conf to below:</p>
+<blockquote>
+<p>⚠️ Note one possibly annoying default setting! We could not read
+Bascet files on some file systems, because they were invisible to
+Bascet. To avoid this, edit /etc/singularity/singularity.conf to
+below:</p>
+</blockquote>
 <pre><code>mount hostfs = yes</code></pre>
 <p>Once installed, Zorn can then pull down the latest Singularity image
 for you. We recommend keeping it in a separate directory from your
@@ -166,9 +179,11 @@ workspace, as multiple workspaces can share the same image</p>
 <p>Note that Docker only exposes certain directories, listed upon start.
 You may have to add more directories depending on where your data is
 located.</p>
-<p>Also note that you need to have Docker desktop running (OSX/Windows)
-whenever you use the conainer. If you don’t like this, pick Podman or
-Singularity instead.</p>
+<blockquote>
+<p>⚠️ Also note that you need to have Docker desktop running
+(OSX/Windows) whenever you use the container. If you don’t like this,
+please use Podman or Singularity instead.</p>
+</blockquote>
 </div>
 </div>
 <div class="section level2">
@@ -181,10 +196,10 @@ Singularity instead.</p>
 <div class="section level2">
 <h2 id="using-the-bascet-instance">Using the Bascet instance<a class="anchor" aria-label="anchor" href="#using-the-bascet-instance"></a>
 </h2>
-<p>You need to pass the bascet_inst variable to each Zorn command that
-requires it. The singularity image will be cached, so if you run this
-again, it will instead use the previous image. You will need to delete
-it manually if you wish to replace it.</p>
+<p>You need to pass the bascetInstance variable to each Zorn command
+that requires it. The singularity image will be cached, so if you run
+this again, it will instead use the previous image. You will need to
+delete it manually if you wish to replace it.</p>
 </div>
 <div class="section level2">
 <h2 id="for-developers-accessing-a-locally-compiled-bascet">For developers: Accessing a locally compiled Bascet<a class="anchor" aria-label="anchor" href="#for-developers-accessing-a-locally-compiled-bascet"></a>
