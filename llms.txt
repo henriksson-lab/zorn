@@ -82,8 +82,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   file exist, it will not be run again
 - [`BascetCellNames()`](https://henriksson-lab.github.io/zorn/reference/BascetCellNames.md)
   : Get list of cells in a Bascet
-- [`BascetCellNames_withstreamer()`](https://henriksson-lab.github.io/zorn/reference/BascetCellNames_withstreamer.md)
-  : Get list of cells in a Bascet – streamer provided
 - [`BascetComputeMinhash()`](https://henriksson-lab.github.io/zorn/reference/BascetComputeMinhash.md)
   : Compute minhashes for each cell. This is a thin wrapper around
   BascetMapCell
@@ -238,8 +236,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   as.data.frame.
 - [`MergeBascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/MergeBascetCountMatrix.md)
   : Merge a list of count matrices as produced by Bascet
-- [`NewBascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/NewBascetCountMatrix.md)
-  : Create new BascetCountMatrix
 - [`NoRunner()`](https://henriksson-lab.github.io/zorn/reference/NoRunner.md)
   : Create new no-runner instance, used for debugging
 - [`OpenBascet()`](https://henriksson-lab.github.io/zorn/reference/OpenBascet.md)
@@ -254,8 +250,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`PrepareSharding()`](https://henriksson-lab.github.io/zorn/reference/PrepareSharding.md)
   : Prepare to shard reads by collecting statistics about each barcode,
   and filtering out cells with few reads
-- [`PrependBascetCountMatrixName()`](https://henriksson-lab.github.io/zorn/reference/PrependBascetCountMatrixName.md)
-  : Prefix names of cells in a count matrix
 - [`ReadBascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/ReadBascetCountMatrix.md)
   : Read a count matrix as produced by Bascet (hdf5 format). This can be
   output from both BascetQueryFq and BascetCountChrom
@@ -272,8 +266,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Show the FASTQC HTML report for a cell, in the available web browser
 - [`SlurmRunner()`](https://henriksson-lab.github.io/zorn/reference/SlurmRunner.md)
   : Create a runner that submits jobs to SLURM
-- [`SpeciesCorrMatrix()`](https://henriksson-lab.github.io/zorn/reference/SpeciesCorrMatrix.md)
-  : TODO is this function used? export
 - [`TabixGetFragmentsSeqs()`](https://henriksson-lab.github.io/zorn/reference/TabixGetFragmentsSeqs.md)
   : Using Tabix, get list of sequences in a fragment file
 - [`TestBascetInstance()`](https://henriksson-lab.github.io/zorn/reference/TestBascetInstance.md)
@@ -302,13 +294,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`aggr.rawtext()`](https://henriksson-lab.github.io/zorn/reference/aggr.rawtext.md)
   : Callback function for just getting raw file contents To be called
   from BascetAggregateMap
-- [`assembleBascetCommand()`](https://henriksson-lab.github.io/zorn/reference/assembleBascetCommand.md)
-  : Prepare Bascet command given arguments
-- [`bascetCheckOverwriteOutput()`](https://henriksson-lab.github.io/zorn/reference/bascetCheckOverwriteOutput.md)
-  : Detect metadata for raw input FASTQ files
-- [`checkTotalMemArg()`](https://henriksson-lab.github.io/zorn/reference/checkTotalMemArg.md)
-  : Given memory amount in mb, format it in a format suitable for Rust
-  parsing
 - [`colSums(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/colSums-BascetCountMatrix-method.md)
   : Column sums of a BascetCountMatrix (counts per feature)
 - [`colnames(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/colnames-BascetCountMatrix-method.md)
@@ -319,35 +304,10 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : This creates a job object, linking to a running command. Mainly used
   for development but can be used in case a Zorn session died and you
   want to create a new monitor
-- [`detectShardsForFile()`](https://henriksson-lab.github.io/zorn/reference/detectShardsForFile.md)
-  : Helper function: Figure out which shards belong together given root
-  input name and extension i.e. root/name.##.ext
 - [`dim(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/dim-BascetCountMatrix-method.md)
   : Dimensions of a BascetCountMatrix
-- [`extractstreamerExit()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerExit.md)
-  : extract streamer: end an instance. the object should no longer be
-  used after calling this function
-- [`extractstreamerExtractTo()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerExtractTo.md)
-  : extract streamer: extract to external file
-- [`extractstreamerListCellsAnyFile()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerListCellsAnyFile.md)
-  : extract streamer: list all cells in a given file
-- [`extractstreamerLs()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerLs.md)
-  : extract streamer: list all files in current Bascet zip-file
-- [`extractstreamerOpen()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerOpen.md)
-  : extract streamer: set which file is open
-- [`extractstreamerReadNLines()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerReadNLines.md)
-  : extract streamer: helper function to read N lines
-- [`extractstreamerReadOneLine()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerReadOneLine.md)
-  : extract streamer: helper function to read one line
-- [`extractstreamerShowtext()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerShowtext.md)
-  : extract streamer: get content of file, assumed to be text (or this
-  function crashes)
-- [`extractstreamerStart()`](https://henriksson-lab.github.io/zorn/reference/extractstreamerStart.md)
-  : extract streamer: create an instance
 - [`formatPlainNumber()`](https://henriksson-lab.github.io/zorn/reference/formatPlainNumber.md)
   : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
-- [`format_size_bascet()`](https://henriksson-lab.github.io/zorn/reference/format_size_bascet.md)
-  : Format size for input to Bascet
 - [`getBascetBinary()`](https://henriksson-lab.github.io/zorn/reference/getBascetBinary.md)
   : Get a Bascet binary for the current platform It will be cached in
   the provided directory to avoid downloading it each the time the
@@ -365,55 +325,12 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Get a Bascet image (singularity or docker). It will be cached in the
   provided directory to avoid downloading it each the time the function
   is called
-- [`getFastqR2fromR1()`](https://henriksson-lab.github.io/zorn/reference/getFastqR2fromR1.md)
-  : Get corresponding R2 file. Assumes that the input file is R1
 - [`is.BascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/is.BascetCountMatrix.md)
   : Check that parameter is a BascetCountMatrix
-- [`is.bascet.file()`](https://henriksson-lab.github.io/zorn/reference/is.bascet.file.md)
-  : Check that parameter is a valid bascet file
-- [`is.bascet.instance()`](https://henriksson-lab.github.io/zorn/reference/is.bascet.instance.md)
-  : Check that parameter is a valid bascet instance
-- [`is.existing.fasta()`](https://henriksson-lab.github.io/zorn/reference/is.existing.fasta.md)
-  : Check that parameter is a valid shard name
-- [`is.integer.like()`](https://henriksson-lab.github.io/zorn/reference/is.integer.like.md)
-  : Check that parameter is castable to an integer
-- [`is.numeric(`*`<range01>`*`)`](https://henriksson-lab.github.io/zorn/reference/is.numeric.range01.md)
-  : Check that parameter is a number between 0..1
-- [`is.percent.string()`](https://henriksson-lab.github.io/zorn/reference/is.percent.string.md)
-  : Check that parameter is in the form "xxx%"
-- [`is.positive.integer()`](https://henriksson-lab.github.io/zorn/reference/is.positive.integer.md)
-  : Check that parameter is an integer and \>0
-- [`is.runner()`](https://henriksson-lab.github.io/zorn/reference/is.runner.md)
-  : Check that parameter is a valid runner
-- [`is.streamer()`](https://henriksson-lab.github.io/zorn/reference/is.streamer.md)
-  : Check that parameter is a valid streamer
-- [`is.valid.env.variable()`](https://henriksson-lab.github.io/zorn/reference/is.valid.env.variable.md)
-  : Check that parameter is a valid environment variable name
-- [`is.valid.listcells()`](https://henriksson-lab.github.io/zorn/reference/is.valid.listcells.md)
-  : Check that parameter is a valid list of cells
-- [`is.valid.memsize()`](https://henriksson-lab.github.io/zorn/reference/is.valid.memsize.md)
-  : Check that parameter is a valid memory size
-- [`is.valid.shardname()`](https://henriksson-lab.github.io/zorn/reference/is.valid.shardname.md)
-  : Check that parameter is a valid shard name
-- [`is.valid.threadcount()`](https://henriksson-lab.github.io/zorn/reference/is.valid.threadcount.md)
-  : Check that parameter is a valid thread count
 - [`isBamPairedAlignment()`](https://henriksson-lab.github.io/zorn/reference/isBamPairedAlignment.md)
   : Figure out if a BAM-file is a paired alignment or not
-- [`isFastq()`](https://henriksson-lab.github.io/zorn/reference/isFastq.md)
-  : Check if a file is a FASTQ file
-- [`isPairedFastq()`](https://henriksson-lab.github.io/zorn/reference/isPairedFastq.md)
-  : Check if a file is a paired FASTQ file. Panics if the file is not a
-  FASTQ at all
 - [`lseq()`](https://henriksson-lab.github.io/zorn/reference/lseq.md) :
   logarithmic spaced sequence; taken from emdbook library
-- [`makeOutputShardNames()`](https://henriksson-lab.github.io/zorn/reference/makeOutputShardNames.md)
-  : Helper function: Generate suitable output filenames according to
-  shard system i.e. root/name.##.ext
-- [`new_no_job()`](https://henriksson-lab.github.io/zorn/reference/new_no_job.md)
-  : Create an empty job. It is considered to have terminated from the
-  start
-- [`parse_size_string()`](https://henriksson-lab.github.io/zorn/reference/parse_size_string.md)
-  : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
 - [`removeBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.md)
   : Remove current Bascet docker image
 - [`removeBascetPodmanImage()`](https://henriksson-lab.github.io/zorn/reference/removeBascetPodmanImage.md)
@@ -424,25 +341,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Row names of a BascetCountMatrix (cell names)
 - [`` `rownames<-`( ``*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/rownames-set-BascetCountMatrix-method.md)
   : Set row names of a BascetCountMatrix (cell names)
-- [`safeDownloadMD5()`](https://henriksson-lab.github.io/zorn/reference/safeDownloadMD5.md)
-  : Download a file, check MD5 to ensure success. This assumes a
-  file.md5 is stored on the server
-- [`shellscriptCancelJobIfFileExists()`](https://henriksson-lab.github.io/zorn/reference/shellscriptCancelJobIfFileExists.md)
-  : Create a piece of script to exit a job early if file exists
-- [`shellscriptMakeBashArray()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeBashArray.md)
-  : Helper function: Create array of values in bash scripts example:
-  myArray=("cat" "dog" "mouse" "frog")
-- [`shellscriptMakeCommalist()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeCommalist.md)
-  : Helper function, taking a list of elements such as \[a,b\], and
-  returning "a,b"
-- [`shellscriptMakeFilesExpander()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeFilesExpander.md)
-  : Generate a shell script command to produce a file of list of strings
-- [`shellscriptMakeOneFileExpander()`](https://henriksson-lab.github.io/zorn/reference/shellscriptMakeOneFileExpander.md)
-  : Helper function that takes content of a list and generates a BASH
-  script that stores the content in a temporary file during execution
-- [`shellscriptSplitArrayIntoListRandomly()`](https://henriksson-lab.github.io/zorn/reference/shellscriptSplitArrayIntoListRandomly.md)
-  : Helper function to take an array of elements and split it randomly
-  into a number of subset lists
 - [`` `[`( ``*`<BascetCountMatrix>`*`,`*`<ANY>`*`,`*`<ANY>`*`,`*`<ANY>`*`)`](https://henriksson-lab.github.io/zorn/reference/sub-BascetCountMatrix-ANY-ANY-ANY-method.md)
   : Subset a BascetCountMatrix
 
