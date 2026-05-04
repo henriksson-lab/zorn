@@ -167,10 +167,43 @@ getBascetExecutable <- function(
 
 
 ###############################################
+#' Get the default directory for storing Bascet binaries
+#'
+#' @return A directory path
+#' @export
+defaultBascetBinDir <- function() {
+  candidate_dirs <- if(.Platform$OS.type == "windows") {
+    c(
+      file.path(Sys.getenv("USERPROFILE"), "Downloads"),
+      file.path(path.expand("~"), "Downloads"),
+      Sys.getenv("USERPROFILE"),
+      path.expand("~")
+    )
+  } else {
+    c(
+      file.path(path.expand("~"), "Downloads"),
+      path.expand("~")
+    )
+  }
+
+  candidate_dirs <- candidate_dirs[nzchar(candidate_dirs)]
+  candidate_dirs <- path.expand(candidate_dirs)
+  candidate_dirs <- candidate_dirs[dir.exists(candidate_dirs)]
+
+  if(length(candidate_dirs) == 0) {
+    stop("Could not find a default directory for storing Bascet binaries")
+  }
+
+  candidate_dirs[[1]]
+}
+
+
+
+###############################################
 #' Get a Bascet binary for the current platform
 #' It will be cached in the provided directory to avoid downloading it each the time the function is called
 #'
-#' @param storeAt Directory to store the binary in. Default is current directory but it is likely better to provide a single systems level directory
+#' @param storeAt Directory to store the binary in. If NULL, uses \code{\link{defaultBascetBinDir}}
 #' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
 #' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
 #' @param forceInstall Force download of the Bascet binary even if a cached binary exists
@@ -178,12 +211,15 @@ getBascetExecutable <- function(
 #' @return A Bascet instance
 #' @export
 getBascetBinary <- function(
-    storeAt=getwd(),
+    storeAt=NULL,
     tempdir=NULL,
     logLevel="info",
     forceInstall=FALSE
 ){
   #Check arguments
+  if(is.null(storeAt)) {
+    storeAt <- defaultBascetBinDir()
+  }
   stopifnot(dir.exists(storeAt))
   stopifnot(is.logical(forceInstall), length(forceInstall) == 1, !is.na(forceInstall))
 

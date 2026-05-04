@@ -6,14 +6,14 @@
 It will be cached in the provided directory to avoid downloading it each the time the function is called}
 \usage{
 getBascetBinary(
-  storeAt = getwd(),
+  storeAt = NULL,
   tempdir = NULL,
   logLevel = "info",
   forceInstall = FALSE
 )
 }
 \arguments{
-\item{storeAt}{Directory to store the binary in. Default is current directory but it is likely better to provide a single systems level directory}
+\item{storeAt}{Directory to store the binary in. If NULL, uses \code{\link{defaultBascetBinDir}}}
 
 \item{tempdir}{Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible}
 
