@@ -2,14 +2,22 @@
 % Please edit documentation in R/ext_tools.R
 \name{BascetMapCellFASTQC}
 \alias{BascetMapCellFASTQC}
-\title{Run FASTQC on reads of all cells.
-This is a thin wrapper around BascetMapCell}
+\title{Run FASTQC on reads of all cells.}
 \usage{
 BascetMapCellFASTQC(
   bascetRoot,
   inputName = "filtered",
   outputName = "fastqc",
-  ...
+  numThreads = NULL,
+  numThreadsRead = NULL,
+  nogroup = FALSE,
+  expgroup = FALSE,
+  kmerSize = 7,
+  minLength = 0,
+  dupLength = 50,
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
@@ -19,15 +27,30 @@ BascetMapCellFASTQC(
 
 \item{outputName}{Name of output shard}
 
-\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
+\item{numThreads}{Total thread budget. Defaults to the runner CPU count}
+
+\item{numThreadsRead}{Threads used by the TIRP reader. If NULL, use the CLI default}
+
+\item{nogroup}{Do not group bases in the FastQC per-base modules}
+
+\item{expgroup}{Use exponential base grouping in the FastQC per-base modules}
+
+\item{kmerSize}{K-mer size for FastQC k-mer content}
+
+\item{minLength}{Minimum sequence length to include}
+
+\item{dupLength}{Length to truncate sequences for duplication detection}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
 }
 \description{
-Run FASTQC on reads of all cells.
-This is a thin wrapper around BascetMapCell
-}
-\seealso{
-\code{\link{BascetMapCell}}
+This uses the bascet integrated fastqc command rather than the old mapcell
+system.
 }

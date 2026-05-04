@@ -2,14 +2,20 @@
 % Please edit documentation in R/ext_tools.R
 \name{BascetMapCellGECCO}
 \alias{BascetMapCellGECCO}
-\title{Run GECCO on contigs of all cells.
-This is a thin wrapper around BascetMapCell}
+\title{Run GECCO on contigs of all cells.}
 \usage{
 BascetMapCellGECCO(
   bascetRoot,
   inputName = "contigs",
   outputName = "gecco",
-  ...
+  numThreads = NULL,
+  dataDir = NULL,
+  threshold = 0.8,
+  cds = 3,
+  noMask = FALSE,
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
@@ -19,15 +25,26 @@ BascetMapCellGECCO(
 
 \item{outputName}{Name of output shard}
 
-\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
+\item{numThreads}{Total thread budget. Defaults to the runner CPU count}
+
+\item{dataDir}{GECCO data directory containing HMM, CRF model, and InterPro files}
+
+\item{threshold}{Minimum probability for cluster membership}
+
+\item{cds}{Minimum number of annotated CDS in a cluster}
+
+\item{noMask}{Do not mask ambiguous nucleotides during gene prediction}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
 }
 \description{
-Run GECCO on contigs of all cells.
-This is a thin wrapper around BascetMapCell
-}
-\seealso{
-\code{\link{BascetMapCell}}
+This uses the bascet integrated gecco command rather than the old mapcell
+system.
 }
