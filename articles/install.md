@@ -53,8 +53,18 @@ You also need Bascet, our command-line suite for single-cell analysis.
 
 ``` r
 
+bascetInstance.default <- getBascetBinary()
+```
+
+or if you want to store the binary in a specific directory (it is
+\<500mb):
+
+``` r
+
 bascetInstance.default <- getBascetBinary(storeAt="/somewhere/on/your/disk/")
 ```
+
+If the file is already downloaded, it will not be downloaded again.
 
 ## Step 3: Test the installation
 
