@@ -7,19 +7,21 @@ output:
   pdf_document: default
 ---
 
-
 ## Requirements
 
-We strive to support Linux, OSX and Windows. We see two type of users:
-* Users who do heavy preprocessing. Our tools are designed to maximally benefit from a beefy computer, ideally an HPC cluster. But a 16GB RAM laptop is technically enough
-* Users who do postprocessing in R. Any computer should be enough, but most single-cell users will likely have 32 or 64GB installed to be able to run Seurat on large modern datasets (and Zorn integrates with Seurat)
+We see two types of users and requirements:
+- **Users who do heavy preprocessing** Our tools are designed to maximally benefit from a beefy computer, ideally an HPC cluster. But a 16GB RAM laptop is technically enough.
+- **Users who do postprocessing in R** Any computer should be enough, but most single-cell users will likely want to have 32 or 64GB installed to be able to run Seurat on large modern datasets. Bascet integrates with Seurat.
 
-Bascet is compiled with the assumption that your CPU supports the BMI instruction set. Any computer past 2015 should have it. If for some odd reason your computer does not have, you will need to compile Bascet yourself
+We strive to support Linux, OSX and Windows.
+
+> ⚠️ Bascet is compiled with the assumption that your CPU supports the BMI instruction set. Any computer past 2015 should have it. You will need to [compile Bascet yourself](for_developers.html) if:
+>
+> - Your CPU does not support the BMI instruction set (uncommon for machines past 2015)
 
 ## Step 1: Install Zorn
 
-Zorn is under active development, so just get it straight
-from GitHub and install from source:
+Zorn is under active development, so just get it straight from GitHub and install from source:
 
 ```{r, eval=F, echo=T}
 if (!requireNamespace("devtools", quietly = TRUE))
@@ -28,12 +30,13 @@ devtools::install_github("henriksson-lab/zorn")
 ```
 
 or newer method (above is becoming deprecated):
+
 ```{r, eval=F, echo=T}
 pak::pkg_install("henriksson-lab/zorn")
 ```
 
-
 You can then load it:
+
 ```{r, eval=F, echo=T}
 library(Zorn)
 ```
@@ -42,6 +45,7 @@ library(Zorn)
 
 You also need Bascet, our command-line suite for single-cell analysis.
 
+
 ```{r, eval=F, echo=T}
 bascetInstance.default <- getBascetBinary(storeAt="/somewhere/on/your/disk/")
 ```
@@ -49,17 +53,15 @@ bascetInstance.default <- getBascetBinary(storeAt="/somewhere/on/your/disk/")
 ## Step 3: Test the installation
 
 Run the following and see if you get "ok" before proceeding:
+
 ```{r, eval=F, echo=T}
 TestBascetInstance(bascetInstance.default)
 ```
 
 ## Using the Bascet instance
 
-You need to pass the bascet_inst variable to each Zorn command that requires it.
-The singularity image will be cached, so if you run this again, it will instead use
-the previous image. You will need to delete it manually if you wish to replace it.
+You need to pass the bascetInstance variable to each Zorn command that requires it.
 
 ## For developers: Accessing a locally compiled Bascet
 
 See [Bascet for Developers](for_developers.html)
-
