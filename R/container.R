@@ -64,6 +64,7 @@ BascetInstance <- function(
 ###############################################
 #' Check that parameter is a valid bascet instance
 #' @param x An object to test for BascetInstance class
+#' @noRd
 is.bascet.instance <- function(x) {
   stringr::str_detect(as.character(class(x)),"BascetInstance")
 }
@@ -620,6 +621,7 @@ if(FALSE){
 #' @param file Name of the file to download content to
 #' 
 #' @return Nothing; panics if the download fails
+#' @noRd
 safeDownloadMD5 <- function(
     url, 
     file
@@ -672,6 +674,7 @@ safeDownloadMD5 <- function(
 #' @param params List of parameters
 #' 
 #' @return Bascet command to run as a string
+#' @noRd
 assembleBascetCommand <- function(bascetInstance, params) {
   tor <- stringr::str_flatten(collapse = " ",
     c(

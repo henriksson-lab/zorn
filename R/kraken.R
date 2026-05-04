@@ -7,6 +7,7 @@
 #' @param adata A Seurat object with the DefaultAssay having counts per species
 #' 
 #' @return A ggplot object
+#' @noRd
 SpeciesCorrMatrix <- function(
     adata
 ){

@@ -23,6 +23,7 @@ setClass("Bascet", slots=list(
 ###############################################
 #' Check that parameter is a valid bascet file
 #' @param f An object to test for Bascet class
+#' @noRd
 is.bascet.file <- function(f) {
   as.character(class(f))=="Bascet"
 }
@@ -83,6 +84,7 @@ BascetCellNames <- function(
 #' @param streamer Bascet streamer instance
 #' 
 #' @return Vector of cell names as strings
+#' @noRd
 BascetCellNames_withstreamer <- function(
     bascetRoot, 
     bascetName,
@@ -517,6 +519,7 @@ AtrandiBarcodeStats <- function(
 #' @param inputName Name of input shard
 #' 
 #' @return List of files that correspond to the shard
+#' @noRd
 detectShardsForFile <- function(
     bascetRoot, 
     inputName,
@@ -577,6 +580,7 @@ detectShardsForFile <- function(
 #' @param num_shards Number of output shards
 #' 
 #' @return List of files to write shards to
+#' @noRd
 makeOutputShardNames <- function(
     bascetRoot, 
     outputName, 
@@ -621,6 +625,7 @@ if(FALSE){
 ###############################################
 #' Check that parameter is a valid streamer
 #' @param streamer An object to test for streamer validity
+#' @noRd
 is.streamer <- function(streamer) {
   #TODO
   TRUE
@@ -635,6 +640,7 @@ is.streamer <- function(streamer) {
 #' @param bascetInstance A Bascet instance
 #' 
 #' @return The process
+#' @noRd
 extractstreamerStart <- function(
     fname=NULL,
     verbose=FALSE,
@@ -716,6 +722,7 @@ extractstreamerStart <- function(
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return List of files
+#' @noRd
 extractstreamerLs <- function(
     p, 
     verbose=FALSE
@@ -747,6 +754,7 @@ extractstreamerLs <- function(
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return List of cells
+#' @noRd
 extractstreamerListCellsAnyFile <- function(
     p, 
     fname,
@@ -796,6 +804,7 @@ extractstreamerListCellsAnyFile <- function(
 #' @param p Streamer process
 #' 
 #' @return Nothing
+#' @noRd
 extractstreamerExit <- function(p){
   #Check arguments
   stopifnot(is.streamer(p))
@@ -811,6 +820,7 @@ extractstreamerExit <- function(p){
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return The line that was read
+#' @noRd
 extractstreamerReadOneLine <- function(
     p,
     verbose=FALSE
@@ -841,6 +851,7 @@ extractstreamerReadOneLine <- function(
 #' @param verbose Print additional information, primarily to help troubleshooting
 #'
 #' @return All the lines
+#' @noRd
 extractstreamerReadNLines <- function(
     p,
     n_lines,
@@ -890,6 +901,7 @@ extractstreamerReadNLines <- function(
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return The text, divided by line
+#' @noRd
 extractstreamerShowtext <- function(
     p, 
     fname, 
@@ -925,6 +937,7 @@ extractstreamerShowtext <- function(
 #' @param verbose Print additional information, primarily to help troubleshooting
 #' 
 #' @return 0 if ok
+#' @noRd
 extractstreamerOpen <- function(
     p, 
     fname, 
@@ -957,6 +970,7 @@ extractstreamerOpen <- function(
 #' @param outpath Path to write the extracted file to
 #'
 #' @return 0 if ok
+#' @noRd
 extractstreamerExtractTo <- function(
     p,
     fname,

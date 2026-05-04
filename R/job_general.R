@@ -100,6 +100,7 @@ setClass("NoJob", slots=list(
 #' Create an empty job. It is considered to have terminated from the start
 #' 
 #' @return A no-job
+#' @noRd
 new_no_job <- function() {
   new(
     "NoJob",
@@ -156,6 +157,7 @@ setMethod(
 ###############################################
 #' Check that parameter is a valid runner
 #' @param x An object to test for Runner class
+#' @noRd
 is.runner <- function(x) {
   stringr::str_detect(as.character(class(x)),"Runner")
 }

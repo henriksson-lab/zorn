@@ -263,6 +263,7 @@ BascetIndexGenomeMinimap2 <- function(
 #' @param fname Path to file
 #' 
 #' @return TRUE if the file is some type of FASTQ
+#' @noRd
 isFastq <- function(
     fname
 ) {
@@ -277,6 +278,7 @@ isFastq <- function(
 #' @param fname Path to file
 #' 
 #' @return TRUE if the file is a paired FASTQ
+#' @noRd
 isPairedFastq <- function(
     fname
 ) {
@@ -298,6 +300,7 @@ isPairedFastq <- function(
 #' @param fname Path to file
 #' 
 #' @return Path to R2 file
+#' @noRd
 getFastqR2fromR1 <- function(
     fname
 ) {

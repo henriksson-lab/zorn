@@ -59,6 +59,7 @@ CreateSeuratObject.BascetCountMatrix <- function(counts, ...) {
 #' @param obs Data frame of observation metadata, one row per cell
 #' 
 #' @return A Bascet count matrix object
+#' @noRd
 NewBascetCountMatrix <- function(
     X,
     obs
@@ -306,6 +307,7 @@ ReadBascetCountMatrix <- function(
 ###############################################
 #' Prefix names of cells in a count matrix
 #' 
+#' @noRd
 PrependBascetCountMatrixName <- function(
     mat,
     prependName

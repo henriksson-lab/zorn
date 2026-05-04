@@ -25,6 +25,7 @@
 ###############################################
 #' Check that parameter is a valid environment variable name
 #' @param x A string representing an environment variable name
+#' @noRd
 is.valid.env.variable <- function(x) {
   #TODO check that the name has no weird symbols
   is.character(x)
@@ -42,6 +43,7 @@ is.valid.env.variable <- function(x) {
 #' @param list_content Content for each file
 #' 
 #' @return Part of a shell script
+#' @noRd
 shellscriptMakeFilesExpander <- function(
     for_variable, 
     list_content
@@ -106,6 +108,7 @@ shellscriptMakeFilesExpander <- function(
 #' @param f List of elements
 #' 
 #' @return Formatted list
+#' @noRd
 shellscriptMakeCommalist <- function(
     f
 ) {
@@ -121,6 +124,7 @@ shellscriptMakeCommalist <- function(
 #' @param vals Array of strings to store into the environment variable
 #' 
 #' @return A string similar to: myArray=("cat" "dog" "mouse" "frog")
+#' @noRd
 shellscriptMakeBashArray <- function(
     variable, 
     vals
@@ -149,6 +153,7 @@ if(FALSE){
 #' @param num_divide Number of subdivions
 #' 
 #' @return List of arrays
+#' @noRd
 shellscriptSplitArrayIntoListRandomly <- function(
     arr, 
     num_divide
@@ -176,6 +181,7 @@ shellscriptSplitArrayIntoListRandomly <- function(
 #' @param list_lines Content to write to the file
 #' 
 #' @return BASH script content for the expander
+#' @noRd
 shellscriptMakeOneFileExpander <- function(
     tmpname, 
     list_lines
@@ -205,6 +211,7 @@ shellscriptMakeOneFileExpander <- function(
 #' @param fvar Name of file
 #' 
 #' @return BASH script content 
+#' @noRd
 shellscriptCancelJobIfFileExists <- function(
     fvar
 ) {

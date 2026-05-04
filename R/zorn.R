@@ -45,6 +45,7 @@ if(FALSE) {
 #' @param s Size as string. If numeric, it is just returned
 #' 
 #' @return Size in bytes, as integer in a string (long format)
+#' @noRd
 parse_size_string <- function(s) {
   if(is.null(s)) {
     return(NULL)
@@ -91,6 +92,7 @@ parse_size_string <- function(s) {
 #' Format size for input to Bascet
 #' 
 #' @param s Size as output from fs::fs_bytes, or a string
+#' @noRd
 format_size_bascet <- function(s) {
   paste0(s, "B")
 }
@@ -129,6 +131,7 @@ formatPlainNumber <- function(s) {
 #' @param totalMem Total memory to allocate, as a string (e.g. "8g"). If NULL, derived from runner
 #' @param runner The job runner, used to extract memory settings if totalMem is NULL
 #' @param bascetInstance A Bascet instance, used to subtract container memory overhead
+#' @noRd
 checkTotalMemArg <- function(
     totalMem,
     runner,
@@ -158,6 +161,7 @@ checkTotalMemArg <- function(
 ###############################################
 #' Check that parameter is in the form "xxx%"
 #' @param s A string to test for percent format (e.g. "10%")
+#' @noRd
 is.percent.string <- function(s) {
   if(!is.null(s)) {
     pref <- stringr::str_sub(s, 1,stringr::str_length(s)-1)
@@ -176,6 +180,7 @@ is.percent.string <- function(s) {
 ###############################################
 #' Check that parameter is a valid memory size
 #' @param x A string representing a memory size (e.g. "8g")
+#' @noRd
 is.valid.memsize <- function(x) {
   !is.na(parse_size_string(x))
 }
@@ -184,6 +189,7 @@ is.valid.memsize <- function(x) {
 ###############################################
 #' Check that parameter is a valid thread count
 #' @param x A numeric thread count
+#' @noRd
 is.valid.threadcount <- function(x) {
   #Note: not calling is.positive.integer to ensure we get a proper error message
   round(x)==x & x>0
@@ -192,6 +198,7 @@ is.valid.threadcount <- function(x) {
 ###############################################
 #' Check that parameter is an integer and >0
 #' @param x A numeric value
+#' @noRd
 is.positive.integer <- function(x) {
   round(x)==x & x>0
 }
@@ -199,6 +206,7 @@ is.positive.integer <- function(x) {
 ###############################################
 #' Check that parameter is castable to an integer
 #' @param x A numeric value
+#' @noRd
 is.integer.like <- function(x) {
   round(x)==x
 }
@@ -206,6 +214,7 @@ is.integer.like <- function(x) {
 ###############################################
 #' Check that parameter is a valid shard name
 #' @param x A string representing a shard name
+#' @noRd
 is.valid.shardname <- function(x) {
   # can expand upon this
   is.character(x) && !stringr::str_detect(x,stringr::fixed("."))
@@ -215,6 +224,7 @@ is.valid.shardname <- function(x) {
 ###############################################
 #' Check that parameter is a valid list of cells
 #' @param x A character vector of cell names, or NULL
+#' @noRd
 is.valid.listcells <- function(x) {
   is.null(x) || is.character(x)
 }
@@ -223,6 +233,7 @@ is.valid.listcells <- function(x) {
 ###############################################
 #' Check that parameter is a valid shard name
 #' @param x A file path string pointing to a FASTA file
+#' @noRd
 is.existing.fasta <- function(x) {
   is_fasta <- 
     stringr::str_ends(x,stringr::fixed(".fa")) ||
@@ -236,6 +247,7 @@ is.existing.fasta <- function(x) {
 ###############################################
 #' Check that parameter is a number between 0..1
 #' @param x A numeric value
+#' @noRd
 is.numeric.range01 <- function(x) {
   is.numeric(x) && x>=0 && x<=1
 }
@@ -261,6 +273,7 @@ is.numeric.range01 <- function(x) {
 #' @param overwrite Files that we expect to exist
 #' 
 #' @return TRUE if ok to proceed
+#' @noRd
 bascetCheckOverwriteOutput <- function(
   outputFiles, 
   overwrite
