@@ -56,6 +56,7 @@ cell without having to scan through the entire file.
 
 Example:
 
+
     @BASCET_cell1:AAAA:1
     ATCGATCGATCG
     +

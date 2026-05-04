@@ -5,6 +5,7 @@ to run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.
 
 ``` r
+
 library(Zorn)
 bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
@@ -16,19 +17,20 @@ identify which read belongs to which cell. Zorn can automatically figure
 out which files to use for what:
 
 ``` r
+
 rawmeta <- DetectRawFileMeta("/home/yours/directory_with_raw_fastq")
 ```
 
 Depending on your input data, rawmeta might look like this:
 
-| prefix          | r1                                       | r2                                       | dir                                          |
-|:----------------|:-----------------------------------------|:-----------------------------------------|:---------------------------------------------|
+| prefix | r1 | r2 | dir |
+|:---|:---|:---|:---|
 | UDI_Plate_WT_29 | UDI_Plate_WT_29_S43_L007_R1_001.fastq.gz | UDI_Plate_WT_29_S43_L007_R2_001.fastq.gz | /home/m/mahogny/mystore/dataset/250611/fastq |
 | UDI_Plate_WT_29 | UDI_Plate_WT_29_S43_L008_R1_001.fastq.gz | UDI_Plate_WT_29_S43_L008_R2_001.fastq.gz | /home/m/mahogny/mystore/dataset/250611/fastq |
 | UDI_Plate_WT_30 | UDI_Plate_WT_30_S44_L007_R1_001.fastq.gz | UDI_Plate_WT_30_S44_L007_R2_001.fastq.gz | /home/m/mahogny/mystore/dataset/250611/fastq |
 | UDI_Plate_WT_30 | UDI_Plate_WT_30_S44_L008_R1_001.fastq.gz | UDI_Plate_WT_30_S44_L008_R2_001.fastq.gz | /home/m/mahogny/mystore/dataset/250611/fastq |
 
-Example input file metadata
+Example input file metadata {.table}
 
 Prefix is the name of the library, of which there are two here. Note the
 paired input FASTQ files R1 and R2. Zorn has here detected that the
@@ -57,6 +59,7 @@ SPC-based MDA protocol for WGS.
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 BascetGetRaw(
     bascetRoot, 
     rawmeta,
@@ -72,6 +75,7 @@ done in two steps, in which you first set up a “plan”. This is done
 using the following command:
 
 ``` r
+
 debstat <- PrepareSharding(
   bascetRoot,
   inputName="debarcoded",
@@ -83,6 +87,7 @@ Before you proceed, you should perform a kneeplot analysis to see which
 cells you keep:
 
 ``` r
+
 DebarcodedKneePlot(
   debstat,
   filename = "kneeplot.pdf" #optional
@@ -119,6 +124,7 @@ it is more likely to cause mistakes.
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 BascetShardify(
   debstat,
   numOutputShards = 10 #Shards per library; increase to spread the workload over more computers

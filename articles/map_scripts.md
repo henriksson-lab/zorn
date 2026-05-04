@@ -14,6 +14,7 @@ quality metrics of each assembled genome:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 BascetMapCell(
   bascetRoot,
   withfunction = "_quast",
@@ -29,6 +30,7 @@ results into R. We call this procedure “aggregate”. In case of QUAST,
 this procedure loads all quality metrics into an R data.frame object:
 
 ``` r
+
 quast_aggr <- MapListAsDataFrame(BascetAggregateMap(
   bascetRoot,
   inputName="quast",
@@ -63,6 +65,7 @@ which takes FASTQ as input
 Once you have written your script, you invoke it with a direct path:
 
 ``` r
+
 BascetMapCell(
   bascetRoot,
   withfunction = "/path/to/your/script.sh",
@@ -83,6 +86,7 @@ each tool, and stores the raw file content in a list. This is not pretty
 but it may help you in debugging and development:
 
 ``` r
+
 quast_aggr <- MapListAsDataFrame(BascetAggregateMap(
   bascetRoot,
   inputName="..",

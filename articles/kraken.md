@@ -5,6 +5,7 @@ to run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.
 
 ``` r
+
 library(Zorn)
 bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
@@ -22,6 +23,7 @@ directory. You can then run KRAKEN2 like this:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### Run Kraken on each cell. Produce a count matrix of taxonomy features
 BascetRunKraken(
   bascetRoot,
@@ -44,6 +46,7 @@ concatenates them into a single matrix. It can then be loaded into
 Seurat:
 
 ``` r
+
 mat <- ReadBascetCountMatrix(bascetRoot,"kraken", verbose=FALSE)
 
 adata <- CreateSeuratObject(mat, project = "proj", min.cells = 0, min.features = 0)
@@ -54,6 +57,7 @@ annotate species by simply picking the dominant species, phylum and
 group for each cell:
 
 ``` r
+
 ## Look up taxonomy consensus data given taxonomyID counts for each cell
 kraken_taxid <- KrakenFindConsensusTaxonomy(mat)
 
@@ -67,6 +71,7 @@ differently hard to lyse, you will likely have phylum-specific kneeplot
 patterns.
 
 ``` r
+
 showNumSpecies <- 10
 KrakenKneePlot(adata, groupby = "phylum", showNumSpecies=showNumSpecies)
 ```
@@ -79,6 +84,7 @@ different cutoffs for different species). This is however the most basic
 filtering you can perform:
 
 ``` r
+
 keep_cells <- adata$nCount_RNA > 10000 #10k reads
 sum(keep_cells)
 adata <- adata[,keep_cells]
@@ -94,6 +100,7 @@ appropriate.
 ATAC-seq style analysis
 
 ``` r
+
 #ATAC-seq style analysis
 library(Signac)
 adata <- RunTFIDF(adata)
@@ -119,6 +126,7 @@ You can now plot a UMAP with your cells! Here colored by genus, but you
 can also try other levels of annotation:
 
 ``` r
+
 DimPlot(object = adata, label = TRUE, group.by = "genus", reduction = "kraken_umap") + 
   NoLegend() + 
   xlab("KRAKEN1") + 

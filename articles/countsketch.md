@@ -5,6 +5,7 @@ run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.
 
 ``` r
+
 library(Zorn)
 bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
@@ -50,6 +51,7 @@ novo* assembly commands to extract unique KMERs as input for sketching
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 #Gather count sketches into a single matrix file
 BascetGatherCountSketch(
   bascetRoot,
@@ -64,6 +66,7 @@ BascetGatherCountSketch(
 You can now load all of this data into R as a Seurat object:
 
 ``` r
+
 adata <- BascetLoadCountSketchMatrix(
   bascetRoot
 )
@@ -76,6 +79,7 @@ the code in a separate R session. If you see warning messages about
 threading later on, then this is the only backup we can offer for now!*
 
 ``` r
+
 library(future)
 plan("multicore", workers = 10)
 ```
@@ -89,12 +93,14 @@ produces a UMAP, setting the dimension to all available dimensions in
 the reduction:
 
 ``` r
+
 adata <- CountSketchUMAP(adata)
 ```
 
 The result can be visualized:
 
 ``` r
+
 DimPlot(adata)
 ```
 

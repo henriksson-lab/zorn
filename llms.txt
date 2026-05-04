@@ -101,10 +101,12 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Gather all count sketches into a single count sketch matrix
 - [`BascetGetRaw()`](https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.md)
   : Extract barcodes and trim input raw FASTQ
-- [`BascetIndexGenomeBWA()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWA.md)
-  : Index a genome using BWA such that it can be used for alignment
+- [`BascetIndexGenomeBWAMEM2()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWAMEM2.md)
+  : Index a genome using BWA-MEM2 such that it can be used for alignment
 - [`BascetIndexGenomeBowtie2()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBowtie2.md)
   : Index a genome using Bowtie2 such that it can be used for alignment
+- [`BascetIndexGenomeMinimap2()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeMinimap2.md)
+  : Index a genome using minimap2 such that it can be used for alignment
 - [`BascetIndexGenomeSTAR()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeSTAR.md)
   : Index a genome using STAR such that it can be used for alignment
 - [`BascetInstance()`](https://henriksson-lab.github.io/zorn/reference/BascetInstance.md)
@@ -130,17 +132,17 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Run Bakta on contigs of all cells. This is a thin wrapper around
   BascetMapCell
 - [`BascetMapCellFASTQC()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellFASTQC.md)
-  : Run FASTQC on reads of all cells. This is a thin wrapper around
-  BascetMapCell
+  : Run FASTQC on reads of all cells.
 - [`BascetMapCellGECCO()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellGECCO.md)
-  : Run GECCO on contigs of all cells. This is a thin wrapper around
-  BascetMapCell
+  : Run GECCO on contigs of all cells.
 - [`BascetMapCellQUAST()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.md)
   : Run QUAST on reads of all cells. This is a thin wrapper around
   BascetMapCell
 - [`BascetMapCellSKESA()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESA.md)
   : Run SKESA on reads of all cells. This is a thin wrapper around
   BascetMapCell
+- [`BascetMapCellSKESAintegrated()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESAintegrated.md)
+  : Run integrated SKESA on reads of all cells.
 - [`BascetMapTransform()`](https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.md)
   : Transform data
 - [`BascetQueryFq()`](https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.md)
@@ -346,9 +348,16 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
 - [`format_size_bascet()`](https://henriksson-lab.github.io/zorn/reference/format_size_bascet.md)
   : Format size for input to Bascet
+- [`getBascetBinary()`](https://henriksson-lab.github.io/zorn/reference/getBascetBinary.md)
+  : Get a Bascet binary for the current platform It will be cached in
+  the provided directory to avoid downloading it each the time the
+  function is called
 - [`getBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/getBascetDockerImage.md)
   : Get and install a Bascet docker image. It will be cached to avoid
   downloading it each the time the function is called
+- [`getBascetExecutable()`](https://henriksson-lab.github.io/zorn/reference/getBascetExecutable.md)
+  : Get a Bascet executable It will be cached in the provided directory
+  to avoid downloading it each the time the function is called
 - [`getBascetPodmanImage()`](https://henriksson-lab.github.io/zorn/reference/getBascetPodmanImage.md)
   : Get and install a Bascet podman image. It will be cached to avoid
   downloading it each the time the function is called
@@ -450,6 +459,7 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [Working with Bascet-ZIP
   files](https://henriksson-lab.github.io/zorn/articles/bascet_zip.md):
 - [Clustering](https://henriksson-lab.github.io/zorn/articles/clustering.md):
+- [Coassembly](https://henriksson-lab.github.io/zorn/articles/coassembly.md):
 - [Count sketch KMER-based
   workflow](https://henriksson-lab.github.io/zorn/articles/countsketch.md):
 - [Debarcoding and

@@ -10,6 +10,7 @@ you have a reference:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 BascetAlignToReference(
   bascetRoot,
   inputName="fastp", #FASTP-filtered FASTQ as input
@@ -29,6 +30,7 @@ filtering. The alignment tutorial has more details, but here is an
 example command:
 
 ``` r
+
 BascetCountChrom(
   bascetRoot,
   inputName="myref_unsorted_aligned",
@@ -48,6 +50,7 @@ you can filter later:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 BascetRunCellSNP(
   bascetRoot,
   inputName="myref_aligned",
@@ -62,6 +65,7 @@ The heavy work is now over. If you generated a count matrix, you can
 load it like this:
 
 ``` r
+
 # get aligned counts
 cnt_myref <- ReadBascetCountMatrix(bascetRoot,"cnt_myref")
 
@@ -76,6 +80,7 @@ You can then produce a type of kneeplot, showing how well certain cells
 map to this reference:
 
 ``` r
+
 ### Knee plot of alignment
 df <- data.frame(
   frac_mapped = sort(cnt_myref$obs$frac_mapped, decreasing = TRUE),
@@ -91,6 +96,7 @@ Based on the knee plot, you can extract cells that are close enough to
 your reference like this:
 
 ``` r
+
 list_cell_mutans <- cnt_myref$obs$`_index`[which(cnt_myref$obs$frac_mapped>0.8)]
 ```
 
@@ -99,6 +105,7 @@ list_cell_mutans <- cnt_myref$obs$`_index`[which(cnt_myref$obs$frac_mapped>0.8)]
 Load the CellSNP-lite counts as follows:
 
 ``` r
+
 snp_ad <- ReadCellSNPmatrix(
   bascetRoot,
   "cellsnp"
@@ -108,6 +115,7 @@ snp_ad <- ReadCellSNPmatrix(
 Create a Seurat object from the counts:
 
 ``` r
+
 adata <- CreateSeuratObject(counts = t(snp_ad), project = "adata3k", min.cells = 3, min.features = 0)
 
 #only keep selected cells (optional)
@@ -121,6 +129,7 @@ adata$tot_reads <-  cnt_mutans$obs[colnames(adata),]$tot_reads
 Do the usual transformations and clustering:
 
 ``` r
+
 ### Normalize data, PCA etc
 adata <- NormalizeData(adata, normalization.method = "LogNormalize", scale.factor = 10000)
 adata <- NormalizeData(adata)
@@ -141,6 +150,7 @@ adata$snp_count <- rowSums(adata@assays$RNA@layers$counts)
 Do some quick plots to check for clusters:
 
 ``` r
+
 DimPlot(adata, reduction = "umap")
 FeaturePlot(adata, reduction = "umap", features = c("snp_count"))
 FeaturePlot(adata, reduction = "umap", features = c("frac_mapped"))
@@ -150,6 +160,7 @@ FeaturePlot(adata, reduction = "umap", features = c("tot_reads"))
 Find differential SNPs using the Seurat marker tools
 
 ``` r
+
 adata.markers <- FindAllMarkers(adata, only.pos = TRUE)
 
 adata.markers %>%
@@ -164,6 +175,7 @@ as.data.frame(top10)
 Plot SNPs to your liking
 
 ``` r
+
 FeaturePlot(adata, reduction = "umap", features = c("NZ-CP077404.1-7148-T-to-C"))
 ```
 

@@ -33,6 +33,7 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
+    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -249,10 +250,10 @@
 
         <dt>
 
-          <code><a href="BascetIndexGenomeBWA.html">BascetIndexGenomeBWA()</a></code>
+          <code><a href="BascetIndexGenomeBWAMEM2.html">BascetIndexGenomeBWAMEM2()</a></code>
 
         </dt>
-        <dd>Index a genome using BWA such that it can be used for alignment</dd>
+        <dd>Index a genome using BWA-MEM2 such that it can be used for alignment</dd>
 
         <dt>
 
@@ -260,6 +261,13 @@
 
         </dt>
         <dd>Index a genome using Bowtie2 such that it can be used for alignment</dd>
+
+        <dt>
+
+          <code><a href="BascetIndexGenomeMinimap2.html">BascetIndexGenomeMinimap2()</a></code>
+
+        </dt>
+        <dd>Index a genome using minimap2 such that it can be used for alignment</dd>
 
         <dt>
 
@@ -336,14 +344,14 @@
           <code><a href="BascetMapCellFASTQC.html">BascetMapCellFASTQC()</a></code>
 
         </dt>
-        <dd>Run FASTQC on reads of all cells. This is a thin wrapper around BascetMapCell</dd>
+        <dd>Run FASTQC on reads of all cells.</dd>
 
         <dt>
 
           <code><a href="BascetMapCellGECCO.html">BascetMapCellGECCO()</a></code>
 
         </dt>
-        <dd>Run GECCO on contigs of all cells. This is a thin wrapper around BascetMapCell</dd>
+        <dd>Run GECCO on contigs of all cells.</dd>
 
         <dt>
 
@@ -358,6 +366,13 @@
 
         </dt>
         <dd>Run SKESA on reads of all cells. This is a thin wrapper around BascetMapCell</dd>
+
+        <dt>
+
+          <code><a href="BascetMapCellSKESAintegrated.html">BascetMapCellSKESAintegrated()</a></code>
+
+        </dt>
+        <dd>Run integrated SKESA on reads of all cells.</dd>
 
         <dt>
 
@@ -956,10 +971,24 @@
 
         <dt>
 
+          <code><a href="getBascetBinary.html">getBascetBinary()</a></code>
+
+        </dt>
+        <dd>Get a Bascet binary for the current platform It will be cached in the provided directory to avoid downloading it each the time the function is called</dd>
+
+        <dt>
+
           <code><a href="getBascetDockerImage.html">getBascetDockerImage()</a></code>
 
         </dt>
         <dd>Get and install a Bascet docker image. It will be cached to avoid downloading it each the time the function is called</dd>
+
+        <dt>
+
+          <code><a href="getBascetExecutable.html">getBascetExecutable()</a></code>
+
+        </dt>
+        <dd>Get a Bascet executable It will be cached in the provided directory to avoid downloading it each the time the function is called</dd>
 
         <dt>
 

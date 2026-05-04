@@ -1,0 +1,42 @@
+# Coassembly
+
+If you have cells with highly similar genomes, you might be able to
+generate “coassemblies” - consensus assemblies using reads from multiple
+similar cells.
+
+To do this, simply extract the debarcoded reads from the cells of
+interest. There are many ways of picking them, where one method is to
+use the clustering function in Seurat. But you can use any method you
+wish to come up with a list of cell names
+
+First set up your Zorn/Bascet work directory as before.
+
+Then this is a very random method to extract cells after clustering
+([see this Seurat tutorial
+first](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html)). It
+is an open research problem how to best carry this out:
+
+``` r
+### Get cell names
+cell_names <- rownames(adata[adata$cluster_id="0",])
+```
+
+Next extract a FASTQ with reads:
+
+``` r
+
+### Extract reads TODO
+Bascet....A(
+  bascetRoot,
+  inputName = "filtered",
+  outputName = "contigs"
+)
+```
+
+And finally, run [SKESA](https://github.com/ncbi/SKESA) or your
+favourite software to assemble the contigs: (in BASH)
+
+``` r
+
+#SKESA etc
+```

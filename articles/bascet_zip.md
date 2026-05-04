@@ -14,6 +14,7 @@ is the approach to take.
 First load an instance, and ensure that it works:
 
 ``` r
+
 bascetInstance <- getBascetSingularityImage(...)
 TestBascetInstance(bascetInstance)
 ```
@@ -25,6 +26,7 @@ Docker and Singularity, such that you pay the cost only once; but
 reading many files is very fast.
 
 ``` r
+
 skesa_file <- OpenBascet(
   bascetRoot, 
   "skesa", 
@@ -36,6 +38,7 @@ You can obtain a list of files for a cell like this (see reference for
 more commands):
 
 ``` r
+
 BascetListFilesForCell(
   skesa_file, 
   "G1_E5_H7_E11", 
@@ -47,6 +50,7 @@ A common scenario is that you want the assembled genome of a particular
 cell. It can be done like this:
 
 ``` r
+
 contig_file <- BascetReadFile(
   skesa_file,
   cellID = "G1_E5_H7_E11", 
@@ -59,6 +63,7 @@ Be sure to close the file when you are done, as you have a rather large
 ecosystem of tools still in memory!
 
 ``` r
+
 CloseBascet(
   skesa_file
 )
@@ -69,6 +74,7 @@ data, we recommend loading it using the seqinr package rather than
 directly using the raw file data obtained by the function above.
 
 ``` r
+
 writeLines(
   contig_file, 
   "my_genome.fa"

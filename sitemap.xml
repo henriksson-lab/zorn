@@ -6,6 +6,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/articles/bascet_fastq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/bascet_zip.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/clustering.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/coassembly.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/countsketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/debarcoding.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/example_data.html</loc></url>
@@ -52,8 +53,9 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGatherCountSketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWA.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWAMEM2.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBowtie2.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeMinimap2.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeSTAR.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetInstance.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetListFilesForCell.html</loc></url>
@@ -68,6 +70,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellGECCO.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESA.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESAintegrated.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadFile.html</loc></url>
@@ -153,7 +156,9 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/extractstreamerStart.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/formatPlainNumber.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/format_size_bascet.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetBinary.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetDockerImage.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetExecutable.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetPodmanImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getFastqR2fromR1.html</loc></url>

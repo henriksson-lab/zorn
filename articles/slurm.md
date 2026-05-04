@@ -23,6 +23,7 @@ partition to submit to, and the name of your account. You can also set a
 permissible default timeout time:
 
 ``` r
+
 ## Set the new default runner. Note that the name should not be changed!
 bascetRunner.default <- SlurmRunner(
   partition="shared", 
@@ -45,6 +46,7 @@ are used. This is the suggested method, where only relevant settings are
 overridden on a per-job basis:
 
 ``` r
+
 BascetGetRaw(
   bascetRoot,
   rawmeta,
@@ -96,6 +98,7 @@ Whenever you run a job, you now want to catch a handle to the job in a
 variable:
 
 ``` r
+
 my_job <- BascetGetRaw(  #note, store job in a variable
   bascetRoot,
   rawmeta,
@@ -111,6 +114,7 @@ After running this command, you will immediately get the control back.
 To see the status of a job, it is best to just run WaitForJob:
 
 ``` r
+
 WaitForJob(my_job)
 ```
 

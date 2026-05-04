@@ -6,6 +6,7 @@ If you want to run QC on all cells as a whole, to get the average
 picture, simply run FASTQC on reads after transformation to FASTQ:
 
 ``` r
+
 ### Get reads in fastq format
 BascetMapTransform(
   bascetRoot,
@@ -24,6 +25,7 @@ issues such as adapter content. You first run FASTQC with mapcell:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 BascetMapCellFASTQ(
   bascetRoot,
   inputName = "filtered"  #or other source of reads
@@ -31,6 +33,7 @@ BascetMapCellFASTQ(
 ```
 
 ``` r
+
 BascetMapCellFASTQ(
   bascetRoot,
   inputName = "filtered"  #or other source of reads
@@ -42,6 +45,7 @@ FASTQ HTML report in the follow manner (opening in the RShiny plot pane,
 or separate browser):
 
 ``` r
+
 ShowFASTQCforCell(
     bascetFile, 
     cellID="xyz", #name of your cell 
@@ -54,6 +58,7 @@ creates rather complex statistics that need further extraction for
 simple plotting
 
 ``` r
+
 aggr_fastqc <- BascetAggregateFASTQC(
   bascetRoot
 )
@@ -71,6 +76,7 @@ PlotFASTQCadapterContent <- function(
 You can also retrieve a table of pass/fail statistics:
 
 ``` r
+
 fastqc_passfail <- GetFASTQCpassfailStats(
     aggr_fastqc,
     readnum="1" #for R1
@@ -81,6 +87,7 @@ Because there are so many things you can do with this statistics, we
 provide a general interface to each table that FASTQC generates:
 
 ``` r
+
 mystats <- GetFASTQCassembledDF(
     aggr_fastqc, 
     section="see below", 

@@ -5,6 +5,7 @@ run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.
 
 ``` r
+
 library(Zorn)
 bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
@@ -22,6 +23,7 @@ typical sharded reads:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### Get reads in fastq format
 BascetMapTransform(
   bascetRoot,
@@ -40,6 +42,7 @@ be gzipped):
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 #Build a reference
 BascetIndexGenomeBWA(
   bascetRoot,
@@ -58,6 +61,7 @@ outputs both unsorted and sorted BAM-files.
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### Perform alignment
 BascetAlignToReference(
   bascetRoot,
@@ -71,6 +75,7 @@ TODO: Filtering
 ## Host filtering workflow
 
 ``` r
+
 BascetFilterAlignment(
   bascetRoot,
   outputName="filter_paired",
@@ -95,6 +100,7 @@ operations this is typically enough.
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### Generate fragments BED file suited for quantifying
 ### reads/chromosome using Signac later 
 BascetBam2Fragments(
@@ -115,6 +121,7 @@ files:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### Count reads per chromosome
 BascetCountChrom(
   bascetRoot
@@ -129,6 +136,7 @@ concatenates them into a single matrix. It can then be loaded into
 Seurat:
 
 ``` r
+
 library(Seurat)
 
 cnt <- ReadBascetCountMatrix(bascetRoot,"chromcount", verbose=FALSE)
@@ -144,6 +152,7 @@ recommend that you keep the cutoff low until you are better informed.
 You can then apply the cutoff as follows:
 
 ``` r
+
 keep_cells <- adata$nCount_chrom_cnt > 10000 #10k reads
 sum(keep_cells)                              #See how many cells pass this cutoff
 adata <- adata[,keep_cells]                  #Reduce to sensible number
@@ -154,6 +163,7 @@ furthermore sum them up to get species-level counts. mapSeq2strain
 should contain two columns: (todo) (TODO filter after instead)
 
 ``` r
+
 adata[["species_cnt"]] <- ChromToSpeciesCount(adata, mapSeq2strain)  
 
 #Optional: Figure out which species has most reads in which cell
@@ -164,6 +174,7 @@ adata$species_aln <- rownames(cnt)[apply(cnt, 2, which.max)]
 Knowing the species, you can generate a per-species kneeplot as follows:
 
 ``` r
+
 DefaultAssay(adata) <- "species_cnt"
 KneeplotPerSpecies(adata)
 ```
@@ -178,6 +189,7 @@ appropriate.
 ATAC-seq style analysis:
 
 ``` r
+
 #ATAC-seq style analysis
 library(Signac)
 adata <- RunTFIDF(adata)
@@ -190,6 +202,7 @@ adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:(nrow(adata)-1), re
 RNA-seq style analysis:
 
 ``` r
+
 #RNA-seq style analysis
 adata <- NormalizeData(adata)
 adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = nrow(adata))
@@ -202,6 +215,7 @@ Finally, you can plot your UMAP. If you also extracted the dominant
 species column in your matrix, you can visualize it on top!
 
 ``` r
+
 DimPlot(object = adata, label = TRUE, group.by = "species_aln") + 
   xlab("BWA1") + 
   ylab("BWA2")
@@ -216,6 +230,7 @@ coordinates from a GTF or GFF file (both are supported). The following
 command performs this operation:
 
 ``` r
+
 BascetCountFeature(
   bascetRoot,
   gffFile = "/my/genome.gtf.gz",
@@ -234,6 +249,7 @@ After the features (genes) have been counted, you can load them into
 Seurat:
 
 ``` r
+
 library(Seurat)
 
 cnt <- ReadBascetCountMatrix(bascetRoot,"featurecount", verbose=FALSE)
@@ -246,6 +262,7 @@ Seurat](https://satijalab.org/seurat/articles/pbmc3k_tutorial). But for
 the impatient, this is some minimal example code to get your first UMAP:
 
 ``` r
+
 adata <- NormalizeData(adata)
 adata <- FindVariableFeatures(adata, selection.method = "vst")
 adata <- ScaleData(adata)

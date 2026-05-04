@@ -1,4 +1,4 @@
-pandoc: 3.1.11
+pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
@@ -7,6 +7,7 @@ articles:
   bascet_fastq: bascet_fastq.html
   bascet_zip: bascet_zip.html
   clustering: clustering.html
+  coassembly: coassembly.html
   countsketch: countsketch.html
   debarcoding: debarcoding.html
   example_data: example_data.html
@@ -24,7 +25,7 @@ articles:
   slurm: slurm.html
   snp_analysis: snp_analysis.html
   tcr_analysis: tcr_analysis.html
-last_built: 2026-04-24T17:12Z
+last_built: 2026-05-04T20:04Z
 urls:
   reference: https://henriksson-lab.github.io/zorn/reference
   article: https://henriksson-lab.github.io/zorn/articles

@@ -48,6 +48,7 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
+    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -103,9 +104,6 @@ if:</p>
 <ul>
 <li>Your CPU does not support the BMI instruction set (uncommon for
 machines past 2015)</li>
-<li>You are running OSX, where our Docker/Podman/Singularity images
-currently only run via Apple’s x86 emulation layer for Apple Silicon.
-For native Apple Silicon support you will need to <a href="for_developers.html">compile Bascet yourself</a>.</li>
 </ul>
 </blockquote>
 </div>
@@ -129,77 +127,22 @@ and install from source:</p>
 <h2 id="step-2-install-bascet">Step 2: Install Bascet<a class="anchor" aria-label="anchor" href="#step-2-install-bascet"></a>
 </h2>
 <p>You also need Bascet, our command-line suite for single-cell
-analysis. Most users will find it easiest to run Bascet through
-Singularity or Docker; instructions for each are described below.
-Singularity is for Linux users, while OSX and Windows users have to use
-Docker.</p>
-<div class="section level3">
-<h3 id="install-bascet-via-singularity-linux-only-likely-the-best-option-for-hpc-environments">Install Bascet via Singularity (Linux only; likely the best option
-for HPC environments)<a class="anchor" aria-label="anchor" href="#install-bascet-via-singularity-linux-only-likely-the-best-option-for-hpc-environments"></a>
-</h3>
-<p>First <a href="https://docs.sylabs.io/guides/3.0/user-guide/installation.html" class="external-link">install
-Singularity</a>.</p>
-<blockquote>
-<p>⚠️ Note one possibly annoying default setting! We could not read
-Bascet files on some file systems, because they were invisible to
-Bascet. To avoid this, edit /etc/singularity/singularity.conf to
-below:</p>
-</blockquote>
-<pre><code>mount hostfs = yes</code></pre>
-<p>Once installed, Zorn can then pull down the latest Singularity image
-for you. We recommend keeping it in a separate directory from your
-workspace, as multiple workspaces can share the same image</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetSingularityImage.html">getBascetSingularityImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="install-bascet-via-podman">Install Bascet via Podman<a class="anchor" aria-label="anchor" href="#install-bascet-via-podman"></a>
-</h3>
-<p>First <a href="https://podman.io/getting-started/installation" class="external-link">install
-Podman</a>.</p>
-<p>Once installed, Zorn can then pull down the latest Podman image for
-you. It can be deleted once it has been loaded into Podman.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetPodmanImage.html">getBascetPodmanImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
-<p>Note that Podman only exposes certain directories, listed upon start.
-You may have to add more directories depending on where your data is
-located.</p>
-</div>
-<div class="section level3">
-<h3 id="install-bascet-via-docker-singularity-or-podman-are-recommended-for-linux">Install Bascet via Docker (Singularity or Podman are recommended for
-Linux)<a class="anchor" aria-label="anchor" href="#install-bascet-via-docker-singularity-or-podman-are-recommended-for-linux"></a>
-</h3>
-<p>First <a href="https://docs.docker.com/get-started/" class="external-link">install
-Docker</a>.</p>
-<p>Once installed, Zorn can then pull down the latest Docker image for
-you. We recommend keeping it in a separate directory from your
-workspace, as multiple workspaces can share the same image</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetDockerImage.html">getBascetDockerImage</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
-<p>Note that Docker only exposes certain directories, listed upon start.
-You may have to add more directories depending on where your data is
-located.</p>
-<blockquote>
-<p>⚠️ Also note that you need to have Docker desktop running
-(OSX/Windows) whenever you use the container. If you don’t like this,
-please use Podman or Singularity instead.</p>
-</blockquote>
-</div>
+analysis.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetBinary.html">getBascetBinary</a></span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"/somewhere/on/your/disk/"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="step-3-test-the-installation">Step 3: Test the installation<a class="anchor" aria-label="anchor" href="#step-3-test-the-installation"></a>
 </h2>
 <p>Run the following and see if you get “ok” before proceeding:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascetInstance.default</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="using-the-bascet-instance">Using the Bascet instance<a class="anchor" aria-label="anchor" href="#using-the-bascet-instance"></a>
 </h2>
 <p>You need to pass the bascetInstance variable to each Zorn command
-that requires it. The singularity image will be cached, so if you run
-this again, it will instead use the previous image. You will need to
-delete it manually if you wish to replace it.</p>
+that requires it.</p>
 </div>
 <div class="section level2">
 <h2 id="for-developers-accessing-a-locally-compiled-bascet">For developers: Accessing a locally compiled Bascet<a class="anchor" aria-label="anchor" href="#for-developers-accessing-a-locally-compiled-bascet"></a>

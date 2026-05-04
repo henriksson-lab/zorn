@@ -39,6 +39,7 @@ The following command converts any Bascet file containing reads to
 Bascet-FASTQ:
 
 ``` r
+
 ### Get reads in FASTQ format
 BascetMapTransform(
   bascetRoot,
@@ -58,6 +59,7 @@ wish to use other software, you can apply it in any other way to the
 FASTQ files.
 
 ``` r
+
 ### Get reads in fastq format
 BascetRunFASTP(
   bascetRoot,
@@ -75,6 +77,7 @@ via indexing, unlike FASTQ. The following command performs the
 conversion
 
 ``` r
+
 #Convert FASTQ to TIRP
 BascetMapTransform(
   bascetRoot,

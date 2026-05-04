@@ -6,6 +6,7 @@ First run QUAST on all the cells: [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 BascetMapCell(
   bascetRoot,
   withfunction = "_quast",
@@ -18,6 +19,7 @@ Then aggregate the results for visualization. This example caches the
 result to speed up reloading; this is optional
 
 ``` r
+
 quast_aggr <- BascetCacheComputation(bascetRoot,"cache_quast",MapListAsDataFrame(BascetAggregateMap(
   bascetRoot,
   "quast",
@@ -34,6 +36,7 @@ default. See ListDatabaseAbricate() for a list of other databases
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 BascetMapCellAbricate(
   bascetRoot,
   inputName = "skesa"  #or other source of contigs
@@ -44,6 +47,7 @@ Then aggregate the results for visualization. This example caches the
 result to speed up reloading; this is optional
 
 ``` r
+
 quast_aggr <- BascetCacheComputation(bascetRoot,"cache_abricate",MapListAsDataFrame(BascetAggregateMap(
   bascetRoot,
   "abricate",
@@ -56,6 +60,7 @@ quast_aggr <- BascetCacheComputation(bascetRoot,"cache_abricate",MapListAsDataFr
 First download a database:
 
 ``` r
+
 DownloadDatabaseBakta(
   dbdir="~/bakta",  #create directory before running command
   dbtype="light"
@@ -66,6 +71,7 @@ You can run then run Bakta on all cells: [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### ....
 BascetMapCellBakta(
   bascetRoot,
@@ -78,6 +84,7 @@ Then aggregate the results for visualization. This example caches the
 result to speed up reloading; this is optional
 
 ``` r
+
 quast_aggr <- BascetCacheComputation(bascetRoot,"cache_bakta",MapListAsDataFrame(BascetAggregateMap(
   bascetRoot,
   "bakta",

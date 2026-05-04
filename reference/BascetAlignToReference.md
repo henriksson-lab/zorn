@@ -14,7 +14,7 @@ BascetAlignToReference(
   outputNameBAMcell = "aligned_cell",
   outputNameBAMpos = "aligned_pos",
   overwrite = FALSE,
-  aligner = c(NULL, "BWA", "bowtie2", "STAR"),
+  aligner = c(NULL, "BWAMEM2", "bowtie2", "STAR"),
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -58,7 +58,7 @@ BascetAlignToReference(
 
 - aligner:
 
-  Which aligner to use: "BWA", "bowtie2", or "STAR"
+  Which aligner to use: "BWAMEM2", "bowtie2", or "STAR"
 
 - runner:
 

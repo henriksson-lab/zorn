@@ -8,6 +8,7 @@ Assembly can then performed using SKESA, via the MapCell system:
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### Assemble all genomes
 BascetMapCellSKESA(
   bascetRoot,
@@ -21,9 +22,11 @@ Note that both skesa and spades only assembles cells for which there are
 sufficient number of reads.
 
 ``` r
+
 #TODO extract an individual genome
 ```
 
 ``` r
+
 #TODO QUAST for QC etc
 ```

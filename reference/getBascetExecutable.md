@@ -1,0 +1,31 @@
+# Get a Bascet executable It will be cached in the provided directory to avoid downloading it each the time the function is called
+
+Get a Bascet executable It will be cached in the provided directory to
+avoid downloading it each the time the function is called
+
+## Usage
+
+``` r
+getBascetExecutable(storeAt = getwd(), tempdir = NULL, logLevel = "info")
+```
+
+## Arguments
+
+- storeAt:
+
+  Directory to store the container in. Default is current directory but
+  it is likely better to provide a single systems level directory
+  \#################### TODO
+
+- tempdir:
+
+  Default is to create a directory for temporary files in the current
+  directory. Place it on a fast disk if possible
+
+- logLevel:
+
+  Log level for the Bascet instance (e.g. "info", "debug", "warn")
+
+## Value
+
+A Bascet instance

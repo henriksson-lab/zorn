@@ -5,6 +5,7 @@ run these steps on a SLURM cluster, see separate vignette and adapt
 accordingly.
 
 ``` r
+
 library(Zorn)
 bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
@@ -22,6 +23,7 @@ cells.
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### Compute minhashes for each cell
 BascetComputeMinhash(
   bascetRoot
@@ -39,6 +41,7 @@ genomes. We can however look for KMERs that are more frequently shared
 by counting minhashes across all cells, and generating a histogram.
 
 ``` r
+
 kmerHist <- BascetReadMinhashHistogram(bascetRoot)
 
 kmerHist$rank <- 1:nrow(kmerHist)
@@ -58,6 +61,7 @@ practice, we don’t see this happening; just picking the most common top
 based on a cutoff:
 
 ``` r
+
 ### Pick KMERs
 useKMERs <- kmerHist$kmer[kmerHist$cnt>5]  #Pick KMERs present in more than 5 cells
 ```
@@ -69,6 +73,7 @@ presence.
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
+
 ### Build count table by looking up selected KMERs in per-cell KMER databases
 BascetQueryFq(
   bascetRoot,
@@ -84,6 +89,7 @@ concatenates them into a single matrix. It can then be loaded into
 Seurat:
 
 ``` r
+
 library(Seurat)
 ### Read count matrix
 cnt <- ReadBascetCountMatrix(
@@ -98,6 +104,7 @@ that with this workflow, the cutoff is based on the number of KMERs
 rather than the number of reads.
 
 ``` r
+
   ## Load subset of real cells
   keep_cells <- rowSums(cnt)>20000 #this cutoff is based on the number of KMERs, not read count!
   sum(keep_cells)
@@ -115,6 +122,7 @@ ATAC-seq dimensional reduction depending on what you think is
 appropriate.
 
 ``` r
+
 if(TRUE){
   #ATAC-seq style analysis
   library(Signac)
@@ -139,6 +147,7 @@ workflow; or you can use other annotation tools through the
 mapcell-system.
 
 ``` r
+
 DimPlot(object = adata, reduction = "infokmers_umap") + 
   xlab("KMER1") + 
   ylab("KMER2")

@@ -38,6 +38,7 @@ This setup enables you to see compile errors and get hints while coding!
 You can do this to link to your own Rust binary:
 
 ``` r
+
 bascetInstance.default <- BascetInstance(
   bin="/path/to/bascet/target/debug/bascet",
   tempdir="./"
