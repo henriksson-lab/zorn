@@ -279,29 +279,15 @@
   : Get a Bascet binary for the current platform It will be cached in
   the provided directory to avoid downloading it each the time the
   function is called
-- [`getBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/getBascetDockerImage.md)
-  : Get and install a Bascet docker image. It will be cached to avoid
-  downloading it each the time the function is called
 - [`getBascetExecutable()`](https://henriksson-lab.github.io/zorn/reference/getBascetExecutable.md)
   : Get a Bascet executable It will be cached in the provided directory
   to avoid downloading it each the time the function is called
-- [`getBascetPodmanImage()`](https://henriksson-lab.github.io/zorn/reference/getBascetPodmanImage.md)
-  : Get and install a Bascet podman image. It will be cached to avoid
-  downloading it each the time the function is called
-- [`getBascetSingularityImage()`](https://henriksson-lab.github.io/zorn/reference/getBascetSingularityImage.md)
-  : Get a Bascet image (singularity or docker). It will be cached in the
-  provided directory to avoid downloading it each the time the function
-  is called
 - [`is.BascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/is.BascetCountMatrix.md)
   : Check that parameter is a BascetCountMatrix
 - [`isBamPairedAlignment()`](https://henriksson-lab.github.io/zorn/reference/isBamPairedAlignment.md)
   : Figure out if a BAM-file is a paired alignment or not
 - [`lseq()`](https://henriksson-lab.github.io/zorn/reference/lseq.md) :
   logarithmic spaced sequence; taken from emdbook library
-- [`removeBascetDockerImage()`](https://henriksson-lab.github.io/zorn/reference/removeBascetDockerImage.md)
-  : Remove current Bascet docker image
-- [`removeBascetPodmanImage()`](https://henriksson-lab.github.io/zorn/reference/removeBascetPodmanImage.md)
-  : Remove current Bascet podman image
 - [`rowSums(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/rowSums-BascetCountMatrix-method.md)
   : Row sums of a BascetCountMatrix (counts per cell)
 - [`rownames(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/rownames-BascetCountMatrix-method.md)
