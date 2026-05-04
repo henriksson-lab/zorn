@@ -7,7 +7,12 @@ called
 ## Usage
 
 ``` r
-getBascetBinary(storeAt = getwd(), tempdir = NULL, logLevel = "info")
+getBascetBinary(
+  storeAt = getwd(),
+  tempdir = NULL,
+  logLevel = "info",
+  forceInstall = FALSE
+)
 ```
 
 ## Arguments
@@ -25,6 +30,10 @@ getBascetBinary(storeAt = getwd(), tempdir = NULL, logLevel = "info")
 - logLevel:
 
   Log level for the Bascet instance (e.g. "info", "debug", "warn")
+
+- forceInstall:
+
+  Force download of the Bascet binary even if a cached binary exists
 
 ## Value
 
