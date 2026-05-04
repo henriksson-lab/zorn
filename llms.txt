@@ -304,6 +304,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : This creates a job object, linking to a running command. Mainly used
   for development but can be used in case a Zorn session died and you
   want to create a new monitor
+- [`defaultBascetBinDir()`](https://henriksson-lab.github.io/zorn/reference/defaultBascetBinDir.md)
+  : Get the default directory for storing Bascet binaries
 - [`dim(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/dim-BascetCountMatrix-method.md)
   : Dimensions of a BascetCountMatrix
 - [`formatPlainNumber()`](https://henriksson-lab.github.io/zorn/reference/formatPlainNumber.md)

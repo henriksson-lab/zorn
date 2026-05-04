@@ -8,7 +8,7 @@ called
 
 ``` r
 getBascetBinary(
-  storeAt = getwd(),
+  storeAt = NULL,
   tempdir = NULL,
   logLevel = "info",
   forceInstall = FALSE
@@ -19,8 +19,8 @@ getBascetBinary(
 
 - storeAt:
 
-  Directory to store the binary in. Default is current directory but it
-  is likely better to provide a single systems level directory
+  Directory to store the binary in. If NULL, uses
+  [`defaultBascetBinDir`](https://henriksson-lab.github.io/zorn/reference/defaultBascetBinDir.md)
 
 - tempdir:
 

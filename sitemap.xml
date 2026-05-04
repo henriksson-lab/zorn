@@ -136,6 +136,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/colnames-BascetCountMatrix-method.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/colnames-set-BascetCountMatrix-method.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/createSlurmJobFromExisting.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/defaultBascetBinDir.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/dim-BascetCountMatrix-method.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/formatPlainNumber.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/getBascetBinary.html</loc></url>
