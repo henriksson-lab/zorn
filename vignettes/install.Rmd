@@ -40,57 +40,11 @@ library(Zorn)
 
 ## Step 2: Install Bascet
 
-You also need Bascet, our command-line suite for single-cell analysis. Most users will find it easiest to run Bascet through Singularity or Docker; instructions for each are described below. Singularity is for Linux users, while OSX and Windows users have to use Docker.
-
-### Install Bascet via Singularity (Linux only; likely the best option for HPC environments)
-
-First [install Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html).
-
-Note one possibly annoying default setting! We could not read Bascet files on some file systems, because they were invisible to Bascet.
-To avoid this, edit /etc/singularity/singularity.conf to below:
-```{}
-mount hostfs = yes
-```
-
-Once installed, Zorn can then pull down the latest Singularity image for you.
-We recommend keeping it in a separate directory from your workspace, as
-multiple workspaces can share the same image
+You also need Bascet, our command-line suite for single-cell analysis.
 
 ```{r, eval=F, echo=T}
-bascetInstance.default <- getBascetSingularityImage(storeAt="/somewhere/on/your/disk/")
+bascetInstance.default <- getBascetBinary(storeAt="/somewhere/on/your/disk/")
 ```
-
-### Install Bascet via Podman
-
-First [install Podman](https://podman.io/getting-started/installation).
-
-Once installed, Zorn can then pull down the latest Podman image for you. It can be deleted once it
-has been loaded into Podman.
-
-```{r, eval=F, echo=T}
-bascetInstance.default <- getBascetPodmanImage(storeAt="/somewhere/on/your/disk/")
-```
-
-Note that Podman only exposes certain directories, listed upon start. You may have to add more directories
-depending on where your data is located.
-
-### Install Bascet via Docker (Singularity or Podman are recommended for Linux)
-
-First [install Docker](https://docs.docker.com/get-started/).
-
-Once installed, Zorn can then pull down the latest Docker image for you.
-We recommend keeping it in a separate directory from your workspace, as
-multiple workspaces can share the same image
-
-```{r, eval=F, echo=T}
-bascetInstance.default <- getBascetDockerImage(storeAt="/somewhere/on/your/disk/")
-```
-
-Note that Docker only exposes certain directories, listed upon start. You may have to add more directories
-depending on where your data is located.
-
-Also note that you need to have Docker desktop running (OSX/Windows) whenever you use the conainer.
-If you don't like this, pick Podman or Singularity instead.
 
 ## Step 3: Test the installation
 

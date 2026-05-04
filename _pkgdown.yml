@@ -37,6 +37,8 @@ navbar:
           href: articles/snp_analysis.html
         - text: "Map scripts"
           href: articles/map_scripts.html
+        - text: "Coassembly"
+          href: articles/coassembly.Rmd
         - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html

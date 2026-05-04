@@ -114,6 +114,137 @@ GetBascetTempDir <- function(
 
 
 
+
+
+###############################################
+#' Get a Bascet executable
+#' It will be cached in the provided directory to avoid downloading it each the time the function is called
+#' 
+#' @param storeAt Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory #################### TODO
+#' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
+#' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
+#'
+#' @return A Bascet instance
+#' @export
+getBascetExecutable <- function(
+    storeAt=getwd(),
+    tempdir=NULL,
+    logLevel="info"
+){
+  #Check arguments
+  stopifnot(dir.exists(storeAt))
+
+  if(is.null(tempdir)){
+    tempdir <- "./temp"
+    dir.create(tempdir, showWarnings = FALSE)
+  } else {
+    stopifnot(dir.exists(tempdir))
+  }
+
+  #Download file if needed
+  #file_bascet_sif <- file.path(storeAt, "bascet.sif")
+  #if(!file.exists(file_bascet_sif)) {
+  #  print("No singularity image present; downloading")
+  #  safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif)
+  #} else {
+  #  print(paste("Found existing Bascet singularity image:", file_bascet_sif))
+  #}
+
+  prependCmd <- ""  
+  #paste("singularity run", file_bascet_sif," ")
+
+
+  BascetInstance(
+    bin="bascet",   ##### what about .exe ??? ################################  ###################### path?? ##################################
+    tempdir=tempdir,
+    prependCmd=prependCmd,
+    containerMem="10GB",
+    logLevel=logLevel
+  )
+}
+
+
+
+###############################################
+#' Get a Bascet binary for the current platform
+#' It will be cached in the provided directory to avoid downloading it each the time the function is called
+#'
+#' @param storeAt Directory to store the binary in. Default is current directory but it is likely better to provide a single systems level directory
+#' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
+#' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
+#'
+#' @return A Bascet instance
+#' @export
+getBascetBinary <- function(
+    storeAt=getwd(),
+    tempdir=NULL,
+    logLevel="info"
+){
+  #Check arguments
+  stopifnot(dir.exists(storeAt))
+
+  if(is.null(tempdir)){
+    tempdir <- "./temp"
+    dir.create(tempdir, showWarnings = FALSE)
+  } else {
+    stopifnot(dir.exists(tempdir))
+  }
+
+  root_url <- "http://beagle.henlab.org/public/bascet/bins"
+  sysname <- tolower(Sys.info()[["sysname"]])
+  file_local_bascet <- file.path(storeAt, "bascet")
+
+  if(file.exists(file_local_bascet)) {
+    print(paste("Found existing Bascet binary:", file_local_bascet))
+    if(sysname != "windows") {
+      Sys.chmod(file_local_bascet, mode="0755")
+    }
+    return(BascetInstance(
+      bin=file_local_bascet,
+      tempdir=tempdir,
+      prependCmd="",
+      containerMem="10GB",
+      logLevel=logLevel
+    ))
+  }
+
+  if(sysname == "linux") {
+    bascet_bin <- "bascet-linux-x86_64"
+  } else if(sysname == "darwin") {
+    bascet_bin <- "bascet-macos-universal"
+  } else if(sysname == "windows") {
+    bascet_bin <- "bascet-windows-x86_64.exe"
+  } else {
+    stop(sprintf("Unsupported operating system for Bascet binary: %s", sysname))
+  }
+
+  file_bascet_bin <- file.path(storeAt, bascet_bin)
+  url_bascet_bin <- paste(root_url, bascet_bin, sep="/")
+
+  if(!file.exists(file_bascet_bin)) {
+    print("No Bascet binary present; downloading")
+    safeDownloadMD5(url_bascet_bin, file_bascet_bin)
+  } else {
+    print(paste("Found existing Bascet binary:", file_bascet_bin))
+  }
+
+  if(sysname != "windows") {
+    Sys.chmod(file_bascet_bin, mode="0755")
+  }
+
+  BascetInstance(
+    bin=file_bascet_bin,
+    tempdir=tempdir,
+    prependCmd="",
+    containerMem="10GB",
+    logLevel=logLevel
+  )
+}
+
+
+
+
+
 ###############################################
 #' Get a Bascet image (singularity or docker). 
 #' It will be cached in the provided directory to avoid downloading it each the time the function is called
@@ -556,4 +687,3 @@ assembleBascetCommand <- function(bascetInstance, params) {
 #  print("///////////////")
   tor
 }
-

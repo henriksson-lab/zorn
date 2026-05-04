@@ -31,6 +31,157 @@ BascetMapCellSKESA <- function(
   )
 }
 
+###############################################
+#' Run integrated SKESA on reads of all cells.
+#'
+#' This uses the bascet integrated skesa command rather than the old mapcell
+#' system.
+#'
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input shard
+#' @param outputName Name of output shard
+#' @param numThreads Total thread budget. Defaults to the runner CPU count
+#' @param numSkesaWorkers Number of cells to assemble concurrently
+#' @param numSkesaCores Number of cores to give each SKESA assembly
+#' @param numThreadsRead Threads used by the TIRP reader. If NULL, use the CLI default
+#' @param totalMem Total memory to allocate
+#' @param kmer Minimal k-mer length for assembly
+#' @param maxKmer Maximal k-mer length for assembly. 0 means auto
+#' @param steps Number of assembly iterations from minimal to maximal k-mer length
+#' @param minCount Minimal count for k-mers retained
+#' @param maxKmerCount Maximum k-mer count for fork tie-breaking
+#' @param vectorPercent Percentage of reads containing 19-mer for adapter detection. 1.0 disables
+#' @param insertSize Expected insert size for paired reads. 0 means auto
+#' @param fraction Maximum noise to signal ratio acceptable for extension
+#' @param maxSnpLen Maximal SNP length
+#' @param minContig Minimal contig length reported in output
+#' @param allowSnps Allow additional step for SNP discovery
+#' @param forceSingleEnds Do not use paired-end information
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#'
+#' @return A job to be executed, or being executed, depending on runner settings
+#' @export
+BascetMapCellSKESAintegrated <- function(
+    bascetRoot,
+    inputName="filtered",
+    outputName="contigs",
+    numThreads=NULL,
+    numSkesaWorkers=NULL,
+    numSkesaCores=NULL,
+    numThreadsRead=NULL,
+    totalMem=NULL,
+    kmer=21,
+    maxKmer=0,
+    steps=11,
+    minCount=1,
+    maxKmerCount=10,
+    vectorPercent=0.05,
+    insertSize=0,
+    fraction=0.01,
+    maxSnpLen=150,
+    minContig=50,
+    allowSnps=FALSE,
+    forceSingleEnds=FALSE,
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
+){
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
+  }
+
+  if(is.null(numSkesaWorkers) && is.null(numSkesaCores)) {
+    numSkesaWorkers <- 1
+    numSkesaCores <- numThreads
+  } else if(is.null(numSkesaWorkers)) {
+    numSkesaWorkers <- max(1, floor(numThreads / numSkesaCores))
+  } else if(is.null(numSkesaCores)) {
+    numSkesaCores <- max(1, floor(numThreads / numSkesaWorkers))
+  }
+
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.valid.threadcount(numThreads))
+  stopifnot(is.valid.threadcount(numSkesaWorkers))
+  stopifnot(is.valid.threadcount(numSkesaCores))
+  if(!is.null(numThreadsRead)) {
+    stopifnot(is.valid.threadcount(numThreadsRead))
+  }
+  stopifnot(is.positive.integer(kmer))
+  stopifnot(is.integer.like(maxKmer), maxKmer >= 0)
+  stopifnot(is.positive.integer(steps))
+  if(!is.null(minCount)) {
+    stopifnot(is.positive.integer(minCount))
+  }
+  stopifnot(is.positive.integer(maxKmerCount))
+  stopifnot(is.numeric(vectorPercent), vectorPercent >= 0, vectorPercent <= 1)
+  stopifnot(is.integer.like(insertSize), insertSize >= 0)
+  stopifnot(is.numeric(fraction), fraction > 0)
+  stopifnot(is.positive.integer(maxSnpLen))
+  stopifnot(is.positive.integer(minContig))
+  stopifnot(is.logical(allowSnps))
+  stopifnot(is.logical(forceSingleEnds))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
+
+  #Check memory sizes
+  totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
+
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+
+  if(num_shards==0){
+    stop("No input files")
+  }
+
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "zip", num_shards)
+
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
+    RunJob(
+      runner = runner,
+      jobname = "Zskesa",
+      bascetInstance = bascetInstance,
+      cmd = c(
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
+
+        ### Abort early if needed
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
+
+        assembleBascetCommand(bascetInstance, c(
+          "skesa",
+          "-i=${files_in[$TASK_ID]}",
+          "-o=${files_out[$TASK_ID]}",
+          paste0("--skesa-workers=",numSkesaWorkers),
+          paste0("--skesa-cores=",numSkesaCores),
+          if(!is.null(numThreadsRead)) paste0("--num-threads-read=",numThreadsRead),
+          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)),
+          paste0("--kmer=",kmer),
+          paste0("--max-kmer=",maxKmer),
+          paste0("--steps=",steps),
+          if(!is.null(minCount)) paste0("--min-count=",minCount),
+          paste0("--max-kmer-count=",maxKmerCount),
+          paste0("--vector-percent=",vectorPercent),
+          paste0("--insert-size=",insertSize),
+          paste0("--fraction=",fraction),
+          paste0("--max-snp-len=",maxSnpLen),
+          paste0("--min-contig=",minContig),
+          if(allowSnps) "--allow-snps",
+          if(forceSingleEnds) "--force-single-ends",
+          "--single-pass-counter"
+        ))
+      ),
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
+}
+
 
 ################################################################################
 ################ QUAST #########################################################
@@ -150,29 +301,101 @@ BascetAggregateQUAST <- function(
 
 ###############################################
 #' Run FASTQC on reads of all cells.
-#' This is a thin wrapper around BascetMapCell
+#'
+#' This uses the bascet integrated fastqc command rather than the old mapcell
+#' system.
 #'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#' @param numThreads Total thread budget. Defaults to the runner CPU count
+#' @param numThreadsRead Threads used by the TIRP reader. If NULL, use the CLI default
+#' @param nogroup Do not group bases in the FastQC per-base modules
+#' @param expgroup Use exponential base grouping in the FastQC per-base modules
+#' @param kmerSize K-mer size for FastQC k-mer content
+#' @param minLength Minimum sequence length to include
+#' @param dupLength Length to truncate sequences for duplication detection
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
-#' @seealso \code{\link{BascetMapCell}}
 #' @export
 BascetMapCellFASTQC <- function(
     bascetRoot,
     inputName="filtered",
     outputName="fastqc",
-    ...
+    numThreads=NULL,
+    numThreadsRead=NULL,
+    nogroup=FALSE,
+    expgroup=FALSE,
+    kmerSize=7,
+    minLength=0,
+    dupLength=50,
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
 ){
-  BascetMapCell(
-    bascetRoot=bascetRoot,
-    withfunction="_fastqc",
-    inputName=inputName,
-    outputName=outputName,
-    ...
-  )
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
+  }
+
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.valid.threadcount(numThreads))
+  if(!is.null(numThreadsRead)) {
+    stopifnot(is.valid.threadcount(numThreadsRead))
+    stopifnot(numThreads > numThreadsRead)
+  }
+  stopifnot(is.logical(nogroup))
+  stopifnot(is.logical(expgroup))
+  stopifnot(is.positive.integer(kmerSize))
+  stopifnot(is.integer.like(minLength), minLength >= 0)
+  stopifnot(is.positive.integer(dupLength))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
+
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+
+  if(num_shards==0){
+    stop("No input files")
+  }
+
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "zip", num_shards)
+
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
+    RunJob(
+      runner = runner,
+      jobname = "Zfastqc",
+      bascetInstance = bascetInstance,
+      cmd = c(
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
+
+        ### Abort early if needed
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
+
+        assembleBascetCommand(bascetInstance, c(
+          "fastqc",
+          "-i=${files_in[$TASK_ID]}",
+          "-o=${files_out[$TASK_ID]}",
+          paste0("--threads=",numThreads),
+          if(!is.null(numThreadsRead)) paste0("--num-threads-read=",numThreadsRead),
+          if(nogroup) "--nogroup",
+          if(expgroup) "--expgroup",
+          paste0("--kmer-size=",kmerSize),
+          paste0("--min-length=",minLength),
+          paste0("--dup-length=",dupLength)
+        ))
+      ),
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -1044,29 +1267,92 @@ BascetAggregateAMRfinder <- function(
 
 ###############################################
 #' Run GECCO on contigs of all cells.
-#' This is a thin wrapper around BascetMapCell
+#'
+#' This uses the bascet integrated gecco command rather than the old mapcell
+#' system.
 #'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#' @param numThreads Total thread budget. Defaults to the runner CPU count
+#' @param dataDir GECCO data directory containing HMM, CRF model, and InterPro files
+#' @param threshold Minimum probability for cluster membership
+#' @param cds Minimum number of annotated CDS in a cluster
+#' @param noMask Do not mask ambiguous nucleotides during gene prediction
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
-#' @seealso \code{\link{BascetMapCell}}
 #' @export
 BascetMapCellGECCO <- function(
     bascetRoot,
     inputName="contigs",
     outputName="gecco",
-    ...
+    numThreads=NULL,
+    dataDir=NULL,
+    threshold=0.8,
+    cds=3,
+    noMask=FALSE,
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
 ){
-  BascetMapCell(
-    bascetRoot=bascetRoot,
-    withfunction="_gecco",
-    inputName=inputName,
-    outputName=outputName,
-    ...
-  )
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
+  }
+
+  stopifnot(dir.exists(bascetRoot))
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.valid.threadcount(numThreads))
+  if(!is.null(dataDir)) {
+    stopifnot(dir.exists(dataDir))
+  }
+  stopifnot(is.numeric(threshold), threshold >= 0, threshold <= 1)
+  stopifnot(is.positive.integer(cds))
+  stopifnot(is.logical(noMask))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
+
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+
+  if(num_shards==0){
+    stop("No input files")
+  }
+
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "zip", num_shards)
+
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
+    RunJob(
+      runner = runner,
+      jobname = "Zgecco",
+      bascetInstance = bascetInstance,
+      cmd = c(
+        shellscriptMakeBashArray("files_in",inputFiles),
+        shellscriptMakeBashArray("files_out",outputFiles),
+
+        ### Abort early if needed
+        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
+
+        assembleBascetCommand(bascetInstance, c(
+          "gecco",
+          "-i=${files_in[$TASK_ID]}",
+          "-o=${files_out[$TASK_ID]}",
+          paste0("--threads=",numThreads),
+          if(!is.null(dataDir)) paste0("--data-dir=",dataDir),
+          paste0("--threshold=",threshold),
+          paste0("--cds=",cds),
+          if(noMask) "--no-mask"
+        ))
+      ),
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
@@ -1086,8 +1372,7 @@ aggr.gecco <- function(
     bascetInstance
 ){ 
   
-  tmp <- BascetReadFile(bascetFile, cellID, "gecco_out/clusters.tsv", as="text", bascetInstance=bascetInstance)
-  tmp <- readLines("/home/mahogny/github/zorn/test_aggr/gecco/salmonella_SRR33219394.clusters.tsv")
+  tmp <- BascetReadFile(bascetFile, cellID, "clusters.tsv", as="text", bascetInstance=bascetInstance)
   dat <- read.delim(text = tmp)
   dat
 }
@@ -1120,4 +1405,3 @@ BascetAggregateGECCO <- function(
     ...
   )
 }
-

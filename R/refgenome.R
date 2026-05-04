@@ -50,38 +50,36 @@ isBamPairedAlignment <- function(
 
 
 ###############################################
-#' Index a genome using BWA such that it can be used for alignment
-#' 
+#' Index a genome using BWA-MEM2 such that it can be used for alignment
+#'
 #' TODO: could check if genome is indexed already
-#' 
+#'
 #' @param genomeFile Name of FASTA file holding genome sequence
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
-#' 
+#'
 #' @export
-BascetIndexGenomeBWA <- function(  
-    genomeFile, 
-    runner=GetDefaultBascetRunner(), 
+BascetIndexGenomeBWAMEM2 <- function(
+    genomeFile,
+    runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Check arguments
   stopifnot(is.existing.fasta(genomeFile))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
-  
+
   #if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job
     RunJob(
-      runner = runner, 
+      runner = runner,
       jobname = "Zbwa_index",
       bascetInstance = bascetInstance,
       cmd = c(
-        ### For sorting
-        paste(
-          bascetInstance@prependCmd,
-          "bwa index",
+        assembleBascetCommand(bascetInstance, c(
+          "exttool", "bwa-mem2", "index",
           genomeFile
-        )
+        ))
       ),
       arraysize = 1
     )
@@ -189,21 +187,66 @@ BascetIndexGenomeSTAR <- function(
   #Produce the script and run the job.
   #Note: overwrite not supported. It is too dangerous to implement
   RunJob(
-    runner = runner, 
+    runner = runner,
     jobname = "Zstar_index",
     bascetInstance = bascetInstance,
     cmd = c(
       paste(
         "mkdir -p", outDir
       ),
-      paste(
-        bascetInstance@prependCmd,
-        "STAR --runThreadN", as.character(numThreads),
-        "--runMode genomeGenerate",
-        "--genomeDir",outDir,
-        "--genomeFastaFiles",fastaFile,
+      assembleBascetCommand(bascetInstance, c(
+        "exttool", "STAR",
+        "--runThreadN", as.character(numThreads),
+        "--runMode", "genomeGenerate",
+        "--genomeDir", outDir,
+        "--genomeFastaFiles", fastaFile,
         "--sjdbGTFfile", gtfFile
-      )
+      ))
+    ),
+    arraysize = 1
+  )
+}
+
+
+
+
+###############################################
+#' Index a genome using minimap2 such that it can be used for alignment
+#'
+#' @param fastaFile Name of FASTA file holding genome sequence
+#' @param indexFile Path to write the resulting .mmi index
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
+#'
+#' @return A job to be executed, or being executed, depending on runner settings
+#' @export
+BascetIndexGenomeMinimap2 <- function(
+    fastaFile,
+    indexFile,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
+){
+  #Check arguments
+  stopifnot(is.existing.fasta(fastaFile))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
+
+  #Exit early if already done
+  if(file.exists(indexFile)){
+    print("minimap2 index already exists; skipping")
+    return(new_no_job())
+  }
+
+  RunJob(
+    runner = runner,
+    jobname = "Zmm2_index",
+    bascetInstance = bascetInstance,
+    cmd = c(
+      assembleBascetCommand(bascetInstance, c(
+        "exttool", "minimap2",
+        "-d", indexFile,
+        fastaFile
+      ))
     ),
     arraysize = 1
   )
@@ -473,7 +516,7 @@ BascetFilterAlignment <- function(
 #' @param outputNameBAMcell Name of cell-sorted BAMs
 #' @param outputNameBAMpos Name of pos-sorted BAMs (if generated)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param aligner Which aligner to use: "BWA", "bowtie2", or "STAR"
+#' @param aligner Which aligner to use: "BWAMEM2", "bowtie2", or "STAR"
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -487,7 +530,7 @@ BascetAlignToReference <- function(
     outputNameBAMcell="aligned_cell", 
     outputNameBAMpos="aligned_pos",  #TODO make optional
     overwrite=FALSE,
-    aligner=c(NULL, "BWA", "bowtie2", "STAR"),
+    aligner=c(NULL, "BWAMEM2", "bowtie2", "STAR"),
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -521,9 +564,9 @@ BascetAlignToReference <- function(
   outputFilesBAMunsorted  <- makeOutputShardNames(bascetRoot, outputNameBAMcell,  "bam", num_shards)
   outputFilesBAMsorted    <- makeOutputShardNames(bascetRoot, outputNameBAMpos, "bam", num_shards)
   
-  if(aligner=="BWA"){
+  if(aligner=="BWAMEM2"){
     if(!file.exists(useReference)){
-      stop("BWA reference file does not exist")
+      stop("BWAMEM2 reference file does not exist")
     }
   } else if (aligner=="bowtie2") {
     #TODO: option of providing extra flag, "--very-sensitive-local" (should be default)
