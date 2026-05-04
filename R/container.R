@@ -194,6 +194,9 @@ getBascetBinary <- function(
   root_url <- "http://beagle.henlab.org/public/bascet/bins"
   sysname <- tolower(Sys.info()[["sysname"]])
   file_local_bascet <- file.path(storeAt, "bascet")
+  bin_path <- function(path) {
+    normalizePath(path, mustWork=TRUE)
+  }
 
   if(file.exists(file_local_bascet)) {
     print(paste("Found existing Bascet binary:", file_local_bascet))
@@ -201,7 +204,7 @@ getBascetBinary <- function(
       Sys.chmod(file_local_bascet, mode="0755")
     }
     return(BascetInstance(
-      bin=file_local_bascet,
+      bin=bin_path(file_local_bascet),
       tempdir=tempdir,
       prependCmd="",
       containerMem="10GB",
@@ -234,7 +237,7 @@ getBascetBinary <- function(
   }
 
   BascetInstance(
-    bin=file_bascet_bin,
+    bin=bin_path(file_bascet_bin),
     tempdir=tempdir,
     prependCmd="",
     containerMem="10GB",
@@ -576,15 +579,13 @@ TestBascetInstance <- function(
   #check arguments
   stopifnot(is.bascet.instance(bascetInstance))
 
-  #run bascet, just checking current version
-  cmd <- paste(
-    bascetInstance@prependCmd,
-    bascetInstance@bin,
-    "-V"
-  )
-
   #prependCmd is a pre-built shell string (contains $PWD/%cd% expansion and
   #container map flags), so it must be interpreted by a shell.
+  cmd <- paste(
+    bascetInstance@prependCmd,
+    shQuote(bascetInstance@bin),
+    "-V"
+  )
   if (.Platform$OS.type == "windows") {
     ret <- system2("cmd", c("/c", cmd), stdout = TRUE)
   } else {
@@ -679,7 +680,7 @@ assembleBascetCommand <- function(bascetInstance, params) {
   tor <- stringr::str_flatten(collapse = " ",
     c(
       bascetInstance@prependCmd,
-      bascetInstance@bin,
+      shQuote(bascetInstance@bin),
       if(bascetInstance@logToFile) "--log-mode=$BASCET_LOGFILE",
       paste0("--log-level=",bascetInstance@logLevel),
       params
