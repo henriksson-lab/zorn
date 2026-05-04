@@ -5,7 +5,12 @@
 \title{Get a Bascet binary for the current platform
 It will be cached in the provided directory to avoid downloading it each the time the function is called}
 \usage{
-getBascetBinary(storeAt = getwd(), tempdir = NULL, logLevel = "info")
+getBascetBinary(
+  storeAt = getwd(),
+  tempdir = NULL,
+  logLevel = "info",
+  forceInstall = FALSE
+)
 }
 \arguments{
 \item{storeAt}{Directory to store the binary in. Default is current directory but it is likely better to provide a single systems level directory}
@@ -13,6 +18,8 @@ getBascetBinary(storeAt = getwd(), tempdir = NULL, logLevel = "info")
 \item{tempdir}{Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible}
 
 \item{logLevel}{Log level for the Bascet instance (e.g. "info", "debug", "warn")}
+
+\item{forceInstall}{Force download of the Bascet binary even if a cached binary exists}
 }
 \value{
 A Bascet instance

@@ -173,16 +173,19 @@ getBascetExecutable <- function(
 #' @param storeAt Directory to store the binary in. Default is current directory but it is likely better to provide a single systems level directory
 #' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
 #' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
+#' @param forceInstall Force download of the Bascet binary even if a cached binary exists
 #'
 #' @return A Bascet instance
 #' @export
 getBascetBinary <- function(
     storeAt=getwd(),
     tempdir=NULL,
-    logLevel="info"
+    logLevel="info",
+    forceInstall=FALSE
 ){
   #Check arguments
   stopifnot(dir.exists(storeAt))
+  stopifnot(is.logical(forceInstall), length(forceInstall) == 1, !is.na(forceInstall))
 
   if(is.null(tempdir)){
     tempdir <- "./temp"
@@ -198,7 +201,7 @@ getBascetBinary <- function(
     normalizePath(path, mustWork=TRUE)
   }
 
-  if(file.exists(file_local_bascet)) {
+  if(!forceInstall && file.exists(file_local_bascet)) {
     print(paste("Found existing Bascet binary:", file_local_bascet))
     if(sysname != "windows") {
       Sys.chmod(file_local_bascet, mode="0755")
@@ -225,8 +228,12 @@ getBascetBinary <- function(
   file_bascet_bin <- file.path(storeAt, bascet_bin)
   url_bascet_bin <- paste(root_url, bascet_bin, sep="/")
 
-  if(!file.exists(file_bascet_bin)) {
-    print("No Bascet binary present; downloading")
+  if(forceInstall || !file.exists(file_bascet_bin)) {
+    if(forceInstall) {
+      print("Force installing Bascet binary; downloading")
+    } else {
+      print("No Bascet binary present; downloading")
+    }
     safeDownloadMD5(url_bascet_bin, file_bascet_bin)
   } else {
     print(paste("Found existing Bascet binary:", file_bascet_bin))
@@ -269,7 +276,7 @@ TestBascetInstance <- function(
     shQuote(bascetInstance@bin),
     "-V"
   )
-  ret <- system(cmd)
+  ret <- system(cmd, intern = TRUE)
 
   #Print version number (if it works)
   print(ret)
