@@ -75,11 +75,13 @@ BascetIndexGenomeBWAMEM2 <- function(
       runner = runner,
       jobname = "Zbwa_index",
       bascetInstance = bascetInstance,
-      cmd = c(
-        assembleBascetCommand(bascetInstance, c(
-          "exttool", "bwa-mem2", "index",
-          genomeFile
-        ))
+      cmd = JobScript(
+        steps = list(
+          JobBascetCommand(bascetInstance, list(
+            "exttool", "bwa-mem2", "index",
+            genomeFile
+          ))
+        )
       ),
       arraysize = 1
     )
@@ -124,14 +126,13 @@ BascetIndexGenomeBowtie2 <- function(
       runner = runner, 
       jobname = "Zbt2_build",
       bascetInstance = bascetInstance,
-      cmd = c(
-        ### For sorting
-        paste(
-          bascetInstance@prependCmd,
-          "bowtie2-build",
-          "--threads",numThreads,
-          genomeFile,
-          indexName
+      cmd = JobScript(
+        steps = list(
+          JobCommand("bowtie2-build", list(
+            JobArg("--threads", numThreads, sep = " "),
+            genomeFile,
+            indexName
+          ), prepend = bascetInstance@prependCmd)
         )
       ),
       arraysize = 1
@@ -190,18 +191,18 @@ BascetIndexGenomeSTAR <- function(
     runner = runner,
     jobname = "Zstar_index",
     bascetInstance = bascetInstance,
-    cmd = c(
-      paste(
-        "mkdir -p", outDir
-      ),
-      assembleBascetCommand(bascetInstance, c(
-        "exttool", "STAR",
-        "--runThreadN", as.character(numThreads),
-        "--runMode", "genomeGenerate",
-        "--genomeDir", outDir,
-        "--genomeFastaFiles", fastaFile,
-        "--sjdbGTFfile", gtfFile
-      ))
+    cmd = JobScript(
+      steps = list(
+        JobEnsureDir(outDir),
+        JobBascetCommand(bascetInstance, list(
+          "exttool", "STAR",
+          JobArg("--runThreadN", as.character(numThreads), sep = " "),
+          JobArg("--runMode", "genomeGenerate", sep = " "),
+          JobArg("--genomeDir", outDir, sep = " "),
+          JobArg("--genomeFastaFiles", fastaFile, sep = " "),
+          JobArg("--sjdbGTFfile", gtfFile, sep = " ")
+        ))
+      )
     ),
     arraysize = 1
   )
@@ -241,12 +242,14 @@ BascetIndexGenomeMinimap2 <- function(
     runner = runner,
     jobname = "Zmm2_index",
     bascetInstance = bascetInstance,
-    cmd = c(
-      assembleBascetCommand(bascetInstance, c(
-        "exttool", "minimap2",
-        "-d", indexFile,
-        fastaFile
-      ))
+    cmd = JobScript(
+      steps = list(
+        JobBascetCommand(bascetInstance, list(
+          "exttool", "minimap2",
+          JobArg("-d", indexFile, sep = " "),
+          fastaFile
+        ))
+      )
     ),
     arraysize = 1
   )
@@ -362,16 +365,16 @@ BascetAlignmentToBigwig <- function(
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     
     ### Build command
-    cmd <- c(
-      shellscriptMakeBashArray("files_in", inputFiles),
-      shellscriptMakeBashArray("files_out", outputFiles),
-      
-      ### For sorting
-      paste(
-        bascetInstance@prependCmd,
-        "bamCoverage",
-        "-b ${files_in[$TASK_ID]}",     #Each job takes a single output
-        "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
+    cmd <- JobScript(
+      vars = list(
+        files_in = inputFiles,
+        files_out = outputFiles
+      ),
+      steps = list(
+        JobCommand("bamCoverage", list(
+          JobArg("-b", JobVar("files_in"), sep = " "),
+          JobArg("-o", JobVar("files_out"), sep = " ")
+        ), prepend = bascetInstance@prependCmd)
       )
     )
 
@@ -471,18 +474,22 @@ BascetFilterAlignment <- function(
     }
     
     ### Build command
-    cmd <- c(
-      shellscriptMakeBashArray("files_in", inputFiles),
-      shellscriptMakeBashArray("files_out", outputFiles),
-      
-      paste(
-        bascetInstance@prependCmd,
-        "samtools view",
-        samtools_flags, 
-        "-@",numThreads,           #Number of threads to use
-        "${files_in[$TASK_ID]}",        #Each job takes a single output
-        "-b",                           #Output binary
-        "-o ${files_out[$TASK_ID]}"     #Each job produces a single output
+    cmd <- JobScript(
+      vars = list(
+        files_in = inputFiles,
+        files_out = outputFiles
+      ),
+      steps = list(
+        JobCommand("samtools", c(
+          list("view"),
+          as.list(strsplit(trimws(samtools_flags), "\\s+")[[1]][nzchar(strsplit(trimws(samtools_flags), "\\s+")[[1]])]),
+          list(
+            JobArg("-@", numThreads, sep = " "),
+            JobVar("files_in"),
+            "-b",
+            JobArg("-o", JobVar("files_out"), sep = " ")
+          )
+        ), prepend = bascetInstance@prependCmd)
       )
     )
       
@@ -595,25 +602,26 @@ BascetAlignToReference <- function(
       runner = runner, 
       jobname = "Zaln",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in", inputFiles),
-        shellscriptMakeBashArray("files_out_unsorted", outputFilesBAMunsorted),
-        shellscriptMakeBashArray("files_out_sorted",   outputFilesBAMsorted),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_sorted[$TASK_ID]}"),
-        
-        assembleBascetCommand(bascetInstance, c(
-          "align",
-          "--in=${files_in[$TASK_ID]}",   
-          "--unsorted=${files_out_unsorted[$TASK_ID]}",
-          "--sorted=${files_out_sorted[$TASK_ID]}",
-          "--temp=$BASCET_TEMPDIR",
-          paste0("--genome=",useReference),
-          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
-          if(!is.null(numThreads)) paste0("--threads=",numThreads),
-          paste0("--aligner=",aligner)
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out_unsorted = outputFilesBAMunsorted,
+          files_out_sorted = outputFilesBAMsorted
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out_sorted")),
+          JobBascetCommand(bascetInstance, list(
+            "align",
+            JobArg("--in", JobVar("files_in")),
+            JobArg("--unsorted", JobVar("files_out_unsorted")),
+            JobArg("--sorted", JobVar("files_out_sorted")),
+            JobArg("--temp", JobEnv("BASCET_TEMPDIR")),
+            JobArg("--genome", useReference),
+            JobMaybeArg("--memory", totalMem, format_size_bascet),
+            JobMaybeArg("--threads", numThreads),
+            JobArg("--aligner", aligner)
+          ))
+        )
       ),
       arraysize = num_shards
     )
@@ -685,19 +693,20 @@ BascetBam2Fragments <- function(
       runner = runner, 
       jobname = "Zbam2frag",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in", inputFiles),
-        shellscriptMakeBashArray("files_out",outputFiles),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        assembleBascetCommand(bascetInstance, c(
-          "bam2fragments",
-          "-t=$BASCET_TEMPDIR", 
-          "-i=${files_in[$TASK_ID]}",  
-          "-o=${files_out[$TASK_ID]}"
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "bam2fragments",
+            JobArg("-t", JobEnv("BASCET_TEMPDIR")),
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out"))
+          ))
+        )
       ),
       arraysize = length(inputFiles)
     )
@@ -760,21 +769,22 @@ BascetCountChrom <- function(
       runner = runner, 
       jobname = "Zcountchrom",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in", inputFiles),
-        shellscriptMakeBashArray("files_out",outputFiles),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        assembleBascetCommand(bascetInstance, c(
-          "countchrom",
-          paste0("--min-matching=",minMatching),
-          if(removeDuplicates) "--remove-duplicates",
-          "-t=$BASCET_TEMPDIR",
-          "-i=${files_in[$TASK_ID]}",  
-          "-o=${files_out[$TASK_ID]}"
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "countchrom",
+            JobArg("--min-matching", minMatching),
+            if(removeDuplicates) JobArg("--remove-duplicates"),
+            JobArg("-t", JobEnv("BASCET_TEMPDIR")),
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out"))
+          ))
+        )
       ),
       arraysize = length(inputFiles)
     )
@@ -1083,23 +1093,24 @@ BascetCountFeature <- function(
       runner = runner, 
       jobname = "Zcountf",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in", inputFiles),
-        shellscriptMakeBashArray("files_out",outputFiles),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        assembleBascetCommand(bascetInstance, c(
-          "countfeature",
-          paste0("-g=", gffFile),
-          paste0("--use-feature=", useFeature),
-          paste0("--attr-id=", attrGeneId),
-          paste0("--attr-name=", attrGeneName),
-          "-t=$BASCET_TEMPDIR",
-          "-i=${files_in[$TASK_ID]}",  
-          "-o=${files_out[$TASK_ID]}"
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "countfeature",
+            JobArg("-g", gffFile),
+            JobArg("--use-feature", useFeature),
+            JobArg("--attr-id", attrGeneId),
+            JobArg("--attr-name", attrGeneName),
+            JobArg("-t", JobEnv("BASCET_TEMPDIR")),
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out"))
+          ))
+        )
       ),
       arraysize = length(inputFiles)
     )
@@ -1187,46 +1198,42 @@ BascetRunCellSNP <- function(
   listchromFiles <- makeOutputShardNames(bascetRoot, outputName, "listchrom", num_shards)
 
   ### Build command: basic alignment
-  cmd <- c(
-    shellscriptMakeBashArray("files_in", inputFiles),
-    shellscriptMakeBashArray("files_out", outputFiles),
-    shellscriptMakeBashArray("files_listcell", listcellFiles),
-    shellscriptMakeBashArray("files_listchrom", listchromFiles),
-    
-    ### Abort early if needed    
-    #if(!overwrite) shellscriptCancelJobIfFileExists("${outputFiles[$TASK_ID]}"),  #does this work on dirs?
-    if(!overwrite) shellscriptCancelJobIfFileExists("${files_listcell[$TASK_ID]}"),  
-    
-    ### To make list of chromosome IDs
-    paste(
-      bascetInstance@prependCmd,
-      "bash -c \"",
-      "samtools idxstats ${files_in[$TASK_ID]} | head -n -1 | cut -f 1 > ${files_listchrom[$TASK_ID]}",
-      "\""
+  cmd <- JobScript(
+    vars = list(
+      files_in = inputFiles,
+      files_out = outputFiles,
+      files_listcell = listcellFiles,
+      files_listchrom = listchromFiles
     ),
-    
-    
-    ### To make list of cell IDs. could avoid if we write our own cellsnp-lite
-    paste(
-      bascetInstance@prependCmd,
-      "bash -c \"",
-      "samtools view ${files_in[$TASK_ID]} | sed -e 's/^.*CB:Z://' | sed -e 's/\t.*//' | sort | uniq > ${files_listcell[$TASK_ID]}",
-      "\""
-    ),
-    
-    ### For SNP-calling
-    paste(
-      bascetInstance@prependCmd,
-      "cellsnp-lite", 
-      "-s ${files_in[$TASK_ID]}",        #Align BAM
-      "-p", numThreads,
-      "--genotype",
-      "--chrom `cat ${files_listchrom[$TASK_ID]} | paste --serial -d, - -`",
-      #"--minMAF 0.1",
-      #"--minCOUNT 100", #no output w these
-      "--gzip",
-      "-b ${files_listcell[$TASK_ID]}",
-      "-O ${files_out[$TASK_ID]}"        #Each input means one output
+    steps = list(
+      if(!overwrite) JobSkipIfFileExists(JobVar("files_listcell")),
+      JobRedirect(
+        JobPipeline(
+          JobCommand("samtools", list("idxstats", JobVar("files_in")), prepend = bascetInstance@prependCmd),
+          JobCommand("head", list("-n", "-1")),
+          JobCommand("cut", list("-f", "1"))
+        ),
+        stdout = JobVar("files_listchrom")
+      ),
+      JobRedirect(
+        JobPipeline(
+          JobCommand("samtools", list("view", JobVar("files_in")), prepend = bascetInstance@prependCmd),
+          JobCommand("sed", list("-e", "s/^.*CB:Z://")),
+          JobCommand("sed", list("-e", "s/\t.*//")),
+          JobCommand("sort"),
+          JobCommand("uniq")
+        ),
+        stdout = JobVar("files_listcell")
+      ),
+      JobCommand("cellsnp-lite", list(
+        JobArg("-s", JobVar("files_in"), sep = " "),
+        JobArg("-p", numThreads, sep = " "),
+        JobArg("--genotype"),
+        JobArg("--chrom", JobFileLinesCsv(JobVar("files_listchrom")), sep = " "),
+        JobArg("--gzip"),
+        JobArg("-b", JobVar("files_listcell"), sep = " "),
+        JobArg("-O", JobVar("files_out"), sep = " ")
+      ), prepend = bascetInstance@prependCmd)
     )
   )
   

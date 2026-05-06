@@ -63,6 +63,9 @@ setMethod(
   f = "RunJob",
   signature ="NoRunner",
   definition = function(runner, jobname, bascetInstance, cmd, arraysize) {  
+    if(!is.jobscript(cmd)) {
+      stop("NoRunner requires cmd to be a JobScript")
+    }
     print("This is an attempt to start a job (but will not run)")
     new_no_job()
   }
@@ -180,7 +183,6 @@ GetDefaultBascetRunner <- function() {
   
   bascetRunner.default
 }
-
 
 
 

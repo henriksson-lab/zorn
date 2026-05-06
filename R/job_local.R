@@ -20,7 +20,7 @@ setClass("LocalRunner", slots=list(
 #' @export
 setClass("LocalJob", slots=list(
   cmd="character",
-  proc="ANY", #processx:process
+  proc="ANY",
   logfile="character",
   arraysize="numeric"
 )
@@ -115,89 +115,53 @@ setMethod(
   signature ="LocalRunner",
   definition = function(runner, jobname, bascetInstance, cmd, arraysize) { 
     print("Starting local job")
-    
-    ## Decide on a tempdir location; different for each job. Ensure to create it
-    path_tempdir <- file.path(GetBascetTempDir(bascetInstance), "$TASK_ID")
-    cmd <- c(
-      paste0("BASCET_TEMPDIR=",path_tempdir),
-      paste0("mkdir -p ",path_tempdir),
-      cmd
-    )
 
-    ## Decide on a log location; different for each job. Create the directory
-    if(bascetInstance@logToFile) {
-      cmd <- c(
-        "mkdir -p logs",
-        paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${TASK_ID}.log")),
-        cmd
+    if(!is.jobscript(cmd)) {
+      stop("LocalRunner requires cmd to be a JobScript")
+    }
+
+    if(!runner@direct) {
+      stop("LocalRunner(direct = FALSE) is no longer supported")
+    }
+
+    if(runner@showScript) {
+      print("=============== local JobScript start =================")
+      str(cmd)
+      print("=============== local JobScript end =================")
+    }
+
+    print("Running directly")
+    tmproot <- GetBascetTempDir(bascetInstance)
+    for(i in seq_len(arraysize)) {
+      task_id <- i - 1L
+      path_tempdir <- file.path(tmproot, as.character(task_id))
+      dir.create(path_tempdir, recursive = TRUE, showWarnings = FALSE)
+
+      task_env <- list(BASCET_TEMPDIR = path_tempdir)
+      if(bascetInstance@logToFile) {
+        dir.create("logs", showWarnings = FALSE)
+        task_env$BASCET_LOGFILE <- paste0("logs/", jobname, ".", task_id, ".log")
+      }
+
+      tryCatch(
+        runJobScriptLocal(cmd, task_id = task_id, env = task_env),
+        error = function(e) {
+          stop(
+            paste0(
+              "Local array task ",
+              task_id,
+              " failed while running ",
+              jobname,
+              ": ",
+              conditionMessage(e)
+            ),
+            call. = FALSE
+          )
+        }
       )
-    } 
-    
-    cmd <- stringr::str_flatten(cmd,"\n")
-    
-    if(runner@showScript){
-      print("=============== final local script start =================")
-      writeLines(cmd)
-      print("=============== final local script end =================")
     }
-    
-    
-    #### Concatenate all scripts over all TASK_ID
-    all_cmd <- vector("character", arraysize)
-    for(i in seq_len(arraysize)){
-      this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),i-1)  #0... TASK_ID -1
-      this_cmd <- stringr::str_replace_all(this_cmd,stringr::fixed("${TASK_ID}"),i-1)  #0... TASK_ID -1
-      all_cmd[i] <- this_cmd
-    }
-    
-    
-    if(runner@showScript){
-      print("=============== all script start =================")
-      writeLines(all_cmd)
-      print("=============== all script end =================")
-    }
-    
-    #Figure out name of file to store in
-    tfile <- tempfile(pattern = jobname, fileext=".sh") #putting jobname here helps it show up in "ps"; but may cause issues if bad jobname given
-    
-    #Delete the file upon exit
-    all_cmd <- c(
-      paste("trap \"rm -rf ",tfile,"\" EXIT"),
-      all_cmd
-    )
-    
-    #Write script file
-    writeLines(con=tfile,c(
-      "#!/bin/bash",
-      stringr::str_flatten(all_cmd,"\n")
-    ))
-    
-    if(runner@direct) {
-      print("Running directly")  
-      system(paste("bash", tfile))
-      #print(tfile)
-      #file.remove(tfile) #assumes process has started. can we do better? check https://www.linuxjournal.com/content/bash-trap-command 
-      
-      #Return no job, as it is done already
-      new_no_job()
-    } else {
-      print("Using separate process")
-      
-      #write(tfile,paste("\n", "rm", tfile), append=TRUE)  ##this will make the script delete itself at the end ; or put command first? ---- can also 
-      job <- new(
-        "LocalJob",
-        cmd=cmd,
-        proc=processx::process$new("bash",tfile),
-        logfile="foo",
-        arraysize=arraysize
-      )
-      
-      #Sys.sleep(1)
-      #file.remove(tfile) #assumes process has started. can we do better? yes -- can put delete command into the tfile itself!! TODO
-      
-      #Return the job with PIDs set  
-      job
-    }
+
+    new_no_job()
   }
 )
 

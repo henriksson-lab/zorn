@@ -206,6 +206,11 @@ setMethod(
       "mkdir -p logs",
       paste0("BASCET_LOGFILE=",paste0("logs/",jobname,".${SLURM_ARRAY_TASK_ID}.log"))
     )
+
+    if(!is.jobscript(cmd)) {
+      stop("SlurmRunner requires cmd to be a JobScript")
+    }
+    cmd <- renderJobScriptBash(cmd)
     
     ## Add the provided command
     this_cmd <- stringr::str_replace_all(cmd,stringr::fixed("$TASK_ID"),"$SLURM_ARRAY_TASK_ID")
@@ -522,4 +527,3 @@ if(FALSE){
   j <- createSlurmJobFromExisting("35772765", arraysize = 1)
   WaitForJob(j)
 }
-

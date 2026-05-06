@@ -298,43 +298,38 @@ BascetGetRaw <- function(
       runner = runner, 
       jobname = "Zgetraw",
       bascetInstance = bascetInstance,
-      cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
-        shellscriptMakeBashArray("files_r1",file.path(rawmeta$dir, rawmeta$r1)),
-        shellscriptMakeBashArray("files_r2",file.path(rawmeta$dir, rawmeta$r2)),
-        shellscriptMakeBashArray("libnames",rawmeta$prefix),
-        shellscriptMakeBashArray("files_out",arg_outputFiles),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        assembleBascetCommand(bascetInstance, c(
-          "get-raw",
-          "--temp=$BASCET_TEMPDIR",
-          
-          paste0("--threads=", numThreads),
-          if(!is.null(numReadThreads)) paste0("--countof-threads-read=",numReadThreads),
-          if(!is.null(numDebarcodeThreads)) paste0("--countof-threads-debarcode=",numDebarcodeThreads),
-          if(!is.null(numSortingThreads)) paste0("--countof-threads-sort=",numSortingThreads),
-          if(!is.null(numWriteThreads)) paste0("--countof-threads-write=",numWriteThreads),
-          
-          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
-          if(!is.null(streamBufferSize)) paste0("--sizeof-stream-buffer=",streamBufferSize),
-          if(!is.null(sortBufferSize)) paste0("--sizeof-sort-buffer=",sortBufferSize), 
-          if(!is.null(compressBufferSize)) paste0("--sizeof-compress-buffer=",compressBufferSize),
-          if(!is.null(compressRawBufferSize)) paste0("--sizeof-compress-raw-buffer=",compressRawBufferSize),
-
-          if(!is.null(numMergeStreams)) paste0("--countof-merge-streams=",numMergeStreams),
-
-          if(!is.null(compressionLevel)) paste0("--compression-level=",compressionLevel),
-          
-          "--r1=${files_r1[$TASK_ID]}",
-          "--r2=${files_r2[$TASK_ID]}",
-          if(add_libnames) "--library=${libnames[$TASK_ID]}",
-          "--out=${files_out[$TASK_ID]}",                 #Each job produces a single output
-          chemistry,
-          if(!is.null(subchemistry)) paste0("--subchemistry=",subchemistry)
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_r1 = file.path(rawmeta$dir, rawmeta$r1),
+          files_r2 = file.path(rawmeta$dir, rawmeta$r2),
+          libnames = rawmeta$prefix,
+          files_out = arg_outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "get-raw",
+            JobArg("--temp", JobEnv("BASCET_TEMPDIR")),
+            JobArg("--threads", numThreads),
+            JobMaybeArg("--countof-threads-read", numReadThreads),
+            JobMaybeArg("--countof-threads-debarcode", numDebarcodeThreads),
+            JobMaybeArg("--countof-threads-sort", numSortingThreads),
+            JobMaybeArg("--countof-threads-write", numWriteThreads),
+            JobMaybeArg("--memory", totalMem, format_size_bascet),
+            JobMaybeArg("--sizeof-stream-buffer", streamBufferSize),
+            JobMaybeArg("--sizeof-sort-buffer", sortBufferSize),
+            JobMaybeArg("--sizeof-compress-buffer", compressBufferSize),
+            JobMaybeArg("--sizeof-compress-raw-buffer", compressRawBufferSize),
+            JobMaybeArg("--countof-merge-streams", numMergeStreams),
+            JobMaybeArg("--compression-level", compressionLevel),
+            JobArg("--r1", JobVar("files_r1")),
+            JobArg("--r2", JobVar("files_r2")),
+            if(add_libnames) JobArg("--library", JobVar("libnames")),
+            JobArg("--out", JobVar("files_out")),
+            chemistry,
+            JobMaybeArg("--subchemistry", subchemistry)
+          ))
+        )
       ),
       arraysize = nrow(rawmeta)
     )    
@@ -669,26 +664,26 @@ BascetShardify <- function(
       runner = runner, 
       jobname = "Zshardify",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in", inputFiles),
-        shellscriptMakeBashArray("files_out", outputFiles),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        shellscriptMakeFilesExpander("CELLFILE", debstat$list_picked_cells),
-        assembleBascetCommand(bascetInstance, c(
-          "shardify", 
-          "--temp=$BASCET_TEMPDIR",
-          "-i=${files_in[$TASK_ID]}",   
-          "-o=${files_out[$TASK_ID]}",  
-          "--include=${CELLFILE[$TASK_ID]}",
-
-          if(!is.null(numThreads)) paste0("--threads=",numThreads),
-          if(!is.null(numWriterThreads)) paste0("--numof-threads-write=",format_size_bascet(numWriterThreads)),
-          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)),
-          if(!is.null(streamArenaMem)) paste0("--sizeof-stream-arena=",format_size_bascet(streamArenaMem))
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobFiles("CELLFILE", debstat$list_picked_cells),
+          JobBascetCommand(bascetInstance, list(
+            "shardify",
+            JobArg("--temp", JobEnv("BASCET_TEMPDIR")),
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out")),
+            JobArg("--include", JobVar("CELLFILE")),
+            JobMaybeArg("--threads", numThreads),
+            JobMaybeArg("--numof-threads-write", numWriterThreads, format_size_bascet),
+            JobMaybeArg("--memory", totalMem, format_size_bascet),
+            JobMaybeArg("--sizeof-stream-arena", streamArenaMem, format_size_bascet)
+          ))
+        )
       ), 
       arraysize = debstat$numgroup
     )

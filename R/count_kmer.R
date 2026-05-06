@@ -95,15 +95,17 @@ BascetMakeMinhashHistogram <- function(
 
   if(bascetCheckOverwriteOutput(outputFile, overwrite)) {
     #Make the command
-    cmd <- c(
-      if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
-      assembleBascetCommand(bascetInstance, c(
-        "minhash-hist",
-        if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
-        "-t=$BASCET_TEMPDIR",
-        paste0("-i=", shellscriptMakeCommalist(inputFiles)),
-        paste0("-o=", outputFile)
-      ))
+    cmd <- JobScript(
+      steps = list(
+        if(produce_cell_list) JobFiles("CELLFILE", list_cell_for_shard),
+        JobBascetCommand(bascetInstance, list(
+          "minhash-hist",
+          if(produce_cell_list) JobArg("--cells", JobVar("CELLFILE")),
+          JobArg("-t", JobEnv("BASCET_TEMPDIR")),
+          JobArg("-i", stringr::str_flatten(inputFiles, collapse = ",")),
+          JobArg("-o", outputFile)
+        ))
+      )
     )
 
     #print(cmd)
@@ -195,23 +197,24 @@ BascetQueryFq <- function( #666
       runner = runner, 
       jobname = "bascet_query",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in",inputFiles),
-        shellscriptMakeBashArray("files_out",outputFiles),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        shellscriptMakeOneFileExpander("KMERFILE", useKMERs), 
-        assembleBascetCommand(bascetInstance, c(
-          "detect-kmer-fq",
-          "-t=$BASCET_TEMPDIR",
-          paste0("--threads=", numThreads),
-          paste0("-m=", format(maxReads, scientific=FALSE)),
-          "-f=$KMERFILE",
-          "-i=${files_in[$TASK_ID]}",
-          "-o=${files_out[$TASK_ID]}"
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobFile("KMERFILE", useKMERs),
+          JobBascetCommand(bascetInstance, list(
+            "detect-kmer-fq",
+            JobArg("-t", JobEnv("BASCET_TEMPDIR")),
+            JobArg("--threads", numThreads),
+            JobArg("-m", format(maxReads, scientific=FALSE)),
+            JobArg("-f", JobEnv("KMERFILE")),
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out"))
+          ))
+        )
       ),
       arraysize = num_shards
     )
@@ -309,4 +312,3 @@ ChooseInformativeKMERs <- function(
   #set.seed(0)
   #sample(all_kmer, numPick)
 }
-

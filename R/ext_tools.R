@@ -145,35 +145,36 @@ BascetMapCellSKESAintegrated <- function(
       runner = runner,
       jobname = "Zskesa",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in",inputFiles),
-        shellscriptMakeBashArray("files_out",outputFiles),
-
-        ### Abort early if needed
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-
-        assembleBascetCommand(bascetInstance, c(
-          "skesa",
-          "-i=${files_in[$TASK_ID]}",
-          "-o=${files_out[$TASK_ID]}",
-          paste0("--skesa-workers=",numSkesaWorkers),
-          paste0("--skesa-cores=",numSkesaCores),
-          if(!is.null(numThreadsRead)) paste0("--num-threads-read=",numThreadsRead),
-          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)),
-          paste0("--kmer=",kmer),
-          paste0("--max-kmer=",maxKmer),
-          paste0("--steps=",steps),
-          if(!is.null(minCount)) paste0("--min-count=",minCount),
-          paste0("--max-kmer-count=",maxKmerCount),
-          paste0("--vector-percent=",vectorPercent),
-          paste0("--insert-size=",insertSize),
-          paste0("--fraction=",fraction),
-          paste0("--max-snp-len=",maxSnpLen),
-          paste0("--min-contig=",minContig),
-          if(allowSnps) "--allow-snps",
-          if(forceSingleEnds) "--force-single-ends",
-          "--single-pass-counter"
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "skesa",
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out")),
+            JobArg("--skesa-workers", numSkesaWorkers),
+            JobArg("--skesa-cores", numSkesaCores),
+            JobMaybeArg("--num-threads-read", numThreadsRead),
+            JobMaybeArg("--memory", totalMem, format_size_bascet),
+            JobArg("--kmer", kmer),
+            JobArg("--max-kmer", maxKmer),
+            JobArg("--steps", steps),
+            JobMaybeArg("--min-count", minCount),
+            JobArg("--max-kmer-count", maxKmerCount),
+            JobArg("--vector-percent", vectorPercent),
+            JobArg("--insert-size", insertSize),
+            JobArg("--fraction", fraction),
+            JobArg("--max-snp-len", maxSnpLen),
+            JobArg("--min-contig", minContig),
+            if(allowSnps) JobArg("--allow-snps"),
+            if(forceSingleEnds) JobArg("--force-single-ends"),
+            JobArg("--single-pass-counter")
+          ))
+        )
       ),
       arraysize = num_shards
     )
@@ -371,25 +372,26 @@ BascetMapCellFASTQC <- function(
       runner = runner,
       jobname = "Zfastqc",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in",inputFiles),
-        shellscriptMakeBashArray("files_out",outputFiles),
-
-        ### Abort early if needed
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-
-        assembleBascetCommand(bascetInstance, c(
-          "fastqc",
-          "-i=${files_in[$TASK_ID]}",
-          "-o=${files_out[$TASK_ID]}",
-          paste0("--threads=",numThreads),
-          if(!is.null(numThreadsRead)) paste0("--num-threads-read=",numThreadsRead),
-          if(nogroup) "--nogroup",
-          if(expgroup) "--expgroup",
-          paste0("--kmer-size=",kmerSize),
-          paste0("--min-length=",minLength),
-          paste0("--dup-length=",dupLength)
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "fastqc",
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out")),
+            JobArg("--threads", numThreads),
+            JobMaybeArg("--num-threads-read", numThreadsRead),
+            if(nogroup) JobArg("--nogroup"),
+            if(expgroup) JobArg("--expgroup"),
+            JobArg("--kmer-size", kmerSize),
+            JobArg("--min-length", minLength),
+            JobArg("--dup-length", dupLength)
+          ))
+        )
       ),
       arraysize = num_shards
     )
@@ -1330,23 +1332,24 @@ BascetMapCellGECCO <- function(
       runner = runner,
       jobname = "Zgecco",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in",inputFiles),
-        shellscriptMakeBashArray("files_out",outputFiles),
-
-        ### Abort early if needed
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-
-        assembleBascetCommand(bascetInstance, c(
-          "gecco",
-          "-i=${files_in[$TASK_ID]}",
-          "-o=${files_out[$TASK_ID]}",
-          paste0("--threads=",numThreads),
-          if(!is.null(dataDir)) paste0("--data-dir=",dataDir),
-          paste0("--threshold=",threshold),
-          paste0("--cds=",cds),
-          if(noMask) "--no-mask"
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "gecco",
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out")),
+            JobArg("--threads", numThreads),
+            JobMaybeArg("--data-dir", dataDir),
+            JobArg("--threshold", threshold),
+            JobArg("--cds", cds),
+            if(noMask) JobArg("--no-mask")
+          ))
+        )
       ),
       arraysize = num_shards
     )

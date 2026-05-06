@@ -44,9 +44,12 @@ BascetCountMatrixToAssay <- function(mat) {
 #' @rawNamespace S3method(SeuratObject::CreateSeuratObject, BascetCountMatrix)
 #' @export
 CreateSeuratObject.BascetCountMatrix <- function(counts, ...) {
+  meta.data <- counts@obs
+  rownames(meta.data) <- rownames(counts@X)
+
   SeuratObject::CreateSeuratObject(
     counts = Matrix::t(counts@X),
-    meta.data = counts@obs,
+    meta.data = meta.data,
     ...
   )
 }
@@ -289,7 +292,7 @@ ReadBascetCountMatrix <- function(
     list_one <- ReadBascetCountMatrix_one(f)
     
     if(verbose){
-      print(dim(list_one$X))
+      print(dim(list_one@X))
     }
     listInput[[f]] <- list_one
     #list_mat[[f]] <- list_one@X
@@ -466,4 +469,3 @@ BascetAddMetaData <- function(adata, metadata, columns=NULL, subsetCommon=FALSE)
   adata@meta.data <- cbind(adata@meta.data, sub)
   adata
 }
-

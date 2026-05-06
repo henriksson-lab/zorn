@@ -48,37 +48,30 @@ BascetMapCell <- function(
   
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Build the command - custom arguments
-    cmd <- c()
+    cmd <- list()
     for(key in names(args)){
-      
-      #Escape value
-      val <- args[[key]]
-      val <- stringr::str_replace_all(val,stringr::fixed("\""),"\\\"")
-      
-      #Add argument
-      cmd <- c(
-        cmd,
-        paste0("export ",key,"=\"",val,"\"")
-      )
+      cmd[[length(cmd) + 1L]] <- JobSetEnv(key, args[[key]])
     }
     
     #Build the command - the rest
-    cmd <- c(
-      cmd,
-      #shellscript_set_tempdir(bascetInstance),
-      shellscriptMakeBashArray("files_in",inputFiles),
-      shellscriptMakeBashArray("files_out",outputFiles),
-      
-      ### Abort early if needed    
-      if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-
-      assembleBascetCommand(bascetInstance, c( 
-        "mapcell",
-        "-t=$BASCET_TEMPDIR",
-        "-i=${files_in[$TASK_ID]}",
-        "-o=${files_out[$TASK_ID]}",
-        paste0("-s=", withfunction)
-      ))
+    cmd <- JobScript(
+      vars = list(
+        files_in = inputFiles,
+        files_out = outputFiles
+      ),
+      steps = c(
+        cmd,
+        list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "mapcell",
+            JobArg("-t", JobEnv("BASCET_TEMPDIR")),
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out")),
+            JobArg("-s", withfunction)
+          ))
+        )
+      )
     )
     
     #Run the job

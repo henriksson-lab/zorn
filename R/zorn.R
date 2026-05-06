@@ -407,20 +407,21 @@ BascetMapTransform <- function(
       runner = runner, 
       jobname = "Ztransform",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in",inputFiles),
-        shellscriptMakeBashArray("files_out",outputFiles),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out[$TASK_ID]}"),
-        
-        if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
-        assembleBascetCommand(bascetInstance, c(
-          "transform",
-          if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
-          "-i=${files_in[$TASK_ID]}",
-          "-o=${files_out[$TASK_ID]}"
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          if(produce_cell_list) JobFiles("CELLFILE", list_cell_for_shard),
+          JobBascetCommand(bascetInstance, list(
+            "transform",
+            if(produce_cell_list) JobArg("--cells", JobVar("CELLFILE")),
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out"))
+          ))
+        )
       ),
       arraysize = num_shards
     )  
@@ -486,22 +487,23 @@ BascetToFastq <- function(
       runner = runner, 
       jobname = "Ztofq",
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in",inputFiles),
-        shellscriptMakeBashArray("files_out_r1",outputFilesR1),
-        shellscriptMakeBashArray("files_out_r2",outputFilesR2),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_r1[$TASK_ID]}"),
-        
-        assembleBascetCommand(bascetInstance, c(
-          "to-fastq",
-          "-i=${files_in[$TASK_ID]}",
-          "--out-r1=${files_out_r1[$TASK_ID]}",
-          "--out-r2=${files_out_r2[$TASK_ID]}",
-          "--temp=$BASCET_TEMPDIR",
-          paste0("-@=",numLocalThreads) 
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out_r1 = outputFilesR1,
+          files_out_r2 = outputFilesR2
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out_r1")),
+          JobBascetCommand(bascetInstance, list(
+            "to-fastq",
+            JobArg("-i", JobVar("files_in")),
+            JobArg("--out-r1", JobVar("files_out_r1")),
+            JobArg("--out-r2", JobVar("files_out_r2")),
+            JobArg("--temp", JobEnv("BASCET_TEMPDIR")),
+            JobArg("-@", numLocalThreads)
+          ))
+        )
       ),
       arraysize = num_shards
     )  
@@ -689,29 +691,28 @@ BascetRunFASTP <- function(
       runner = runner, 
       jobname = paste0("Zfastp"),
       bascetInstance = bascetInstance,
-      cmd = c(
-        #shellscript_set_tempdir(bascetInstance),
-        shellscriptMakeBashArray("files_html",outputFiles_report_json),
-        shellscriptMakeBashArray("files_json",outputFiles_report_html),
-        shellscriptMakeBashArray("files_in_R1",inputFiles_R1),
-        if(is_paired) shellscriptMakeBashArray("files_in_R2",inputFiles_R2),
-        shellscriptMakeBashArray("files_out_R1",outputFiles_R1),
-        if(is_paired) shellscriptMakeBashArray("files_out_R2",outputFiles_R2),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_R1[$TASK_ID]}"),
-        
-        paste(
-          bascetInstance@prependCmd,
-          "fastp",
-          "--thread", numLocalThreads,
-          "-g",                           #polyG trimming
-          "-h ${files_html[$TASK_ID]}",
-          "-j ${files_json[$TASK_ID]}",
-          "-i ${files_in_R1[$TASK_ID]}",
-          if(is_paired) "-I ${files_in_R2[$TASK_ID]}",
-          "-o ${files_out_R1[$TASK_ID]}",
-          if(is_paired) "-O ${files_out_R2[$TASK_ID]}"
+      cmd = JobScript(
+        vars = c(
+          list(
+            files_html = outputFiles_report_json,
+            files_json = outputFiles_report_html,
+            files_in_R1 = inputFiles_R1,
+            files_out_R1 = outputFiles_R1
+          ),
+          if(is_paired) list(files_in_R2 = inputFiles_R2, files_out_R2 = outputFiles_R2) else list()
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out_R1")),
+          JobCommand("fastp", list(
+            JobArg("--thread", numLocalThreads, sep = " "),
+            JobArg("-g"),
+            JobArg("-h", JobVar("files_html"), sep = " "),
+            JobArg("-j", JobVar("files_json"), sep = " "),
+            JobArg("-i", JobVar("files_in_R1"), sep = " "),
+            if(is_paired) JobArg("-I", JobVar("files_in_R2"), sep = " "),
+            JobArg("-o", JobVar("files_out_R1"), sep = " "),
+            if(is_paired) JobArg("-O", JobVar("files_out_R2"), sep = " ")
+          ), prepend = bascetInstance@prependCmd)
         )
       ),
       arraysize = num_shards
@@ -720,7 +721,6 @@ BascetRunFASTP <- function(
     new_no_job()
   }
 }
-
 
 
 

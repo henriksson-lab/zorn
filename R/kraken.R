@@ -116,24 +116,25 @@ BascetRunKraken <- function(
       runner = runner, 
       jobname = paste0("Z_kraken_fq"),
       bascetInstance = bascetInstance,
-      cmd = c(
-        shellscriptMakeBashArray("files_in",inputFiles),
-        shellscriptMakeBashArray("files_out_raw",outputFilesRaw),
-        shellscriptMakeBashArray("files_out_matrix",outputFilesMatrix),
-        
-        ### Abort early if needed    
-        if(!overwrite) shellscriptCancelJobIfFileExists("${files_out_matrix[$TASK_ID]}"),
-        
-        assembleBascetCommand(bascetInstance, c(
-          "kraken",
-          "--in=${files_in[$TASK_ID]}",   
-          "--out-raw=${files_out_raw[$TASK_ID]}",
-          "--out-matrix=${files_out_matrix[$TASK_ID]}",
-          "--temp=$BASCET_TEMPDIR",
-          paste0("--db=", useKrakenDB), ################################ TODO might have whitespace
-          if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
-          paste0("--threads=", numThreads)
-        ))
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out_raw = outputFilesRaw,
+          files_out_matrix = outputFilesMatrix
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out_matrix")),
+          JobBascetCommand(bascetInstance, list(
+            "kraken",
+            JobArg("--in", JobVar("files_in")),
+            JobArg("--out-raw", JobVar("files_out_raw")),
+            JobArg("--out-matrix", JobVar("files_out_matrix")),
+            JobArg("--temp", JobEnv("BASCET_TEMPDIR")),
+            JobArg("--db", useKrakenDB),
+            JobMaybeArg("--memory", totalMem, format_size_bascet),
+            JobArg("--threads", numThreads)
+          ))
+        )
       ),
       arraysize = num_shards
     )  

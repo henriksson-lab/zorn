@@ -1,5 +1,5 @@
 Package: Zorn
-Version: 0.5.19
+Version: 0.5.22
 Type: Package
 Title: An all-purpose solution for processing of single-cell microbial data
 Maintainer: Johan Henriksson <johan.henriksson@umu.se>
@@ -46,6 +46,7 @@ URL: https://github.com/henriksson-lab/zorn, https://henriksson-lab.github.io/zo
 BugReports: https://github.com/henriksson-lab/zorn/issues
 Collate:
   'job_general.R'
+  'jobscript.R'
   'job_local.R'
   'job_slurm.R'
   'countmatrix.R'

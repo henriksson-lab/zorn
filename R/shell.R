@@ -27,8 +27,7 @@
 #' @param x A string representing an environment variable name
 #' @noRd
 is.valid.env.variable <- function(x) {
-  #TODO check that the name has no weird symbols
-  is.character(x)
+  is.character(x) && length(x) == 1 && stringr::str_detect(x, "^[A-Za-z_][A-Za-z0-9_]*$")
 }
 
 

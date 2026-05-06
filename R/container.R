@@ -118,47 +118,39 @@ GetBascetTempDir <- function(
 
 
 ###############################################
-#' Get a Bascet executable
-#' It will be cached in the provided directory to avoid downloading it each the time the function is called
+#' Get a Bascet binary from the target from a locally built Bascet repository
 #' 
 #' @param storeAt Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory #################### TODO
 #' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
 #' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
+#' @param targetType What target type to load
 #'
 #' @return A Bascet instance
 #' @export
-getBascetExecutable <- function(
-    storeAt=getwd(),
+getBascetDevDir <- function(
+    devdir,
     tempdir=NULL,
-    logLevel="info"
+    logLevel="info",
+    targetType="release"
 ){
   #Check arguments
-  stopifnot(dir.exists(storeAt))
+  stopifnot(dir.exists(devdir))
 
   if(is.null(tempdir)){
-    tempdir <- "./temp"
+    tempdir <- normalizePath("./temp", mustWork = FALSE)
     dir.create(tempdir, showWarnings = FALSE)
   } else {
     stopifnot(dir.exists(tempdir))
   }
 
-  #Download file if needed
-  #file_bascet_sif <- file.path(storeAt, "bascet.sif")
-  #if(!file.exists(file_bascet_sif)) {
-  #  print("No singularity image present; downloading")
-  #  safeDownloadMD5("http://beagle.henlab.org/public/bascet/bascet.sif",file_bascet_sif)
-  #} else {
-  #  print(paste("Found existing Bascet singularity image:", file_bascet_sif))
-  #}
-
-  prependCmd <- ""  
-  #paste("singularity run", file_bascet_sif," ")
-
+  #Pull out target binary. Should be a file
+  bascet_exe <- normalizePath(file.path(devdir, "target", targetType, "bascet"))
+  stopifnot(file.exists(bascet_exe) & !dir.exists(bascet_exe))
 
   BascetInstance(
-    bin="bascet",   ##### what about .exe ??? ################################  ###################### path?? ##################################
+    bin=bascet_exe,
     tempdir=tempdir,
-    prependCmd=prependCmd,
+    prependCmd="",
     containerMem="10GB",
     logLevel=logLevel
   )
@@ -237,7 +229,7 @@ getBascetBinary <- function(
     normalizePath(path, mustWork=TRUE)
   }
 
-  if(!forceInstall && file.exists(file_local_bascet)) {
+  if(!forceInstall && file.exists(file_local_bascet) && !dir.exists(file_local_bascet)) {
     print(paste("Found existing Bascet binary:", file_local_bascet))
     if(sysname != "windows") {
       Sys.chmod(file_local_bascet, mode="0755")

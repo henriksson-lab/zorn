@@ -76,19 +76,20 @@ BascetGatherCountSketch <- function(
   
   if(bascetCheckOverwriteOutput(outputFile, overwrite)) {
     #Make the command
-    cmd <- c(
-      #shellscript_set_tempdir(bascetInstance),
-      if(produce_cell_list) shellscriptMakeFilesExpander("CELLFILE", list_cell_for_shard),
-      assembleBascetCommand(bascetInstance, c(
-        "countsketch",
-        if(produce_cell_list) "--cells=${CELLFILE[$TASK_ID]}",
-        if(!is.null(totalMem)) paste0("--memory=",format_size_bascet(totalMem)), 
-        paste0("-@=", numThreads), 
-        paste0("-i=", shellscriptMakeCommalist(inputFiles)),
-        paste0("--kmer-size=",kmerSize),
-        paste0("--sketch-size=",sketchSize),
-        paste0("-o=", outputFile)
-      ))
+    cmd <- JobScript(
+      steps = list(
+        if(produce_cell_list) JobFiles("CELLFILE", list_cell_for_shard),
+        JobBascetCommand(bascetInstance, list(
+          "countsketch",
+          if(produce_cell_list) JobArg("--cells", JobVar("CELLFILE")),
+          JobMaybeArg("--memory", totalMem, format_size_bascet),
+          JobArg("-@", numThreads),
+          JobArg("-i", stringr::str_flatten(inputFiles, collapse = ",")),
+          JobArg("--kmer-size", kmerSize),
+          JobArg("--sketch-size", sketchSize),
+          JobArg("-o", outputFile)
+        ))
+      )
     )
     
     #Run the job
