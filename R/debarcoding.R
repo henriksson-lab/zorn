@@ -638,7 +638,7 @@ BascetShardify <- function(
   totalNumOutputShards <- numOutputShards*debstat$numgroup
   dfListOutputs <- data.frame(
     group=rep(1:debstat$numgroup, numOutputShards),
-    outputFile=makeOutputShardNames(bascetRoot, outputName, "tirp.gz", totalNumOutputShards)
+    outputFile=makeOutputShardNames(debstat$bascetRoot, outputName, "tirp.gz", totalNumOutputShards)
   )
 
   dfListInputs <- data.frame(

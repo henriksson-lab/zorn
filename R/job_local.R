@@ -124,12 +124,6 @@ setMethod(
       stop("LocalRunner(direct = FALSE) is no longer supported")
     }
 
-    if(runner@showScript) {
-      print("=============== local JobScript start =================")
-      str(cmd)
-      print("=============== local JobScript end =================")
-    }
-
     print("Running directly")
     tmproot <- GetBascetTempDir(bascetInstance)
     for(i in seq_len(arraysize)) {

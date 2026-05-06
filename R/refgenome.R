@@ -325,13 +325,14 @@ getFastqR2fromR1 <- function(
 #' Generate a bigwig out of all reads in a sorted BAM. Note that the caller
 #' is responsible for sorting the BAM first
 #' 
-#' This function is mainly for QC purposes. It uses bamCoverage from deepTools
-#' apt install python3-deeptools
+#' This function is mainly for QC purposes.
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard (BAM-file)
 #' @param outputName Name of output shard (BIGWIG-file)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param numThreads Number of threads for BAM decompression and BigWig writing
+#' @param totalMem Total memory to allocate
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
@@ -342,16 +343,26 @@ BascetAlignmentToBigwig <- function(
     inputName="aligned_pos", 
     outputName="pileup",
     overwrite=FALSE,
+    numThreads=NULL,
+    totalMem=NULL,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  if(is.null(numThreads)){
+    numThreads <- as.integer(runner@ncpu)
+  }
+
   #Check arguments 
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
+  stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
+
+  #Check memory sizes
+  totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
   
   #Figure out input and output file names
   input_shards <- detectShardsForFile(bascetRoot, inputName) 
@@ -371,10 +382,13 @@ BascetAlignmentToBigwig <- function(
         files_out = outputFiles
       ),
       steps = list(
-        JobCommand("bamCoverage", list(
-          JobArg("-b", JobVar("files_in"), sep = " "),
-          JobArg("-o", JobVar("files_out"), sep = " ")
-        ), prepend = bascetInstance@prependCmd)
+        JobBascetCommand(bascetInstance, list(
+          "tobigwig",
+          JobArg("--in", JobVar("files_in"), sep = " "),
+          JobArg("--out", JobVar("files_out"), sep = " "),
+          JobMaybeArg("--memory", totalMem, format_size_bascet),
+          JobArg("--threads", numThreads, sep = " ")
+        ))
       )
     )
 
@@ -454,24 +468,7 @@ BascetFilterAlignment <- function(
 
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     
-    ### Set flags for samtools. Depends on if paired alignment or not
-    samtools_flags <- ""
-    is_paired_al <- isBamPairedAlignment(inputFiles[1], bascetInstance)
-    print(paste("Detect paired alignment: ",is_paired_al))
-    
-    if(is_paired_al) {
-      if(keepMapped){
-        samtools_flags <- paste(samtools_flags, "-F2")
-      } else {
-        samtools_flags <- paste(samtools_flags, "-f2")
-      }
-    } else {
-      if(keepMapped){
-        samtools_flags <- paste(samtools_flags, "-F4")
-      } else {
-        samtools_flags <- paste(samtools_flags, "-f4")
-      }
-    }
+    keep_arg <- if(keepMapped) "mapped" else "unmapped"
     
     ### Build command
     cmd <- JobScript(
@@ -480,22 +477,16 @@ BascetFilterAlignment <- function(
         files_out = outputFiles
       ),
       steps = list(
-        JobCommand("samtools", c(
-          list("view"),
-          as.list(strsplit(trimws(samtools_flags), "\\s+")[[1]][nzchar(strsplit(trimws(samtools_flags), "\\s+")[[1]])]),
-          list(
-            JobArg("-@", numThreads, sep = " "),
-            JobVar("files_in"),
-            "-b",
-            JobArg("-o", JobVar("files_out"), sep = " ")
-          )
-        ), prepend = bascetInstance@prependCmd)
+        JobBascetCommand(bascetInstance, list(
+          "filterbam",
+          JobArg("--in", JobVar("files_in"), sep = " "),
+          JobArg("--out", JobVar("files_out"), sep = " "),
+          JobArg("--threads", numThreads, sep = " "),
+          JobArg("--keep", keep_arg, sep = " ")
+        ))
       )
     )
       
-    print(cmd)
-    
-    
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -523,8 +514,10 @@ BascetFilterAlignment <- function(
 #' @param numThreads Number of threads to use for each runner. Default is the maximum, taken from runner settings
 #' @param totalMem Total memory to allocate
 #' @param inputName Name of input shard
-#' @param outputNameBAMcell Name of cell-sorted BAMs
-#' @param outputNameBAMpos Name of pos-sorted BAMs (if generated)
+#' @param outputName Output shard name prefix. Defaults to `<outputName>_cell`
+#'   for the unsorted/cell BAM and `<outputName>_pos` for the position-sorted BAM.
+#' @param outputNameBAMcell Name of cell-sorted BAMs. If NULL, derived from `outputName`.
+#' @param outputNameBAMpos Name of pos-sorted BAMs. If NULL, derived from `outputName`.
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param aligner Which aligner to use: "BWAMEM2", "bowtie2", or "STAR"
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
@@ -537,8 +530,9 @@ BascetAlignToReference <- function(
     numThreads=NULL,
     totalMem=NULL,
     inputName="filtered",
-    outputNameBAMcell="aligned_cell", 
-    outputNameBAMpos="aligned_pos",  #TODO make optional
+    outputName="aligned",
+    outputNameBAMcell=NULL,
+    outputNameBAMpos=NULL,
     overwrite=FALSE,
     aligner=c(NULL, "BWAMEM2", "bowtie2", "STAR"),
     runner=GetDefaultBascetRunner(), 
@@ -553,6 +547,13 @@ BascetAlignToReference <- function(
   stopifnot(dir.exists(bascetRoot))
   stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  if(is.null(outputNameBAMcell)) {
+    outputNameBAMcell <- paste0(outputName, "_cell")
+  }
+  if(is.null(outputNameBAMpos)) {
+    outputNameBAMpos <- paste0(outputName, "_pos")
+  }
   stopifnot(is.valid.shardname(outputNameBAMcell))
   stopifnot(is.valid.shardname(outputNameBAMpos))
   stopifnot(is.logical(overwrite))
@@ -596,7 +597,7 @@ BascetAlignToReference <- function(
   #Check memory sizes
   totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
   
-  if(bascetCheckOverwriteOutput(outputNameBAMpos, overwrite)) {
+  if(bascetCheckOverwriteOutput(outputFilesBAMsorted, overwrite)) {
     #Produce the script and run the job
     RunJob(
       runner = runner, 
@@ -1238,8 +1239,6 @@ BascetRunCellSNP <- function(
   )
   
   
-  
-  print(cmd)
   
   if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
     #Produce the script and run the job

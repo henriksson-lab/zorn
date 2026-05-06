@@ -10,6 +10,8 @@ BascetAlignmentToBigwig(
   inputName = "aligned_pos",
   outputName = "pileup",
   overwrite = FALSE,
+  numThreads = NULL,
+  totalMem = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -23,6 +25,10 @@ BascetAlignmentToBigwig(
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
+\item{numThreads}{Number of threads for BAM decompression and BigWig writing}
+
+\item{totalMem}{Total memory to allocate}
+
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
 \item{bascetInstance}{A Bascet instance}
@@ -31,6 +37,5 @@ BascetAlignmentToBigwig(
 A runner job (details depends on runner)
 }
 \description{
-This function is mainly for QC purposes. It uses bamCoverage from deepTools
-apt install python3-deeptools
+This function is mainly for QC purposes.
 }

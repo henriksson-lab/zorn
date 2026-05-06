@@ -10,8 +10,9 @@ BascetAlignToReference(
   numThreads = NULL,
   totalMem = NULL,
   inputName = "filtered",
-  outputNameBAMcell = "aligned_cell",
-  outputNameBAMpos = "aligned_pos",
+  outputName = "aligned",
+  outputNameBAMcell = NULL,
+  outputNameBAMpos = NULL,
   overwrite = FALSE,
   aligner = c(NULL, "BWAMEM2", "bowtie2", "STAR"),
   runner = GetDefaultBascetRunner(),
@@ -29,9 +30,12 @@ BascetAlignToReference(
 
 \item{inputName}{Name of input shard}
 
-\item{outputNameBAMcell}{Name of cell-sorted BAMs}
+\item{outputName}{Output shard name prefix. Defaults to \verb{<outputName>_cell}
+for the unsorted/cell BAM and \verb{<outputName>_pos} for the position-sorted BAM.}
 
-\item{outputNameBAMpos}{Name of pos-sorted BAMs (if generated)}
+\item{outputNameBAMcell}{Name of cell-sorted BAMs. If NULL, derived from \code{outputName}.}
+
+\item{outputNameBAMpos}{Name of pos-sorted BAMs. If NULL, derived from \code{outputName}.}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
