@@ -314,9 +314,9 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Get a Bascet binary for the current platform It will be cached in
   the provided directory to avoid downloading it each the time the
   function is called
-- [`getBascetExecutable()`](https://henriksson-lab.github.io/zorn/reference/getBascetExecutable.md)
-  : Get a Bascet executable It will be cached in the provided directory
-  to avoid downloading it each the time the function is called
+- [`getBascetDevDir()`](https://henriksson-lab.github.io/zorn/reference/getBascetDevDir.md)
+  : Get a Bascet binary from the target from a locally built Bascet
+  repository
 - [`is.BascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/is.BascetCountMatrix.md)
   : Check that parameter is a BascetCountMatrix
 - [`isBamPairedAlignment()`](https://henriksson-lab.github.io/zorn/reference/isBamPairedAlignment.md)

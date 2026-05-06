@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.19</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.23</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,8 +70,9 @@
 <span>  numThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  totalMem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputNameBAMcell <span class="op">=</span> <span class="st">"aligned_cell"</span>,</span>
-<span>  outputNameBAMpos <span class="op">=</span> <span class="st">"aligned_pos"</span>,</span>
+<span>  outputName <span class="op">=</span> <span class="st">"aligned"</span>,</span>
+<span>  outputNameBAMcell <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  outputNameBAMpos <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  aligner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="st">"BWAMEM2"</span>, <span class="st">"bowtie2"</span>, <span class="st">"STAR"</span><span class="op">)</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -103,12 +104,17 @@
 <dd><p>Name of input shard</p></dd>
 
 
+<dt id="arg-outputname">outputName<a class="anchor" aria-label="anchor" href="#arg-outputname"></a></dt>
+<dd><p>Output shard name prefix. Defaults to <code>&lt;outputName&gt;_cell</code>
+for the unsorted/cell BAM and <code>&lt;outputName&gt;_pos</code> for the position-sorted BAM.</p></dd>
+
+
 <dt id="arg-outputnamebamcell">outputNameBAMcell<a class="anchor" aria-label="anchor" href="#arg-outputnamebamcell"></a></dt>
-<dd><p>Name of cell-sorted BAMs</p></dd>
+<dd><p>Name of cell-sorted BAMs. If NULL, derived from <code>outputName</code>.</p></dd>
 
 
 <dt id="arg-outputnamebampos">outputNameBAMpos<a class="anchor" aria-label="anchor" href="#arg-outputnamebampos"></a></dt>
-<dd><p>Name of pos-sorted BAMs (if generated)</p></dd>
+<dd><p>Name of pos-sorted BAMs. If NULL, derived from <code>outputName</code>.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>

@@ -11,8 +11,9 @@ BascetAlignToReference(
   numThreads = NULL,
   totalMem = NULL,
   inputName = "filtered",
-  outputNameBAMcell = "aligned_cell",
-  outputNameBAMpos = "aligned_pos",
+  outputName = "aligned",
+  outputNameBAMcell = NULL,
+  outputNameBAMpos = NULL,
   overwrite = FALSE,
   aligner = c(NULL, "BWAMEM2", "bowtie2", "STAR"),
   runner = GetDefaultBascetRunner(),
@@ -43,13 +44,18 @@ BascetAlignToReference(
 
   Name of input shard
 
+- outputName:
+
+  Output shard name prefix. Defaults to `<outputName>_cell` for the
+  unsorted/cell BAM and `<outputName>_pos` for the position-sorted BAM.
+
 - outputNameBAMcell:
 
-  Name of cell-sorted BAMs
+  Name of cell-sorted BAMs. If NULL, derived from `outputName`.
 
 - outputNameBAMpos:
 
-  Name of pos-sorted BAMs (if generated)
+  Name of pos-sorted BAMs. If NULL, derived from `outputName`.
 
 - overwrite:
 
