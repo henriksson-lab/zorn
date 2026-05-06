@@ -102,6 +102,7 @@ BascetMapCellSKESAintegrated <- function(
   }
 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.valid.threadcount(numThreads))
@@ -342,6 +343,7 @@ BascetMapCellFASTQC <- function(
   }
 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.valid.threadcount(numThreads))
@@ -561,6 +563,7 @@ ShowFASTQCforCell <- function(
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.character(cellID))
   readnum <- match.arg(readnum)
@@ -1305,6 +1308,7 @@ BascetMapCellGECCO <- function(
   }
 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.valid.threadcount(numThreads))

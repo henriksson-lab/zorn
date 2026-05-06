@@ -190,6 +190,7 @@ BascetGetRaw <- function(
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.data.frame(rawmeta))
   stopifnot(is.valid.shardname(outputName))
   chemistry <- match.arg(chemistry)
@@ -363,6 +364,7 @@ PrepareSharding <- function(
 ){
   #Check arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.numeric.range01(minQuantile))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -621,6 +623,8 @@ BascetShardify <- function(
   
   #Check arguments 
   stopifnot(is.debstat(debstat))
+  stopifnot(dir.exists(debstat$bascetRoot))
+  debstat$bascetRoot <- normalizeBascetRoot(debstat$bascetRoot)
   stopifnot(is.positive.integer(numOutputShards))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
@@ -643,7 +647,7 @@ BascetShardify <- function(
 
   dfListInputs <- data.frame(
     group=debstat$meta$group,
-    inputFile=debstat$inputFiles
+    inputFile=addBascetRoot(debstat$bascetRoot, debstat$inputFiles)
   )
 
   dfListIO <- merge(dfListOutputs, dfListInputs)

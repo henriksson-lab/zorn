@@ -88,6 +88,7 @@ BascetRunKraken <- function(
   
   #Check arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(dir.exists(useKrakenDB))
   stopifnot(is.valid.threadcount(numThreads))  
   stopifnot(is.valid.shardname(inputName))

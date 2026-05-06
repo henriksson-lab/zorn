@@ -253,6 +253,25 @@ is.numeric.range01 <- function(x) {
 }
 
 
+###############################################
+#' Normalize a Bascet root directory after it has been validated
+#' @param bascetRoot Existing Bascet root directory
+#' @noRd
+normalizeBascetRoot <- function(bascetRoot) {
+  normalizePath(bascetRoot, winslash = "/", mustWork = TRUE)
+}
+
+###############################################
+#' Add a Bascet root to paths that are not already absolute
+#' @param bascetRoot Existing Bascet root directory
+#' @param paths Paths relative to the Bascet root, or already absolute paths
+#' @noRd
+addBascetRoot <- function(bascetRoot, paths) {
+  is_abs <- grepl("^(/|[A-Za-z]:[/\\\\])", paths)
+  paths[!is_abs] <- file.path(bascetRoot, paths[!is_abs])
+  paths
+}
+
 
 
 
@@ -316,6 +335,7 @@ BascetCacheComputation <- function(
 ){
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.character(fname))
 
   
@@ -370,6 +390,7 @@ BascetMapTransform <- function(
 ){
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.positive.integer(numDivide))
@@ -464,6 +485,7 @@ BascetToFastq <- function(
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
@@ -654,6 +676,7 @@ BascetRunFASTP <- function(
   
   #check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.valid.threadcount(numLocalThreads))
@@ -721,8 +744,6 @@ BascetRunFASTP <- function(
     new_no_job()
   }
 }
-
-
 
 
 

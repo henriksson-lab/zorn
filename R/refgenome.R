@@ -354,6 +354,7 @@ BascetAlignmentToBigwig <- function(
 
   #Check arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
@@ -448,6 +449,7 @@ BascetFilterAlignment <- function(
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
@@ -545,6 +547,7 @@ BascetAlignToReference <- function(
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
@@ -672,6 +675,7 @@ BascetBam2Fragments <- function(
 ){
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.logical(overwrite))
@@ -746,6 +750,7 @@ BascetCountChrom <- function(
 ){
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.numeric(minMatching))
@@ -1068,6 +1073,7 @@ BascetCountFeature <- function(
 ){
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(file.exists(gffFile))
@@ -1178,6 +1184,7 @@ BascetRunCellSNP <- function(
   
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.valid.threadcount(numThreads))
@@ -1315,6 +1322,7 @@ ReadCellSNPmatrix <- function(
 ){
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.listcells(listCells))
   stopifnot(is.logical(verbose))

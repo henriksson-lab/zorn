@@ -28,6 +28,7 @@ BascetMapCell <- function(
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.character(withfunction))
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
@@ -229,6 +230,7 @@ BascetAggregateMap <- function(
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.function(aggrFunction))
   stopifnot(is.valid.listcells(includeCells))

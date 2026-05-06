@@ -70,6 +70,7 @@ BascetMakeMinhashHistogram <- function(
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.listcells(includeCells))
   stopifnot(is.logical(overwrite))
@@ -158,6 +159,7 @@ BascetQueryFq <- function( #666
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   #useKMERs TODO
@@ -240,6 +242,7 @@ BascetReadMinhashHistogram <- function(
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.character(inputName))
 
   #Read file

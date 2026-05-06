@@ -47,6 +47,7 @@ BascetCellNames <- function(
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(bascetName))
   stopifnot(is.bascet.instance(bascetInstance))
 
@@ -93,6 +94,7 @@ BascetCellNames_withstreamer <- function(
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(bascetName))
   stopifnot(is.streamer(streamer))
   
@@ -150,6 +152,7 @@ OpenBascet <- function(
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(bascetName))
   stopifnot(is.bascet.instance(bascetInstance))
   
@@ -378,6 +381,7 @@ ReadHistogram <- function(
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.bascet.instance(bascetInstance))
   stopifnot(is.logical(verbose))
@@ -489,6 +493,7 @@ AtrandiBarcodeStats <- function(
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.bascet.instance(bascetInstance))
 
@@ -527,6 +532,7 @@ detectShardsForFile <- function(
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
 
   #List all files and split into groups
@@ -589,6 +595,7 @@ makeOutputShardNames <- function(
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.positive.integer(num_shards))
 
@@ -1022,6 +1029,7 @@ BascetDumpContigs <- function(
 ){
   #Check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.character(listCells))
   stopifnot(dir.exists(outputDir))

@@ -43,6 +43,7 @@ BascetGatherCountSketch <- function(
   
   #Check input arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.character(outputName))
   stopifnot(is.character(inputName))
   #includeCells todo

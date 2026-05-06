@@ -264,6 +264,7 @@ ReadBascetCountMatrix <- function(
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.logical(verbose))
   
