@@ -5,7 +5,11 @@ Figure out if a BAM-file is a paired alignment or not
 ## Usage
 
 ``` r
-isBamPairedAlignment(fname, bascetInstance = GetDefaultBascetInstance())
+isBamPairedAlignment(
+  fname,
+  bascetInstance = GetDefaultBascetInstance(),
+  maxRecords = 10000
+)
 ```
 
 ## Arguments
@@ -16,7 +20,11 @@ isBamPairedAlignment(fname, bascetInstance = GetDefaultBascetInstance())
 
 - bascetInstance:
 
-  A Bascet instance
+  Deprecated; ignored
+
+- maxRecords:
+
+  Maximum number of BAM records to scan
 
 ## Value
 

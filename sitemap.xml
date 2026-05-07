@@ -50,7 +50,6 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountMatrixToAssay.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGatherCountSketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWAMEM2.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBowtie2.html</loc></url>
@@ -75,6 +74,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadFile.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadMinhashHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunCountsketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunFASTP.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunKraken.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetShardify.html</loc></url>

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,12 +97,12 @@ accordingly.</p>
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h2>
 <p>To first compute the CountSketch, we will use the
-BascetGatherCountSketch-command. The length of KMERs, and number of
-reduced dimensions, is set at this stage: - 31 bp is a common choice of
-KMER lengths as it fits well in 32-bit registers of a CPU, while being
-rather unique. k=31 is used by default. The KMER length should typically
-be odd, to remove KMERs symmetric under reverse complement (e.g., AATT).
-- <strong>⚠️ The reduced number of dimensions must be a power of
+BascetRunCountsketch-command. The length of KMERs, and number of reduced
+dimensions, is set at this stage: - 31 bp is a common choice of KMER
+lengths as it fits well in 32-bit registers of a CPU, while being rather
+unique. k=31 is used by default. The KMER length should typically be
+odd, to remove KMERs symmetric under reverse complement (e.g., AATT). -
+<strong>⚠️ The reduced number of dimensions must be a power of
 two</strong>, such as 2048, 4096, 8192, 16384 etc. This restriction is
 due to the choice of underlying algorithm. The amount of dimensions
 controls how pairwise distances between cells are preserved in the
@@ -133,7 +133,7 @@ have further nice properties beyond the description here.</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Gather count sketches into a single matrix file</span></span>
-<span><span class="fu"><a href="../reference/BascetGatherCountSketch.html">BascetGatherCountSketch</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/BascetRunCountsketch.html">BascetRunCountsketch</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  kmerSize<span class="op">=</span><span class="fl">31</span>,      <span class="co">#Default</span></span>
 <span>  sketchSize<span class="op">=</span><span class="fl">4096</span>,  <span class="co">#Need to be power of two</span></span>

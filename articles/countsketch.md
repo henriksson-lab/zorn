@@ -15,16 +15,16 @@ bascetRoot <- "/home/yours/an_empty_workdirectory"
 ## Preprocessing
 
 To first compute the CountSketch, we will use the
-BascetGatherCountSketch-command. The length of KMERs, and number of
-reduced dimensions, is set at this stage: - 31 bp is a common choice of
-KMER lengths as it fits well in 32-bit registers of a CPU, while being
-rather unique. k=31 is used by default. The KMER length should typically
-be odd, to remove KMERs symmetric under reverse complement (e.g.,
-AATT). - **⚠️ The reduced number of dimensions must be a power of two**,
-such as 2048, 4096, 8192, 16384 etc. This restriction is due to the
-choice of underlying algorithm. The amount of dimensions controls how
-pairwise distances between cells are preserved in the sketch, following
-the Johnson-Lindenstrauss lemma. Higher dimensions yield more accurate
+BascetRunCountsketch-command. The length of KMERs, and number of reduced
+dimensions, is set at this stage: - 31 bp is a common choice of KMER
+lengths as it fits well in 32-bit registers of a CPU, while being rather
+unique. k=31 is used by default. The KMER length should typically be
+odd, to remove KMERs symmetric under reverse complement (e.g., AATT). -
+**⚠️ The reduced number of dimensions must be a power of two**, such as
+2048, 4096, 8192, 16384 etc. This restriction is due to the choice of
+underlying algorithm. The amount of dimensions controls how pairwise
+distances between cells are preserved in the sketch, following the
+Johnson-Lindenstrauss lemma. Higher dimensions yield more accurate
 distance estimates and generally improve clustering.
 
 The following command computes a countsketch matrix. The input is here
@@ -53,7 +53,7 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 ``` r
 
 #Gather count sketches into a single matrix file
-BascetGatherCountSketch(
+BascetRunCountsketch(
   bascetRoot,
   kmerSize=31,      #Default
   sketchSize=4096,  #Need to be power of two

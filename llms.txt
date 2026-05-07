@@ -95,8 +95,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Store all contigs in an output directory, as cell_id.fa
 - [`BascetFilterAlignment()`](https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.md)
   : Filter an alignment (BAM-file).
-- [`BascetGatherCountSketch()`](https://henriksson-lab.github.io/zorn/reference/BascetGatherCountSketch.md)
-  : Gather all count sketches into a single count sketch matrix
 - [`BascetGetRaw()`](https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.md)
   : Extract barcodes and trim input raw FASTQ
 - [`BascetIndexGenomeBWAMEM2()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWAMEM2.md)
@@ -151,6 +149,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Read histogram of KMERs, the output of BascetMakeMinhashHistogram
 - [`BascetRunCellSNP()`](https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.md)
   : Align from FASTQ, generate sorted and indexed BAM file
+- [`BascetRunCountsketch()`](https://henriksson-lab.github.io/zorn/reference/BascetRunCountsketch.md)
+  : Gather all count sketches into a single count sketch matrix
 - [`BascetRunFASTP()`](https://henriksson-lab.github.io/zorn/reference/BascetRunFASTP.md)
   : Run FASTP for each cell. Input must be in FASTQ file format
 - [`BascetRunKraken()`](https://henriksson-lab.github.io/zorn/reference/BascetRunKraken.md)

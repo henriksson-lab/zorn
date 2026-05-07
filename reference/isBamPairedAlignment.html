@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,11 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">isBamPairedAlignment</span><span class="op">(</span><span class="va">fname</span>, bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">isBamPairedAlignment</span><span class="op">(</span></span>
+<span>  <span class="va">fname</span>,</span>
+<span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  maxRecords <span class="op">=</span> <span class="fl">10000</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -76,7 +80,11 @@
 
 
 <dt id="arg-bascetinstance">bascetInstance<a class="anchor" aria-label="anchor" href="#arg-bascetinstance"></a></dt>
-<dd><p>A Bascet instance</p></dd>
+<dd><p>Deprecated; ignored</p></dd>
+
+
+<dt id="arg-maxrecords">maxRecords<a class="anchor" aria-label="anchor" href="#arg-maxrecords"></a></dt>
+<dd><p>Maximum number of BAM records to scan</p></dd>
 
 </dl></div>
     <div class="section level2">

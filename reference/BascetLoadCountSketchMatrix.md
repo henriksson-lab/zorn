@@ -5,7 +5,7 @@ Load count sketch matrix as Seurat object
 ## Usage
 
 ``` r
-BascetLoadCountSketchMatrix(bascetRoot, inputName = "countsketch_mat.csv")
+BascetLoadCountSketchMatrix(bascetRoot, inputName = "countsketch_mat.feather")
 ```
 
 ## Arguments
@@ -16,7 +16,8 @@ BascetLoadCountSketchMatrix(bascetRoot, inputName = "countsketch_mat.csv")
 
 - inputName:
 
-  Name of countsketch matrix file
+  Name of countsketch matrix file. Feather and legacy CSV files are
+  supported.
 
 ## Value
 
