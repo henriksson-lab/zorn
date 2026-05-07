@@ -254,11 +254,32 @@ is.numeric.range01 <- function(x) {
 
 
 ###############################################
+#' Normalize an existing directory path
+#' @param path Existing directory path
+#' @noRd
+normalizeExistingDir <- function(path) {
+  normalizePath(path, winslash = "/", mustWork = TRUE)
+}
+
+###############################################
+#' Normalize a path that may not exist yet
+#' @param path Path to normalize
+#' @noRd
+normalizeOutputPath <- function(path) {
+  path <- path.expand(path)
+  is_abs <- grepl("^(/|[A-Za-z]:[/\\\\])", path)
+  if(!is_abs) {
+    path <- file.path(normalizeExistingDir(getwd()), path)
+  }
+  normalizePath(path, winslash = "/", mustWork = FALSE)
+}
+
+###############################################
 #' Normalize a Bascet root directory after it has been validated
 #' @param bascetRoot Existing Bascet root directory
 #' @noRd
 normalizeBascetRoot <- function(bascetRoot) {
-  normalizePath(bascetRoot, winslash = "/", mustWork = TRUE)
+  normalizeExistingDir(bascetRoot)
 }
 
 ###############################################
@@ -744,8 +765,6 @@ BascetRunFASTP <- function(
     new_no_job()
   }
 }
-
-
 
 
 

@@ -9,41 +9,31 @@
 #' Figure out if a BAM-file is a paired alignment or not
 #' 
 #' @param fname Name of BAM-file
-#' @param bascetInstance A Bascet instance
+#' @param bascetInstance Deprecated; ignored
+#' @param maxRecords Maximum number of BAM records to scan
 #' 
 #' @return TRUE if the BAM-file is a paired alignment
 #' @export
 isBamPairedAlignment <- function(
     fname,
-    bascetInstance=GetDefaultBascetInstance()
+    bascetInstance=GetDefaultBascetInstance(),
+    maxRecords=10000
 ){
   #Check arguments
   stopifnot(file.exists(fname))
-  stopifnot(is.bascet.instance(bascetInstance))
+  stopifnot(is.numeric(maxRecords))
+  stopifnot(length(maxRecords) == 1)
+  stopifnot(maxRecords > 0)
   
-  #example
-  #@PG     ID:bwa  PN:bwa  VN:0.7.18-r1243-dirty   CL:bwa mem /home/m/mahogny/mystore/atrandi/bwa_ref/combo_hx/all.fa.gz /pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/atrandi/v2_wgs_saliva1/asfq.1.R1.fq.gz /pfs/proj/nobackup/fs/projnb10/hpc2nstor2024-027/atrandi/v2_wgs_saliva1/asfq.1.R2.fq.gz -t 10
-  
-  #Note: can also see this from the BAM header, but a real mess to parse out!
-  # samtools view unsorted_aligned.1.bam  -H
-  # @PG	ID:bwa	PN:bwa	VN:0.7.17-r1198-dirty	CL:bwa mem /husky/fromsequencer/241210_joram_rnaseq/ref/all.fa /husky/henriksson/atrandi/v2_rnaseq5//asfq.1.R1.fq.gz /husky/henriksson/atrandi/v2_rnaseq5/asfq.1.R2.fq.gz -t 20
-  
-  cmd <- paste(
-    bascetInstance@prependCmd, 
-    "samtools view",
-    fname,
-    "-h | head -n 10000 | ", #100 was not enough to be reliable
-    bascetInstance@prependCmd," samtools view - -S -c -f 1"
+  bam <- Rsamtools::BamFile(fname, yieldSize = as.integer(maxRecords))
+  open(bam)
+  on.exit(close(bam), add = TRUE)
+  bam_records <- Rsamtools::scanBam(
+    bam,
+    param = Rsamtools::ScanBamParam(what = "flag")
   )
-  
-  ret <- system(
-    cmd, 
-    intern = TRUE, 
-    ignore.stderr=TRUE,
-  )
-  
-  print("Ignore samtools view errors here; this should be rewritten to be handled by bascet instead")
-  as.integer(ret)>0
+  flags <- bam_records[[1]]$flag
+  any(bitwAnd(flags, 0x1) != 0)
 }
 
 
@@ -177,6 +167,9 @@ BascetIndexGenomeSTAR <- function(
   if(!file.exists(gtfFile)){
     stop("Could not find genome GTF file")
   }
+  fastaFile <- normalizePath(fastaFile, winslash = "/", mustWork = TRUE)
+  gtfFile <- normalizePath(gtfFile, winslash = "/", mustWork = TRUE)
+  outDir <- normalizeOutputPath(outDir)
   
   #Exit early if already done
   if(file.exists(outDir)){

@@ -1,5 +1,5 @@
 Package: Zorn
-Version: 0.5.24
+Version: 0.5.25
 Type: Package
 Title: An all-purpose solution for processing of single-cell microbial data
 Maintainer: Johan Henriksson <johan.henriksson@umu.se>
@@ -38,8 +38,10 @@ Imports:
     RCurl,
     sparseMatrixStats (>= 1.10.0),
     benchmarkme,
-    rhdf5
+    rhdf5,
+    Rsamtools
 Suggests: 
+    arrow,
     rmarkdown
 Remotes: github::henriksson-lab/zorn
 URL: https://github.com/henriksson-lab/zorn, https://henriksson-lab.github.io/zorn/

@@ -44,6 +44,9 @@ BascetInstance <- function(
   if(!is.null(tempdir) & !file.exists(tempdir)){
     stop(sprintf("temp directory %s does not exist", tempdir))
   }
+  if(!is.null(tempdir)) {
+    tempdir <- normalizeExistingDir(tempdir)
+  }
   #cannot check other arguments; need to trust user
 
   stopifnot(is.valid.memsize(containerMem))
@@ -221,6 +224,7 @@ getBascetBinary <- function(
   } else {
     stopifnot(dir.exists(tempdir))
   }
+  tempdir <- normalizeExistingDir(tempdir)
 
   root_url <- "http://beagle.henlab.org/public/bascet/bins"
   sysname <- tolower(Sys.info()[["sysname"]])
@@ -297,14 +301,8 @@ TestBascetInstance <- function(
   #check arguments
   stopifnot(is.bascet.instance(bascetInstance))
 
-  #prependCmd is a pre-built shell string (contains $PWD/%cd% expansion and
-  #container map flags), so it must be interpreted by a shell.
-  cmd <- paste(
-    bascetInstance@prependCmd,
-    shQuote(bascetInstance@bin),
-    "-V"
-  )
-  ret <- system(cmd, intern = TRUE)
+  cmd <- buildBascetInvocation(bascetInstance, "-V")
+  ret <- runSystem2Local(cmd$command, cmd$args, capture = TRUE)
 
   #Print version number (if it works)
   print(ret)
@@ -394,4 +392,30 @@ assembleBascetCommand <- function(bascetInstance, params) {
 #  print(tor)
 #  print("///////////////")
   tor
+}
+
+###############################################
+#' Build executable and argv for invoking Bascet directly
+#'
+#' @param bascetInstance Bascet instance
+#' @param params Character vector of Bascet arguments
+#'
+#' @return List with `command` and `args` elements
+#' @noRd
+buildBascetInvocation <- function(bascetInstance, params = character()) {
+  stopifnot(is.bascet.instance(bascetInstance))
+
+  log_file <- Sys.getenv("BASCET_LOGFILE", unset = NA_character_)
+  args <- c(
+    if(bascetInstance@logToFile && !is.na(log_file) && nzchar(log_file)) paste0("--log-mode=", log_file),
+    paste0("--log-level=", bascetInstance@logLevel),
+    params
+  )
+
+  prepend_parts <- splitPrependLocal(bascetInstance@prependCmd)
+  if(length(prepend_parts) == 0) {
+    list(command = bascetInstance@bin, args = args)
+  } else {
+    list(command = prepend_parts[[1]], args = c(prepend_parts[-1], bascetInstance@bin, args))
+  }
 }

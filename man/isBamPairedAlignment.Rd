@@ -4,12 +4,18 @@
 \alias{isBamPairedAlignment}
 \title{Figure out if a BAM-file is a paired alignment or not}
 \usage{
-isBamPairedAlignment(fname, bascetInstance = GetDefaultBascetInstance())
+isBamPairedAlignment(
+  fname,
+  bascetInstance = GetDefaultBascetInstance(),
+  maxRecords = 10000
+)
 }
 \arguments{
 \item{fname}{Name of BAM-file}
 
-\item{bascetInstance}{A Bascet instance}
+\item{bascetInstance}{Deprecated; ignored}
+
+\item{maxRecords}{Maximum number of BAM records to scan}
 }
 \value{
 TRUE if the BAM-file is a paired alignment

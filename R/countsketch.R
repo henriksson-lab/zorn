@@ -21,10 +21,10 @@
 #' 
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @export
-BascetGatherCountSketch <- function( 
+BascetRunCountsketch <- function( 
     bascetRoot, 
-    inputName="countsketch", 
-    outputName="countsketch_mat.csv",  ### replace with shard!!
+    inputName="filtered", 
+    outputName="countsketch_mat.feather",  ### replace with shard!!
     includeCells=NULL,
     kmerSize=31,
     sketchSize=4096,
@@ -116,28 +116,78 @@ BascetGatherCountSketch <- function(
 #' Load count sketch matrix as Seurat object
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of countsketch matrix file
+#' @param inputName Name of countsketch matrix file. Feather and legacy CSV
+#'   files are supported.
 #' 
 #' @return A Seurat object holding the sketch as a reduction
 #' @export
 BascetLoadCountSketchMatrix <- function(
     bascetRoot,
-    inputName="countsketch_mat.csv" ################ could be feather! or dense hdf5. but don't want it loaded as counts. not ideal that we specify ending - detect
+    inputName="countsketch_mat.feather"
 ) {
   fname <- file.path(bascetRoot, inputName)
-  mat <- data.table::fread(fname, header=FALSE, data.table=FALSE)
+  sketch <- ReadCountSketchMatrixFile(fname)
 
-  cellid <- mat[,1]
-  celldepth <- mat[,2]
-  
-  Q <- t(mat[,-(1:2)])  #Each column is one cell
+  cellid <- sketch$cellid
+  celldepth <- sketch$celldepth
+  Q <- sketch$Q
   colnames(Q) <- cellid
-  rownames(Q) <- paste0("f",1:nrow(Q))
+  rownames(Q) <- paste0("f", 1:nrow(Q))
   
   adata <- CreateSeuratObjectWithReduction(Q) #Warning: Data is of class matrix. Coercing to dgCMatrix.
   adata$celldepth <- celldepth
   
   adata
+}
+
+ReadCountSketchMatrixFile <- function(fname) {
+  stopifnot(file.exists(fname))
+
+  ext <- tolower(tools::file_ext(fname))
+  if(ext %in% c("feather", "arrow", "ipc")) {
+    ReadCountSketchMatrixFeather(fname)
+  } else {
+    ReadCountSketchMatrixCsv(fname)
+  }
+}
+
+ReadCountSketchMatrixCsv <- function(fname) {
+  mat <- data.table::fread(fname, header=FALSE, data.table=FALSE)
+  if(ncol(mat) < 3) {
+    stop("CountSketch CSV must contain cell id, depth, and at least one sketch column")
+  }
+
+  list(
+    cellid = mat[[1]],
+    celldepth = mat[[2]],
+    Q = t(as.matrix(mat[, -(1:2), drop=FALSE]))  # Each column is one cell
+  )
+}
+
+ReadCountSketchMatrixFeather <- function(fname) {
+  if(!requireNamespace("arrow", quietly=TRUE)) {
+    stop("Reading CountSketch Feather files requires the R package 'arrow'")
+  }
+
+  mat <- as.data.frame(arrow::read_feather(fname))
+  required_cols <- c("cell_id", "depth")
+  missing_cols <- setdiff(required_cols, colnames(mat))
+  if(length(missing_cols) > 0) {
+    stop(paste("CountSketch Feather file is missing columns:", paste(missing_cols, collapse=", ")))
+  }
+
+  sketch_cols <- grep("^cs_[0-9]+$", colnames(mat), value=TRUE)
+  if(length(sketch_cols) == 0) {
+    stop("CountSketch Feather file contains no cs_<index> sketch columns")
+  }
+  sketch_index <- as.integer(sub("^cs_", "", sketch_cols))
+  sketch_cols <- sketch_cols[order(sketch_index)]
+
+  list(
+    cellid = mat[["cell_id"]],
+    celldepth = mat[["depth"]],
+    Q = t(as.matrix(mat[, sketch_cols, drop=FALSE]))  # Each column is one cell
+  )
 }
 
 

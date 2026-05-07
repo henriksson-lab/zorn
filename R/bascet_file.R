@@ -658,29 +658,16 @@ extractstreamerStart <- function(
   stopifnot(is.bascet.instance(bascetInstance))
   stopifnot(is.logical(verbose))
   
-  #Assemble the command
-  all_cmd <- stringr::str_trim(
-    assembleBascetCommand(bascetInstance, c(
-      "extract-stream",
-      if(!is.null(fname)) paste0("-i=",fname)
-    ))
-  )
-  
-  #Get home variable. will be "" if empty
-  env_home <- Sys.getenv("HOME") 
-
-  #Somehow ~ did not get expanded... so do the work if needed
-  all_cmd <- stringr::str_replace_all(all_cmd, stringr::fixed("~"), env_home)
-  
-  #processx wants the command delivered one argument at a time
-  all_cmd_split <- stringr::str_split(all_cmd, " ")[[1]]
-  all_cmd_split <- all_cmd_split[all_cmd_split!=""] #not sure if needed; but helped make it run
+  cmd <- buildBascetInvocation(bascetInstance, c(
+    "extract-stream",
+    if(!is.null(fname)) paste0("-i=", normalizePath(fname, winslash = "/", mustWork = TRUE))
+  ))
   if(verbose){
-    print(all_cmd_split)
+    print(c(cmd$command, cmd$args))
   }
   p <- processx::process$new(
-    all_cmd_split[1], 
-    all_cmd_split[-1],
+    cmd$command, 
+    cmd$args,
     stdin="|", stdout = "|", stderr = "|"
   )
   all_out <- list()

@@ -30,6 +30,7 @@ DetectRawFileMeta <- function(
 ){
   #check arguments
   stopifnot(dir.exists(rawRoot))
+  rawRoot <- normalizeExistingDir(rawRoot)
   stopifnot(is.logical(verbose))
   
   
@@ -192,6 +193,8 @@ BascetGetRaw <- function(
   stopifnot(dir.exists(bascetRoot))
   bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.data.frame(rawmeta))
+  stopifnot(all(dir.exists(rawmeta$dir)))
+  rawmeta$dir <- normalizeExistingDir(rawmeta$dir)
   stopifnot(is.valid.shardname(outputName))
   chemistry <- match.arg(chemistry)
   stopifnot(is.numeric(barcodeTolerance) || is.null(barcodeTolerance))
