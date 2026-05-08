@@ -242,7 +242,7 @@ getBascetBinary <- function(
       bin=bin_path(file_local_bascet),
       tempdir=tempdir,
       prependCmd="",
-      containerMem="10GB",
+      containerMem="2GB",
       logLevel=logLevel
     ))
   }
@@ -388,9 +388,6 @@ assembleBascetCommand <- function(bascetInstance, params) {
       params
     )
   )
-#  print("///////////////")
-#  print(tor)
-#  print("///////////////")
   tor
 }
 
