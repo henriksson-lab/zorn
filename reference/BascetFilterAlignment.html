@@ -9,7 +9,7 @@ If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); o
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,7 @@ If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); o
 <span>  <span class="va">inputName</span>,</span>
 <span>  <span class="va">outputName</span>,</span>
 <span>  keepMapped <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  totalMem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -101,6 +102,10 @@ If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); o
 
 <dt id="arg-keepmapped">keepMapped<a class="anchor" aria-label="anchor" href="#arg-keepmapped"></a></dt>
 <dd><p>Keep the mapped reads (TRUE) or unmapped (FALSE)</p></dd>
+
+
+<dt id="arg-totalmem">totalMem<a class="anchor" aria-label="anchor" href="#arg-totalmem"></a></dt>
+<dd><p>Total memory to allocate</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>

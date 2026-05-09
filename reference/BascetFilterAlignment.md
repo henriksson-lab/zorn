@@ -13,6 +13,7 @@ BascetFilterAlignment(
   inputName,
   outputName,
   keepMapped = FALSE,
+  totalMem = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -41,6 +42,10 @@ BascetFilterAlignment(
 - keepMapped:
 
   Keep the mapped reads (TRUE) or unmapped (FALSE)
+
+- totalMem:
+
+  Total memory to allocate
 
 - overwrite:
 
