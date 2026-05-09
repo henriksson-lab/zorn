@@ -154,7 +154,7 @@ getBascetDevDir <- function(
     bin=bascet_exe,
     tempdir=tempdir,
     prependCmd="",
-    containerMem="10GB",
+    containerMem="2GB",
     logLevel=logLevel
   )
 }
@@ -279,7 +279,7 @@ getBascetBinary <- function(
     bin=bin_path(file_bascet_bin),
     tempdir=tempdir,
     prependCmd="",
-    containerMem="10GB",
+    containerMem="2GB",
     logLevel=logLevel
   )
 }
