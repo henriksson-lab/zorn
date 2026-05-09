@@ -5,45 +5,15 @@
 
 
 ###############################################
-#' Run SKESA on reads of all cells.
-#' This is a thin wrapper around BascetMapCell
-#'
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of input shard
-#' @param outputName Name of output shard
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
-#'
-#' @return A job to be executed, or being executed, depending on runner settings
-#' @seealso \code{\link{BascetMapCell}}
-#' @export
-BascetMapCellSKESA <- function(
-    bascetRoot,
-    inputName="filtered",
-    outputName="contigs",
-    ...
-){
-  BascetMapCell(
-    bascetRoot=bascetRoot,
-    withfunction="_skesa",
-    inputName=inputName,
-    outputName=outputName,
-    ...
-  )
-}
-
-###############################################
-#' Run integrated SKESA on reads of all cells.
-#'
-#' This uses the bascet integrated skesa command rather than the old mapcell
-#' system.
+#' Run integrated SKESA on reads from each cell.
 #'
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param numThreads Total thread budget. Defaults to the runner CPU count
-#' @param numSkesaWorkers Number of cells to assemble concurrently
-#' @param numSkesaCores Number of cores to give each SKESA assembly
-#' @param numThreadsRead Threads used by the TIRP reader. If NULL, use the CLI default
+#' @param numSkesaWorkers (Advanced) Number of cells to assemble concurrently
+#' @param numSkesaCores (Advanced) Number of cores to give each SKESA assembly
+#' @param numThreadsRead (Advanced) Threads used by the TIRP reader. If NULL, use the CLI default
 #' @param totalMem Total memory to allocate
 #' @param kmer Minimal k-mer length for assembly
 #' @param maxKmer Maximal k-mer length for assembly. 0 means auto
@@ -63,7 +33,7 @@ BascetMapCellSKESA <- function(
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @export
-BascetMapCellSKESAintegrated <- function(
+BascetMapCellSKESA <- function(
     bascetRoot,
     inputName="filtered",
     outputName="contigs",
