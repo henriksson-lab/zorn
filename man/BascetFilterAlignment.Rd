@@ -10,6 +10,7 @@ BascetFilterAlignment(
   inputName,
   outputName,
   keepMapped = FALSE,
+  totalMem = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -25,6 +26,8 @@ BascetFilterAlignment(
 \item{outputName}{Name of output shards (BAM-file format)}
 
 \item{keepMapped}{Keep the mapped reads (TRUE) or unmapped (FALSE)}
+
+\item{totalMem}{Total memory to allocate}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

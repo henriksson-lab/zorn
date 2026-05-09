@@ -419,6 +419,7 @@ BascetAlignmentToBigwig <- function(
 #' @param inputName Name of input shards (BAM-file format)
 #' @param outputName Name of output shards (BAM-file format)
 #' @param keepMapped Keep the mapped reads (TRUE) or unmapped (FALSE)
+#' @param totalMem Total memory to allocate
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -431,6 +432,7 @@ BascetFilterAlignment <- function(
     inputName, 
     outputName,
     keepMapped=FALSE,
+    totalMem=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -450,6 +452,9 @@ BascetFilterAlignment <- function(
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
+
+  #Check memory sizes
+  totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
   
   #Figure out input and output file names
   input_shards <- detectShardsForFile(bascetRoot, inputName) 
@@ -476,7 +481,9 @@ BascetFilterAlignment <- function(
           "filterbam",
           JobArg("--in", JobVar("files_in"), sep = " "),
           JobArg("--out", JobVar("files_out"), sep = " "),
+          JobArg("--temp", JobEnv("BASCET_TEMPDIR"), sep = " "),
           JobArg("--threads", numThreads, sep = " "),
+          JobMaybeArg("--memory", totalMem, format_size_bascet),
           JobArg("--keep", keep_arg, sep = " ")
         ))
       )

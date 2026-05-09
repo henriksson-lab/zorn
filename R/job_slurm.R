@@ -340,6 +340,7 @@ setMethod(
   definition = function(job) {
     # sacct -j JOBID -o jobid,submit,start,end,state
     
+    cur_summary <- "Waiting for SLURM job to start"
     cli::cli_progress_bar(
       total = job@arraysize,
       .auto_close = FALSE,
@@ -359,6 +360,7 @@ setMethod(
       #Merge new info with last info. Only keep the latest entries
       info <- rbind(info, last_info)
       info <- info[!duplicated(info$num),] #remove older entries
+      last_info <- info
       
       #For each expected job in the array, figure out it's status
       current_state <- rep("PENDING",job@arraysize) ## keep outside??
@@ -380,17 +382,19 @@ setMethod(
 #          print(info)
           if(this_num=="[0]") {
             #This is the entry for the batch array as a whole
-            if(info$status=="CANCELLED") {
+            if(info$status[i]=="CANCELLED") {
               current_state[1:job@arraysize] <- "CANCELLED"
             }
           } else {
             
             #check if string is numeric
-            if(grepl("[0123456789]+$",this_num)) {
+            if(grepl("^[0123456789]+$",this_num)) {
               
               #This is an individual index into the array
               slurm_index <- as.integer(this_num)
-              current_state[slurm_index] <- info$status[i]
+              if(slurm_index >= 0 && slurm_index < job@arraysize) {
+                current_state[slurm_index + 1] <- info$status[i]
+              }
               
             } else {
               #this might be a weird entry such as 35556921_0.+  ; not sure what to make of these
@@ -399,47 +403,43 @@ setMethod(
         }        
         
         
-        if(all(current_state=="COMPLETED")){
-          break
-        } else {
-          #print(info$status)
-          
-          #Count number of jobs of each type
-          num_running <- floor(sum(info$status=="RUNNING"))
-          num_completed <- floor(sum(info$status=="COMPLETED")) 
-          num_failed <- floor(sum(info$status=="FAILED"))
-          num_outofmem <- floor(sum(info$status=="OUT_OF_MEM"))
-          num_cancelled <- floor(sum(info$status=="CANCELLED"))
-          
-          #TODO: could also paste separate entries
-          
-          cur_summary <- paste0(
-            job@pid," ",
-            job@jobname,"   ",
-            "To run: ",num_total,"   ",
-            "Completed: ",num_completed,"   ",
-            "Running: ",num_running,"   ",
-            "Failed: ", num_failed,"   ",
-            "Cancelled: ", num_cancelled,"   ",
-            "Out-of-mem: ", num_outofmem
-          )
-          
-          #print(cur_summary)
+        #print(info$status)
+
+        #Count number of jobs of each type
+        num_running <- floor(sum(current_state=="RUNNING"))
+        num_completed <- floor(sum(current_state=="COMPLETED"))
+        num_failed <- floor(sum(current_state=="FAILED"))
+        num_outofmem <- floor(sum(current_state=="OUT_OF_MEM"))
+        num_cancelled <- floor(sum(current_state=="CANCELLED"))
+
+        #TODO: could also paste separate entries
+
+        cur_summary <- paste0(
+          job@pid," ",
+          job@jobname,"   ",
+          "To run: ",num_total,"   ",
+          "Completed: ",num_completed,"   ",
+          "Running: ",num_running,"   ",
+          "Failed: ", num_failed,"   ",
+          "Cancelled: ", num_cancelled,"   ",
+          "Out-of-mem: ", num_outofmem
+        )
+
+        #print(cur_summary)
 
 #print("num_completed")
 #print(num_completed)  ## too many!!
 #print(job@arraysize)
 #print(info)
-        }
       }
       
 #      cli::cli_progress_update(set = 20)
+      cli::cli_progress_update(set = min(num_completed, num_total))
       if(num_completed==num_total) {
-        #Need to break early or cli call fails. Poor design of the library!
+        cli::cli_progress_done()
         cat("\nDone\n")
         break
       } else {
-        cli::cli_progress_update(set = num_completed)
         Sys.sleep(1)
       }
     }
