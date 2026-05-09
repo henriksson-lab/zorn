@@ -72,14 +72,6 @@ is.bascet.instance <- function(x) {
   stringr::str_detect(as.character(class(x)),"BascetInstance")
 }
 
-###############################################
-# The default Bascet installation settings
-# 
-#bascetInstance.default <- BascetInstance(
-#  bin="/home/mahogny/jupyter/bascet/target/debug/bascet",
-#  tempdir="./"
-#)
-
 
 
 ###############################################
@@ -127,6 +119,7 @@ GetBascetTempDir <- function(
 #' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
 #' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
 #' @param targetType What target type to load
+#' @param containerMem Amount of memory used by the container itself
 #'
 #' @return A Bascet instance
 #' @export
@@ -134,10 +127,12 @@ getBascetDevDir <- function(
     devdir,
     tempdir=NULL,
     logLevel="info",
-    targetType="release"
+    targetType="release",
+    containerMem="2GB"
 ){
   #Check arguments
   stopifnot(dir.exists(devdir))
+  stopifnot(is.valid.memsize(containerMem))
 
   if(is.null(tempdir)){
     tempdir <- normalizePath("./temp", mustWork = FALSE)
@@ -154,7 +149,7 @@ getBascetDevDir <- function(
     bin=bascet_exe,
     tempdir=tempdir,
     prependCmd="",
-    containerMem="2GB",
+    containerMem=containerMem,
     logLevel=logLevel
   )
 }
@@ -202,6 +197,7 @@ defaultBascetBinDir <- function() {
 #' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
 #' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
 #' @param forceInstall Force download of the Bascet binary even if a cached binary exists
+#' @param containerMem Amount of memory used by the container itself
 #'
 #' @return A Bascet instance
 #' @export
@@ -209,7 +205,8 @@ getBascetBinary <- function(
     storeAt=NULL,
     tempdir=NULL,
     logLevel="info",
-    forceInstall=FALSE
+    forceInstall=FALSE,
+    containerMem="2GB"
 ){
   #Check arguments
   if(is.null(storeAt)) {
@@ -217,6 +214,7 @@ getBascetBinary <- function(
   }
   stopifnot(dir.exists(storeAt))
   stopifnot(is.logical(forceInstall), length(forceInstall) == 1, !is.na(forceInstall))
+  stopifnot(is.valid.memsize(containerMem))
 
   if(is.null(tempdir)){
     tempdir <- "./temp"
@@ -242,7 +240,7 @@ getBascetBinary <- function(
       bin=bin_path(file_local_bascet),
       tempdir=tempdir,
       prependCmd="",
-      containerMem="2GB",
+      containerMem=containerMem,
       logLevel=logLevel
     ))
   }
@@ -279,7 +277,7 @@ getBascetBinary <- function(
     bin=bin_path(file_bascet_bin),
     tempdir=tempdir,
     prependCmd="",
-    containerMem="2GB",
+    containerMem=containerMem,
     logLevel=logLevel
   )
 }

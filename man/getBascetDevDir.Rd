@@ -8,7 +8,8 @@ getBascetDevDir(
   devdir,
   tempdir = NULL,
   logLevel = "info",
-  targetType = "release"
+  targetType = "release",
+  containerMem = "2GB"
 )
 }
 \arguments{
@@ -17,6 +18,8 @@ getBascetDevDir(
 \item{logLevel}{Log level for the Bascet instance (e.g. "info", "debug", "warn")}
 
 \item{targetType}{What target type to load}
+
+\item{containerMem}{Amount of memory used by the container itself}
 
 \item{storeAt}{Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory #################### TODO}
 }

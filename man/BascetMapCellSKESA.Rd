@@ -2,14 +2,32 @@
 % Please edit documentation in R/ext_tools.R
 \name{BascetMapCellSKESA}
 \alias{BascetMapCellSKESA}
-\title{Run SKESA on reads of all cells.
-This is a thin wrapper around BascetMapCell}
+\title{Run integrated SKESA on reads from each cell.}
 \usage{
 BascetMapCellSKESA(
   bascetRoot,
   inputName = "filtered",
   outputName = "contigs",
-  ...
+  numThreads = NULL,
+  numSkesaWorkers = NULL,
+  numSkesaCores = NULL,
+  numThreadsRead = NULL,
+  totalMem = NULL,
+  kmer = 21,
+  maxKmer = 0,
+  steps = 11,
+  minCount = 1,
+  maxKmerCount = 10,
+  vectorPercent = 0.05,
+  insertSize = 0,
+  fraction = 0.01,
+  maxSnpLen = 150,
+  minContig = 50,
+  allowSnps = FALSE,
+  forceSingleEnds = FALSE,
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
@@ -19,15 +37,49 @@ BascetMapCellSKESA(
 
 \item{outputName}{Name of output shard}
 
-\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
+\item{numThreads}{Total thread budget. Defaults to the runner CPU count}
+
+\item{numSkesaWorkers}{(Advanced) Number of cells to assemble concurrently}
+
+\item{numSkesaCores}{(Advanced) Number of cores to give each SKESA assembly}
+
+\item{numThreadsRead}{(Advanced) Threads used by the TIRP reader. If NULL, use the CLI default}
+
+\item{totalMem}{Total memory to allocate}
+
+\item{kmer}{Minimal k-mer length for assembly}
+
+\item{maxKmer}{Maximal k-mer length for assembly. 0 means auto}
+
+\item{steps}{Number of assembly iterations from minimal to maximal k-mer length}
+
+\item{minCount}{Minimal count for k-mers retained}
+
+\item{maxKmerCount}{Maximum k-mer count for fork tie-breaking}
+
+\item{vectorPercent}{Percentage of reads containing 19-mer for adapter detection. 1.0 disables}
+
+\item{insertSize}{Expected insert size for paired reads. 0 means auto}
+
+\item{fraction}{Maximum noise to signal ratio acceptable for extension}
+
+\item{maxSnpLen}{Maximal SNP length}
+
+\item{minContig}{Minimal contig length reported in output}
+
+\item{allowSnps}{Allow additional step for SNP discovery}
+
+\item{forceSingleEnds}{Do not use paired-end information}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
 }
 \description{
-Run SKESA on reads of all cells.
-This is a thin wrapper around BascetMapCell
-}
-\seealso{
-\code{\link{BascetMapCell}}
+Run integrated SKESA on reads from each cell.
 }

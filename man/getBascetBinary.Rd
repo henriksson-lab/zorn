@@ -9,7 +9,8 @@ getBascetBinary(
   storeAt = NULL,
   tempdir = NULL,
   logLevel = "info",
-  forceInstall = FALSE
+  forceInstall = FALSE,
+  containerMem = "2GB"
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ getBascetBinary(
 \item{logLevel}{Log level for the Bascet instance (e.g. "info", "debug", "warn")}
 
 \item{forceInstall}{Force download of the Bascet binary even if a cached binary exists}
+
+\item{containerMem}{Amount of memory used by the container itself}
 }
 \value{
 A Bascet instance
