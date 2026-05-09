@@ -10,7 +10,8 @@ getBascetDevDir(
   devdir,
   tempdir = NULL,
   logLevel = "info",
-  targetType = "release"
+  targetType = "release",
+  containerMem = "2GB"
 )
 ```
 
@@ -28,6 +29,10 @@ getBascetDevDir(
 - targetType:
 
   What target type to load
+
+- containerMem:
+
+  Amount of memory used by the container itself
 
 - storeAt:
 

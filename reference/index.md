@@ -102,10 +102,7 @@
   : Run QUAST on reads of all cells. This is a thin wrapper around
   BascetMapCell
 - [`BascetMapCellSKESA()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESA.md)
-  : Run SKESA on reads of all cells. This is a thin wrapper around
-  BascetMapCell
-- [`BascetMapCellSKESAintegrated()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESAintegrated.md)
-  : Run integrated SKESA on reads of all cells.
+  : Run integrated SKESA on reads from each cell.
 - [`BascetMapTransform()`](https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.md)
   : Transform data
 - [`BascetQueryFq()`](https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.md)

@@ -124,7 +124,7 @@ and install from source:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-2-install-bascet">Step 2: Install Bascet<a class="anchor" aria-label="anchor" href="#step-2-install-bascet"></a>
+<h2 id="step-2a-install-bascet-precompiled-binary">Step 2a: Install Bascet, precompiled binary<a class="anchor" aria-label="anchor" href="#step-2a-install-bascet-precompiled-binary"></a>
 </h2>
 <p>You also need Bascet, our command-line suite for single-cell
 analysis.</p>
@@ -138,10 +138,29 @@ analysis.</p>
 again.</p>
 </div>
 <div class="section level2">
+<h2 id="step-2b-install-bascet-developer-or-install-from-source">Step 2b: Install Bascet, developer or install from source<a class="anchor" aria-label="anchor" href="#step-2b-install-bascet-developer-or-install-from-source"></a>
+</h2>
+<p>If you want to develop Bascet further, or compile from source, you
+can follow these instructions to get Bascet, compile it, and use your
+own build.</p>
+<p>First install Rust from <a href="https://rust-lang.org/tools/install/" class="external-link">rust-lang.org</a>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--proto</span> <span class="st">'=https'</span> <span class="at">--tlsv1.2</span> <span class="at">-sSf</span> https://sh.rustup.rs <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div>
+<p>Then clone the Bascet repository (adjust the directory to wherever
+you keep your source checkouts):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="bu">cd</span> /home/me/git</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/henriksson-lab/bascet.git</span></code></pre></div>
+<p>You have to make a release build before using Bascet from Zorn. Note
+that there are few checks to ensure the code is properly compiled!</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div>
+<p>You can now point to this build:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetDevDir.html">getBascetDevDir</a></span><span class="op">(</span><span class="st">"/home/me/git/bascet/"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="step-3-test-the-installation">Step 3: Test the installation<a class="anchor" aria-label="anchor" href="#step-3-test-the-installation"></a>
 </h2>
 <p>Run the following and see if you get “ok” before proceeding:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascetInstance.default</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

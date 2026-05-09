@@ -11,7 +11,8 @@ getBascetBinary(
   storeAt = NULL,
   tempdir = NULL,
   logLevel = "info",
-  forceInstall = FALSE
+  forceInstall = FALSE,
+  containerMem = "2GB"
 )
 ```
 
@@ -34,6 +35,10 @@ getBascetBinary(
 - forceInstall:
 
   Force download of the Bascet binary even if a cached binary exists
+
+- containerMem:
+
+  Amount of memory used by the container itself
 
 ## Value
 
