@@ -35,14 +35,14 @@ If you have files that are awkwardly named for some reason, simply produce a dat
 
 You can now parse the reads the figure out which cell they belong to, and any UMI information. The only thing you additionally need to specify is what type of data you have, where "atrandi_wgs" is for the Atrandi SPC-based MDA protocol for WGS.
 
-> ⚠️ Note that Bascet performs trimming of reads during the GetRaw stage. This includes: 
+> ⚠️ Note that Bascet performs trimming of reads during the Debarcode stage. This includes: 
 - For RNA-seq: PolyA trimming and trimming at adapters 
 - For Atrandi WGS: A specialized algorithm to detect overlap and remove adapters accordingly Regular users should thus not need to worry about this
 
 [(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
-BascetGetRaw(
+BascetDebarcode(
     bascetRoot, 
     rawmeta,
     chemistry="atrandi_wgs"

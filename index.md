@@ -22,4 +22,4 @@ Most users want to use Zorn for all operations. However, if you want to expand o
 
 ## News
 
-* 2025-07-28: Version 0.4.0 has now been released. Please update Bascet to match this release. This update changes the GetRaw and Shardify commands to reduce memory consumption when working with large number of cells. Parse Biosciences scRNA-seq is now unofficially supported.
+* 2025-07-28: Version 0.4.0 has now been released. Please update Bascet to match this release. This update changes the Debarcode and Shardify commands to reduce memory consumption when working with large number of cells. Parse Biosciences scRNA-seq is now unofficially supported.

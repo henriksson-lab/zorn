@@ -33,7 +33,7 @@ rawmeta <- DetectRawFileMeta("/home/m/mahogny/mystore/dataset/atrandi/240903_wgs
 
 
 ### Debarcode the reads, then sort them.
-BascetGetRaw(
+BascetDebarcode(
   bascetRoot,
   rawmeta,
   runner=bascet_runner,

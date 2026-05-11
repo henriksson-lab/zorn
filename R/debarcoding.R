@@ -142,7 +142,7 @@ DetectRawFileMeta <- function(
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @export
-BascetGetRaw <- function(
+BascetDebarcode <- function(
     bascetRoot, 
     rawmeta,
     maxShardSize="200g",  ### if any?   maybe no need!
@@ -300,7 +300,7 @@ BascetGetRaw <- function(
     
     RunJob(
       runner = runner, 
-      jobname = "Zgetraw",
+      jobname = "Zdebarcode",
       bascetInstance = bascetInstance,
       cmd = JobScript(
         vars = list(
@@ -312,7 +312,7 @@ BascetGetRaw <- function(
         steps = list(
           if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
           JobBascetCommand(bascetInstance, list(
-            "get-raw",
+            "debarcode",
             JobArg("--temp", JobEnv("BASCET_TEMPDIR")),
             JobArg("--threads", numThreads),
             JobMaybeArg("--countof-threads-read", numReadThreads),

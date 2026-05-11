@@ -53,7 +53,7 @@ You likely want to tune each SLURM job a bit in terms of how many cores are used
 This is the suggested method, where only relevant settings are overridden on a per-job basis:
 
 ```{r, eval=F, echo=T}
-BascetGetRaw(
+BascetDebarcode(
   bascetRoot,
   rawmeta,
   chemistry="atrandi-wgs",
@@ -102,7 +102,7 @@ bascetInstance.default <- getBascetSingularityImage(storeAt="~/")
 Whenever you run a job, you now want to catch a handle to the job in a variable:
 
 ```{r, eval=F, echo=T}
-my_job <- BascetGetRaw(  #note, store job in a variable
+my_job <- BascetDebarcode(  #note, store job in a variable
   bascetRoot,
   rawmeta,
   chemistry="atrandi-wgs",

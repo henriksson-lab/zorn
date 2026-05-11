@@ -20,7 +20,7 @@ rawmeta <- DetectRawFileMeta("/husky/fromsequencer/240903_wgs_atcc2_miseq/raw")
 
 
 ### Debarcode the reads, then sort them.
-BascetGetRawAtrandiWGS(
+BascetDebarcode(
   bascetRoot,
   rawmeta,
   runner=inst

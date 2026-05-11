@@ -25,7 +25,7 @@ bascetInstance.default  #temp dir is here
 
 
 ### Debarcode the reads, then sort them.
-BascetGetRawAtrandiWGS(
+BascetDebarcode(
   bascetRoot,
   rawmeta,
   runner=inst
