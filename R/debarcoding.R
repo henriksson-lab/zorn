@@ -478,18 +478,15 @@ PrepareSharding <- function(
     #  print(g)
     #}
     
-    #Produce a knee plot. Subsample to speed up the code (this might cause bias?)
+    # Produce a sampled knee plot, but choose cells from the full count table.
     knee <- list_group_bc_count[[g]]
     knee$index <- 1:nrow(knee)
-    
-    sub_knee <- knee[sample(1:nrow(knee), min(nrow(knee),10000)),, drop=FALSE]
-    
-    sub_knee$cs <- cumsum(sub_knee$count)
-    sub_knee$picked <- sub_knee$cs > sum(sub_knee$count)*minQuantile
+
+    read_cutoff <- quantile(knee$count, minQuantile)
+
+    plot_idx <- unique(as.integer(seq(1, nrow(knee), length.out = min(nrow(knee), 10000))))
+    sub_knee <- knee[plot_idx,, drop=FALSE]
     sub_knee$group <- g
-    
-    #min_quantile <- 0.99
-    read_cutoff <- quantile(sub_knee$count, minQuantile)
     sub_knee$picked <- sub_knee$count > read_cutoff
     
     list_knee[[g]] <- sub_knee
