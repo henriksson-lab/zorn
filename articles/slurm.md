@@ -47,7 +47,7 @@ overridden on a per-job basis:
 
 ``` r
 
-BascetGetRaw(
+BascetDebarcode(
   bascetRoot,
   rawmeta,
   chemistry="atrandi-wgs",
@@ -99,7 +99,7 @@ variable:
 
 ``` r
 
-my_job <- BascetGetRaw(  #note, store job in a variable
+my_job <- BascetDebarcode(  #note, store job in a variable
   bascetRoot,
   rawmeta,
   chemistry="atrandi-wgs",

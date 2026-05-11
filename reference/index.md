@@ -58,12 +58,12 @@
   : From aligned BAM file, compute counts per feature
 - [`BascetCountMatrixToAssay()`](https://henriksson-lab.github.io/zorn/reference/BascetCountMatrixToAssay.md)
   : Convert a BascetCountMatrix to a Seurat Assay
+- [`BascetDebarcode()`](https://henriksson-lab.github.io/zorn/reference/BascetDebarcode.md)
+  : Extract barcodes and trim input raw FASTQ
 - [`BascetDumpContigs()`](https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.md)
   : Store all contigs in an output directory, as cell_id.fa
 - [`BascetFilterAlignment()`](https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.md)
   : Filter an alignment (BAM-file).
-- [`BascetGetRaw()`](https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.md)
-  : Extract barcodes and trim input raw FASTQ
 - [`BascetIndexGenomeBWAMEM2()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWAMEM2.md)
   : Index a genome using BWA-MEM2 such that it can be used for alignment
 - [`BascetIndexGenomeBowtie2()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBowtie2.md)

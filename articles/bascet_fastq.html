@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.27</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -138,9 +138,9 @@ Bascet-FASTQ:</p>
 <p><a href="https://github.com/OpenGene/fastp" class="external-link">(FASTP)</a> is a fast
 trimmer. We however don’t recommend it for de novo assembly as it seems
 to leave too many adapters (<em>this is why we already perform our own
-trimming during GetRaw</em>). In either case, FASTP can be run directly
-through Zorn. If you wish to use other software, you can apply it in any
-other way to the FASTQ files.</p>
+trimming during Debarcode</em>). In either case, FASTP can be run
+directly through Zorn. If you wish to use other software, you can apply
+it in any other way to the FASTQ files.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
 <span><span class="fu"><a href="../reference/BascetRunFASTP.html">BascetRunFASTP</a></span><span class="op">(</span></span>

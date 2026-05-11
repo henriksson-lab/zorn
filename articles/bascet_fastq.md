@@ -54,8 +54,8 @@ BascetMapTransform(
 [(FASTP)](https://github.com/OpenGene/fastp) is a fast trimmer. We
 however don’t recommend it for de novo assembly as it seems to leave too
 many adapters (*this is why we already perform our own trimming during
-GetRaw*). In either case, FASTP can be run directly through Zorn. If you
-wish to use other software, you can apply it in any other way to the
+Debarcode*). In either case, FASTP can be run directly through Zorn. If
+you wish to use other software, you can apply it in any other way to the
 FASTQ files.
 
 ``` r

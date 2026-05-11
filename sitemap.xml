@@ -48,9 +48,9 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountChrom.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountMatrixToAssay.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDebarcode.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetGetRaw.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWAMEM2.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBowtie2.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeMinimap2.html</loc></url>

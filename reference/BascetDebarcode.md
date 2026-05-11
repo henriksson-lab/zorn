@@ -1,0 +1,143 @@
+# Extract barcodes and trim input raw FASTQ
+
+Extract barcodes and trim input raw FASTQ
+
+## Usage
+
+``` r
+BascetDebarcode(
+  bascetRoot,
+  rawmeta,
+  maxShardSize = "200g",
+  outputName = "debarcoded",
+  chemistry = c("atrandi-wgs", "atrandi-wgslr", "atrandi-rnaseq", "parse-bio"),
+  subchemistry = NULL,
+  barcodeTolerance = NULL,
+  numThreads = NULL,
+  numReadThreads = NULL,
+  numDebarcodeThreads = NULL,
+  numSortingThreads = NULL,
+  numMergeSortingThreads = NULL,
+  numWriteThreads = NULL,
+  numCompressThreads = NULL,
+  totalMem = NULL,
+  streamBufferSize = NULL,
+  sortBufferSize = NULL,
+  compressBufferSize = NULL,
+  compressRawBufferSize = NULL,
+  compressionLevel = NULL,
+  numMergeStreams = NULL,
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
+)
+```
+
+## Arguments
+
+- bascetRoot:
+
+  The root folder where all Bascets are stored
+
+- rawmeta:
+
+  Metadata for the raw FASTQ input files. See DetectRawFileMeta
+
+- maxShardSize:
+
+  Estimated maximum size of output shard. Can be set higher but as
+  sorting is also performed during sharding, it can be overall more
+  efficient to only do partial sorting during this command
+
+- outputName:
+
+  Name output files: Debarcoded reads
+
+- chemistry:
+
+  The type of data to be parsed
+
+- subchemistry:
+
+  Sub-chemistry variant, if applicable
+
+- barcodeTolerance:
+
+  Optional: Number of mismatches allowed in the barcode for it to still
+  be considered valid
+
+- numThreads:
+
+  Number of threads to use per job. Default is the number from the
+  runner
+
+- numReadThreads:
+
+  Advanced setting: Number of threads for reading
+
+- numDebarcodeThreads:
+
+  Advanced setting: Number of threads for debarcoding
+
+- numSortingThreads:
+
+  Advanced setting: Number of threads for sorting, first phase
+
+- numMergeSortingThreads:
+
+  Advanced setting: Number of threads for sorting, second phase
+
+- numWriteThreads:
+
+  Advanced setting: Number of threads for writing
+
+- numCompressThreads:
+
+  Advanced setting: Number of threads for compressing
+
+- totalMem:
+
+  Total memory to allocate
+
+- streamBufferSize:
+
+  Advanced setting: Stream buffer size (fraction, given as e.g. "10%")
+
+- sortBufferSize:
+
+  Advanced setting: Sort buffer size (fraction, given as e.g. "10%")
+
+- compressBufferSize:
+
+  Advanced setting: Compress buffer size (fraction, given as e.g. "10%")
+
+- compressRawBufferSize:
+
+  Advanced setting: Raw compress buffer size (fraction, given as e.g.
+  "10%")
+
+- compressionLevel:
+
+  Advanced setting: Compression level (0..12)
+
+- numMergeStreams:
+
+  Advanced setting: Number of merge streams (must be \>= 2)
+
+- overwrite:
+
+  Force overwriting of existing files. The default is to do nothing
+  files exist
+
+- runner:
+
+  The job manager, specifying how the command will be run (e.g. locally,
+  or via SLURM)
+
+- bascetInstance:
+
+  A Bascet instance
+
+## Value
+
+A job to be executed, or being executed, depending on runner settings

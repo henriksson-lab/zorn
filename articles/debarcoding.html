@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.27</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -155,7 +155,7 @@ and any UMI information. The only thing you additionally need to specify
 is what type of data you have, where “atrandi_wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.</p>
 <blockquote>
-<p>⚠️ Note that Bascet performs trimming of reads during the GetRaw
+<p>⚠️ Note that Bascet performs trimming of reads during the Debarcode
 stage. This includes: - For RNA-seq: PolyA trimming and trimming at
 adapters - For Atrandi WGS: A specialized algorithm to detect overlap
 and remove adapters accordingly Regular users should thus not need to
@@ -163,7 +163,7 @@ worry about this</p>
 </blockquote>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetGetRaw.html">BascetGetRaw</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetDebarcode.html">BascetDebarcode</a></span><span class="op">(</span></span>
 <span>    <span class="va">bascetRoot</span>, </span>
 <span>    <span class="va">rawmeta</span>,</span>
 <span>    chemistry<span class="op">=</span><span class="st">"atrandi_wgs"</span></span>

@@ -49,7 +49,7 @@ and any UMI information. The only thing you additionally need to specify
 is what type of data you have, where “atrandi_wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.
 
-> ⚠️ Note that Bascet performs trimming of reads during the GetRaw
+> ⚠️ Note that Bascet performs trimming of reads during the Debarcode
 > stage. This includes: - For RNA-seq: PolyA trimming and trimming at
 > adapters - For Atrandi WGS: A specialized algorithm to detect overlap
 > and remove adapters accordingly Regular users should thus not need to
@@ -60,7 +60,7 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
 
-BascetGetRaw(
+BascetDebarcode(
     bascetRoot, 
     rawmeta,
     chemistry="atrandi_wgs"
