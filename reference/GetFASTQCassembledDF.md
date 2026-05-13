@@ -25,4 +25,5 @@ GetFASTQCassembledDF(aggrFastqData, section, readnum = c(1, 2))
 
 ## Value
 
-TODO
+A data.frame containing the requested FASTQC section for the selected
+read across all cells, with a `cellID` column identifying each cell.

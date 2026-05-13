@@ -2,15 +2,15 @@
 
 ## Authors
 
-- **Johan Henriksson**. Author, maintainer.
-  [](https://orcid.org/0000-0002-7745-2844)
-
-- **Laura Carroll**. Author. [](https://orcid.org/0000-0002-3677-0192)
+- **Julian Dicken**. Author.
+  [](https://orcid.org/https://orcid.org/0009-0009-8614-7321)
 
 - **Hadrien Gourlé**. Author. [](https://orcid.org/0000-0001-9807-1082)
 
-- **Julian Dicken**. Author.
-  [](https://orcid.org/https://orcid.org/0009-0009-8614-7321)
+- **Laura Carroll**. Author. [](https://orcid.org/0000-0002-3677-0192)
+
+- **Johan Henriksson**. Author, maintainer.
+  [](https://orcid.org/0000-0002-7745-2844)
 
 - **HenLab, CompMicroLab, and Collaborators**. Funder.
 

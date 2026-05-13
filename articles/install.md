@@ -21,7 +21,16 @@ We strive to support Linux, OSX and Windows.
 > - Your CPU does not support the BMI instruction set (uncommon for
 >   machines past 2015)
 
-## Step 1: Install Zorn
+## Step 1: Install upstream package
+
+You will likely need to first install the following packages (might or
+might not get pulled in by Zorn automatically):
+
+- [Bioconductor](https://www.bioconductor.org/install/)
+- [Seurat](https://satijalab.org/seurat/articles/install.html)
+- [Signac](https://stuartlab.org/signac/articles/install)
+
+## Step 2: Install Zorn
 
 Zorn is under active development, so just get it straight from GitHub
 and install from source:
@@ -47,7 +56,7 @@ You can then load it:
 library(Zorn)
 ```
 
-## Step 2a: Install Bascet, precompiled binary
+## Step 3a: Install Bascet, precompiled binary
 
 You also need Bascet, our command-line suite for single-cell analysis.
 
@@ -66,7 +75,7 @@ bascetInstance.default <- getBascetBinary(storeAt="/somewhere/on/your/disk/")
 
 If the file is already downloaded, it will not be downloaded again.
 
-## Step 2b: Install Bascet, developer or install from source
+## Step 3b: Install Bascet, developer or install from source
 
 If you want to develop Bascet further, or compile from source, you can
 follow these instructions to get Bascet, compile it, and use your own
@@ -101,7 +110,10 @@ You can now point to this build:
 bascetInstance.default <- getBascetDevDir("/home/me/git/bascet/")
 ```
 
-## Step 3: Test the installation
+More [developer information
+here](https://henriksson-lab.github.io/zorn/articles/for_developers.md).
+
+## Step 4: Test the installation
 
 Run the following and see if you get “ok” before proceeding:
 
@@ -109,13 +121,3 @@ Run the following and see if you get “ok” before proceeding:
 
 TestBascetInstance(bascetInstance.default)
 ```
-
-## Using the Bascet instance
-
-You need to pass the bascetInstance variable to each Zorn command that
-requires it.
-
-## For developers: Accessing a locally compiled Bascet
-
-See [Bascet for
-Developers](https://henriksson-lab.github.io/zorn/articles/for_developers.md)

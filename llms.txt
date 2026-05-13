@@ -104,7 +104,9 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`BascetIndexGenomeMinimap2()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeMinimap2.md)
   : Index a genome using minimap2 such that it can be used for alignment
 - [`BascetIndexGenomeSTAR()`](https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeSTAR.md)
-  : Index a genome using STAR such that it can be used for alignment
+  : Index a genome using STAR such that it can be used for alignment.
+  Note that Bascet STAR (star-rs) automatically detects if GTF and FASTA
+  are gzipped
 - [`BascetInstance()`](https://henriksson-lab.github.io/zorn/reference/BascetInstance.md)
   : Create a new bascet instance. For advanced users only
 - [`BascetListFilesForCell()`](https://henriksson-lab.github.io/zorn/reference/BascetListFilesForCell.md)
@@ -255,10 +257,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`ReadHistogram()`](https://henriksson-lab.github.io/zorn/reference/ReadHistogram.md)
   : Read the count histogram associated with a Bascet. Not all Bascets
   have one, but it is typically produced after debarcoding
-- [`SetTaxonomyNamesFeatures()`](https://henriksson-lab.github.io/zorn/reference/SetTaxonomyNamesFeatures.md)
-  : Take a KRAKEN2 count matrix where the column is the taxonomyID.
-  Convert to a matrix where the columns instead are the names of each
-  taxonomy. Unused taxonomyID columns will not be kept
 - [`ShowFASTQCforCell()`](https://henriksson-lab.github.io/zorn/reference/ShowFASTQCforCell.md)
   : Show the FASTQC HTML report for a cell, in the available web browser
 - [`SlurmRunner()`](https://henriksson-lab.github.io/zorn/reference/SlurmRunner.md)

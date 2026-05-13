@@ -1,6 +1,8 @@
-# Index a genome using STAR such that it can be used for alignment
+# Index a genome using STAR such that it can be used for alignment. Note that Bascet STAR (star-rs) automatically detects if GTF and FASTA are gzipped
 
-Index a genome using STAR such that it can be used for alignment
+Index a genome using STAR such that it can be used for alignment. Note
+that Bascet STAR (star-rs) automatically detects if GTF and FASTA are
+gzipped
 
 ## Usage
 

@@ -16,7 +16,8 @@ MapCellMultiListAsDataFrame(mylist)
 
 ## Value
 
-TODO
+A data.frame containing the row-bound non-empty entries of `mylist`,
+with a `cellID` column identifying the source list element.
 
 ## Details
 

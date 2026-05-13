@@ -69,8 +69,6 @@ BascetRunCountsketch(
 
   A Bascet instance
 
-  TODO produce a binary file format instead; gather files upon loading?
-
 ## Value
 
 A job to be executed, or being executed, depending on runner settings

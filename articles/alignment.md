@@ -11,44 +11,56 @@ bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
+## Indexing a genome
+
+Before alignment, you need to prepare your reference by indexing it.
+Bascet wraps several aligners and use their native indices. If you want
+full access to all options, indices can be built the old-school way by
+accessing them like this:
+
+    #Access BWAMEM2 inside Bascet
+    ./bascet exttool bwa-mem2 index ...
+
+But you can also perform the indexing via R. Here we assume that you
+have a genome FASTA-file “genome.fa” or “genome.fa.gz”:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+
+#Build a reference for BWAMEM2
+BascetIndexGenomeBWAMEM2(
+  bascetRoot,
+  "/your_reference/genome.fa"
+)
+```
+
+If you have long-read data, Minimap2 is the better option
+
+``` r
+
+#Build a reference for Minimap2
+BascetIndexGenomeMinimap2(
+  bascetRoot,
+  "/your_reference/genome.fa"
+)
+```
+
+You can also use STAR if you want to align RNA-seq data (and thus need a
+splice-aware aligner)
+
+``` r
+
+#Build a reference for STAR
+BascetIndexGenomeSTAR(
+  bascetRoot,
+  fastaFile="/your_reference/genome.fa",
+  gtfFile="/your_reference/genome.gtf"  #note that GTF-file is needed here to inform STAR about splice junctions
+)
+```
+
 ## Alignment
-
-We will use BWA for alignment, which wants the data in FASTQ format.
-Here we assume that you use a single-cell WGS chemistry that produces
-paired reads, and direct Zorn to produce R1/R2 FASTQ files (only R1
-specified). We name the output Bascets “asfq”, taking as input the
-typical sharded reads:
-
-[(SLURM-compatible
-step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
-
-``` r
-
-### Get reads in fastq format
-BascetMapTransform(
-  bascetRoot,
-  inputName="filtered",   #default; can omit
-  outputName="asfq",  ###name parameter
-  out_format="R1.fq.gz"
-)
-```
-
-Before alignment, you need to prepare your reference by indexing it. You
-can do this using “bwa index” in the terminal; but you can also do it
-via Zorn. This assumes that you have a FASTA-file named all.fa (can also
-be gzipped):
-
-[(SLURM-compatible
-step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
-
-``` r
-
-#Build a reference
-BascetIndexGenomeBWA(
-  bascetRoot,
-  "/your_reference/all.fa"
-)
-```
 
 You can now proceed with alignment using BWA. By default, this command
 outputs both unsorted and sorted BAM-files.
@@ -65,50 +77,36 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 ### Perform alignment
 BascetAlignToReference(
   bascetRoot,
-  useReference="/your_reference/all.fa",
-  numLocalThreads=10
+  aligner="BWAMEM2",
+  useReference="/your_reference/genome.fa"
 )
 ```
 
-TODO: Filtering
-
 ## Host filtering workflow
+
+A common task in metagenomics is to filter out human reads. After you
+have aligned the reads, you can run the following command to only retain
+unmapped reads
 
 ``` r
 
 BascetFilterAlignment(
   bascetRoot,
-  outputName="filter_paired",
-  keep_mapped=TRUE
+  inputName="aligned_cell",
+  outputName="aligned_cell_nohost",
+  keepMapped=TRUE
 )
 ```
 
-## Option \#1: Counting with Signac
-
-If you want to analyze where reads mapped, either for RNA-seq counting
-for genes, or more generally, what the count is within a genomic region,
-you can use Signac for great flexibility in this task. Signac is
-designed to analyze single-cell ATAC-seq data, where the reads are
-stored in a specialized BED-file. You can use the command below to
-generate this file.
-
-Note one caveat: depending on chemistry, this workflow may not handle
-UMIs, and just report raw read counts. However, for quick and dirty
-operations this is typically enough.
+To get the output BAM file back in Bascet TIRP format, use the following
+command
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
-``` r
+`{r, eval=F, echo=T}#Convert aligned filtered BAM to TIRP BascetMapTransform( bascetRoot, inputName="aligned_cell_nohost", outputName = "filtered_nohost", outFormat="tirp.gz" )`
 
-### Generate fragments BED file suited for quantifying
-### reads/chromosome using Signac later 
-BascetBam2Fragments(
-  bascetRoot
-)
-```
-
-## Option \#2: Counting chromosomes (species)
+## Option \#1: Counting chromosomes (presence/absence of species)
 
 A simplified scenario is when you just want to get the number of reads
 per chromosome. These counts can later be summarized on the levels of
@@ -186,7 +184,7 @@ required command below, where you can apply either an RNA-seq or
 ATAC-seq dimensional reduction depending on what you think is
 appropriate.
 
-ATAC-seq style analysis:
+ATAC-seq style analysis (recommended also for DNA-seq!):
 
 ``` r
 
@@ -221,7 +219,7 @@ DimPlot(object = adata, label = TRUE, group.by = "species_aln") +
   ylab("BWA2")
 ```
 
-## Option \#3: RNA-seq analysis (feature counting)
+## Option \#2: Feature counting (RNA-seq analysis, etc)
 
 For protocols such as RNA-seq, the aim is to get the number of reads per
 gene, per cell. After alignment and sorting of reads based on genome
@@ -272,4 +270,49 @@ adata <- FindNeighbors(adata, dims = 1:20)
 adata <- FindClusters(adata, resolution = 0.5)
 
 adata <- RunUMAP(adata, dims=1:10)
+```
+
+## Option \#3: Counting with Signac
+
+If you want to analyze where reads mapped, either for RNA-seq counting
+for genes, or more generally, what the count is within a genomic region,
+you can use Signac for great flexibility in this task. Signac is
+designed to analyze single-cell ATAC-seq data, where the reads are
+stored in a specialized BED-file. You can use the command below to
+generate this file.
+
+Note one caveat: depending on chemistry, this workflow may not handle
+UMIs, and just report raw read counts. However, for quick and dirty
+operations this is typically enough.
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+
+### Generate fragments BED file suited for quantifying
+### reads/chromosome using Signac later 
+BascetBam2Fragments(
+  bascetRoot
+)
+```
+
+## Optional: TIRP to FASTQ
+
+If you want to feed the FASTQ data into another tool (or aligner), you
+can use the following command to convert TIRP to FASTQ. Each FASTQ read
+will contain the name of the cell
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+
+### Get reads in fastq format
+BascetMapTransform(
+  bascetRoot,
+  inputName="filtered",
+  outputName="asfq",
+  out_format="R1.fq.gz"
+)
 ```

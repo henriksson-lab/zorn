@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.29</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,33 +93,43 @@ accordingly.</p>
 <span><span class="va">bascet_runner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="cn">TRUE</span>, showScript<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="alignment">Alignment<a class="anchor" aria-label="anchor" href="#alignment"></a>
+<h2 id="indexing-a-genome">Indexing a genome<a class="anchor" aria-label="anchor" href="#indexing-a-genome"></a>
 </h2>
-<p>We will use BWA for alignment, which wants the data in FASTQ format.
-Here we assume that you use a single-cell WGS chemistry that produces
-paired reads, and direct Zorn to produce R1/R2 FASTQ files (only R1
-specified). We name the output Bascets “asfq”, taking as input the
-typical sharded reads:</p>
-<p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
-<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,   <span class="co">#default; can omit</span></span>
-<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,  <span class="co">###name parameter</span></span>
-<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
 <p>Before alignment, you need to prepare your reference by indexing it.
-You can do this using “bwa index” in the terminal; but you can also do
-it via Zorn. This assumes that you have a FASTA-file named all.fa (can
-also be gzipped):</p>
+Bascet wraps several aligners and use their native indices. If you want
+full access to all options, indices can be built the old-school way by
+accessing them like this:</p>
+<pre><code>#Access BWAMEM2 inside Bascet
+./bascet exttool bwa-mem2 index ...</code></pre>
+<p>But you can also perform the indexing via R. Here we assume that you
+have a genome FASTA-file “genome.fa” or “genome.fa.gz”:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Build a reference</span></span>
-<span><span class="fu">BascetIndexGenomeBWA</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co">#Build a reference for BWAMEM2</span></span>
+<span><span class="fu"><a href="../reference/BascetIndexGenomeBWAMEM2.html">BascetIndexGenomeBWAMEM2</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"/your_reference/all.fa"</span></span>
+<span>  <span class="st">"/your_reference/genome.fa"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p>If you have long-read data, Minimap2 is the better option</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Build a reference for Minimap2</span></span>
+<span><span class="fu"><a href="../reference/BascetIndexGenomeMinimap2.html">BascetIndexGenomeMinimap2</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  <span class="st">"/your_reference/genome.fa"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>You can also use STAR if you want to align RNA-seq data (and thus
+need a splice-aware aligner)</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Build a reference for STAR</span></span>
+<span><span class="fu"><a href="../reference/BascetIndexGenomeSTAR.html">BascetIndexGenomeSTAR</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  fastaFile<span class="op">=</span><span class="st">"/your_reference/genome.fa"</span>,</span>
+<span>  gtfFile<span class="op">=</span><span class="st">"/your_reference/genome.gtf"</span>  <span class="co">#note that GTF-file is needed here to inform STAR about splice junctions</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="alignment">Alignment<a class="anchor" aria-label="anchor" href="#alignment"></a>
+</h2>
 <p>You can now proceed with alignment using BWA. By default, this
 command outputs both unsorted and sorted BAM-files.</p>
 <ul>
@@ -128,47 +138,34 @@ regions, i.e., WGS species counting and RNA-seq</li>
 <li>The unsorted BAM-files are required for filtering of host reads</li>
 </ul>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Perform alignment</span></span>
 <span><span class="fu"><a href="../reference/BascetAlignToReference.html">BascetAlignToReference</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  useReference<span class="op">=</span><span class="st">"/your_reference/all.fa"</span>,</span>
-<span>  numLocalThreads<span class="op">=</span><span class="fl">10</span></span>
+<span>  aligner<span class="op">=</span><span class="st">"BWAMEM2"</span>,</span>
+<span>  useReference<span class="op">=</span><span class="st">"/your_reference/genome.fa"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>TODO: Filtering</p>
 </div>
 <div class="section level2">
 <h2 id="host-filtering-workflow">Host filtering workflow<a class="anchor" aria-label="anchor" href="#host-filtering-workflow"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>A common task in metagenomics is to filter out human reads. After you
+have aligned the reads, you can run the following command to only retain
+unmapped reads</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetFilterAlignment.html">BascetFilterAlignment</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  outputName<span class="op">=</span><span class="st">"filter_paired"</span>,</span>
-<span>  keep_mapped<span class="op">=</span><span class="cn">TRUE</span></span>
+<span>  inputName<span class="op">=</span><span class="st">"aligned_cell"</span>,</span>
+<span>  outputName<span class="op">=</span><span class="st">"aligned_cell_nohost"</span>,</span>
+<span>  keepMapped<span class="op">=</span><span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="option-1-counting-with-signac">Option #1: Counting with Signac<a class="anchor" aria-label="anchor" href="#option-1-counting-with-signac"></a>
-</h2>
-<p>If you want to analyze where reads mapped, either for RNA-seq
-counting for genes, or more generally, what the count is within a
-genomic region, you can use Signac for great flexibility in this task.
-Signac is designed to analyze single-cell ATAC-seq data, where the reads
-are stored in a specialized BED-file. You can use the command below to
-generate this file.</p>
-<p>Note one caveat: depending on chemistry, this workflow may not handle
-UMIs, and just report raw read counts. However, for quick and dirty
-operations this is typically enough.</p>
+<p>To get the output BAM file back in Bascet TIRP format, use the
+following command</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Generate fragments BED file suited for quantifying</span></span>
-<span><span class="co">### reads/chromosome using Signac later </span></span>
-<span><span class="fu"><a href="../reference/BascetBam2Fragments.html">BascetBam2Fragments</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<p><code>{r, eval=F, echo=T}#Convert aligned filtered BAM to TIRP BascetMapTransform(   bascetRoot,   inputName="aligned_cell_nohost",   outputName = "filtered_nohost",   outFormat="tirp.gz" )</code></p>
 </div>
 <div class="section level2">
-<h2 id="option-2-counting-chromosomes-species">Option #2: Counting chromosomes (species)<a class="anchor" aria-label="anchor" href="#option-2-counting-chromosomes-species"></a>
+<h2 id="option-1-counting-chromosomes-presenceabsence-of-species">Option #1: Counting chromosomes (presence/absence of species)<a class="anchor" aria-label="anchor" href="#option-1-counting-chromosomes-presenceabsence-of-species"></a>
 </h2>
 <p>A simplified scenario is when you just want to get the number of
 reads per chromosome. These counts can later be summarized on the levels
@@ -177,7 +174,7 @@ compare the alignment to an expected mock community, and thus just want
 to see how species mix together. The following command generates counts
 files:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Count reads per chromosome</span></span>
 <span><span class="fu"><a href="../reference/BascetCountChrom.html">BascetCountChrom</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span></span>
@@ -187,7 +184,7 @@ the <a href="https://anndata.readthedocs.io/en/stable/fileformat-prose.html" cla
 file format</a>. To load these, use the following command that loads the
 files and concatenates them into a single matrix. It can then be loaded
 into Seurat:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadBascetCountMatrix.html">ReadBascetCountMatrix</a></span><span class="op">(</span><span class="va">bascetRoot</span>,<span class="st">"chromcount"</span>, verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
@@ -199,14 +196,14 @@ into Seurat:</p>
 <p>Most likely, some cells will have to be discarded. Initially we
 recommend that you keep the cutoff low until you are better informed.
 You can then apply the cutoff as follows:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">keep_cells</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">$</span><span class="va">nCount_chrom_cnt</span> <span class="op">&gt;</span> <span class="fl">10000</span> <span class="co">#10k reads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">keep_cells</span><span class="op">)</span>                              <span class="co">#See how many cells pass this cutoff</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">[</span>,<span class="va">keep_cells</span><span class="op">]</span>                  <span class="co">#Reduce to sensible number</span></span></code></pre></div>
 <p>If you have a list of which chromosomes belong together, then you can
 furthermore sum them up to get species-level counts. mapSeq2strain
 should contain two columns: (todo) (TODO filter after instead)</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adata</span><span class="op">[[</span><span class="st">"species_cnt"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ChromToSpeciesCount.html">ChromToSpeciesCount</a></span><span class="op">(</span><span class="va">adata</span>, <span class="va">mapSeq2strain</span><span class="op">)</span>  </span>
 <span></span>
 <span><span class="co">#Optional: Figure out which species has most reads in which cell</span></span>
@@ -214,7 +211,7 @@ should contain two columns: (todo) (TODO filter after instead)</p>
 <span><span class="va">adata</span><span class="op">$</span><span class="va">species_aln</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cnt</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">cnt</span>, <span class="fl">2</span>, <span class="va">which.max</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>Knowing the species, you can generate a per-species kneeplot as
 follows:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"species_cnt"</span></span>
 <span><span class="fu"><a href="../reference/KneeplotPerSpecies.html">KneeplotPerSpecies</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></code></pre></div>
 <p>You can now proceed to generate a dimensional reduction in the form
@@ -222,8 +219,8 @@ of a UMAP. See the tutorials for <a href="https://satijalab.org/seurat/" class="
 summarize the required command below, where you can apply either an
 RNA-seq or ATAC-seq dimensional reduction depending on what you think is
 appropriate.</p>
-<p>ATAC-seq style analysis:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>ATAC-seq style analysis (recommended also for DNA-seq!):</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#ATAC-seq style analysis</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stuart-lab/signac" class="external-link">Signac</a></span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://stuartlab.org/signac/reference/RunTFIDF.html" class="external-link">RunTFIDF</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
@@ -232,7 +229,7 @@ appropriate.</p>
 <span><span class="fu"><a href="https://stuartlab.org/signac/reference/DepthCor.html" class="external-link">DepthCor</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">adata</span>, reduction <span class="op">=</span> <span class="st">'lsi'</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, reduction.name <span class="op">=</span> <span class="st">"chrom_umap"</span><span class="op">)</span>  </span></code></pre></div>
 <p>RNA-seq style analysis:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#RNA-seq style analysis</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">adata</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span>, nfeatures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span><span class="op">)</span></span>
@@ -241,20 +238,20 @@ appropriate.</p>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">adata</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, reduction.name <span class="op">=</span> <span class="st">"chrom_umap"</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, you can plot your UMAP. If you also extracted the dominant
 species column in your matrix, you can visualize it on top!</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">adata</span>, label <span class="op">=</span> <span class="cn">TRUE</span>, group.by <span class="op">=</span> <span class="st">"species_aln"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">xlab</span><span class="op">(</span><span class="st">"BWA1"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"BWA2"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="option-3-rna-seq-analysis-feature-counting">Option #3: RNA-seq analysis (feature counting)<a class="anchor" aria-label="anchor" href="#option-3-rna-seq-analysis-feature-counting"></a>
+<h2 id="option-2-feature-counting-rna-seq-analysis-etc">Option #2: Feature counting (RNA-seq analysis, etc)<a class="anchor" aria-label="anchor" href="#option-2-feature-counting-rna-seq-analysis-etc"></a>
 </h2>
 <p>For protocols such as RNA-seq, the aim is to get the number of reads
 per gene, per cell. After alignment and sorting of reads based on genome
 coordinate (default setting), you can overlay the reads with gene
 coordinates from a GTF or GFF file (both are supported). The following
 command performs this operation:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetCountFeature.html">BascetCountFeature</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  gffFile <span class="op">=</span> <span class="st">"/my/genome.gtf.gz"</span>,</span>
@@ -268,7 +265,7 @@ if nothing specified. By default, the rows having “gene” as the feature
 description will</p>
 <p>After the features (genes) have been counted, you can load them into
 Seurat:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadBascetCountMatrix.html">ReadBascetCountMatrix</a></span><span class="op">(</span><span class="va">bascetRoot</span>,<span class="st">"featurecount"</span>, verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
@@ -277,7 +274,7 @@ Seurat:</p>
 <p>From here, you can follow an <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial" class="external-link">RNA-seq
 tutorial for Seurat</a>. But for the impatient, this is some minimal
 example code to get your first UMAP:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">adata</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
@@ -288,6 +285,42 @@ example code to get your first UMAP:</p>
 <span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">adata</span>, dims<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 </div>
+<div class="section level2">
+<h2 id="option-3-counting-with-signac">Option #3: Counting with Signac<a class="anchor" aria-label="anchor" href="#option-3-counting-with-signac"></a>
+</h2>
+<p>If you want to analyze where reads mapped, either for RNA-seq
+counting for genes, or more generally, what the count is within a
+genomic region, you can use Signac for great flexibility in this task.
+Signac is designed to analyze single-cell ATAC-seq data, where the reads
+are stored in a specialized BED-file. You can use the command below to
+generate this file.</p>
+<p>Note one caveat: depending on chemistry, this workflow may not handle
+UMIs, and just report raw read counts. However, for quick and dirty
+operations this is typically enough.</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Generate fragments BED file suited for quantifying</span></span>
+<span><span class="co">### reads/chromosome using Signac later </span></span>
+<span><span class="fu"><a href="../reference/BascetBam2Fragments.html">BascetBam2Fragments</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="optional-tirp-to-fastq">Optional: TIRP to FASTQ<a class="anchor" aria-label="anchor" href="#optional-tirp-to-fastq"></a>
+</h2>
+<p>If you want to feed the FASTQ data into another tool (or aligner),
+you can use the following command to convert TIRP to FASTQ. Each FASTQ
+read will contain the name of the cell</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
+<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,</span>
+<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
+<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
@@ -295,7 +328,7 @@ example code to get your first UMAP:</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Johan Henriksson, Laura Carroll, Hadrien Gourlé, Julian Dicken, HenLab, CompMicroLab, and Collaborators.</p>
+  <p>Developed by Julian Dicken, Hadrien Gourlé, Laura Carroll, Johan Henriksson, HenLab, CompMicroLab, and Collaborators.</p>
 </div>
 
 <div class="pkgdown-footer-right">
