@@ -136,7 +136,8 @@ BascetIndexGenomeBowtie2 <- function(
 
 
 ###############################################
-#' Index a genome using STAR such that it can be used for alignment
+#' Index a genome using STAR such that it can be used for alignment.
+#' Note that Bascet STAR (star-rs) automatically detects if GTF and FASTA are gzipped
 #' 
 #' @param fastaFile Name of FASTA file holding genome sequence
 #' @param gtfFile GFF file holding genome annotation
@@ -639,20 +640,6 @@ BascetAlignToReference <- function(
 
 
 
-
-
-
-#STAR on parse Could not parse UMI from read name
-
-#
-# singularity run ~/mystore//bascet.sif   bash -c " STAR --genomeDir /home/m/mahogny/mystore/dataset/ref_human_virusas/GRCh38 --readFilesIn ${files_in_r1[$TASK_ID]} ${files_in_r2[$TASK_ID]} --runThreadN 10 --outSAMtype SAM --outSAMunmapped Within --outSAMattributes Standard |  bascet pipe-sam-add-tags | samtools view -b -o ${files_out_unsorted[$TASK_ID]} "
-# singularity run ~/mystore//bascet.sif   bash -c " STAR --genomeDir /home/m/mahogny/mystore/dataset/ref_human_virusas/GRCh38 --readFilesIn fastp.1.R1.fq.gz fastp.1.R2.fq.gz --runThreadN 10 --outSAMtype SAM --outSAMunmapped Within --outSAMattributes Standard --outStd SAM > foo.sam "
-
-
-
-
-
-
 ###############################################
 #' Take aligned BAM file and produce Fragments.tsv.gz, compatible with Signac ATAC-seq style analysis
 #' 
@@ -895,7 +882,6 @@ FragmentCountsPerChrom <- function(
   
   #Figure out where the fragment file is
   fr <- Fragments(chromAssay)[[1]]
-  #fr@cells ## also possible!
   
   #Get the name of chromosomes
   all_seqid <- TabixGetFragmentsSeqs(fr@path, bascetInstance)
@@ -933,27 +919,22 @@ FragmentCountsPerChromAssay <- function(
     inputName="fragments.1.tsv.gz" ### TODO, detect, merge all of them
 ) {
   #Check input arguments 
-  #TODO
+  stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
+
+  stopifnot(is.character(inputName), length(inputName) == 1)  ##### need a better test in the future!
+  stopifnot(!is.na(inputName), nzchar(inputName)) ##### need a better test in the future!
   
   fragpath <- file.path(bascetRoot,inputName)
+  stopifnot(file.exists(fragpath))
+
   chromAssay <- FragmentsToSignac(fragpath)
   chromAssay <- FragmentCountsPerChrom(chromAssay)
-  
-  #Subset; needed?
-  #includeCells <- sort(intersect(colnames(adata), colnames(chromAssay)))
-  #chromAssay <- chromAssay[,includeCells]
-  #adata <- adata[,includeCells]
   
   chromAssay_hack <- CreateAssay5Object(counts = chromAssay)
   rownames(chromAssay_hack) <- stringr::str_split_i(rownames(chromAssay_hack),"-1-",1)  #evil hack, fragile
 
-  #Figure out which chromosome dominates  
-  #chromAssay_hack@meta.data$max_chrom <- rownames(chromAssay_hack$counts)[apply(chromAssay_hack$counts, 2, which.max)]
-  
   chromAssay_hack
-  #obj <- CreateAssay5Object(counts = chromAssay_hack)
-  #obj$max_chrom <- max_chrom
-  #obj
 }
 
 
@@ -974,9 +955,14 @@ ChromToSpeciesCount <- function(
     mapSeq2strain
 ){
   #Check input arguments 
-  #TODO
+  stopifnot(inherits(adata, "Seurat"))
+  stopifnot(is.data.frame(mapSeq2strain))
+  stopifnot(all(c("id", "strain") %in% colnames(mapSeq2strain)))
   
   mat_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  stopifnot(!is.null(mat_cnt))
+  stopifnot(nrow(mat_cnt) > 0, ncol(mat_cnt) > 0)
+  stopifnot(any(mapSeq2strain$id %in% rownames(mat_cnt)))
   
   unique_strains <- unique(mapSeq2strain$strain)
   strain_cnt <- matrix(NA, ncol=ncol(mat_cnt), nrow=length(unique_strains))
@@ -1014,7 +1000,10 @@ CountGrangeFeatures <- function(
     grangeGene
 ){
   #Check input arguments 
-  #TODO
+  stopifnot(inherits(adata, "Seurat"))
+  stopifnot(length(Fragments(adata)) > 0)
+  stopifnot(inherits(grangeGene, "GRanges"))
+  stopifnot("Name" %in% colnames(S4Vectors::mcols(grangeGene)))
   
   gene_counts <- FeatureMatrix(
     fragments = Fragments(adata),

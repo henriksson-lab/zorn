@@ -139,7 +139,8 @@ MapListAsDataFrame <- function(
 #'
 #' @param mylist Named list of data.frames, keyed by cell ID
 #'
-#' @return TODO
+#' @return A data.frame containing the row-bound non-empty entries of `mylist`,
+#'   with a `cellID` column identifying the source list element.
 #' @export
 MapCellMultiListAsDataFrame <- function(mylist){
   #check arguments

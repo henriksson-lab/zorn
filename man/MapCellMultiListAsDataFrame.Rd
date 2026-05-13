@@ -10,7 +10,8 @@ MapCellMultiListAsDataFrame(mylist)
 \item{mylist}{Named list of data.frames, keyed by cell ID}
 }
 \value{
-TODO
+A data.frame containing the row-bound non-empty entries of \code{mylist},
+with a \code{cellID} column identifying the source list element.
 }
 \description{
 This one puts cellID as a new column

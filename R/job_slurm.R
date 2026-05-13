@@ -27,7 +27,6 @@ setClass("SlurmRunner", slots=list(
 setClass("SlurmJob", slots=list(
   pid="character", 
   cmd="character", 
-  logfile="character",
   jobname="character",
   arraysize="numeric"
 )
@@ -44,8 +43,7 @@ setClass("SlurmJob", slots=list(
   #   paste0(
   #     "PID:",object@pid, "  ",
   #     "array_size:",object@arraysize, "  ",
-  #     "cmd:",object@cmd, "  ",
-  #     "logfile:",object@logfile
+  #     "cmd:",object@cmd
   #   )
   # )
 #})
@@ -275,7 +273,6 @@ setMethod(
         "SlurmJob",
         pid=pid,
         cmd=cmd, 
-        logfile="todo",
         jobname=jobname,
         arraysize=arraysize
       )
@@ -475,9 +472,7 @@ setMethod(
   f = "JobLog",
   signature ="SlurmJob",
   definition = function(job) {
-    #read this file
-    
-    job@logfile
+    invisible()
   }
 )
 
@@ -499,7 +494,6 @@ createSlurmJobFromExisting <- function(pid, arraysize) {
     "SlurmJob",
     pid=as.character(pid),
     cmd="prevcmd", 
-    logfile="todo",
     jobname="prevjob",
     arraysize=arraysize
   )

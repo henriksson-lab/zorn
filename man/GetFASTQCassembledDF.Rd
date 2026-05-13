@@ -14,7 +14,8 @@ GetFASTQCassembledDF(aggrFastqData, section, readnum = c(1, 2))
 \item{readnum}{1 or 2, for R1 and R2}
 }
 \value{
-TODO
+A data.frame containing the requested FASTQC section for the selected
+read across all cells, with a \code{cellID} column identifying each cell.
 }
 \description{
 Get a data frame for one type of FASTQ statistics across across all cells

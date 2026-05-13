@@ -39,9 +39,7 @@ BascetRunCountsketch(
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 
-\item{bascetInstance}{A Bascet instance
-
-TODO produce a binary file format instead; gather files upon loading?}
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings

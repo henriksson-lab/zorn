@@ -1,10 +1,18 @@
 ^\.github$
+(^|/)\.agents$
+(^|/)\.claude$
+(^|/)\.codex$
+(^|/)\.jobdata$
 ^_pkgdown\.yml$
 ^bascet\.tar$
+^build\.R$
 ^docs
 ^docs$
 ^fastumap
 ^file
+^index\.md$
+^load_zorn\.R$
+^loadmod_hpc2n\.sh$
 ^nameNode.sqlite$
 ^names.dmp$
 ^nodes.dmp$
@@ -17,6 +25,7 @@
 ^test_aggr
 ^testdata$
 ^tutorial
+^read_json\.R$
 ^vignettes
 ^wip
 ^Zorn_

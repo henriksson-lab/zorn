@@ -17,8 +17,6 @@
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #' 
-#' TODO produce a binary file format instead; gather files upon loading?
-#' 
 #' @return A job to be executed, or being executed, depending on runner settings
 #' @export
 BascetRunCountsketch <- function( 
@@ -46,7 +44,7 @@ BascetRunCountsketch <- function(
   bascetRoot <- normalizeBascetRoot(bascetRoot)
   stopifnot(is.character(outputName))
   stopifnot(is.character(inputName))
-  #includeCells todo
+  stopifnot(is.valid.listcells(includeCells))
   stopifnot(is.numeric(kmerSize) && kmerSize == as.integer(kmerSize) && kmerSize > 0)
   stopifnot(is.numeric(sketchSize) && sketchSize == as.integer(sketchSize) && sketchSize > 0 && bitwAnd(sketchSize, sketchSize - 1) == 0)
 

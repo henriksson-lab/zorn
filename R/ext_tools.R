@@ -578,7 +578,8 @@ ShowFASTQCforCell <- function(
 #' @param section Name of the FASTQC section to extract (string)
 #' @param readnum 1 or 2, for R1 and R2
 #'
-#' @return TODO
+#' @return A data.frame containing the requested FASTQC section for the selected
+#'   read across all cells, with a `cellID` column identifying each cell.
 #' @export
 GetFASTQCassembledDF <- function(
     aggrFastqData,

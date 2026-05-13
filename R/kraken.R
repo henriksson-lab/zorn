@@ -1,57 +1,4 @@
 
-
-###############################################
-#'
-#' TODO is this function used? export
-#'
-#' @param adata A Seurat object with the DefaultAssay having counts per species
-#' 
-#' @return A ggplot object
-#' @noRd
-SpeciesCorrMatrix <- function(
-    adata
-){
-  #check arguments
-  #TODO
-  
-  cnt <- adata@assays[[DefaultAssay(adata)]]$counts
-  cnt <- cnt[rowSums(cnt)>0,]
-  
-  list_species <- rownames(cnt)
-  print(list_species)
-  
-  all_comp <- vector("list", length(list_species) * (length(list_species) - 1))
-  idx <- 0L
-  for(i in seq_along(list_species)){
-    for(j in seq_along(list_species)){
-      if(i!=j) {
-        df <- data.frame(
-          x=factor(cnt[i,]>median(cnt[i,]), levels=c("TRUE","FALSE")),
-          y=factor(cnt[j,]>median(cnt[j,]), levels=c("TRUE","FALSE"))
-        )
-
-        ft <- fisher.test(table(df))
-
-        idx <- idx + 1L
-        all_comp[[idx]] <- data.frame(
-          i=list_species[i],
-          j=list_species[j],
-          p=ft$p.value
-        )
-      }
-    }
-  }
-  all_comp <- do.call(rbind, all_comp)
-  ggplot(all_comp, aes(i,j,fill = -log(p))) + geom_tile() + theme_bw()
-  #all_comp
-  #egg::ggarrange(plots = all_plots, nrow = nrow(cnt))  
-}
-
-
-
-
-
-
 ###############################################
 #' Run KRAKEN2 for each cell.
 #' Then produce a count matrix of taxonomy IDs from the output
@@ -240,10 +187,13 @@ KrakenSpeciesDistribution <- function(
     useAssay="kraken"
 ){
   #Check arguments 
-  #adata TODO
-  stopifnot(is.character(useAssay))
+  stopifnot(inherits(adata, "Seurat"))
+  stopifnot(is.character(useAssay), length(useAssay) == 1, !is.na(useAssay))
+  stopifnot(useAssay %in% names(adata@assays))
 
   strain_cnt <- adata@assays[[useAssay]]$counts
+  stopifnot(!is.null(strain_cnt))
+  stopifnot(nrow(strain_cnt) > 0, ncol(strain_cnt) > 0)
   df <- data.frame(
     taxid=rownames(strain_cnt),
     cnt=rowSums(strain_cnt)
@@ -259,65 +209,6 @@ KrakenSpeciesDistribution <- function(
     ylab("Kraken Feature count")
 }
 
-
-
-###############################################
-#' Take a KRAKEN2 count matrix where the column is the taxonomyID.
-#' Convert to a matrix where the columns instead are the names of each taxonomy.
-#' Unused taxonomyID columns will not be kept
-#' 
-#' TODO: should append the name on the axis
-#' 
-#' TODO is this used
-#' 
-#' @param mat description
-#' @param keepSpeciesOnly description
-#' 
-#' @return A named count matrix
-#' @export
-SetTaxonomyNamesFeatures <- function(
-    mat, 
-    keepSpeciesOnly=TRUE
-){
-  #check arguments
-  #TODO mat
-  stopifnot(is.logical(keepSpeciesOnly))
-  
-  #TODO can check if taxid_ is present for this function
-  
-  use_row <- as.integer(stringr::str_remove_all(colnames(mat), "taxid_"))
-
-  taxonomizr::prepareDatabase(getAccessions=FALSE)
-  taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(
-    use_row,
-    desiredTaxa = c("phylum", "class", "order", "family", "genus","species")
-  ))
-  taxid_class_per_cell$taxid <- paste0("taxid_", use_row)
-
-  if(keepSpeciesOnly) {
-    taxid_class_per_cell$use_row <- use_row
-    taxid_class_per_cell <- taxid_class_per_cell[!is.na(taxid_class_per_cell$species),]
-    
-    compressed_mat <- mat[, taxid_class_per_cell$taxid]
-    colnames(compressed_mat) <- taxid_class_per_cell$species
-    #compressed_mat    
-
-  } else {
-    #Find the best name to use
-    taxid_class_per_cell$name <- taxid_class_per_cell$species
-    torep <- is.na(taxid_class_per_cell$name)
-    taxid_class_per_cell$name[torep] <- taxid_class_per_cell$genus[torep]  
-    torep <- is.na(taxid_class_per_cell$name)
-    taxid_class_per_cell$name[torep] <- "NA"
-    
-    #use_name <- paste0(use_row,"-",taxid_class_per_cell$name)
-    
-    compressed_mat <- mat[, taxid_class_per_cell$taxid]
-    colnames(compressed_mat) <- paste0(use_row,"-",taxid_class_per_cell$name)
-  }
-    
-  compressed_mat
-}
 
 
 
@@ -340,12 +231,15 @@ KrakenKneePlot <- function(
     includeTotal=TRUE
 ) {
   #check arguments
-  #TODO adata
+  stopifnot(inherits(adata, "Seurat"))
+  stopifnot("taxid" %in% colnames(adata@meta.data))
   groupby <- match.arg(groupby)
   stopifnot(is.positive.integer(showNumSpecies))
-  stopifnot(is.logical(sortByName))
+  stopifnot(is.logical(sortByName), length(sortByName) == 1, !is.na(sortByName))
+  stopifnot(is.logical(includeTotal), length(includeTotal) == 1, !is.na(includeTotal))
   
   use_row <- as.integer(stringr::str_remove_all(adata$taxid, "taxid-"))   ##really needed??
+  stopifnot(!any(is.na(use_row)))
   
   taxonomizr::prepareDatabase(getAccessions=FALSE)
   taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(
@@ -436,11 +330,3 @@ KrakenKneePlot <- function(
 
 
 
-
-if(FALSE){
-  taxonomizr::getTaxonomy(
-    0,
-    desiredTaxa = c(
-      "phylum", "class", "order", "family", "genus","species")
-  )
-}

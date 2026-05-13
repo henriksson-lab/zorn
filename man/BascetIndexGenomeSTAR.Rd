@@ -2,7 +2,8 @@
 % Please edit documentation in R/refgenome.R
 \name{BascetIndexGenomeSTAR}
 \alias{BascetIndexGenomeSTAR}
-\title{Index a genome using STAR such that it can be used for alignment}
+\title{Index a genome using STAR such that it can be used for alignment.
+Note that Bascet STAR (star-rs) automatically detects if GTF and FASTA are gzipped}
 \usage{
 BascetIndexGenomeSTAR(
   fastaFile,
@@ -30,5 +31,6 @@ BascetIndexGenomeSTAR(
 A job to be executed, or being executed, depending on runner settings
 }
 \description{
-Index a genome using STAR such that it can be used for alignment
+Index a genome using STAR such that it can be used for alignment.
+Note that Bascet STAR (star-rs) automatically detects if GTF and FASTA are gzipped
 }

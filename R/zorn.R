@@ -192,7 +192,7 @@ is.valid.memsize <- function(x) {
 #' @noRd
 is.valid.threadcount <- function(x) {
   #Note: not calling is.positive.integer to ensure we get a proper error message
-  round(x)==x & x>0
+  is.numeric(x) && length(x) == 1 && !is.na(x) && is.finite(x) && round(x) == x && x > 0
 }
 
 ###############################################
@@ -200,7 +200,7 @@ is.valid.threadcount <- function(x) {
 #' @param x A numeric value
 #' @noRd
 is.positive.integer <- function(x) {
-  round(x)==x & x>0
+  is.numeric(x) && length(x) == 1 && !is.na(x) && is.finite(x) && round(x) == x && x > 0
 }
 
 ###############################################
@@ -217,7 +217,12 @@ is.integer.like <- function(x) {
 #' @noRd
 is.valid.shardname <- function(x) {
   # can expand upon this
-  is.character(x) && !stringr::str_detect(x,stringr::fixed("."))
+  is.character(x) &&
+    length(x) == 1 &&
+    !is.na(x) &&
+    nzchar(x) &&
+    !stringr::str_detect(x, "[/\\\\]") &&
+    !stringr::str_detect(x, stringr::fixed("."))
 }
 
 
@@ -226,7 +231,7 @@ is.valid.shardname <- function(x) {
 #' @param x A character vector of cell names, or NULL
 #' @noRd
 is.valid.listcells <- function(x) {
-  is.null(x) || is.character(x)
+  is.null(x) || (is.character(x) && !any(is.na(x)))
 }
 
 
@@ -424,7 +429,9 @@ BascetMapTransform <- function(
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
   
-  #TODO check outformat
+  stopifnot(is.character(outFormat), length(outFormat) == 1)
+  stopifnot(!is.na(outFormat), nzchar(outFormat))
+  stopifnot(!grepl("[/\\\\[:space:]]", outFormat))
 
   #Figure out input and output file names  
   inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
@@ -579,13 +586,16 @@ KneeplotPerSpecies <- function(
     maxSpecies=NULL
 ) {
   #check arguments
-  #TODO
+  stopifnot(inherits(adata, "Seurat"))
+  stopifnot(is.null(maxSpecies) || is.positive.integer(maxSpecies))
 
   strain_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
+  stopifnot(!is.null(strain_cnt))
+  stopifnot(nrow(strain_cnt) > 0, ncol(strain_cnt) > 0)
   
   if(!is.null(maxSpecies)){
     strain_cnt <- strain_cnt[order(rowSums(strain_cnt), decreasing = TRUE),]
-    strain_cnt <- strain_cnt[1:min(nrow(strain_cnt), maxSpecies),]
+    strain_cnt <- strain_cnt[1:min(nrow(strain_cnt), maxSpecies),,drop=FALSE]
   }
   
   allknee <- list()
@@ -627,11 +637,13 @@ BarnyardPlotMatrix <- function(
     adata
 ){
   #check arguments
-  #TODO
-  
+  stopifnot(inherits(adata, "Seurat"))
   
   cnt <- adata@assays[[DefaultAssay(adata)]]$counts
-  cnt <- cnt[rowSums(cnt)>0,]  ##Only consider species we have
+  stopifnot(!is.null(cnt))
+  stopifnot(nrow(cnt) > 0, ncol(cnt) > 0)
+  cnt <- cnt[rowSums(cnt)>0,,drop=FALSE]  ##Only consider species we have
+  stopifnot(nrow(cnt) >= 2)
   list_species <- rownames(cnt)#[1:5] ######## Just do a few!
   
   all_plots <- list()
@@ -765,8 +777,5 @@ BascetRunFASTP <- function(
     new_no_job()
   }
 }
-
-
-
 
 
