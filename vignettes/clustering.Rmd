@@ -8,6 +8,9 @@ output:
 ---
 
 
+################ this section is disabled for now#
+
+First set up Zorn/Bascet according to the [install instructions](install.html). This tutorial assumes that you have [debarcoded the reads](debarcoding.html).
 
 
 

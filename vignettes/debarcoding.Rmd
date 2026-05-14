@@ -7,16 +7,24 @@ output:
   pdf_document: default
 ---
 
-First set up your Zorn/Bascet working directory as before. If you wish to run these steps on a SLURM cluster, see separate vignette and adapt accordingly.
+
+First set up Zorn/Bascet according to the [install instructions](install.html), e.g.:
+
 
 ```{r, eval=F, echo=T}
 library(Zorn)
 bascetRunner.default <- LocalRunner()
-bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
-bascetRoot <- "/home/yours/an_empty_workdirectory"
+bascetInstance.default <- getBascetBinary()
 ```
 
-The first step in data processing is take the raw FASTQ files and identify which read belongs to which cell. Zorn can automatically figure out which files to use for what:
+Bascet assumes that you have a "workspace" where all procesed files will land. We call this the bascetRoot. Set it up first:
+
+```{r, eval=F, echo=T}
+bascetRoot <- file.path("/home/yours/an_empty_workdirectory")
+```
+
+
+The first data processing step is to read the raw FASTQ files and identify which read belongs to which cell. Zorn can automatically figure out which files to use for what:
 
 ```{r, eval=F, echo=T}
 rawmeta <- DetectRawFileMeta("/home/yours/directory_with_raw_fastq")
@@ -35,15 +43,15 @@ If you have files that are awkwardly named for some reason, simply produce a dat
 
 You can now parse the reads the figure out which cell they belong to, and any UMI information. The only thing you additionally need to specify is what type of data you have, where "atrandi_wgs" is for the Atrandi SPC-based MDA protocol for WGS.
 
-> ⚠️ Note that Bascet performs trimming of reads during the Debarcode stage. This includes: 
-- For RNA-seq: PolyA trimming and trimming at adapters 
+> ⚠️ Note that Bascet performs trimming of reads during the Debarcode stage. This includes:
+- For RNA-seq: PolyA trimming and trimming at adapters
 - For Atrandi WGS: A specialized algorithm to detect overlap and remove adapters accordingly Regular users should thus not need to worry about this
 
 [(SLURM-compatible step)](slurm.html)
 
 ```{r, eval=F, echo=T}
 BascetDebarcode(
-    bascetRoot, 
+    bascetRoot,
     rawmeta,
     chemistry="atrandi_wgs"
 )
@@ -68,9 +76,9 @@ DebarcodedKneePlot(
 )
 ```
 
-This is just a histogram of reads per barcode. (downsampling for speed causes cells of low indices to not be shown, worry not!) The diagram however tells you 
+This is just a histogram of reads per barcode. (downsampling for speed causes cells of low indices to not be shown, worry not!) The diagram however tells you
 - how many cells you have
-- how much free-floating RNA/DNA you have in your background (empty droplets/SPCs) 
+- how much free-floating RNA/DNA you have in your background (empty droplets/SPCs)
 - how distinct cells are from background
 
 An example kneeplot for Parse biosciences RNA-seq data is shown below. You want to include slightly more cells than the knee indicates. For Atrandi microbial WGS data, knee plots cannot be trusted, and you may want a fair bit more to account for lysis differences (see our manuscript). Including too many cells will slow down later steps but you can reduce the number of cells at any point. Adjust the cutoff using the previously set minQuantile parameter.

@@ -1,5 +1,5 @@
 ---
-title: "KRAKEN2 "
+title: "KRAKEN2"
 output:
   html_document:
     theme: united
@@ -8,14 +8,7 @@ output:
 ---
 
 
-First set up your Zorn/Bascet working directory as before. If you wish to run
-these steps on a SLURM cluster, see separate vignette and adapt accordingly.
-
-```{r, eval=F, echo=T}
-library(Zorn)
-bascetRunner.default <- LocalRunner()
-bascetRoot <- "/home/yours/an_empty_workdirectory"
-```
+First set up Zorn/Bascet according to the [install instructions](install.html). This tutorial assumes that you have [debarcoded the reads](debarcoding.html).
 
 # Classifying reads with KRAKEN2
 
