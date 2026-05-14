@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>KRAKEN2  • Zorn</title>
+<title>KRAKEN2 • Zorn</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="KRAKEN2 ">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="KRAKEN2">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -48,7 +48,6 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
-    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -76,7 +75,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>KRAKEN2 </h1>
+      <h1>KRAKEN2</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/kraken.Rmd" class="external-link"><code>vignettes/kraken.Rmd</code></a></small>
@@ -85,13 +84,8 @@
 
     
     
-<p>First set up your Zorn/Bascet working directory as before. If you
-wish to run these steps on a SLURM cluster, see separate vignette and
-adapt accordingly.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
+<p>First set up Zorn/Bascet according to the <a href="install.html">install instructions</a>. This tutorial assumes that
+you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
 <div class="section level2">
 <h2 id="classifying-reads-with-kraken2">Classifying reads with KRAKEN2<a class="anchor" aria-label="anchor" href="#classifying-reads-with-kraken2"></a>
 </h2>
@@ -99,7 +93,7 @@ adapt accordingly.</p>
 <p>If you want a small one then consider standard-8. Unzip it in a
 directory. You can then run KRAKEN2 like this:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Run Kraken on each cell. Produce a count matrix of taxonomy features</span></span>
 <span><span class="fu"><a href="../reference/BascetRunKraken.html">BascetRunKraken</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
@@ -118,14 +112,14 @@ the <a href="https://anndata.readthedocs.io/en/stable/fileformat-prose.html" cla
 file format</a>. To load these, use the following command that loads the
 files and concatenates them into a single matrix. It can then be loaded
 into Seurat:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadBascetCountMatrix.html">ReadBascetCountMatrix</a></span><span class="op">(</span><span class="va">bascetRoot</span>,<span class="st">"kraken"</span>, verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">mat</span>, project <span class="op">=</span> <span class="st">"proj"</span>, min.cells <span class="op">=</span> <span class="fl">0</span>, min.features <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 <p>You then most likely want to know which cell is which species. Zorn
 can annotate species by simply picking the dominant species, phylum and
 group for each cell:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Look up taxonomy consensus data given taxonomyID counts for each cell</span></span>
 <span><span class="va">kraken_taxid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/KrakenFindConsensusTaxonomy.html">KrakenFindConsensusTaxonomy</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span></span>
 <span></span>
@@ -135,7 +129,7 @@ group for each cell:</p>
 investigate a kneeplot of each species. As different species are
 differently hard to lyse, you will likely have phylum-specific kneeplot
 patterns.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">showNumSpecies</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
 <span><span class="fu"><a href="../reference/KrakenKneePlot.html">KrakenKneePlot</a></span><span class="op">(</span><span class="va">adata</span>, groupby <span class="op">=</span> <span class="st">"phylum"</span>, showNumSpecies<span class="op">=</span><span class="va">showNumSpecies</span><span class="op">)</span></span></code></pre></div>
 <p>You can then proceed to filter out cells with few reads. Note that a
@@ -144,7 +138,7 @@ DNA (due to different genome sizes &amp; lysis biases); the best way to
 handle this is an open research question (e.g. you could also consider
 different cutoffs for different species). This is however the most basic
 filtering you can perform:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">keep_cells</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">$</span><span class="va">nCount_RNA</span> <span class="op">&gt;</span> <span class="fl">10000</span> <span class="co">#10k reads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">keep_cells</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">[</span>,<span class="va">keep_cells</span><span class="op">]</span></span></code></pre></div>
@@ -154,7 +148,7 @@ summarize the required command below, where you can apply either an
 RNA-seq or ATAC-seq dimensional reduction depending on what you think is
 appropriate.</p>
 <p>ATAC-seq style analysis</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#ATAC-seq style analysis</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stuart-lab/signac" class="external-link">Signac</a></span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://stuartlab.org/signac/reference/RunTFIDF.html" class="external-link">RunTFIDF</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
@@ -163,16 +157,16 @@ appropriate.</p>
 <span><span class="fu"><a href="https://stuartlab.org/signac/reference/DepthCor.html" class="external-link">DepthCor</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">adata</span>, reduction <span class="op">=</span> <span class="st">'lsi'</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, reduction.name <span class="op">=</span> <span class="st">"kraken_umap"</span><span class="op">)</span>  </span></code></pre></div>
 <p>RNA-seq style analysis</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">#RNA-seq style analysis</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">NormalizeData</span>(adata)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">FindVariableFeatures</span>(adata, <span class="at">selection.method =</span> <span class="st">"vst"</span>, <span class="at">nfeatures =</span> <span class="dv">2000</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">ScaleData</span>(adata, <span class="at">features =</span> <span class="fu">rownames</span>(adata))</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">RunPCA</span>(adata, <span class="at">features =</span> <span class="fu">VariableFeatures</span>(<span class="at">object =</span> adata))</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(adata, <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="at">reduction.name =</span> <span class="st">"kraken_umap"</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#RNA-seq style analysis</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">NormalizeData</span>(adata)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">FindVariableFeatures</span>(adata, <span class="at">selection.method =</span> <span class="st">"vst"</span>, <span class="at">nfeatures =</span> <span class="dv">2000</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">ScaleData</span>(adata, <span class="at">features =</span> <span class="fu">rownames</span>(adata))</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">RunPCA</span>(adata, <span class="at">features =</span> <span class="fu">VariableFeatures</span>(<span class="at">object =</span> adata))</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>adata <span class="ot">&lt;-</span> <span class="fu">RunUMAP</span>(adata, <span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="at">reduction.name =</span> <span class="st">"kraken_umap"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
 <p>You can now plot a UMAP with your cells! Here colored by genus, but
 you can also try other levels of annotation:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">adata</span>, label <span class="op">=</span> <span class="cn">TRUE</span>, group.by <span class="op">=</span> <span class="st">"genus"</span>, reduction <span class="op">=</span> <span class="st">"kraken_umap"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://satijalab.org/seurat/reference/SeuratTheme.html" class="external-link">NoLegend</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">xlab</span><span class="op">(</span><span class="st">"KRAKEN1"</span><span class="op">)</span> <span class="op">+</span> </span>

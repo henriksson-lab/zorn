@@ -48,7 +48,6 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
-    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -85,8 +84,9 @@
 
     
     
-<p>First set up your Zorn/Bascet work directory as before. Assembly of
-each cell’s genome can then be performed using SKESA:</p>
+<p>First set up Zorn/Bascet according to the <a href="install.html">install instructions</a>. This tutorial assumes that
+you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
+<p>Assembly of each cell’s genome can then be performed using SKESA:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Assemble all genomes</span></span>
@@ -141,6 +141,39 @@ ZIP:</p>
 </h2>
 <p>To assess assemblies, have a look at our <a href="map_scripts.html">Map scripts</a> vignette, which shows how to run
 per-cell tools (e.g. QUAST for assembly QC).</p>
+</div>
+<div class="section level2">
+<h2 id="coassembly">Coassembly<a class="anchor" aria-label="anchor" href="#coassembly"></a>
+</h2>
+<div id="todo" class="section level60">
+<p class="heading">TODO</p>
+<p>If you have cells with highly similar genomes, you might be able to
+generate “coassemblies” - consensus assemblies using reads from multiple
+similar cells.</p>
+<p>To do this, simply extract the debarcoded reads from the cells of
+interest. There are many ways of picking them, where one method is to
+use the clustering function in Seurat. But you can use any method you
+wish to come up with a list of cell names</p>
+<p>First set up your Zorn/Bascet work directory as before.</p>
+<p>Then this is a very random method to extract cells after clustering
+(<a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial.html" class="external-link">see
+this Seurat tutorial first</a>). It is an open research problem how to
+best carry this out:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">### Get cell names</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>cell_names <span class="ot">&lt;-</span> <span class="fu">rownames</span>(adata[adata<span class="sc">$</span><span class="at">cluster_id=</span><span class="st">"0"</span>,])</span></code></pre></div>
+<p>Next extract a FASTQ with reads:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Extract reads TODO</span></span>
+<span><span class="fu">Bascet....A</span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
+<span>  outputName <span class="op">=</span> <span class="st">"contigs"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>And finally, run <a href="https://github.com/ncbi/SKESA" class="external-link">SKESA</a> or
+your favourite software to assemble the contigs: (in BASH)</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#SKESA etc</span></span></code></pre></div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -48,7 +48,6 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
-    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -89,18 +88,20 @@
 <h2 id="compiling-bascet">Compiling Bascet<a class="anchor" aria-label="anchor" href="#compiling-bascet"></a>
 </h2>
 <p>Bascet is located <a href="https://github.com/henriksson-lab/bascet" class="external-link">in a separate Github
-repository</a></p>
-<p>You first need to <a href="https://rustup.rs" class="external-link">download rust</a></p>
-<p>To download Bascet and get the Rust dependencies:</p>
-<pre class="console"><code>git clone https://github.com/henriksson-lab/bascet.git   
-#or: git clone git@github.com:henriksson-lab/bascet.git   
-
-cd bascet
+repository</a>.</p>
+<p>First install Rust from <a href="https://rust-lang.org/tools/install/" class="external-link">rust-lang.org</a>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--proto</span> <span class="st">'=https'</span> <span class="at">--tlsv1.2</span> <span class="at">-sSf</span> https://sh.rustup.rs <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div>
+<p>Then download bascet</p>
+<pre class="console"><code>git clone https://github.com/henriksson-lab/bascet.git</code></pre>
+<p>and install what is needed for a nightly build:</p>
+<pre class="console"><code>cd bascet
 make install_rust  #this will install rust nightly build -- only need to do this once</code></pre>
 <p>To compile Bascet, you just run “make” whenever you make a
 change:</p>
-<pre class="console"><code>cd bascet
-make</code></pre>
+<p>You have to make a release build before using Bascet from Zorn. Note
+if you are editing the source code: Zorn will not ensure that it is
+recompiled when you run it! Rerun whenever needed</p>
+<pre class="console"><code><span><span class="va">make</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="editing-the-bascet-code">Editing the Bascet code<a class="anchor" aria-label="anchor" href="#editing-the-bascet-code"></a>
@@ -110,19 +111,6 @@ particular, install the <a href="https://code.visualstudio.com/docs/languages/ru
 extensions</a>.</p>
 <p>This setup enables you to see compile errors and get hints while
 coding!</p>
-</div>
-<div class="section level2">
-<h2 id="accessing-a-locally-compiled-bascet-in-zorn">Accessing a locally compiled Bascet in Zorn<a class="anchor" aria-label="anchor" href="#accessing-a-locally-compiled-bascet-in-zorn"></a>
-</h2>
-<p>You can do this to link to your own Rust binary:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetInstance.html">BascetInstance</a></span><span class="op">(</span></span>
-<span>  bin<span class="op">=</span><span class="st">"/path/to/bascet/target/debug/bascet"</span>,</span>
-<span>  tempdir<span class="op">=</span><span class="st">"./"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>If you want access to all the software in Docker/Singularity, you can
-also pass an image; while Bascet is present, providing an absolute path
-like above will override it.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

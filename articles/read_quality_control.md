@@ -1,36 +1,49 @@
 # Read-based quality control
 
-## FASTQC
+First set up Zorn/Bascet according to the [install
+instructions](https://henriksson-lab.github.io/zorn/articles/install.md).
+This tutorial assumes that you have [debarcoded the
+reads](https://henriksson-lab.github.io/zorn/articles/debarcoding.md).
 
-If you want to run QC on all cells as a whole, to get the average
-picture, simply run FASTQC on reads after transformation to FASTQ:
+## FASTQC on library as whole
 
-``` r
+A common tool to investigate raw reads is
+[FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
+You can always download the orignal software and run it on the FASTQ
+files. But you also have a Rust-translation of FASTQC built into Bascet,
+and you can invoke it under exttool (… means FASTQC CLI parameters; see
+original tool documentation).
 
-### Get reads in fastq format
-BascetMapTransform(
-  bascetRoot,
-  inputName="filtered",   
-  outputName="asfq",      
-  out_format="R1.fq.gz"
-)
-```
+    ./bascet exttool fastqc ...
 
-You can also run FASTQC on each individual cell, in which case you do
-not need to convert to FASTQ as above. This takes a fair bit of time,
-but can help tell if, e.g., a cluster of cells is caused by technical
-issues such as adapter content. You first run FASTQC with mapcell:
+You will likely find a ton of repeated sequences for single-cell data as
+adapters are kept until after debarcoding. You can transform TIRP files
+to FASTQ to have adapters trimmed before FASTQC analysis, if relevant
+(e.g., to check quality of adapter trimming, etc):
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
 
-BascetMapCellFASTQ(
+### Convert debarcoded reads to FASTQ format
+BascetMapTransform(
   bascetRoot,
-  inputName = "filtered"  #or other source of reads
+  inputName="filtered",
+  outputName="asfq",
+  out_format="R1.fq.gz"
 )
 ```
+
+## FASTQC per cell
+
+You can also run FASTQC on each individual cell (TIRP as input). This
+takes a fair bit of time, but can help tell if, e.g., a cluster of cells
+is caused by technical issues such as adapter content. You first run
+FASTQC on each cell like this:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
 
@@ -47,7 +60,7 @@ or separate browser):
 ``` r
 
 ShowFASTQCforCell(
-    bascetFile, 
+    bascetFile,
     cellID="xyz", #name of your cell 
     readnum="1", #for R1
 )
@@ -108,5 +121,5 @@ Possible values of section are:
 - “Overrepresented sequences”
 - “Adapter Content”
 
-Other statistics can also be extracted. Refer to the full reference
-manual for a list
+Other statistics can also be extracted. Refer to the full R command
+reference manual for a list

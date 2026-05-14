@@ -1,16 +1,9 @@
 # Informative KMER-based workflow
 
-First set up your Zorn/Bascet workdirectory as before. If you wish to
-run these steps on a SLURM cluster, see separate vignette and adapt
-accordingly.
-
-``` r
-
-library(Zorn)
-bascetRunner.default <- LocalRunner()
-bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
-bascetRoot <- "/home/yours/an_empty_workdirectory"
-```
+First set up Zorn/Bascet according to the [install
+instructions](https://henriksson-lab.github.io/zorn/articles/install.md).
+This tutorial assumes that you have [debarcoded the
+reads](https://henriksson-lab.github.io/zorn/articles/debarcoding.md).
 
 ## Preprocessing
 

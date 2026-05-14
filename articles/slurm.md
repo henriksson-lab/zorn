@@ -24,15 +24,17 @@ permissible default timeout time:
 
 ``` r
 
+library(Zorn)
+
 ## Set the new default runner. Note that the name should not be changed!
 bascetRunner.default <- SlurmRunner(
-  partition="shared", 
-  account="name_of_your_project", 
+  partition="shared",
+  account="name_of_your_project",
   time="0-24:00:00"
 )
 
-## get a Bascet instance as usual; this is a separate concern from the runner
-bascetInstance.default <- getBascetSingularityImage(storeAt="~/")
+## Get a Bascet instance as usual; this is a separate concern from the runner, covered in the install instructions
+bascetInstance.default <- getBascetBinary()
 ```
 
 You then make calls to Bascet as in all other tutorials. The main
@@ -58,15 +60,19 @@ BascetDebarcode(
 )
 ```
 
-## SLURM settings
+## SLURM settings: CPU and RAM
 
-We are unable to give specific suggestions on cpu and memory as it
+We are unable to give specific suggestions on CPU and memory as it
 depends on how your SLURM instance is configured. As an example, Swedish
-clusters are set up to give memory in proportion to the number of CPUs.
+clusters are set up to give memory in proportion to the number of CPUs,
+but this can be unreliable if different nodes have different amount of
+RAM per core.
 
 Bascet is written to avoid using large amounts of RAM when possible.
-Exceptions are the use of downstream software such as KRAKEN (in
-particular).
+However, certain commands load databases which can be large (KRAKEN,
+STAR), and the amount of memory varies greatly with database size.
+KRAKEN has smaller databases that are easier to fit in memory. STAR
+genome references tend to be large and beg for 32GB ram or more.
 
 All operations are multithreaded and benefit from having more CPUs per
 node. Speed is however limited by disk access speed. It it thus worth
@@ -90,8 +96,8 @@ bascetRunner.default <- SlurmRunner(
   direct=FALSE ## NEW! this enables asynchronous mode
 )
 
-## get a Bascet instance as usual; this is a separate concern from the runner
-bascetInstance.default <- getBascetSingularityImage(storeAt="~/")
+## Get a Bascet instance as usual; this is a separate concern from the runner, covered in the install instructions
+bascetInstance.default <- getBascetBinary()
 ```
 
 Whenever you run a job, you now want to catch a handle to the job in a

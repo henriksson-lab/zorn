@@ -1,18 +1,25 @@
 # Debarcoding and sharding
 
-First set up your Zorn/Bascet working directory as before. If you wish
-to run these steps on a SLURM cluster, see separate vignette and adapt
-accordingly.
+First set up Zorn/Bascet according to the [install
+instructions](https://henriksson-lab.github.io/zorn/articles/install.md),
+e.g.:
 
 ``` r
 
 library(Zorn)
 bascetRunner.default <- LocalRunner()
-bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
-bascetRoot <- "/home/yours/an_empty_workdirectory"
+bascetInstance.default <- getBascetBinary()
 ```
 
-The first step in data processing is take the raw FASTQ files and
+Bascet assumes that you have a “workspace” where all procesed files will
+land. We call this the bascetRoot. Set it up first:
+
+``` r
+
+bascetRoot <- file.path("/home/yours/an_empty_workdirectory")
+```
+
+The first data processing step is to read the raw FASTQ files and
 identify which read belongs to which cell. Zorn can automatically figure
 out which files to use for what:
 
@@ -61,7 +68,7 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 ``` r
 
 BascetDebarcode(
-    bascetRoot, 
+    bascetRoot,
     rawmeta,
     chemistry="atrandi_wgs"
 )

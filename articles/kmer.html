@@ -48,7 +48,6 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
-    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -85,14 +84,8 @@
 
     
     
-<p>First set up your Zorn/Bascet workdirectory as before. If you wish to
-run these steps on a SLURM cluster, see separate vignette and adapt
-accordingly.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu">getBascetSingularityImage</span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span> <span class="co">#Assuming Linux</span></span>
-<span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
+<p>First set up Zorn/Bascet according to the <a href="install.html">install instructions</a>. This tutorial assumes that
+you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
 <div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h2>
@@ -101,7 +94,7 @@ them. Bascet/Zorn offers one way, in which we first extract minhashes
 from each cell. These are finger prints that we later can look for in
 other cells.</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Compute minhashes for each cell</span></span>
 <span><span class="fu"><a href="../reference/BascetComputeMinhash.html">BascetComputeMinhash</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span></span>
@@ -115,7 +108,7 @@ other cells.</p>
 not share minhashes, simply because the reads don’t span all of their
 genomes. We can however look for KMERs that are more frequently shared
 by counting minhashes across all cells, and generating a histogram.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">kmerHist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetReadMinhashHistogram.html">BascetReadMinhashHistogram</a></span><span class="op">(</span><span class="va">bascetRoot</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">kmerHist</span><span class="op">$</span><span class="va">rank</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">kmerHist</span><span class="op">)</span></span>
@@ -131,7 +124,7 @@ either</a>. In practice, we don’t see this happening; just picking the
 most common KMERs seems to give useful results. Here we pick up to the
 top 100,000 KMERs and write them to a file so the query step can be
 rerun later:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Pick KMERs</span></span>
 <span><span class="va">kmerHist</span><span class="op">$</span><span class="va">rand_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">kmerHist</span><span class="op">)</span><span class="op">)</span> <span class="co">#add a tie breaker</span></span>
 <span><span class="va">kmerHist</span> <span class="op">&lt;-</span> <span class="va">kmerHist</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">kmerHist</span><span class="op">$</span><span class="va">cnt</span>, <span class="va">kmerHist</span><span class="op">$</span><span class="va">rand_index</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,<span class="op">]</span></span>
@@ -141,7 +134,7 @@ rerun later:</p>
 <p>Using the list of KMERs, you can now re-scan all genomes for their
 presence.</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Build count table by looking up selected KMERs in per-cell KMER databases</span></span>
 <span><span class="va">useKMERs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">bascetRoot</span>, <span class="st">"use_kmers.txt"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/BascetQueryFq.html">BascetQueryFq</a></span><span class="op">(</span></span>
@@ -153,7 +146,7 @@ the <a href="https://anndata.readthedocs.io/en/stable/fileformat-prose.html" cla
 file format</a>. To load these, use the following command that loads the
 files and concatenates them into a single matrix. It can then be loaded
 into Seurat:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span><span class="co">### Read count matrix</span></span>
 <span><span class="va">cnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadBascetCountMatrix.html">ReadBascetCountMatrix</a></span><span class="op">(</span></span>
@@ -163,7 +156,7 @@ into Seurat:</p>
 <p>Most likely you will have to filter out the low abundant cells. Note
 that with this workflow, the cutoff is based on the number of KMERs
 rather than the number of reads.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co">## Load subset of real cells</span></span>
 <span>  <span class="va">keep_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">cnt</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">20000</span> <span class="co">#this cutoff is based on the number of KMERs, not read count!</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">keep_cells</span><span class="op">)</span></span>
@@ -176,7 +169,7 @@ of a UMAP. See the tutorials for <a href="https://satijalab.org/seurat/" class="
 summarize the required command below, where you can apply either an
 RNA-seq or ATAC-seq dimensional reduction depending on what you think is
 appropriate.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="co">#ATAC-seq style analysis</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stuart-lab/signac" class="external-link">Signac</a></span><span class="op">)</span></span>
@@ -199,7 +192,7 @@ appropriate.</p>
 have any labels. One way to obtain labels is by also running the
 KRAKEN-based workflow; or you can use other annotation tools through the
 mapcell-system.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">adata</span>, reduction <span class="op">=</span> <span class="st">"infokmers_umap"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">xlab</span><span class="op">(</span><span class="st">"KMER1"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"KMER2"</span><span class="op">)</span></span></code></pre></div>

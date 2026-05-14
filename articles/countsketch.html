@@ -48,7 +48,6 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
-    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -85,14 +84,8 @@
 
     
     
-<p>First set up your Zorn/Bascet work directory as before. If you wish
-to run these steps on a SLURM cluster, see separate vignette and adapt
-accordingly.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
-<span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu">getBascetSingularityImage</span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span> <span class="co">#Assuming Linux</span></span>
-<span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/home/yours/an_empty_workdirectory"</span></span></code></pre></div>
+<p>First set up Zorn/Bascet according to the <a href="install.html">install instructions</a>. This tutorial assumes that
+you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
 <div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h2>
@@ -131,7 +124,7 @@ the original full KMER vectors</p>
 have further nice properties beyond the description here.</p>
 </blockquote>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Gather count sketches into a single matrix file</span></span>
 <span><span class="fu"><a href="../reference/BascetRunCountsketch.html">BascetRunCountsketch</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
@@ -144,7 +137,7 @@ have further nice properties beyond the description here.</p>
 <h2 id="postprocessing-with-signacseurat">Postprocessing with Signac/Seurat<a class="anchor" aria-label="anchor" href="#postprocessing-with-signacseurat"></a>
 </h2>
 <p>You can now load all of this data into R as a Seurat object:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetLoadCountSketchMatrix.html">BascetLoadCountSketchMatrix</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -154,7 +147,7 @@ writing, threading might be disabled in RStudio. You then need to run
 the code in a separate R session. If you see warning messages about
 threading later on, then this is the only backup we can offer for
 now!</em></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="st">"multicore"</span>, workers <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>Note that the data was loaded directly as a <em>Seurat
@@ -164,10 +157,10 @@ perform PCA, SVD or similar on the data. Rather, we recommend using all
 the dimensions, and compute fewer in the first steps if you want to
 reduce. The following code produces a UMAP, setting the dimension to all
 available dimensions in the reduction:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CountSketchUMAP.html">CountSketchUMAP</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></code></pre></div>
 <p>The result can be visualized:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span></code></pre></div>
 <p>We recommend that you integrate this object with the output of
 KRAKEN2 to get some clue about what the clusters mean.</p>

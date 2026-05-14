@@ -3,32 +3,15 @@
 ## Alignment
 
 SNP-analysis relies on having data aligned to a reference. First follow
-the
-
-First align files to a reference of your choice. See the alignment
-tutorial for full details, but this is an example command to align once
-you have a reference:
-
-[(SLURM-compatible
-step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
-
-``` r
-
-BascetAlignToReference(
-  bascetRoot,
-  inputName="fastp", #FASTP-filtered FASTQ as input
-  outputNameBAMunsorted = "myref_unsorted_aligned",
-  outputNameBAMsorted = "myref_aligned",
-  useReference="..../../../myref",
-  numLocalThreads=10
-)
-```
+the [alignment
+workflow](https://henriksson-lab.github.io/zorn/articles/alignment.md)
+to generate the needed BAM-files.
 
 ## SNP-calling
 
 You can now check how each cells genome deviate from the reference and
-obtain SNPs. This is done by calling the integrated CellSNP-lite. *The
-input data must be position sorted reads*.
+obtain SNPs. This is done by calling the integrated CellSNP-lite. **The
+input data must be position sorted reads**.
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)

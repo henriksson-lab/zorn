@@ -48,7 +48,6 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
-    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -109,15 +108,17 @@ recommend you to do it, these are only default values, such as which
 partition to submit to, and the name of your account. You can also set a
 permissible default timeout time:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Set the new default runner. Note that the name should not be changed!</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Set the new default runner. Note that the name should not be changed!</span></span>
 <span><span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span></span>
-<span>  partition<span class="op">=</span><span class="st">"shared"</span>, </span>
-<span>  account<span class="op">=</span><span class="st">"name_of_your_project"</span>, </span>
+<span>  partition<span class="op">=</span><span class="st">"shared"</span>,</span>
+<span>  account<span class="op">=</span><span class="st">"name_of_your_project"</span>,</span>
 <span>  time<span class="op">=</span><span class="st">"0-24:00:00"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## get a Bascet instance as usual; this is a separate concern from the runner</span></span>
-<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu">getBascetSingularityImage</span><span class="op">(</span>storeAt<span class="op">=</span><span class="st">"~/"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">## Get a Bascet instance as usual; this is a separate concern from the runner, covered in the install instructions</span></span>
+<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetBinary.html">getBascetBinary</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>You then make calls to Bascet as in all other tutorials. The main
 script, in charge of the control flow, should be run in <a href="https://github.com/tmux/tmux/wiki" class="external-link">tmux</a> or <a href="https://linuxize.com/post/how-to-use-linux-screen/" class="external-link">screen</a>, on
 a login node of your cluster.</p>
@@ -136,15 +137,18 @@ settings are overridden on a per-job basis:</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="slurm-settings">SLURM settings<a class="anchor" aria-label="anchor" href="#slurm-settings"></a>
+<h2 id="slurm-settings-cpu-and-ram">SLURM settings: CPU and RAM<a class="anchor" aria-label="anchor" href="#slurm-settings-cpu-and-ram"></a>
 </h2>
-<p>We are unable to give specific suggestions on cpu and memory as it
+<p>We are unable to give specific suggestions on CPU and memory as it
 depends on how your SLURM instance is configured. As an example, Swedish
-clusters are set up to give memory in proportion to the number of
-CPUs.</p>
+clusters are set up to give memory in proportion to the number of CPUs,
+but this can be unreliable if different nodes have different amount of
+RAM per core.</p>
 <p>Bascet is written to avoid using large amounts of RAM when possible.
-Exceptions are the use of downstream software such as KRAKEN (in
-particular).</p>
+However, certain commands load databases which can be large (KRAKEN,
+STAR), and the amount of memory varies greatly with database size.
+KRAKEN has smaller databases that are easier to fit in memory. STAR
+genome references tend to be large and beg for 32GB ram or more.</p>
 <p>All operations are multithreaded and benefit from having more CPUs
 per node. Speed is however limited by disk access speed. It it thus
 worth investigating your log files after execution to see how much
@@ -166,8 +170,8 @@ differently:</p>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">direct=</span><span class="cn">FALSE</span> <span class="do">## NEW! this enables asynchronous mode</span></span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="do">## get a Bascet instance as usual; this is a separate concern from the runner</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>bascetInstance.default <span class="ot">&lt;-</span> <span class="fu">getBascetSingularityImage</span>(<span class="at">storeAt=</span><span class="st">"~/"</span>)</span></code></pre></div>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="do">## Get a Bascet instance as usual; this is a separate concern from the runner, covered in the install instructions</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>bascetInstance.default <span class="ot">&lt;-</span> <span class="fu">getBascetBinary</span>()</span></code></pre></div>
 <p>Whenever you run a job, you now want to catch a handle to the job in
 a variable:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">

@@ -1,5 +1,7 @@
 # Coassembly
 
+disable page
+
 If you have cells with highly similar genomes, you might be able to
 generate “coassemblies” - consensus assemblies using reads from multiple
 similar cells.

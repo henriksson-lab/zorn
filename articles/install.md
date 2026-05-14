@@ -16,10 +16,8 @@ We strive to support Linux, OSX and Windows.
 > BMI instruction set. Any computer past 2015 should have it. You will
 > need to [compile Bascet
 > yourself](https://henriksson-lab.github.io/zorn/articles/for_developers.md)
-> if:
->
-> - Your CPU does not support the BMI instruction set (uncommon for
->   machines past 2015)
+> if your CPU does not support the BMI instruction set (uncommon for
+> machines past 2015)
 
 ## Step 1: Install upstream package
 
@@ -56,7 +54,7 @@ You can then load it:
 library(Zorn)
 ```
 
-## Step 3a: Install Bascet, precompiled binary
+## Step 3a: Install Bascet: as a precompiled binary
 
 You also need Bascet, our command-line suite for single-cell analysis.
 
@@ -75,43 +73,10 @@ bascetInstance.default <- getBascetBinary(storeAt="/somewhere/on/your/disk/")
 
 If the file is already downloaded, it will not be downloaded again.
 
-## Step 3b: Install Bascet, developer or install from source
+## Step 3b: Install Bascet: from source, for developers or if your computer does not support out binaries
 
-If you want to develop Bascet further, or compile from source, you can
-follow these instructions to get Bascet, compile it, and use your own
-build.
-
-First install Rust from
-[rust-lang.org](https://rust-lang.org/tools/install/):
-
-``` bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-Then clone the Bascet repository (adjust the directory to wherever you
-keep your source checkouts):
-
-``` bash
-cd /home/me/git
-git clone https://github.com/henriksson-lab/bascet.git
-```
-
-You have to make a release build before using Bascet from Zorn. Note
-that there are few checks to ensure the code is properly compiled!
-
-``` bash
-make
-```
-
-You can now point to this build:
-
-``` r
-
-bascetInstance.default <- getBascetDevDir("/home/me/git/bascet/")
-```
-
-More [developer information
-here](https://henriksson-lab.github.io/zorn/articles/for_developers.md).
+See section [for
+developers](https://henriksson-lab.github.io/zorn/articles/for_developers.md).
 
 ## Step 4: Test the installation
 
@@ -120,4 +85,17 @@ Run the following and see if you get “ok” before proceeding:
 ``` r
 
 TestBascetInstance(bascetInstance.default)
+```
+
+## Summary: Minimal Zorn/Bascet code for local use
+
+This code is all you will need at the end. But if you want to run this
+on [SLURM, see separate article
+next](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+
+library(Zorn)
+bascetInstance.default <- getBascetBinary()
+bascetRunner.default <- LocalRunner(mem="30g")
 ```

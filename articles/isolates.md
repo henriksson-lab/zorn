@@ -1,5 +1,8 @@
 # Isolate analysis
 
+this section has been disabled. we need to reimplement this
+functionality
+
 If you want to analyze bulk samples (e.g. isolates) with Zorn/Bascet,
 this is absolutely possible, and you then get the benefits of 1. a
 workflow manager 2. a suite of analysis tools 3. fewer files to manage

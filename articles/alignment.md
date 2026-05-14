@@ -1,15 +1,21 @@
 # Alignment-based workflow
 
-First set up your Zorn/Bascet workdirectory as before. If you wish to
-run these steps on a SLURM cluster, see separate vignette and adapt
-accordingly.
+First set up Zorn/Bascet according to the [install
+instructions](https://henriksson-lab.github.io/zorn/articles/install.md).
+This tutorial assumes that you have [debarcoded the
+reads](https://henriksson-lab.github.io/zorn/articles/debarcoding.md).
 
-``` r
+## When to perform alignment
 
-library(Zorn)
-bascet_runner.default <- LocalRunner()
-bascetRoot <- "/home/yours/an_empty_workdirectory"
-```
+Most single-cell analysis’ will involve an alignment step:
+
+- For analysis of model organisms (classic scRNA-seq), alignment is
+  needed to see which genes are expressed
+- For metagenomics, alignment is a good way of removing human reads, or
+  reads from contaminating DNA/RNA included with the enzmymes of buffers
+  (see filter step later)
+- For metagenomics, you still need alignment prior to SNP-analysis
+  (covered in separate section)
 
 ## Indexing a genome
 

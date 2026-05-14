@@ -48,7 +48,6 @@
     <li><a class="dropdown-item" href="../articles/genome_annotation.html">Genome annotation</a></li>
     <li><a class="dropdown-item" href="../articles/snp_analysis.html">SNP analysis</a></li>
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
-    <li><a class="dropdown-item" href="../articles/coassembly.Rmd">Coassembly</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -85,29 +84,39 @@
 
     
     
+<p>First set up Zorn/Bascet according to the <a href="install.html">install instructions</a>. This tutorial assumes that
+you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
 <div class="section level2">
-<h2 id="fastqc">FASTQC<a class="anchor" aria-label="anchor" href="#fastqc"></a>
+<h2 id="fastqc-on-library-as-whole">FASTQC on library as whole<a class="anchor" aria-label="anchor" href="#fastqc-on-library-as-whole"></a>
 </h2>
-<p>If you want to run QC on all cells as a whole, to get the average
-picture, simply run FASTQC on reads after transformation to FASTQ:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
-<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,   </span>
-<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,      </span>
-<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>You can also run FASTQC on each individual cell, in which case you do
-not need to convert to FASTQ as above. This takes a fair bit of time,
-but can help tell if, e.g., a cluster of cells is caused by technical
-issues such as adapter content. You first run FASTQC with mapcell:</p>
+<p>A common tool to investigate raw reads is <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/" class="external-link">FASTQC</a>.
+You can always download the orignal software and run it on the FASTQ
+files. But you also have a Rust-translation of FASTQC built into Bascet,
+and you can invoke it under exttool (… means FASTQC CLI parameters; see
+original tool documentation).</p>
+<pre><code>./bascet exttool fastqc ...</code></pre>
+<p>You will likely find a ton of repeated sequences for single-cell data
+as adapters are kept until after debarcoding. You can transform TIRP
+files to FASTQ to have adapters trimmed before FASTQC analysis, if
+relevant (e.g., to check quality of adapter trimming, etc):</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BascetMapCellFASTQ</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co">### Convert debarcoded reads to FASTQ format</span></span>
+<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>  <span class="co">#or other source of reads</span></span>
+<span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,</span>
+<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
+<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="fastqc-per-cell">FASTQC per cell<a class="anchor" aria-label="anchor" href="#fastqc-per-cell"></a>
+</h2>
+<p>You can also run FASTQC on each individual cell (TIRP as input). This
+takes a fair bit of time, but can help tell if, e.g., a cluster of cells
+is caused by technical issues such as adapter content. You first run
+FASTQC on each cell like this:</p>
+<p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BascetMapCellFASTQ</span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
@@ -118,7 +127,7 @@ FASTQ HTML report in the follow manner (opening in the RShiny plot pane,
 or separate browser):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ShowFASTQCforCell.html">ShowFASTQCforCell</a></span><span class="op">(</span></span>
-<span>    <span class="va">bascetFile</span>, </span>
+<span>    <span class="va">bascetFile</span>,</span>
 <span>    cellID<span class="op">=</span><span class="st">"xyz"</span>, <span class="co">#name of your cell </span></span>
 <span>    readnum<span class="op">=</span><span class="st">"1"</span>, <span class="co">#for R1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -161,10 +170,11 @@ provide a general interface to each table that FASTQC generates:</p>
 <li>“Overrepresented sequences”</li>
 <li>“Adapter Content”</li>
 </ul>
-<p>Other statistics can also be extracted. Refer to the full reference
-manual for a list</p>
+<p>Other statistics can also be extracted. Refer to the full R command
+reference manual for a list</p>
 </div>
-  </main>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

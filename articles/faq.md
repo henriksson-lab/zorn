@@ -12,7 +12,7 @@ Contact us; if it is a commonly used tool and the effort is low, we
 might be able to rather quickly get it in. If it is a major endeavor, it
 might be a possible task for a collaboration.
 
-## How do I contribute?
+## How can I contribute?
 
 There’s a ton of tasks that we would be happy to get help with.
 Depending on the task, it might be enough to just know R and some BASH;
