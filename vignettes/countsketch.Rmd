@@ -11,6 +11,21 @@ output:
 
 First set up Zorn/Bascet according to the [install instructions](install.html). This tutorial assumes that you have [debarcoded the reads](debarcoding.html).
 
+# When to use the Count sketch KMER-based workflow
+
+This workflow takes debarcoded reads from each cell and maps each cell to a high-dimensional vector space. This space does not retain
+the original KMERs but can be queried for the similarity of cell content, and the presence of a set of KMERs. The workflow
+shines in that it does not require any prior knowledge, and it makes use of all the sequencing data captured for each cell.
+It is a good "second workflow" after first using the [KRAKEN2-based workflow](kraken.html), which also assigns taxonomic IDs.
+
+> ℹ️ Count sketching relies on the following ideas:
+- Genomes can be represented as a vector of KMER counts. If these KMERs are long enough, they exist nearly-only once in a genome, and seldom in genomes of different origins
+- Angles between KMER count vectors ignore sequencing depth and thus represent underlying genome prior to sampling-by-sequencing
+- The distance between high dimensional vectors is preserved also after random linear projection into a lower dimensional space (lower, but still high-dimensional)
+- The random projection matrix can be represented implicitly, avoiding the need for the original full KMER vectors
+
+> Note that these linear projections are different from Min-Hashes, and have further nice properties beyond the description here.
+
 # Preprocessing
 To first compute the CountSketch, we will use the BascetRunCountsketch-command. The length of KMERs, and number of reduced dimensions,
 is set at this stage:
@@ -19,13 +34,6 @@ is set at this stage:
 
 The following command computes a countsketch matrix. The input is here the raw reads, which is suitable for metatranscriptomics, and works for metagenomics as well.
 For higher precision, you can also use the *de novo* assembly commands to extract unique KMERs as input for sketching (not shown here).
-
-> ℹ️ Count sketching relies on the following ideas:
-* Genomes can be represented as a vector of KMER counts. If these KMERs are long enough, they exist nearly-only once in a genome, and seldom in genomes of different origins * Angles between KMER count vectors ignore sequencing depth and thus represent underlying genome prior to sampling-by-sequencing
-* The distance between high dimensional vectors is preserved also after random linear projection into a lower dimensional space (lower, but still high-dimensional)
-* The random projection matrix can be represented implicitly, avoiding the need for the original full KMER vectors
-
-> Note that these linear projections are different from Min-Hashes, and have further nice properties beyond the description here.
 
 [(SLURM-compatible step)](slurm.html)
 
