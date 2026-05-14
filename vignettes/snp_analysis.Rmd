@@ -11,6 +11,15 @@ output:
 
 To compare closely related genomes, it is common to analyze SNPs (Single Nucleotide Polymorphisms) - sites in the genome which differ between two or more genomes.
 This method works fairly well for comparing, e.g., human genomes; for microbes, this analysis is typically restricted to highly similar genomes or subsets of genomes.
+SNP-analysis can also be use to separate cells from different donors.
+
+# Citing
+
+Bascet wraps [cellsnp-lite](https://github.com/single-cell-genetics/cellsnp-lite) for SNP-calling, so please cite this paper if you use it:
+
+Xianjie Huang, Yuanhua Huang, *Cellsnp-lite: an efficient tool for genotyping single cells*, 
+Bioinformatics, Volume 37, Issue 23, December 2021, Pages 4569–4571, https://doi.org/10.1093/bioinformatics/btab358
+
 
 # Alignment
 
@@ -145,3 +154,9 @@ FeaturePlot(adata, reduction = "umap", features = c("NZ-CP077404.1-7148-T-to-C")
 ```
 
 That's it!
+
+# SNP-based deconvolution of cells from different donors
+
+The output files from SNP-analysis are directly compatible with [Vireo](https://github.com/single-cell-genetics/vireo).
+See their tutorials for how to perform this analysis.
+

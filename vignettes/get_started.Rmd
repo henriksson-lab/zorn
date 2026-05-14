@@ -40,9 +40,6 @@ Then there are several options on how to continue with deeper analysis:
 These may help you understand the design of Zorn and Bascet:
 
 -   [Overview of file formats](fileformats.html)
-
 -   [Working with Bascet files](articles/bascet_files.html)
-
 -   [For developers](for_developers.html) - if you wish to modify Bascet
-
 -   [Example data](example_data.html) - you can run the workflow with some small datasets before you scale up
