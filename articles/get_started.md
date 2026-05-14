@@ -63,14 +63,11 @@ These may help you understand the design of Zorn and Bascet:
 
 - [Overview of file
   formats](https://henriksson-lab.github.io/zorn/articles/fileformats.md)
-
 - [Working with Bascet
   files](https://henriksson-lab.github.io/zorn/articles/articles/bascet_files.md)
-
 - [For
   developers](https://henriksson-lab.github.io/zorn/articles/for_developers.md) -
   if you wish to modify Bascet
-
 - [Example
   data](https://henriksson-lab.github.io/zorn/articles/example_data.md) -
   you can run the workflow with some small datasets before you scale up

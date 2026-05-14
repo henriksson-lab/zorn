@@ -10,6 +10,7 @@
   Bascet-FASTQ](https://henriksson-lab.github.io/zorn/articles/bascet_fastq.md):
 - [Working with Bascet-ZIP
   files](https://henriksson-lab.github.io/zorn/articles/bascet_zip.md):
+- [Citing](https://henriksson-lab.github.io/zorn/articles/citing.md):
 - [Clustering](https://henriksson-lab.github.io/zorn/articles/clustering.md):
 - [Coassembly](https://henriksson-lab.github.io/zorn/articles/coassembly.md):
 - [Count sketch KMER-based

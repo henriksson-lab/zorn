@@ -57,6 +57,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../articles/faq.html">FAQ</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/citing.html">Citing</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -91,7 +92,17 @@
 (Single Nucleotide Polymorphisms) - sites in the genome which differ
 between two or more genomes. This method works fairly well for
 comparing, e.g., human genomes; for microbes, this analysis is typically
-restricted to highly similar genomes or subsets of genomes.</p>
+restricted to highly similar genomes or subsets of genomes. SNP-analysis
+can also be use to separate cells from different donors.</p>
+</div>
+<div class="section level2">
+<h2 id="citing">Citing<a class="anchor" aria-label="anchor" href="#citing"></a>
+</h2>
+<p>Bascet wraps <a href="https://github.com/single-cell-genetics/cellsnp-lite" class="external-link">cellsnp-lite</a>
+for SNP-calling, so please cite this paper if you use it:</p>
+<p>Xianjie Huang, Yuanhua Huang, <em>Cellsnp-lite: an efficient tool for
+genotyping single cells</em>, Bioinformatics, Volume 37, Issue 23,
+December 2021, Pages 4569–4571, <a href="https://doi.org/10.1093/bioinformatics/btab358" class="external-link uri">https://doi.org/10.1093/bioinformatics/btab358</a></p>
 </div>
 <div class="section level2">
 <h2 id="alignment">Alignment<a class="anchor" aria-label="anchor" href="#alignment"></a>
@@ -207,6 +218,12 @@ established):</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/FeaturePlot.html" class="external-link">FeaturePlot</a></span><span class="op">(</span><span class="va">adata</span>, reduction <span class="op">=</span> <span class="st">"umap"</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NZ-CP077404.1-7148-T-to-C"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>That’s it!</p>
+</div>
+<div class="section level2">
+<h2 id="snp-based-deconvolution-of-cells-from-different-donors">SNP-based deconvolution of cells from different donors<a class="anchor" aria-label="anchor" href="#snp-based-deconvolution-of-cells-from-different-donors"></a>
+</h2>
+<p>The output files from SNP-analysis are directly compatible with <a href="https://github.com/single-cell-genetics/vireo" class="external-link">Vireo</a>. See
+their tutorials for how to perform this analysis.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
