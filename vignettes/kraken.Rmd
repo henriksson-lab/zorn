@@ -13,7 +13,7 @@ these steps on a SLURM cluster, see separate vignette and adapt accordingly.
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner()
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 

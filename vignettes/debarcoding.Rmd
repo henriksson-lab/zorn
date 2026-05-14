@@ -11,7 +11,7 @@ First set up your Zorn/Bascet working directory as before. If you wish to run th
 
 ```{r, eval=F, echo=T}
 library(Zorn)
-bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner()
 bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
