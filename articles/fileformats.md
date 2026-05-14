@@ -12,7 +12,7 @@ following columns, separated by a tab:
 - R2 sequence
 - R1 quality score
 - R2 quality score
-- UMI
+- UMI (always present, may be empty)
 
 With the only exception of right after debarcoding, TIRPs are always
 sorted by the name of the cell. They are then indexed using tabix. This
@@ -20,15 +20,16 @@ means that you can retrieve a list of cells in a file using the tabix
 tool, but we advise you to use higher level wrappers in Zorn/Bascet to
 not get locked to this file format.
 
-An optional read count histogram can be stored as file: xxx.tirp.gz.hist
+An optional read count histogram can be stored as a file:
+xxx.tirp.gz.hist
 
 ## Bascet-ZIP (.zip)
 
-We use zip files as a means of storing general data. There are the
+We use zip files as a means of storing general data. These are the
 conventions:
 
-- File Y for cell XX are stored as XX/Y
-- If a cells has reads, there are stored as XX/r1.fq and XX/r2.fq
+- File Y for cell XX is stored as XX/Y
+- If a cell has reads, they are stored as XX/r1.fq and XX/r2.fq
 - If a cell has contigs, they are stored as XX/contigs.fa
 - The file XX/\_mapcell.log is the output from the mapcell script
 - Overall, files named XX/*YY are reserved as special output from future
@@ -50,8 +51,8 @@ UMI is the unique molecular identifier \* read_number is just a number,
 with the same number for R1 and R2. it can be used to track read
 correspondence if reads are filtered, multimapped etc.
 
-Reads in Bascet-FASTQ should be sorted by cellID, read_number and
-read_index, in this order. This makes it easy to read all reads for one
+Reads in Bascet-FASTQ should be sorted by (cellID, read_number,
+read_index), in this order. This makes it easy to read all reads for one
 cell without having to scan through the entire file.
 
 Example:
@@ -72,11 +73,11 @@ follow the same naming convention as in Bascet-FASTQ. Thus, running any
 aligner on a Bascet-FASTQ should result in valid Bascet-BAM.
 
 To support other tools, the reads may also be annotated using tags. If
-read names are not named according to the FASTQ scheme, i.e, if they do
-not start with “BASCET\_”, tools must instead scan for tags:
+read names are not named according to the FASTQ scheme, tools must
+instead scan for tags:
 
-- @CB:Z:…. cell_ID
-- @UB:Z….. UMI
+- CB:Z:…. cell_ID
+- UB:Z:…. UMI
 
 This is similar to CellRanger annotation
 (<https://www.10xgenomics.com/support/software/cell-ranger/7.2/analysis/outputs/cr-outputs-bam>),
@@ -92,6 +93,6 @@ Bascet generates count matrices from several tools:
 - Feature and chromosome count matrices
 
 Our format is very similar to the [Anndata count matrix
-format](https://anndata.readthedocs.io). we may however need to further
+format](https://anndata.readthedocs.io). We may however need to further
 adjust our writers for conformity. We provide our own compatible
 readers.
