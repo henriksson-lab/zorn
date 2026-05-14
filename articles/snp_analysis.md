@@ -1,9 +1,17 @@
 # SNP analysis
 
+## When to perform SNP-analysis
+
+To compare closely related genomes, it is common to analyze SNPs (Single
+Nucleotide Polymorphisms) - sites in the genome which differ between two
+or more genomes. This method works fairly well for comparing, e.g.,
+human genomes; for microbes, this analysis is typically restricted to
+highly similar genomes or subsets of genomes.
+
 ## Alignment
 
-SNP-analysis relies on having data aligned to a reference. First follow
-the [alignment
+SNP-analysis relies on having data aligned to a reference, to which SNPs
+(differences) are called. First follow the [alignment
 workflow](https://henriksson-lab.github.io/zorn/articles/alignment.md)
 to generate the needed BAM-files.
 
