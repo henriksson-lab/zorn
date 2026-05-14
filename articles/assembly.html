@@ -86,7 +86,21 @@
     
 <p>First set up Zorn/Bascet according to the <a href="install.html">install instructions</a>. This tutorial assumes that
 you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
-<p>Assembly of each cell’s genome can then be performed using SKESA:</p>
+<div class="section level2">
+<h2 id="when-to-perform-de-novo-assembly">When to perform <em>de novo</em> assembly<a class="anchor" aria-label="anchor" href="#when-to-perform-de-novo-assembly"></a>
+</h2>
+<p><em>De novo</em> assembly is the process of reconstructing a genome
+(or transcriptome) from sequencing reads <em>without using a reference
+genome as a guide</em>. It is used primarily in microbiology, as
+research on eukaryotes is commonly done on organisms with known genomes.
+Possible exceptions are the assembly of cancer genomes, but assembly of
+large genomes is difficult, and Zorn/Bascet is currently optimized for
+the handling of smaller microbial genomes.</p>
+</div>
+<div class="section level2">
+<h2 id="de-novo-assembly-using-skesa">De novo assembly using SKESA<a class="anchor" aria-label="anchor" href="#de-novo-assembly-using-skesa"></a>
+</h2>
+<p>Assembly of each cell’s genome can be performed using SKESA:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Assemble all genomes</span></span>
@@ -98,6 +112,7 @@ you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
 <p>This produce contigs for each cell, all grouped together in
 “contigs”. Note that both Skesa and Spades only assembles cells for
 which there are sufficient number of reads.</p>
+</div>
 <div class="section level2">
 <h2 id="investigating-assemblies">Investigating assemblies<a class="anchor" aria-label="anchor" href="#investigating-assemblies"></a>
 </h2>

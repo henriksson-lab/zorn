@@ -5,7 +5,19 @@ instructions](https://henriksson-lab.github.io/zorn/articles/install.md).
 This tutorial assumes that you have [debarcoded the
 reads](https://henriksson-lab.github.io/zorn/articles/debarcoding.md).
 
-Assembly of each cell’s genome can then be performed using SKESA:
+## When to perform *de novo* assembly
+
+*De novo* assembly is the process of reconstructing a genome (or
+transcriptome) from sequencing reads *without using a reference genome
+as a guide*. It is used primarily in microbiology, as research on
+eukaryotes is commonly done on organisms with known genomes. Possible
+exceptions are the assembly of cancer genomes, but assembly of large
+genomes is difficult, and Zorn/Bascet is currently optimized for the
+handling of smaller microbial genomes.
+
+## De novo assembly using SKESA
+
+Assembly of each cell’s genome can be performed using SKESA:
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
