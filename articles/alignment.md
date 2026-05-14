@@ -7,7 +7,7 @@ accordingly.
 ``` r
 
 library(Zorn)
-bascet_runner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascet_runner.default <- LocalRunner()
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 
@@ -104,7 +104,16 @@ command
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
-`{r, eval=F, echo=T}#Convert aligned filtered BAM to TIRP BascetMapTransform( bascetRoot, inputName="aligned_cell_nohost", outputName = "filtered_nohost", outFormat="tirp.gz" )`
+``` r
+
+#Convert aligned filtered BAM to TIRP
+BascetMapTransform(
+  bascetRoot,
+  inputName="aligned_cell_nohost",
+  outputName = "filtered_nohost",
+  outFormat="tirp.gz"
+)
+```
 
 ## Option \#1: Counting chromosomes (presence/absence of species)
 
@@ -165,7 +174,7 @@ should contain two columns: (todo) (TODO filter after instead)
 adata[["species_cnt"]] <- ChromToSpeciesCount(adata, mapSeq2strain)  
 
 #Optional: Figure out which species has most reads in which cell
-cnt <- adata@assays$species_cnt$counts
+cnt <- GetAssayData(adata, assay = "species_cnt", layer = "counts")
 adata$species_aln <- rownames(cnt)[apply(cnt, 2, which.max)]
 ```
 
@@ -192,9 +201,10 @@ ATAC-seq style analysis (recommended also for DNA-seq!):
 library(Signac)
 adata <- RunTFIDF(adata)
 adata <- FindTopFeatures(adata, min.cutoff = 'q0')
-adata <- RunSVD(adata)
+numdim <- min(50, nrow(adata)-1)
+adata <- RunSVD(adata, n = numdim)
 DepthCor(adata)
-adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:(nrow(adata)-1), reduction.name = "chrom_umap")  
+adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:numdim, reduction.name = "chrom_umap")  
 ```
 
 RNA-seq style analysis:
@@ -205,8 +215,9 @@ RNA-seq style analysis:
 adata <- NormalizeData(adata)
 adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = nrow(adata))
 adata <- ScaleData(adata, features = rownames(adata))
-adata <- RunPCA(adata, features = VariableFeatures(object = adata))
-adata <- RunUMAP(adata, dims = 1:(nrow(adata)-1), reduction.name = "chrom_umap")
+numdim <- min(50, nrow(adata)-2)
+adata <- RunPCA(adata, features = VariableFeatures(object = adata), npcs = numdim)
+adata <- RunUMAP(adata, dims = 1:numdim, reduction.name = "chrom_umap")
 ```
 
 Finally, you can plot your UMAP. If you also extracted the dominant

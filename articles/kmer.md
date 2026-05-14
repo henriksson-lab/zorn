@@ -7,7 +7,7 @@ accordingly.
 ``` r
 
 library(Zorn)
-bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner()
 bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
@@ -45,7 +45,7 @@ by counting minhashes across all cells, and generating a histogram.
 kmerHist <- BascetReadMinhashHistogram(bascetRoot)
 
 kmerHist$rank <- 1:nrow(kmerHist)
-ggplot(kmerHist[kmerHist$cnt>2,], aes(rank, cnt)) +
+ggplot(kmerHist[sample(1:nrow(kmerHist), min(30000, nrow(kmerHist))),], aes(rank, cnt)) +
   geom_point() +
   scale_x_log10() +
   scale_y_log10()
@@ -56,14 +56,18 @@ not help clustering much as the UMAP algorithm will not find many other
 cells they are correlated with. Likewise, KMERs present in each cell are
 not [informative
 either](https://en.wikipedia.org/wiki/Binary_entropy_function). In
-practice, we don’t see this happening; just picking the most common top
-10,000 KMERs or so seems to give useful results. You can also pick KMERs
-based on a cutoff:
+practice, we don’t see this happening; just picking the most common
+KMERs seems to give useful results. Here we pick up to the top 100,000
+KMERs and write them to a file so the query step can be rerun later:
 
 ``` r
 
 ### Pick KMERs
-useKMERs <- kmerHist$kmer[kmerHist$cnt>5]  #Pick KMERs present in more than 5 cells
+kmerHist$rand_index <- sample(1:nrow(kmerHist)) #add a tie breaker
+kmerHist <- kmerHist[order(kmerHist$cnt, kmerHist$rand_index, decreasing = TRUE),]
+
+useKMERs <- kmerHist$kmer[1:min(100000, nrow(kmerHist))]
+writeLines(useKMERs, file.path(bascetRoot, "use_kmers.txt"))
 ```
 
 Using the list of KMERs, you can now re-scan all genomes for their
@@ -75,6 +79,7 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 ``` r
 
 ### Build count table by looking up selected KMERs in per-cell KMER databases
+useKMERs <- readLines(file.path(bascetRoot, "use_kmers.txt"))
 BascetQueryFq(
   bascetRoot,
   useKMERs=useKMERs
@@ -95,8 +100,7 @@ library(Seurat)
 cnt <- ReadBascetCountMatrix(
   bascetRoot,
   "kmer_counts"
-  #TODO note that the ,,,,,,,,,,,,,,,,,,,,,,,TODO,,,, is a maximum count by default
-) 
+)
 ```
 
 Most likely you will have to filter out the low abundant cells. Note
@@ -128,16 +132,18 @@ if(TRUE){
   library(Signac)
   adata <- RunTFIDF(adata)
   adata <- FindTopFeatures(adata, min.cutoff = 'q0')
-  adata <- RunSVD(adata)
+  numdim <- min(30, nrow(adata)-1)
+  adata <- RunSVD(adata, n = numdim)
   DepthCor(adata)
-  adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name = "infokmers_umap")  
+  adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:numdim, reduction.name = "infokmers_umap")
 } else {
   #RNA-seq style analysis
   adata <- NormalizeData(adata)
   adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
   adata <- ScaleData(adata, features = rownames(adata))
-  adata <- RunPCA(adata, features = VariableFeatures(object = adata))
-  adata <- RunUMAP(adata, dims = 1:20, reduction.name = "infokmers_umap")
+  numdim <- min(20, nrow(adata)-2)
+  adata <- RunPCA(adata, features = VariableFeatures(object = adata), npcs = numdim)
+  adata <- RunUMAP(adata, dims = 1:numdim, reduction.name = "infokmers_umap")
 }
 ```
 
@@ -148,7 +154,7 @@ mapcell-system.
 
 ``` r
 
-DimPlot(object = adata, reduction = "infokmers_umap") + 
-  xlab("KMER1") + 
+DimPlot(object = adata, reduction = "infokmers_umap") +
+  xlab("KMER1") +
   ylab("KMER2")
 ```

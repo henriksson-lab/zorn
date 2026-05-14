@@ -85,8 +85,8 @@
 
     
     
-<p>First set up your Zorn/Bascet work directory as before.</p>
-<p>Assembly can then performed using SKESA, via the MapCell system:</p>
+<p>First set up your Zorn/Bascet work directory as before. Assembly of
+each cell’s genome can then be performed using SKESA:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Assemble all genomes</span></span>
@@ -95,14 +95,55 @@
 <span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
 <span>  outputName <span class="op">=</span> <span class="st">"contigs"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>This produce contigs for each cell, all grouped together in “skesa”.
-Note that both skesa and spades only assembles cells for which there are
-sufficient number of reads.</p>
+<p>This produce contigs for each cell, all grouped together in
+“contigs”. Note that both Skesa and Spades only assembles cells for
+which there are sufficient number of reads.</p>
+<div class="section level2">
+<h2 id="investigating-assemblies">Investigating assemblies<a class="anchor" aria-label="anchor" href="#investigating-assemblies"></a>
+</h2>
+<p>The output is zip-files with contigs for each cell, separately. You
+can thus easily extract the contigs of interest and analyze with any
+tool of choice (not just Zorn/Bascet).</p>
+<p>You can obtain the contigs for one cell like this (this is the
+fastest way):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#TODO extract an individual genome</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/OpenBascet.html">OpenBascet</a></span><span class="op">(</span><span class="va">bascetRoot</span>, <span class="st">"contigs"</span>, <span class="va">bascetInstance</span><span class="op">)</span></span>
+<span><span class="va">contigs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetReadFile.html">BascetReadFile</a></span><span class="op">(</span><span class="va">b</span>, cellID <span class="op">=</span> <span class="st">"&lt;cell_id&gt;"</span>, filename <span class="op">=</span> <span class="st">"contigs.fa"</span>, as <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/CloseBascet.html">CloseBascet</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span></span></code></pre></div>
+<p>We also provide convencience functions for getting a subset. The
+worked example below will work for future file formats as well, not just
+ZIP:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#TODO QUAST for QC etc</span></span></code></pre></div>
-  </main>
+<code class="sourceCode R"><span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/path/to/your/bascet"</span></span>
+<span><span class="va">bascetInstance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get cell names</span></span>
+<span><span class="va">cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetCellNames.html">BascetCellNames</a></span><span class="op">(</span><span class="va">bascetRoot</span>, <span class="st">"contigs"</span>, bascetInstance <span class="op">=</span> <span class="va">bascetInstance</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Pick the cells you want — e.g. all of them, or a subset</span></span>
+<span><span class="va">listCells</span> <span class="op">&lt;-</span> <span class="va">cells</span><span class="op">$</span><span class="va">cell</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Make sure the output dir exists</span></span>
+<span><span class="va">outputDir</span> <span class="op">&lt;-</span> <span class="st">"contigs_out"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outputDir</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Dump contigs — one &lt;cellid&gt;.fa file per cell</span></span>
+<span><span class="fu"><a href="../reference/BascetDumpContigs.html">BascetDumpContigs</a></span><span class="op">(</span></span>
+<span>  bascetRoot     <span class="op">=</span> <span class="va">bascetRoot</span>,</span>
+<span>  inputName      <span class="op">=</span> <span class="st">"contigs"</span>,          <span class="co"># shard holding contigs.fa per cell</span></span>
+<span>  listCells      <span class="op">=</span> <span class="va">listCells</span>,</span>
+<span>  outputDir      <span class="op">=</span> <span class="va">outputDir</span>,</span>
+<span>  bascetInstance <span class="op">=</span> <span class="va">bascetInstance</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="assembly-analysis">Assembly analysis<a class="anchor" aria-label="anchor" href="#assembly-analysis"></a>
+</h2>
+<p>To assess assemblies, have a look at our <a href="map_scripts.html">Map scripts</a> vignette, which shows how to run
+per-cell tools (e.g. QUAST for assembly QC).</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

@@ -7,7 +7,7 @@ accordingly.
 ``` r
 
 library(Zorn)
-bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner()
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```
 

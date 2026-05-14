@@ -2,6 +2,9 @@
 
 ## Alignment
 
+SNP-analysis relies on having data aligned to a reference. First follow
+the
+
 First align files to a reference of your choice. See the alignment
 tutorial for full details, but this is an example command to align once
 you have a reference:
@@ -21,30 +24,11 @@ BascetAlignToReference(
 )
 ```
 
-## Extracting cells most similar to the reference
-
-If you have a complex sample, you likely want to only compare cells of a
-given species (however you define it). You can obtain a rather trivial
-count table, including how many reads did not align, for later
-filtering. The alignment tutorial has more details, but here is an
-example command:
-
-``` r
-
-BascetCountChrom(
-  bascetRoot,
-  inputName="myref_unsorted_aligned",
-  outputName="cnt_myref",
-  runner=SlurmRunner(bascet_runner.default, ncpu="2") 
-)
-```
-
 ## SNP-calling
 
 You can now check how each cells genome deviate from the reference and
-obtain SNPs. This is done by calling CellSNP-lite. It is ok to do this
-on all the cells, even those that are not of the species of interest;
-you can filter later:
+obtain SNPs. This is done by calling the integrated CellSNP-lite. *The
+input data must be position sorted reads*.
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
@@ -55,14 +39,13 @@ BascetRunCellSNP(
   bascetRoot,
   inputName="myref_aligned",
   numLocalThreads=5,
-  runner=SlurmRunner(bascet_runner.default, ncpu="5") 
+  runner=SlurmRunner(bascet_runner.default, ncpu="5")
 )
 ```
 
-## Selecting cells
+## Loading the count matrix
 
-The heavy work is now over. If you generated a count matrix, you can
-load it like this:
+The heavy work is now over. You can load the count matrix like this:
 
 ``` r
 
@@ -72,12 +55,15 @@ cnt_myref <- ReadBascetCountMatrix(bascetRoot,"cnt_myref")
 # Compute fraction aligned
 cnt_myref$obs$tot_reads <- as.double(cnt_myref$obs$`_unmapped` + cnt_myref$X)
 cnt_myref$obs$frac_mapped <- as.double(cnt_myref$X/cnt_myref$obs$tot_reads)
-cnt_myref$obs$`_index` <- stringr::str_remove(cnt_myref$obs$`_index`,"BASCET_")  #will not be needed in the future
-rownames(cnt_myref$obs) <- cnt_myref$obs$`_index`
 ```
 
-You can then produce a type of kneeplot, showing how well certain cells
-map to this reference:
+## Subsetting cells
+
+If you do microbial analysis and only want cells that are similar enough
+for comparision, you can filter out other cells using the following
+procedure.
+
+First produce a kneeplot of how much cells deviate SNP-wise:
 
 ``` r
 
@@ -86,23 +72,23 @@ df <- data.frame(
   frac_mapped = sort(cnt_myref$obs$frac_mapped, decreasing = TRUE),
   index = 1:nrow(cnt_myref$obs)
 )
-ggplot(df, aes(index, frac_mapped)) + 
-  geom_line() + 
-  scale_x_log10() + 
+ggplot(df, aes(index, frac_mapped)) +
+  geom_line() +
+  scale_x_log10() +
   theme_bw()
 ```
 
-Based on the knee plot, you can extract cells that are close enough to
-your reference like this:
+You can then subset as follows:
 
 ``` r
 
-list_cell_mutans <- cnt_myref$obs$`_index`[which(cnt_myref$obs$frac_mapped>0.8)]
+cnt_myref <- cnt_myref[cnt_myref$obs$frac_mapped>0.8,]
 ```
 
-\#Clustering by SNPs
+## Clustering by SNPs
 
-Load the CellSNP-lite counts as follows:
+You can produce UMAPs and clusters based on the SNP matrix. Load the
+CellSNP-lite counts as follows:
 
 ``` r
 
@@ -118,15 +104,14 @@ Create a Seurat object from the counts:
 
 adata <- CreateSeuratObject(counts = t(snp_ad), project = "adata3k", min.cells = 3, min.features = 0)
 
-#only keep selected cells (optional)
-adata <- adata[,colnames(adata) %in% list_cell_mutans]
-
 #transfer count metadata (optional)
 adata$frac_mapped <-  cnt_mutans$obs[colnames(adata),]$frac_mapped
 adata$tot_reads <-  cnt_mutans$obs[colnames(adata),]$tot_reads
 ```
 
-Do the usual transformations and clustering:
+Do the usual transformations and clustering (another option is to
+normalize by sequencing depth of cell, not SNP count; or run
+ATAC-seq-like normalization. Best practices are yet to be established):
 
 ``` r
 
@@ -135,7 +120,7 @@ adata <- NormalizeData(adata, normalization.method = "LogNormalize", scale.facto
 adata <- NormalizeData(adata)
 adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
 all.genes <- rownames(adata)
-adata <- ScaleData(adata, features = all.genes) ########## todo should normalize by sequencing depth of original cell! not SNP count
+adata <- ScaleData(adata, features = all.genes)
 
 adata <- RunPCA(adata, features = VariableFeatures(object = adata))
 

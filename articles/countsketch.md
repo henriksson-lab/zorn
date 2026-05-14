@@ -7,7 +7,7 @@ accordingly.
 ``` r
 
 library(Zorn)
-bascetRunner.default <- LocalRunner(direct = TRUE, showScript=TRUE)
+bascetRunner.default <- LocalRunner()
 bascetInstance.default <- getBascetSingularityImage(storeAt="~/") #Assuming Linux
 bascetRoot <- "/home/yours/an_empty_workdirectory"
 ```

@@ -1,25 +1,192 @@
 # Map scripts
 
-## Running a MAP function
+## Bascet has two types of MAP functions
 
 Zorn/Bascet is designed to let you run all kinds of software that
 operates on your cells. This can be either the raw reads, the contigs,
 or any other data that you produce. Because these operations can be
 computationally intense, all of this happens through the MAP framework.
 
-Here is an example of invoking the built-in QUAST script to produce
-quality metrics of each assembled genome:
+Bascet currently hosts two type of MAP functions:
+
+- MAP functions written in Rust for highest performance. If the original
+  software is not Rust, we perform [static analysis-mediated LLM
+  translation](https://github.com/henriksson-lab/rustification) to make
+  it compatible
+- MAP functions calling software through shell scripts. This is not as
+  fast but avoids the creation of thousands (or millions) of small files
+
+## Running first-class Rust MAP functions
+
+These wrappers call native Bascet subcommands directly, so they are the
+fastest way to process all cells. Zorn currently provides:
+
+- `BascetMapCellSKESA` — *de novo* assembly with SKESA, producing
+  contigs from filtered reads
+- `BascetMapCellFASTQC` — read-level quality control with FastQC
+- `BascetMapCellGECCO` — biosynthetic gene cluster prediction on
+  assembled contigs
+
+### GECCO — biosynthetic gene clusters (for assembled genomes)
+
+[GECCO](https://gecco.embl.de/) scans assembled contigs for biosynthetic
+gene clusters (BGCs).
+
+``` r
+
+BascetMapCellGECCO(
+  bascetRoot,
+  inputName  = "contigs",
+  outputName = "gecco"
+)
+```
+
+Aggregate the per-cell cluster tables into a single list of data.frames:
+
+``` r
+
+gecco_aggr <- BascetAggregateGECCO(
+  bascetRoot,
+  inputName = "gecco"
+)
+```
+
+### SKESA — assembly (runs on reads as input)
+
+``` r
+
+BascetMapCellSKESA(
+  bascetRoot,
+  inputName  = "filtered",
+  outputName = "contigs",
+  kmer       = 21,
+  minContig  = 50
+)
+```
+
+### FastQC — QC of reads (runs on reads as input)
+
+``` r
+
+BascetMapCellFASTQC(
+  bascetRoot,
+  inputName  = "filtered",
+  outputName = "fastqc"
+)
+
+fastqc_aggr <- BascetAggregateFASTQC(
+  bascetRoot,
+  inputName = "fastqc"
+)
+```
+
+## Running a shell-script based MAP function
+
+Shell-script wrappers are the easiest way to run external bioinformatics
+tools without writing your own MAP function. Zorn includes wrappers for
+the most common single-cell microbial workflows:
+
+| Wrapper | Tool | Typical input | Typical output |
+|----|----|----|----|
+| `BascetMapCellQUAST` | QUAST assembly QC | `contigs` | `quast` |
+| `BascetMapCellAbricate` | Abricate AMR / virulence | `contigs` | `abricate` |
+| `BascetMapCellBakta` | Bakta genome annotation | `contigs` | `bakta` |
+| `BascetMapCellAriba` | Ariba AMR from reads | `filtered` | `ariba` |
+| `BascetMapCellAMRfinder` | NCBI AMRfinder | `contigs` | `AMRfinder` |
+
+Each of these is a thin wrapper around `BascetMapCell` that knows the
+right script name and arguments.
+
+### QUAST — assembly quality
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
 
+BascetMapCellQUAST(
+  bascetRoot,
+  inputName  = "contigs",
+  outputName = "quast"
+)
+```
+
+If you prefer the raw form, this is equivalent to:
+
+``` r
+
 BascetMapCell(
   bascetRoot,
   withfunction = "_quast",
-  inputName = "skesa",
-  outputName = "quast"
+  inputName    = "contigs",
+  outputName   = "quast"
+)
+```
+
+### Abricate — AMR / virulence screening
+
+``` r
+
+BascetMapCellAbricate(
+  bascetRoot,
+  inputName  = "contigs",
+  outputName = "abricate",
+  db         = "ncbi"
+)
+
+abricate_mat <- BascetAggregateAbricate(
+  bascetRoot,
+  inputName = "abricate"
+)
+```
+
+### Bakta — genome annotation
+
+``` r
+
+DownloadDatabaseBakta("/path/to/bakta_db", dbtype = "light")
+
+BascetMapCellBakta(
+  bascetRoot,
+  inputName  = "contigs",
+  outputName = "bakta",
+  db         = "/path/to/bakta_db"
+)
+```
+
+### Ariba — AMR identification from reads
+
+``` r
+
+BascetMapCellAriba(
+  bascetRoot,
+  inputName  = "filtered",
+  outputName = "ariba",
+  db         = "/path/to/ariba_db/out.prepareref"
+)
+
+ariba_mat <- BascetAggregateAriba(
+  bascetRoot,
+  inputName = "ariba"
+)
+```
+
+### AMRfinder
+
+``` r
+
+DownloadDatabaseAMRfinder("/path/to/amrfinder_db")
+
+BascetMapCellAMRfinder(
+  bascetRoot,
+  inputName  = "contigs",
+  outputName = "AMRfinder",
+  db         = "/path/to/amrfinder_db"
+)
+
+amr_df <- BascetAggregateAMRfinder(
+  bascetRoot,
+  inputName = "AMRfinder"
 )
 ```
 
@@ -96,8 +263,8 @@ quast_aggr <- MapListAsDataFrame(BascetAggregateMap(
 
 ## Custom MAP functions - details
 
-If you look at any [example MAP
-function](https://github.com/henriksson-lab/bascet/blob/main/src/mapcell_scripts/quast.sh),
+If you look at any [of our MAP
+functions](https://github.com/henriksson-lab/bascet/tree/main/crates/bascet-cli/src/mapcell_scripts),
 you will find that it is a BASH script that conforms to a certain
 pattern. It actually is just a script (in any language) that takes
 certain command line arguments.

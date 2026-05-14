@@ -42,7 +42,7 @@ Bascet-ZIP)](https://henriksson-lab.github.io/zorn/articles/bascet_zip.md).
 Some tools require FASTQ as input or output. To keep track of the cell
 origin of reads, the reads have a special naming convention:
 
-“BASCET\_” cellID “:” UMI “:” read_number
+cellID “:” UMI “:” read_number
 
 where \* cellID is the name of the cell. As FASTQ only supports some
 characters, names will be mangled in the future (to be implemented) \*
@@ -57,7 +57,7 @@ cell without having to scan through the entire file.
 Example:
 
 
-    @BASCET_cell1:AAAA:1
+    @cell1:AAAA:1
     ATCGATCGATCG
     +
     FFFFFFFFFFFF
@@ -83,20 +83,15 @@ This is similar to CellRanger annotation
 except Bascet does not have tags for yet-to-be-corrected cell IDs and
 UMIs.
 
-## Bascet-KRAKEN5 (.kraken5)
+## Bascet-HDF5 (.h5)
 
-This is a sparse matrix HDF5 file, aimed to store counts from KRAKEN2.
-As KRAKEN2 outputs taxonomy IDs (starting from 0), these are used as
-column indices in this matrix format.
+Bascet generates count matrices from several tools:
 
-More details to follow TODO TODO TODO TODO TODO TODO TODO
+- KRAKEN count matrices
+- Informative KMER count matrices
+- Feature and chromosome count matrices
 
-## Bascet-HDF5 (.hd5)
-
-This format loosely implements the Anndata count matrix format
-(<https://anndata.readthedocs.io>). To accommodate for the needs to
-store other types of data, these files will likely deviate from the
-standard in the future. Thus, do not expect to be able to load them with
-regular anndata-compatible software.
-
-More details to followTODO TODO TODO TODO TODO TODO TODO TODO
+Our format is very similar to the [Anndata count matrix
+format](https://anndata.readthedocs.io). we may however need to further
+adjust our writers for conformity. We provide our own compatible
+readers.

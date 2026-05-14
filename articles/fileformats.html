@@ -130,7 +130,7 @@ Bascet-ZIP)</a>.</p>
 </h2>
 <p>Some tools require FASTQ as input or output. To keep track of the
 cell origin of reads, the reads have a special naming convention:</p>
-<p>“BASCET_” cellID “:” UMI “:” read_number</p>
+<p>cellID “:” UMI “:” read_number</p>
 <p>where * cellID is the name of the cell. As FASTQ only supports some
 characters, names will be mangled in the future (to be implemented) *
 UMI is the unique molecular identifier * read_number is just a number,
@@ -141,7 +141,7 @@ read_index, in this order. This makes it easy to read all reads for one
 cell without having to scan through the entire file.</p>
 Example:
 <pre>
-@BASCET_cell1:AAAA:1
+@cell1:AAAA:1
 ATCGATCGATCG
 +
 FFFFFFFFFFFF
@@ -169,21 +169,17 @@ except Bascet does not have tags for yet-to-be-corrected cell IDs and
 UMIs.</p>
 </div>
 <div class="section level2">
-<h2 id="bascet-kraken5--kraken5">Bascet-KRAKEN5 (.kraken5)<a class="anchor" aria-label="anchor" href="#bascet-kraken5--kraken5"></a>
+<h2 id="bascet-hdf5--h5">Bascet-HDF5 (.h5)<a class="anchor" aria-label="anchor" href="#bascet-hdf5--h5"></a>
 </h2>
-<p>This is a sparse matrix HDF5 file, aimed to store counts from
-KRAKEN2. As KRAKEN2 outputs taxonomy IDs (starting from 0), these are
-used as column indices in this matrix format.</p>
-<p>More details to follow TODO TODO TODO TODO TODO TODO TODO</p>
-</div>
-<div class="section level2">
-<h2 id="bascet-hdf5--hd5">Bascet-HDF5 (.hd5)<a class="anchor" aria-label="anchor" href="#bascet-hdf5--hd5"></a>
-</h2>
-<p>This format loosely implements the Anndata count matrix format (<a href="https://anndata.readthedocs.io" class="external-link uri">https://anndata.readthedocs.io</a>). To accommodate for the
-needs to store other types of data, these files will likely deviate from
-the standard in the future. Thus, do not expect to be able to load them
-with regular anndata-compatible software.</p>
-<p>More details to followTODO TODO TODO TODO TODO TODO TODO TODO</p>
+<p>Bascet generates count matrices from several tools:</p>
+<ul>
+<li>KRAKEN count matrices</li>
+<li>Informative KMER count matrices</li>
+<li>Feature and chromosome count matrices</li>
+</ul>
+<p>Our format is very similar to the <a href="https://anndata.readthedocs.io" class="external-link">Anndata count matrix format</a>.
+we may however need to further adjust our writers for conformity. We
+provide our own compatible readers.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -1,8 +1,7 @@
 # De novo assembly
 
-First set up your Zorn/Bascet work directory as before.
-
-Assembly can then performed using SKESA, via the MapCell system:
+First set up your Zorn/Bascet work directory as before. Assembly of each
+cell’s genome can then be performed using SKESA:
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
@@ -17,16 +16,57 @@ BascetMapCellSKESA(
 )
 ```
 
-This produce contigs for each cell, all grouped together in “skesa”.
-Note that both skesa and spades only assembles cells for which there are
+This produce contigs for each cell, all grouped together in “contigs”.
+Note that both Skesa and Spades only assembles cells for which there are
 sufficient number of reads.
 
+## Investigating assemblies
+
+The output is zip-files with contigs for each cell, separately. You can
+thus easily extract the contigs of interest and analyze with any tool of
+choice (not just Zorn/Bascet).
+
+You can obtain the contigs for one cell like this (this is the fastest
+way):
+
 ``` r
 
-#TODO extract an individual genome
+b <- OpenBascet(bascetRoot, "contigs", bascetInstance)
+contigs <- BascetReadFile(b, cellID = "<cell_id>", filename = "contigs.fa", as = "text")
+CloseBascet(b)
 ```
+
+We also provide convencience functions for getting a subset. The worked
+example below will work for future file formats as well, not just ZIP:
 
 ``` r
 
-#TODO QUAST for QC etc
+bascetRoot <- "/path/to/your/bascet"
+bascetInstance <- GetDefaultBascetInstance()
+
+# Get cell names
+cells <- BascetCellNames(bascetRoot, "contigs", bascetInstance = bascetInstance)
+
+# Pick the cells you want — e.g. all of them, or a subset
+listCells <- cells$cell[1:10]
+
+# Make sure the output dir exists
+outputDir <- "contigs_out"
+dir.create(outputDir, showWarnings = FALSE)
+
+# Dump contigs — one <cellid>.fa file per cell
+BascetDumpContigs(
+  bascetRoot     = bascetRoot,
+  inputName      = "contigs",          # shard holding contigs.fa per cell
+  listCells      = listCells,
+  outputDir      = outputDir,
+  bascetInstance = bascetInstance
+)
 ```
+
+## Assembly analysis
+
+To assess assemblies, have a look at our [Map
+scripts](https://henriksson-lab.github.io/zorn/articles/map_scripts.md)
+vignette, which shows how to run per-cell tools (e.g. QUAST for assembly
+QC).
