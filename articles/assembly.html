@@ -137,7 +137,7 @@ ZIP:</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="assembly-analysis">Assembly analysis<a class="anchor" aria-label="anchor" href="#assembly-analysis"></a>
+<h2 id="further-analysis-of-assembled-contigs">Further analysis of assembled contigs<a class="anchor" aria-label="anchor" href="#further-analysis-of-assembled-contigs"></a>
 </h2>
 <p>To assess assemblies, have a look at our <a href="map_scripts.html">Map scripts</a> vignette, which shows how to run
 per-cell tools (e.g. QUAST for assembly QC).</p>
@@ -145,35 +145,35 @@ per-cell tools (e.g. QUAST for assembly QC).</p>
 <div class="section level2">
 <h2 id="coassembly">Coassembly<a class="anchor" aria-label="anchor" href="#coassembly"></a>
 </h2>
-<div id="todo" class="section level60">
-<p class="heading">TODO</p>
 <p>If you have cells with highly similar genomes, you might be able to
 generate “coassemblies” - consensus assemblies using reads from multiple
 similar cells.</p>
 <p>To do this, simply extract the debarcoded reads from the cells of
 interest. There are many ways of picking them, where one method is to
 use the clustering function in Seurat. But you can use any method you
-wish to come up with a list of cell names</p>
-<p>First set up your Zorn/Bascet work directory as before.</p>
-<p>Then this is a very random method to extract cells after clustering
-(<a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial.html" class="external-link">see
-this Seurat tutorial first</a>). It is an open research problem how to
-best carry this out:</p>
+wish to come up with a list of cell names. To learn more about
+clustering, <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial.html" class="external-link">see
+this Seurat tutorial first</a>. Note that it is an open research problem
+how to best pick cells for coassembly!</p>
+<p>After clustering, you can get the names of cells in cluster “0”:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">### Get cell names</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>cell_names <span class="ot">&lt;-</span> <span class="fu">rownames</span>(adata[adata<span class="sc">$</span><span class="at">cluster_id=</span><span class="st">"0"</span>,])</span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>listCells <span class="ot">&lt;-</span> <span class="fu">rownames</span>(adata[adata<span class="sc">$</span><span class="at">cluster_id=</span><span class="st">"0"</span>,])</span></code></pre></div>
 <p>Next extract a FASTQ with reads:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Extract reads TODO</span></span>
-<span><span class="fu">Bascet....A</span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"contigs"</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetDumpContigs.html">BascetDumpContigs</a></span><span class="op">(</span></span>
+<span>  bascetRoot     <span class="op">=</span> <span class="va">bascetRoot</span>,</span>
+<span>  inputName      <span class="op">=</span> <span class="st">"contigs"</span>,          <span class="co"># shard holding contigs.fa per cell</span></span>
+<span>  listCells      <span class="op">=</span> <span class="va">listCells</span>,</span>
+<span>  outputDir      <span class="op">=</span> <span class="va">outputDir</span>,</span>
+<span>  bascetInstance <span class="op">=</span> <span class="va">bascetInstance</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>And finally, run <a href="https://github.com/ncbi/SKESA" class="external-link">SKESA</a> or
 your favourite software to assemble the contigs: (in BASH)</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#SKESA etc</span></span></code></pre></div>
-</div>
+<code class="sourceCode R"><span><span class="co">#Run SKESA</span></span>
+<span></span>
+<span></span>
+<span><span class="co">########################################################### TODO: run skesa</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
