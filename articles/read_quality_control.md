@@ -5,11 +5,27 @@ instructions](https://henriksson-lab.github.io/zorn/articles/install.md).
 This tutorial assumes that you have [debarcoded the
 reads](https://henriksson-lab.github.io/zorn/articles/debarcoding.md).
 
+## When to perform read-based quality control
+
+We find that read-based quality control is not a very useful metric for
+single-cell analysis. Adapters are already handled in the pipeline, and
+the insert size distribution (distance from R1 to R2) is already checked
+prior to sequencing. Instead we recommend to just generate a UMAP using,
+e.g., the [KRAKEN2
+workflow](https://henriksson-lab.github.io/zorn/articles/kraken.md),
+will better tell you about common single-cell problems: - If you have
+many doublets (mixing of cells) - If you have background RNA/DNA mixing
+into cells - If you are able to identity cells
+
+That said, we wrap FASTQC for read-based quality control, which might
+help pinpoint certain problems that can arise in the library
+preparation.
+
 ## FASTQC on library as whole
 
 A common tool to investigate raw reads is
 [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
-You can always download the orignal software and run it on the FASTQ
+You can always download the original software and run it on the FASTQ
 files. But you also have a Rust-translation of FASTQC built into Bascet,
 and you can invoke it under exttool (… means FASTQC CLI parameters; see
 original tool documentation).

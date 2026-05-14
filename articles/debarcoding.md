@@ -11,8 +11,8 @@ bascetRunner.default <- LocalRunner()
 bascetInstance.default <- getBascetBinary()
 ```
 
-Bascet assumes that you have a “workspace” where all procesed files will
-land. We call this the bascetRoot. Set it up first:
+Bascet assumes that you have a “workspace” where all processed files
+will land. We call this the bascetRoot. Set it up first:
 
 ``` r
 
