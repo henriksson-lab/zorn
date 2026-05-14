@@ -5,6 +5,22 @@ instructions](https://henriksson-lab.github.io/zorn/articles/install.md).
 This tutorial assumes that you have [debarcoded the
 reads](https://henriksson-lab.github.io/zorn/articles/debarcoding.md).
 
+## When to use the informative KMER-based workflow
+
+This workflow takes debarcoded reads from each cell and determines the
+presence-absence of a set of KMERs for each cell. These KMERs can be
+determined by a min-hash-like approach, or picked from some source of
+prior knowledge. It can be used as a “second/third” workflow, after
+first using the [KRAKEN2-based
+workflow](https://henriksson-lab.github.io/zorn/articles/kraken.md) and
+assigning taxonomic IDs, or the unbiased [Count sketch
+workflow](https://henriksson-lab.github.io/zorn/articles/countsketch.md).
+It can be unbiased like the Count sketch workflow, but retains
+interpretability in that you will know for certain if a KMER was
+detected for a cell or not. The disadvantage is that not all KMERs are
+retained for the final analysis step, as it is not possible to retain
+all source KMERs in memory.
+
 ## Preprocessing
 
 To extract informative KMERs, you first need to obtain a list of them.

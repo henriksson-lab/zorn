@@ -87,6 +87,17 @@
 <p>First set up Zorn/Bascet according to the <a href="install.html">install instructions</a>. This tutorial assumes that
 you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
 <div class="section level2">
+<h2 id="when-to-use-the-kraken2-workflow">When to use the KRAKEN2 workflow<a class="anchor" aria-label="anchor" href="#when-to-use-the-kraken2-workflow"></a>
+</h2>
+<p>This workflow takes debarcoded reads and assigns taxonomic IDs to
+each of them. This results in a count matrix that can be used for
+dimensional reduction and clustering. The advantage of this workflow is
+that (1) it lets you use prior information to group cells, (2) it lets
+you assign a taxonomic ID (species) to each cell using majority voting.
+The workflow is fast and a good “first QC” for any metagenomic
+dataset</p>
+</div>
+<div class="section level2">
 <h2 id="classifying-reads-with-kraken2">Classifying reads with KRAKEN2<a class="anchor" aria-label="anchor" href="#classifying-reads-with-kraken2"></a>
 </h2>
 <p>To run KRAKEN2, you need a database. You can get them here: <a href="https://benlangmead.github.io/aws-indexes/k2" class="external-link uri">https://benlangmead.github.io/aws-indexes/k2</a></p>

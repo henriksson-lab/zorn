@@ -87,6 +87,20 @@
 <p>First set up Zorn/Bascet according to the <a href="install.html">install instructions</a>. This tutorial assumes that
 you have <a href="debarcoding.html">debarcoded the reads</a>.</p>
 <div class="section level2">
+<h2 id="when-to-use-the-informative-kmer-based-workflow">When to use the informative KMER-based workflow<a class="anchor" aria-label="anchor" href="#when-to-use-the-informative-kmer-based-workflow"></a>
+</h2>
+<p>This workflow takes debarcoded reads from each cell and determines
+the presence-absence of a set of KMERs for each cell. These KMERs can be
+determined by a min-hash-like approach, or picked from some source of
+prior knowledge. It can be used as a “second/third” workflow, after
+first using the <a href="kraken.html">KRAKEN2-based workflow</a> and
+assigning taxonomic IDs, or the unbiased <a href="countsketch.html">Count sketch workflow</a>. It can be unbiased
+like the Count sketch workflow, but retains interpretability in that you
+will know for certain if a KMER was detected for a cell or not. The
+disadvantage is that not all KMERs are retained for the final analysis
+step, as it is not possible to retain all source KMERs in memory.</p>
+</div>
+<div class="section level2">
 <h2 id="preprocessing">Preprocessing<a class="anchor" aria-label="anchor" href="#preprocessing"></a>
 </h2>
 <p>To extract informative KMERs, you first need to obtain a list of
@@ -197,7 +211,8 @@ mapcell-system.</p>
 <span>  <span class="fu">xlab</span><span class="op">(</span><span class="st">"KMER1"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"KMER2"</span><span class="op">)</span></span></code></pre></div>
 </div>
-  </main>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

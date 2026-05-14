@@ -5,6 +5,15 @@ instructions](https://henriksson-lab.github.io/zorn/articles/install.md).
 This tutorial assumes that you have [debarcoded the
 reads](https://henriksson-lab.github.io/zorn/articles/debarcoding.md).
 
+## When to use the KRAKEN2 workflow
+
+This workflow takes debarcoded reads and assigns taxonomic IDs to each
+of them. This results in a count matrix that can be used for dimensional
+reduction and clustering. The advantage of this workflow is that (1) it
+lets you use prior information to group cells, (2) it lets you assign a
+taxonomic ID (species) to each cell using majority voting. The workflow
+is fast and a good “first QC” for any metagenomic dataset
+
 ## Classifying reads with KRAKEN2
 
 To run KRAKEN2, you need a database. You can get them here:
