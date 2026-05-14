@@ -50,6 +50,8 @@ navbar:
           href: articles/example_data.html
     - text: FAQ
       href: articles/faq.html
+    - text: Citing
+      href: articles/citing.html
     - text: "Reference"
       href: reference/index.html
   right:
