@@ -11,7 +11,7 @@ insert_max_size <- 800
 num_cells <- 50
 num_shards <- 20
 
-fa_rootdir <- "/husky/fromsequencer/240809_novaseq_wgs1/trimmed/ref10/separate"
+fa_rootdir <- "/husky/henriksson/atrandi/bwamem_ref/simulated_ref10/separate"
 list_genomes <- unique(str_split_i(list.files(fa_rootdir)," ",1))
 
 
