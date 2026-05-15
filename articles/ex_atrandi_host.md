@@ -17,39 +17,37 @@ if(TRUE) {
 }
 
 
-################################################################################
-############################### Debarcode ######################################
-################################################################################
+####################
+### Debarcode
+####################
 
-  rawmeta_dir <- readLines("rawdata.txt")
-  rawmeta <- DetectRawFileMeta(rawmeta_dir)
+rawmeta <- DetectRawFileMeta("/path/to/fastq")
 
-  BascetDebarcode(
-    bascetRoot,
-    rawmeta,
-    chemistry="atrandi-wgs"
-  )
+BascetDebarcode(
+  bascetRoot,
+  rawmeta,
+  chemistry="atrandi-wgs"
+)
 
-  ### Figure out which drops to keep (roughly)
-  debstat <- PrepareSharding(
-    bascetRoot,
-    inputName="debarcoded",
-    minQuantile=0.95
-  )
+### Figure out which drops/cells to keep (roughly)
+debstat <- PrepareSharding(
+  bascetRoot,
+  inputName="debarcoded",
+  minQuantile=0.95
+)
 
-  DebarcodedKneePlot(debstat, filename = "kneeplot.pdf")
+DebarcodedKneePlot(debstat, filename = "kneeplot.pdf")
 
-  ### Shardify i.e. divide into multiple sets of files for parallel processing. If running local, can also just do 1 shard
-  BascetShardify(
-    debstat,
-    numOutputShards = 20
-  )
-
+### Shardify i.e. divide into multiple sets of files for parallel processing. If running local, can also just do 1 shard
+BascetShardify(
+  debstat,
+  numOutputShards = 20
+)
 
 
-################################################################################
-################## Alignment workflow & host filtering #########################
-################################################################################
+####################
+### Alignment workflow & host filtering
+####################
 
 #We concatenated the Human reference genome, Illumina PhiX, and Xanthomonas, to remove
 #these from the reads. Adjust based on what your background DNA is
@@ -79,10 +77,9 @@ BascetMapTransform(
 )
 
 
-################################################################################
-################## Count sketch workflow #######################################
-################################################################################
-
+####################
+### Count sketch workflow
+####################
 
 BascetRunCountsketch(
   bascetRoot,
@@ -91,10 +88,9 @@ BascetRunCountsketch(
 )
 
 
-################################################################################
-################## kraken workflow #############################################
-################################################################################
-
+####################
+### kraken workflow
+####################
 
 kraken_db <- "/somewhere/kraken/standard-8"
 
@@ -106,15 +102,9 @@ BascetRunKraken(
 )
 
 
-
-
-
-
-################################################################################
-################## De novo Assembly ############################################
-################################################################################
-
-
+####################
+### De novo Assembly
+####################
 
 ### Assemble all genomes
 BascetMapCellSKESA(
@@ -123,9 +113,9 @@ BascetMapCellSKESA(
 )
 
 
-################################################################################
-################## Analyze contigs #############################################
-################################################################################
+####################
+### Analyze contigs
+####################
 
 ### FastQC
 BascetMapCellFASTQC(

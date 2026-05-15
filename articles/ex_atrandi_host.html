@@ -103,39 +103,37 @@ away</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span></span>
-<span><span class="co">################################################################################</span></span>
-<span><span class="co">############################### Debarcode ######################################</span></span>
-<span><span class="co">################################################################################</span></span>
+<span><span class="co">####################</span></span>
+<span><span class="co">### Debarcode</span></span>
+<span><span class="co">####################</span></span>
 <span></span>
-<span>  <span class="va">rawmeta_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="st">"rawdata.txt"</span><span class="op">)</span></span>
-<span>  <span class="va">rawmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DetectRawFileMeta.html">DetectRawFileMeta</a></span><span class="op">(</span><span class="va">rawmeta_dir</span><span class="op">)</span></span>
+<span><span class="va">rawmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DetectRawFileMeta.html">DetectRawFileMeta</a></span><span class="op">(</span><span class="st">"/path/to/fastq"</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="fu"><a href="../reference/BascetDebarcode.html">BascetDebarcode</a></span><span class="op">(</span></span>
-<span>    <span class="va">bascetRoot</span>,</span>
-<span>    <span class="va">rawmeta</span>,</span>
-<span>    chemistry<span class="op">=</span><span class="st">"atrandi-wgs"</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/BascetDebarcode.html">BascetDebarcode</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  <span class="va">rawmeta</span>,</span>
+<span>  chemistry<span class="op">=</span><span class="st">"atrandi-wgs"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="co">### Figure out which drops to keep (roughly)</span></span>
-<span>  <span class="va">debstat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PrepareSharding.html">PrepareSharding</a></span><span class="op">(</span></span>
-<span>    <span class="va">bascetRoot</span>,</span>
-<span>    inputName<span class="op">=</span><span class="st">"debarcoded"</span>,</span>
-<span>    minQuantile<span class="op">=</span><span class="fl">0.95</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="co">### Figure out which drops/cells to keep (roughly)</span></span>
+<span><span class="va">debstat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PrepareSharding.html">PrepareSharding</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  inputName<span class="op">=</span><span class="st">"debarcoded"</span>,</span>
+<span>  minQuantile<span class="op">=</span><span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="fu"><a href="../reference/DebarcodedKneePlot.html">DebarcodedKneePlot</a></span><span class="op">(</span><span class="va">debstat</span>, filename <span class="op">=</span> <span class="st">"kneeplot.pdf"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/DebarcodedKneePlot.html">DebarcodedKneePlot</a></span><span class="op">(</span><span class="va">debstat</span>, filename <span class="op">=</span> <span class="st">"kneeplot.pdf"</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="co">### Shardify i.e. divide into multiple sets of files for parallel processing. If running local, can also just do 1 shard</span></span>
-<span>  <span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
-<span>    <span class="va">debstat</span>,</span>
-<span>    numOutputShards <span class="op">=</span> <span class="fl">20</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
+<span><span class="co">### Shardify i.e. divide into multiple sets of files for parallel processing. If running local, can also just do 1 shard</span></span>
+<span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
+<span>  <span class="va">debstat</span>,</span>
+<span>  numOutputShards <span class="op">=</span> <span class="fl">20</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span></span>
-<span><span class="co">################################################################################</span></span>
-<span><span class="co">################## Alignment workflow &amp; host filtering #########################</span></span>
-<span><span class="co">################################################################################</span></span>
+<span><span class="co">####################</span></span>
+<span><span class="co">### Alignment workflow &amp; host filtering</span></span>
+<span><span class="co">####################</span></span>
 <span></span>
 <span><span class="co">#We concatenated the Human reference genome, Illumina PhiX, and Xanthomonas, to remove</span></span>
 <span><span class="co">#these from the reads. Adjust based on what your background DNA is</span></span>
@@ -165,10 +163,9 @@ away</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
-<span><span class="co">################################################################################</span></span>
-<span><span class="co">################## Count sketch workflow #######################################</span></span>
-<span><span class="co">################################################################################</span></span>
-<span></span>
+<span><span class="co">####################</span></span>
+<span><span class="co">### Count sketch workflow</span></span>
+<span><span class="co">####################</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/BascetRunCountsketch.html">BascetRunCountsketch</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
@@ -177,10 +174,9 @@ away</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
-<span><span class="co">################################################################################</span></span>
-<span><span class="co">################## kraken workflow #############################################</span></span>
-<span><span class="co">################################################################################</span></span>
-<span></span>
+<span><span class="co">####################</span></span>
+<span><span class="co">### kraken workflow</span></span>
+<span><span class="co">####################</span></span>
 <span></span>
 <span><span class="va">kraken_db</span> <span class="op">&lt;-</span> <span class="st">"/somewhere/kraken/standard-8"</span></span>
 <span></span>
@@ -192,15 +188,9 @@ away</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
-<span></span>
-<span></span>
-<span></span>
-<span></span>
-<span><span class="co">################################################################################</span></span>
-<span><span class="co">################## De novo Assembly ############################################</span></span>
-<span><span class="co">################################################################################</span></span>
-<span></span>
-<span></span>
+<span><span class="co">####################</span></span>
+<span><span class="co">### De novo Assembly</span></span>
+<span><span class="co">####################</span></span>
 <span></span>
 <span><span class="co">### Assemble all genomes</span></span>
 <span><span class="fu"><a href="../reference/BascetMapCellSKESA.html">BascetMapCellSKESA</a></span><span class="op">(</span></span>
@@ -209,9 +199,9 @@ away</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
-<span><span class="co">################################################################################</span></span>
-<span><span class="co">################## Analyze contigs #############################################</span></span>
-<span><span class="co">################################################################################</span></span>
+<span><span class="co">####################</span></span>
+<span><span class="co">### Analyze contigs</span></span>
+<span><span class="co">####################</span></span>
 <span></span>
 <span><span class="co">### FastQC</span></span>
 <span><span class="fu"><a href="../reference/BascetMapCellFASTQC.html">BascetMapCellFASTQC</a></span><span class="op">(</span></span>
