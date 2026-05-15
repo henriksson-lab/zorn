@@ -1,0 +1,135 @@
+# Example: Atrandi short-read WGS with host removal
+
+This is a full Zorn/Bascet example for Atrandi WGS with Illumina
+short-read data. See other pages for what each step means - this example
+is mainly aimed to let you copy-paste something that will work right
+away
+
+``` r
+
+bascetInstance.default <- getBascetBinart()
+if(TRUE) {
+  #Running locally
+  bascetRunner.default <- LocalRunner(mem="50g")
+} else {
+  #Running on a server with SLURM
+  bascetRunner.default <- SlurmRunner(account="hpc2n2026-186", ncpu="10", mem="35g", time="0-14:00:00")
+}
+
+
+################################################################################
+############################### Debarcode ######################################
+################################################################################
+
+  rawmeta_dir <- readLines("rawdata.txt")
+  rawmeta <- DetectRawFileMeta(rawmeta_dir)
+
+  BascetDebarcode(
+    bascetRoot,
+    rawmeta,
+    chemistry="atrandi-wgs"
+  )
+
+  ### Figure out which drops to keep (roughly)
+  debstat <- PrepareSharding(
+    bascetRoot,
+    inputName="debarcoded",
+    minQuantile=0.95
+  )
+
+  DebarcodedKneePlot(debstat, filename = "kneeplot.pdf")
+
+  ### Shardify i.e. divide into multiple sets of files for parallel processing. If running local, can also just do 1 shard
+  BascetShardify(
+    debstat,
+    numOutputShards = 20
+  )
+
+
+
+################################################################################
+################## Alignment workflow & host filtering #########################
+################################################################################
+
+#We concatenated the Human reference genome, Illumina PhiX, and Xanthomonas, to remove
+#these from the reads. Adjust based on what your background DNA is
+bwaref <- "/somehwere/human_phi_xantham/all.fa.gz"
+
+### Perform alignment
+BascetAlignToReference(
+  bascetRoot,
+  useReference = bwaref
+)
+
+### Remove host
+BascetFilterAlignment(
+    bascetRoot,
+    inputName="aligned_cell",
+    outputName="aligned_cell_nohost",
+    keepMapped=FALSE
+)
+
+
+### Get BAM back to TIRP format
+BascetMapTransform(
+  bascetRoot,
+  inputName="aligned_cell_nohost",
+  outputName = "filtered_nohost",
+  outFormat="tirp.gz"
+)
+
+
+################################################################################
+################## Count sketch workflow #######################################
+################################################################################
+
+
+BascetRunCountsketch(
+  bascetRoot,
+  sketchSize=16384,
+  inputName="filtered_nohost"
+)
+
+
+################################################################################
+################## kraken workflow #############################################
+################################################################################
+
+
+kraken_db <- "/somewhere/kraken/standard-8"
+
+### Run Kraken2 on each cell
+BascetRunKraken(
+  bascetRoot,
+  inputName="filtered_nohost",
+  useKrakenDB = kraken_db
+)
+
+
+
+
+
+
+################################################################################
+################## De novo Assembly ############################################
+################################################################################
+
+
+
+### Assemble all genomes
+BascetMapCellSKESA(
+  bascetRoot,
+  inputName = "filtered_nohost"
+)
+
+
+################################################################################
+################## Analyze contigs #############################################
+################################################################################
+
+### FastQC
+BascetMapCellFASTQC(
+  bascetRoot,
+  inputName = "filtered_nohost"
+)
+```

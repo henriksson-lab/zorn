@@ -59,6 +59,11 @@ Then there are several options on how to continue with deeper analysis:
   MAP](https://henriksson-lab.github.io/zorn/articles/map_scripts.md) -
   the general method for performing calculations on each cell
 
+If you are in a hurry, you can check our examples:
+
+- [Atrandi short-read WGS with host
+  removal](https://henriksson-lab.github.io/zorn/articles/ex_atrandi_host.md)
+
 These may help you understand the design of Zorn and Bascet:
 
 - [Overview of file

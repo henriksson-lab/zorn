@@ -12,11 +12,12 @@
   files](https://henriksson-lab.github.io/zorn/articles/bascet_zip.md):
 - [Citing](https://henriksson-lab.github.io/zorn/articles/citing.md):
 - [Clustering](https://henriksson-lab.github.io/zorn/articles/clustering.md):
-- [Coassembly](https://henriksson-lab.github.io/zorn/articles/coassembly.md):
 - [Count sketch KMER-based
   workflow](https://henriksson-lab.github.io/zorn/articles/countsketch.md):
 - [Debarcoding and
   sharding](https://henriksson-lab.github.io/zorn/articles/debarcoding.md):
+- [Example: Atrandi short-read WGS with host
+  removal](https://henriksson-lab.github.io/zorn/articles/ex_atrandi_host.md):
 - [Example
   data](https://henriksson-lab.github.io/zorn/articles/example_data.md):
 - [Frequently Asked
