@@ -53,6 +53,8 @@ navbar:
           href: articles/example_data.html
     - text: FAQ
       href: articles/faq.html
+    - text: Bug reports
+      href: https://github.com/henriksson-lab/bascet/issues
     - text: Citing
       href: articles/citing.html
     - text: "Reference"
