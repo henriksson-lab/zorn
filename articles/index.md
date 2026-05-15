@@ -11,7 +11,6 @@
 - [Working with Bascet-ZIP
   files](https://henriksson-lab.github.io/zorn/articles/bascet_zip.md):
 - [Citing](https://henriksson-lab.github.io/zorn/articles/citing.md):
-- [Clustering](https://henriksson-lab.github.io/zorn/articles/clustering.md):
 - [Count sketch KMER-based
   workflow](https://henriksson-lab.github.io/zorn/articles/countsketch.md):
 - [Debarcoding and

@@ -45,8 +45,6 @@ The next step to get an overview is likely:
 
 Then there are several options on how to continue with deeper analysis:
 
-- [Clustering](https://henriksson-lab.github.io/zorn/articles/clustering.md) -
-  to visualize your samples
 - [De novo
   assembly](https://henriksson-lab.github.io/zorn/articles/assembly.md)
 - [Genome
@@ -68,8 +66,10 @@ These may help you understand the design of Zorn and Bascet:
 
 - [Overview of file
   formats](https://henriksson-lab.github.io/zorn/articles/fileformats.md)
-- [Working with Bascet
-  files](https://henriksson-lab.github.io/zorn/articles/articles/bascet_files.md)
+- [The types of Bascet-ZIP
+  files](https://henriksson-lab.github.io/zorn/articles/bascet_zip.md)
+- [Working with
+  Bascet-FASTQ](https://henriksson-lab.github.io/zorn/articles/bascet_fastq.md)
 - [For
   developers](https://henriksson-lab.github.io/zorn/articles/for_developers.md) -
   if you wish to modify Bascet
