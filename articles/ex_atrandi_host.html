@@ -93,7 +93,7 @@ short-read data. See other pages for what each step means - this example
 is mainly aimed to let you copy-paste something that will work right
 away</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu">getBascetBinart</span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetBinary.html">getBascetBinary</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">if</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co">#Running locally</span></span>
 <span>  <span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>mem<span class="op">=</span><span class="st">"50g"</span><span class="op">)</span></span>
@@ -139,9 +139,13 @@ away</p>
 <span><span class="co">#these from the reads. Adjust based on what your background DNA is</span></span>
 <span><span class="va">bwaref</span> <span class="op">&lt;-</span> <span class="st">"/somehwere/human_phi_xantham/all.fa.gz"</span></span>
 <span></span>
+<span><span class="co">### Build BWAMEM2 reference</span></span>
+<span><span class="fu"><a href="../reference/BascetIndexGenomeBWAMEM2.html">BascetIndexGenomeBWAMEM2</a></span><span class="op">(</span><span class="va">bwaref</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co">### Perform alignment</span></span>
 <span><span class="fu"><a href="../reference/BascetAlignToReference.html">BascetAlignToReference</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
+<span>  aligner <span class="op">=</span> <span class="st">"BWAMEM2"</span>,</span>
 <span>  useReference <span class="op">=</span> <span class="va">bwaref</span></span>
 <span><span class="op">)</span></span>
 <span></span>

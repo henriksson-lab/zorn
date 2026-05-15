@@ -7,7 +7,7 @@ away
 
 ``` r
 
-bascetInstance.default <- getBascetBinart()
+bascetInstance.default <- getBascetBinary()
 if(TRUE) {
   #Running locally
   bascetRunner.default <- LocalRunner(mem="50g")
@@ -53,9 +53,13 @@ BascetShardify(
 #these from the reads. Adjust based on what your background DNA is
 bwaref <- "/somehwere/human_phi_xantham/all.fa.gz"
 
+### Build BWAMEM2 reference
+BascetIndexGenomeBWAMEM2(bwaref)
+
 ### Perform alignment
 BascetAlignToReference(
   bascetRoot,
+  aligner = "BWAMEM2",
   useReference = bwaref
 )
 
