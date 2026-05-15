@@ -38,6 +38,9 @@ navbar:
         - text: "Map scripts"
           href: articles/map_scripts.html
         - text: -------
+        - text: "Example: Atrandi short-reads WGS with host removal"
+          href: articles/ex_atrandi_host.html
+        - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html
         - text: "The types of Bascet-ZIP files"

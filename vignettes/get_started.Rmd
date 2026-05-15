@@ -37,6 +37,10 @@ Then there are several options on how to continue with deeper analysis:
 -   [SNP analysis](snp_analysis.html) - to check genetic variation
 -   [Running software for each cell using MAP](map_scripts.html) - the general method for performing calculations on each cell
 
+If you are in a hurry, you can check our examples:
+
+-   [Atrandi short-read WGS with host removal](ex_atrandi_host.html)
+
 These may help you understand the design of Zorn and Bascet:
 
 -   [Overview of file formats](fileformats.html)
