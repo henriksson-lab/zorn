@@ -114,17 +114,14 @@ setMethod(
   f = "RunJob",
   signature ="LocalRunner",
   definition = function(runner, jobname, bascetInstance, cmd, arraysize) { 
-    print("Starting local job")
-
     if(!is.jobscript(cmd)) {
-      stop("LocalRunner requires cmd to be a JobScript")
+      stop("Failed to start local job: LocalRunner requires cmd to be a JobScript")
     }
 
     if(!runner@direct) {
-      stop("LocalRunner(direct = FALSE) is no longer supported")
+      stop("Failed to start local job: LocalRunner(direct = FALSE) is no longer supported")
     }
 
-    print("Running directly")
     tmproot <- GetBascetTempDir(bascetInstance)
     for(i in seq_len(arraysize)) {
       task_id <- i - 1L

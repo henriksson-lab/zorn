@@ -147,7 +147,7 @@ BascetDebarcode <- function(
     rawmeta,
     maxShardSize="200g",  ### if any?   maybe no need!
     outputName="debarcoded", 
-    chemistry=c("atrandi-wgs","atrandi-wgslr","atrandi-rnaseq","parse-bio"),  #TODO any way to get list from software?
+    chemistry=c("atrandi-wgs","atrandi-wgslr","atrandi-rnaseq","parse-bio","tenx"),  #TODO any way to get list from software?
     subchemistry=NULL,
     barcodeTolerance=NULL,
     
@@ -282,7 +282,10 @@ BascetDebarcode <- function(
   rawmeta_tostore <- do.call(rbind, list_rawmeta)
   arg_outputFiles <- matrix(list_outputFiles, nrow=1)
 
-  print(rawmeta_tostore)
+  old_width <- getOption("width")
+  options(width = 500)
+  print(rawmeta_tostore, row.names = FALSE)
+  options(width = old_width)
   #  print(rawmeta)
   #  print(arg_outputFiles)
   #  return(666)

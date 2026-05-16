@@ -40,6 +40,8 @@ navbar:
         - text: -------
         - text: "Example: Atrandi short-reads WGS with host removal"
           href: articles/ex_atrandi_host.html
+        - text: "Example: 10x Genomics single-cell RNA-seq"
+          href: articles/ex_10x_rnaseq.html
         - text: -------
         - text: "Overview of file formats"
           href: articles/fileformats.html

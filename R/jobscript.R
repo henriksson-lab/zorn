@@ -221,6 +221,20 @@ JobEnsureDir <- function(path) {
 }
 
 ###############################################
+#' Print a message during job execution
+#'
+#' Local execution calls `message()`. Bash rendering emits `echo`.
+#'
+#' @param message Message to print. Must be a single string.
+#'
+#' @return A `JobEcho` step.
+#' @noRd
+JobEcho <- function(message) {
+  stopifnot(is.character(message), length(message) == 1)
+  structure(list(message = message), class = "JobEcho")
+}
+
+###############################################
 #' Build an external command step
 #'
 #' `JobCommand` is for non-bascet tools. Prefer more specific typed steps when
@@ -514,6 +528,18 @@ renderJobStepBash.JobSetEnv <- function(step, task_id = "$TASK_ID") {
 #' @noRd
 renderJobStepBash.JobEnsureDir <- function(step, task_id = "$TASK_ID") {
   paste("mkdir -p", renderJobValueBash(step$path, task_id = task_id))
+}
+
+###############################################
+#' Render a message-printing step for bash
+#'
+#' @param step `JobEcho` step.
+#' @param task_id Bash expression for the current task id.
+#'
+#' @return Character scalar `echo` command.
+#' @noRd
+renderJobStepBash.JobEcho <- function(step, task_id = "$TASK_ID") {
+  paste("echo", shQuote(step$message))
 }
 
 ###############################################
@@ -955,6 +981,21 @@ runJobStepLocal.JobSetEnv <- function(step, ctx, input = NULL, capture = FALSE) 
 #' @noRd
 runJobStepLocal.JobEnsureDir <- function(step, ctx, input = NULL, capture = FALSE) {
   dir.create(resolveJobValueLocal(step$path, ctx), recursive = TRUE, showWarnings = FALSE)
+  invisible(NULL)
+}
+
+###############################################
+#' Print a message locally
+#'
+#' @param step `JobEcho` step.
+#' @param ctx Local execution context.
+#' @param input Ignored.
+#' @param capture Ignored.
+#'
+#' @return Invisibly returns NULL.
+#' @noRd
+runJobStepLocal.JobEcho <- function(step, ctx, input = NULL, capture = FALSE) {
+  message(step$message)
   invisible(NULL)
 }
 

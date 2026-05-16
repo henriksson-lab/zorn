@@ -188,6 +188,7 @@ BascetIndexGenomeSTAR <- function(
     cmd = JobScript(
       steps = list(
         JobEnsureDir(outDir),
+        JobEcho("Indexing genome with STAR..."),
         JobBascetCommand(bascetInstance, list(
           "exttool", "STAR",
           JobArg("--runThreadN", as.character(numThreads), sep = " "),
