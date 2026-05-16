@@ -17,9 +17,9 @@ if(TRUE) {
 }
 
 
-####################
+###
 ### Debarcode
-####################
+###
 
 rawmeta <- DetectRawFileMeta("/path/to/fastq")
 
@@ -46,9 +46,9 @@ BascetShardify(
 )
 
 
-####################
+###
 ### Alignment workflow (STAR, splice-aware)
-####################
+###
 
 if(TRUE) {
   #Use the Cell Ranger human reference
@@ -73,9 +73,9 @@ BascetAlignToReference(
 )
 
 
-####################
+###
 ### Feature counting (genes per cell)
-####################
+###
 
 ### Overlay aligned reads with gene coordinates from the reference GTF.
 ### Cell Ranger GTFs use gene_name (not the default "name") for the gene symbol.
@@ -86,10 +86,10 @@ BascetCountFeature(
 )
 
 
-####################
+###
 ### Load into Seurat; See, e.g., the Seurat PBMC tutorial for more details.
 ### The only difference is in how the count matrix is loaded
-####################
+###
 
 library(Seurat)
 
