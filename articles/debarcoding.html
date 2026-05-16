@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.29</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,6 +50,7 @@
     <li><a class="dropdown-item" href="../articles/map_scripts.html">Map scripts</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/ex_atrandi_host.html">Example: Atrandi short-reads WGS with host removal</a></li>
+    <li><a class="dropdown-item" href="../articles/ex_10x_rnaseq.html">Example: 10x Genomics single-cell RNA-seq</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/fileformats.html">Overview of file formats</a></li>
     <li><a class="dropdown-item" href="../articles/bascet_zip.html">The types of Bascet-ZIP files</a></li>
@@ -102,6 +103,23 @@ identify which read belongs to which cell. Zorn can automatically figure
 out which files to use for what:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rawmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DetectRawFileMeta.html">DetectRawFileMeta</a></span><span class="op">(</span><span class="st">"/home/yours/directory_with_raw_fastq"</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p>⚠️ Input FASTQs must be <strong>bgzipped</strong>
+(<code>.fastq.gz</code> written by <code>bgzip</code>), not produced by
+plain <code>gzip</code>. Bascet relies on the block structure of BGZF to
+read the files in parallel. FASTQs straight off an Illumina sequencer
+are already bgzipped, but if you have re-compressed files (or downloaded
+<code>.gz</code> files from elsewhere) you may need to recompress with
+<code>bgzip</code> first. Decompress to a real file first, then bgzip
+it:</p>
+<pre><code>gunzip reads.fastq.gz   # produces reads.fastq
+bgzip reads.fastq       # produces reads.fastq.gz (bgzipped)</code></pre>
+<p>⚠️ <strong>Do not pipe into <code>bgzip</code></strong>
+(e.g. <code>zcat reads.fastq.gz | bgzip &gt; ...</code>). It silently
+produces a file that looks valid but is not correctly block-compressed,
+and Bascet will fail to read it in parallel. Always run
+<code>bgzip</code> on a real file.</p>
+</blockquote>
 <p>Depending on your input data, rawmeta might look like this:</p>
 <table class="table">
 <caption>Example input file metadata</caption>
@@ -156,7 +174,7 @@ produce a data frame with the columns above, and provide as input for
 the next stage.</p>
 <p>You can now parse the reads the figure out which cell they belong to,
 and any UMI information. The only thing you additionally need to specify
-is what type of data you have, where “atrandi_wgs” is for the Atrandi
+is what type of data you have, where “atrandi-wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.</p>
 <blockquote>
 <p>⚠️ Note that Bascet performs trimming of reads during the Debarcode
@@ -166,19 +184,25 @@ and remove adapters accordingly Regular users should thus not need to
 worry about this</p>
 </blockquote>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetDebarcode.html">BascetDebarcode</a></span><span class="op">(</span></span>
 <span>    <span class="va">bascetRoot</span>,</span>
 <span>    <span class="va">rawmeta</span>,</span>
-<span>    chemistry<span class="op">=</span><span class="st">"atrandi_wgs"</span></span>
+<span>    chemistry<span class="op">=</span><span class="st">"atrandi-wgs"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p>Chemistries supported right now are: - <code>atrandi-wgs</code> —
+Atrandi SPC-based MDA protocol for WGS - <code>atrandi-wgslr</code> —
+Atrandi SPC-based MDA protocol for WGS, long-read -
+<code>atrandi-rnaseq</code> — Atrandi SPC-based protocol for RNA-seq -
+<code>parse-bio</code> — Parse Biosciences RNA-seq - <code>tenx</code> —
+10x Genomics (3’/5’ v2/v3/v3.1/v4, multiome)</p>
 <p>After debarcoding, you now need to (1) merge files belong to the same
 library, and (2) remove reads belonging to empty droplets. Furthermore,
 at this step you can also decide to split the cells across multiple
 “shards”, enabling parallel processing the data in later steps. This
 done in two steps, in which you first set up a “plan”. This is done
 using the following command:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">debstat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PrepareSharding.html">PrepareSharding</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName<span class="op">=</span><span class="st">"debarcoded"</span>,</span>
@@ -186,7 +210,7 @@ using the following command:</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Before you proceed, you should perform a kneeplot analysis to see
 which cells you keep:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/DebarcodedKneePlot.html">DebarcodedKneePlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">debstat</span>,</span>
 <span>  filename <span class="op">=</span> <span class="st">"kneeplot.pdf"</span> <span class="co">#optional</span></span>
@@ -214,7 +238,7 @@ in parallel. If you run everything on your own computer then we advise
 only creating one shard, as there is no benefit to having multiple and
 it is more likely to cause mistakes.</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
 <span>  <span class="va">debstat</span>,</span>
 <span>  numOutputShards <span class="op">=</span> <span class="fl">10</span> <span class="co">#Shards per library; increase to spread the workload over more computers</span></span>

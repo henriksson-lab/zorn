@@ -1,0 +1,109 @@
+# Example: 10x Genomics single-cell RNA-seq
+
+This is a full Zorn/Bascet example for 10x Genomics single-cell RNA-seq
+data aligned against a human reference. See other pages for what each
+step means - this example is mainly aimed to let you copy-paste
+something that will work right away
+
+``` r
+
+bascetInstance.default <- getBascetBinary()
+if(TRUE) {
+  #Running locally
+  bascetRunner.default <- LocalRunner(mem="50g")
+} else {
+  #Running on a server with SLURM
+  bascetRunner.default <- SlurmRunner(account="hpc2n2026-186", ncpu="10", mem="35g", time="0-14:00:00")
+}
+
+
+####################
+### Debarcode
+####################
+
+rawmeta <- DetectRawFileMeta("/path/to/fastq")
+
+BascetDebarcode(
+  bascetRoot,
+  rawmeta,
+  chemistry="tenx"
+)
+
+### Figure out which drops/cells to keep (roughly)
+debstat <- PrepareSharding(
+  bascetRoot,
+  inputName="debarcoded",
+  minQuantile=0.95
+)
+
+DebarcodedKneePlot(debstat, filename = "kneeplot.pdf")
+
+### Shardify i.e. divide into multiple sets of files for parallel processing.
+### If running local, can also just do 1 shard
+BascetShardify(
+  debstat,
+  numOutputShards = 40
+)
+
+
+####################
+### Alignment workflow (STAR, splice-aware)
+####################
+
+if(TRUE) {
+  #Use the Cell Ranger human reference
+  starref <- "/path/to/refdata-gex-GRCh38-2020-A/star"
+} else {
+  #build your own STAR index via BascetIndexGenomeSTAR
+  starref <- "/path/to/star"
+  starfasta <- "/path/to/refdata-gex-GRCh38-2020-A/fasta/genome.fa"
+  stargff <- "/path/to/refdata-gex-GRCh38-2020-A/genes/genes.gtf"
+  BascetIndexGenomeSTAR(
+    fastaFile = starfasta,
+    gtfFile = stargff,
+    outDir = starref
+  )
+}
+
+### Perform alignment
+BascetAlignToReference(
+  bascetRoot,
+  aligner = "STAR",
+  useReference = starref
+)
+
+
+####################
+### Feature counting (genes per cell)
+####################
+
+### Overlay aligned reads with gene coordinates from the reference GTF.
+### Cell Ranger GTFs use gene_name (not the default "name") for the gene symbol.
+BascetCountFeature(
+  bascetRoot,
+  gffFile = stargff,
+  attrGeneName = "gene_name"
+)
+
+
+####################
+### Load into Seurat; See, e.g., the Seurat PBMC tutorial for more details.
+### The only difference is in how the count matrix is loaded
+####################
+
+library(Seurat)
+
+cnt <- ReadBascetCountMatrix(bascetRoot, "featurecount")
+
+adata <- CreateSeuratObject(cnt)
+
+adata <- NormalizeData(adata)
+adata <- FindVariableFeatures(adata, selection.method = "vst")
+adata <- ScaleData(adata)
+adata <- RunPCA(adata, features = VariableFeatures(object = adata))
+
+adata <- FindNeighbors(adata, dims = 1:20)
+adata <- FindClusters(adata, resolution = 0.5)
+
+adata <- RunUMAP(adata, dims = 1:10)
+```

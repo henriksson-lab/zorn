@@ -15,6 +15,8 @@
   workflow](https://henriksson-lab.github.io/zorn/articles/countsketch.md):
 - [Debarcoding and
   sharding](https://henriksson-lab.github.io/zorn/articles/debarcoding.md):
+- [Example: 10x Genomics single-cell
+  RNA-seq](https://henriksson-lab.github.io/zorn/articles/ex_10x_rnaseq.md):
 - [Example: Atrandi short-read WGS with host
   removal](https://henriksson-lab.github.io/zorn/articles/ex_atrandi_host.md):
 - [Example

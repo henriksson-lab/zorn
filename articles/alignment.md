@@ -241,8 +241,10 @@ DimPlot(object = adata, label = TRUE, group.by = "species_aln") +
 For protocols such as RNA-seq, the aim is to get the number of reads per
 gene, per cell. After alignment and sorting of reads based on genome
 coordinate (default setting), you can overlay the reads with gene
-coordinates from a GTF or GFF file (both are supported). The following
-command performs this operation:
+coordinates from an annotation file. The format is detected from the
+file extension; the following are all supported: `.gff`, `.gff.gz`,
+`.gtf`, `.gtf.gz` and `.bed`. The following command performs this
+operation:
 
 ``` r
 

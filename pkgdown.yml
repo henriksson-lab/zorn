@@ -9,6 +9,7 @@ articles:
   citing: citing.html
   countsketch: countsketch.html
   debarcoding: debarcoding.html
+  ex_10x_rnaseq: ex_10x_rnaseq.html
   ex_atrandi_host: ex_atrandi_host.html
   example_data: example_data.html
   faq: faq.html
@@ -25,7 +26,7 @@ articles:
   slurm: slurm.html
   snp_analysis: snp_analysis.html
   tcr_analysis: tcr_analysis.html
-last_built: 2026-05-15T16:29Z
+last_built: 2026-05-16T11:59Z
 urls:
   reference: https://henriksson-lab.github.io/zorn/reference
   article: https://henriksson-lab.github.io/zorn/articles

@@ -28,6 +28,22 @@ out which files to use for what:
 rawmeta <- DetectRawFileMeta("/home/yours/directory_with_raw_fastq")
 ```
 
+> ⚠️ Input FASTQs must be **bgzipped** (`.fastq.gz` written by `bgzip`),
+> not produced by plain `gzip`. Bascet relies on the block structure of
+> BGZF to read the files in parallel. FASTQs straight off an Illumina
+> sequencer are already bgzipped, but if you have re-compressed files
+> (or downloaded `.gz` files from elsewhere) you may need to recompress
+> with `bgzip` first. Decompress to a real file first, then bgzip it:
+>
+>     gunzip reads.fastq.gz   # produces reads.fastq
+>     bgzip reads.fastq       # produces reads.fastq.gz (bgzipped)
+>
+> ⚠️ **Do not pipe into `bgzip`**
+> (e.g. `zcat reads.fastq.gz | bgzip > ...`). It silently produces a
+> file that looks valid but is not correctly block-compressed, and
+> Bascet will fail to read it in parallel. Always run `bgzip` on a real
+> file.
+
 Depending on your input data, rawmeta might look like this:
 
 | prefix | r1 | r2 | dir |
@@ -53,7 +69,7 @@ the next stage.
 
 You can now parse the reads the figure out which cell they belong to,
 and any UMI information. The only thing you additionally need to specify
-is what type of data you have, where “atrandi_wgs” is for the Atrandi
+is what type of data you have, where “atrandi-wgs” is for the Atrandi
 SPC-based MDA protocol for WGS.
 
 > ⚠️ Note that Bascet performs trimming of reads during the Debarcode
@@ -70,9 +86,15 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 BascetDebarcode(
     bascetRoot,
     rawmeta,
-    chemistry="atrandi_wgs"
+    chemistry="atrandi-wgs"
 )
 ```
+
+Chemistries supported right now are: - `atrandi-wgs` — Atrandi SPC-based
+MDA protocol for WGS - `atrandi-wgslr` — Atrandi SPC-based MDA protocol
+for WGS, long-read - `atrandi-rnaseq` — Atrandi SPC-based protocol for
+RNA-seq - `parse-bio` — Parse Biosciences RNA-seq - `tenx` — 10x
+Genomics (3’/5’ v2/v3/v3.1/v4, multiome)
 
 After debarcoding, you now need to (1) merge files belong to the same
 library, and (2) remove reads belonging to empty droplets. Furthermore,

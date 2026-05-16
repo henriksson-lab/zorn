@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Example: Atrandi short-read WGS with host removal • Zorn</title>
+<title>Example: 10x Genomics single-cell RNA-seq • Zorn</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Example: Atrandi short-read WGS with host removal">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Example: 10x Genomics single-cell RNA-seq">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -80,19 +80,19 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Example: Atrandi short-read WGS with host removal</h1>
+      <h1>Example: 10x Genomics single-cell RNA-seq</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/ex_atrandi_host.Rmd" class="external-link"><code>vignettes/ex_atrandi_host.Rmd</code></a></small>
-      <div class="d-none name"><code>ex_atrandi_host.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/ex_10x_rnaseq.Rmd" class="external-link"><code>vignettes/ex_10x_rnaseq.Rmd</code></a></small>
+      <div class="d-none name"><code>ex_10x_rnaseq.Rmd</code></div>
     </div>
 
     
     
-<p>This is a full Zorn/Bascet example for Atrandi WGS with Illumina
-short-read data. See other pages for what each step means - this example
-is mainly aimed to let you copy-paste something that will work right
-away</p>
+<p>This is a full Zorn/Bascet example for 10x Genomics single-cell
+RNA-seq data aligned against a human reference. See other pages for what
+each step means - this example is mainly aimed to let you copy-paste
+something that will work right away</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetBinary.html">getBascetBinary</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">if</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
@@ -113,7 +113,7 @@ away</p>
 <span><span class="fu"><a href="../reference/BascetDebarcode.html">BascetDebarcode</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  <span class="va">rawmeta</span>,</span>
-<span>  chemistry<span class="op">=</span><span class="st">"atrandi-wgs"</span></span>
+<span>  chemistry<span class="op">=</span><span class="st">"tenx"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">### Figure out which drops/cells to keep (roughly)</span></span>
@@ -125,94 +125,74 @@ away</p>
 <span></span>
 <span><span class="fu"><a href="../reference/DebarcodedKneePlot.html">DebarcodedKneePlot</a></span><span class="op">(</span><span class="va">debstat</span>, filename <span class="op">=</span> <span class="st">"kneeplot.pdf"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">### Shardify i.e. divide into multiple sets of files for parallel processing. If running local, can also just do 1 shard</span></span>
+<span><span class="co">### Shardify i.e. divide into multiple sets of files for parallel processing.</span></span>
+<span><span class="co">### If running local, can also just do 1 shard</span></span>
 <span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
 <span>  <span class="va">debstat</span>,</span>
-<span>  numOutputShards <span class="op">=</span> <span class="fl">20</span></span>
+<span>  numOutputShards <span class="op">=</span> <span class="fl">40</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="co">####################</span></span>
-<span><span class="co">### Alignment workflow &amp; host filtering</span></span>
+<span><span class="co">### Alignment workflow (STAR, splice-aware)</span></span>
 <span><span class="co">####################</span></span>
 <span></span>
-<span><span class="co">#We concatenated the Human reference genome, Illumina PhiX, and Xanthomonas, to remove</span></span>
-<span><span class="co">#these from the reads. Adjust based on what your background DNA is</span></span>
-<span><span class="va">bwaref</span> <span class="op">&lt;-</span> <span class="st">"/somehwere/human_phi_xantham/all.fa.gz"</span></span>
-<span></span>
-<span><span class="co">### Build BWAMEM2 reference</span></span>
-<span><span class="fu"><a href="../reference/BascetIndexGenomeBWAMEM2.html">BascetIndexGenomeBWAMEM2</a></span><span class="op">(</span><span class="va">bwaref</span><span class="op">)</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co">#Use the Cell Ranger human reference</span></span>
+<span>  <span class="va">starref</span> <span class="op">&lt;-</span> <span class="st">"/path/to/refdata-gex-GRCh38-2020-A/star"</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="co">#build your own STAR index via BascetIndexGenomeSTAR</span></span>
+<span>  <span class="va">starref</span> <span class="op">&lt;-</span> <span class="st">"/path/to/star"</span></span>
+<span>  <span class="va">starfasta</span> <span class="op">&lt;-</span> <span class="st">"/path/to/refdata-gex-GRCh38-2020-A/fasta/genome.fa"</span></span>
+<span>  <span class="va">stargff</span> <span class="op">&lt;-</span> <span class="st">"/path/to/refdata-gex-GRCh38-2020-A/genes/genes.gtf"</span></span>
+<span>  <span class="fu"><a href="../reference/BascetIndexGenomeSTAR.html">BascetIndexGenomeSTAR</a></span><span class="op">(</span></span>
+<span>    fastaFile <span class="op">=</span> <span class="va">starfasta</span>,</span>
+<span>    gtfFile <span class="op">=</span> <span class="va">stargff</span>,</span>
+<span>    outDir <span class="op">=</span> <span class="va">starref</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="co">### Perform alignment</span></span>
 <span><span class="fu"><a href="../reference/BascetAlignToReference.html">BascetAlignToReference</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  aligner <span class="op">=</span> <span class="st">"BWAMEM2"</span>,</span>
-<span>  useReference <span class="op">=</span> <span class="va">bwaref</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">### Remove host</span></span>
-<span><span class="fu"><a href="../reference/BascetFilterAlignment.html">BascetFilterAlignment</a></span><span class="op">(</span></span>
-<span>    <span class="va">bascetRoot</span>,</span>
-<span>    inputName<span class="op">=</span><span class="st">"aligned_cell"</span>,</span>
-<span>    outputName<span class="op">=</span><span class="st">"aligned_cell_nohost"</span>,</span>
-<span>    keepMapped<span class="op">=</span><span class="cn">FALSE</span></span>
+<span>  aligner <span class="op">=</span> <span class="st">"STAR"</span>,</span>
+<span>  useReference <span class="op">=</span> <span class="va">starref</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
-<span><span class="co">### Get BAM back to TIRP format</span></span>
-<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
+<span><span class="co">####################</span></span>
+<span><span class="co">### Feature counting (genes per cell)</span></span>
+<span><span class="co">####################</span></span>
+<span></span>
+<span><span class="co">### Overlay aligned reads with gene coordinates from the reference GTF.</span></span>
+<span><span class="co">### Cell Ranger GTFs use gene_name (not the default "name") for the gene symbol.</span></span>
+<span><span class="fu"><a href="../reference/BascetCountFeature.html">BascetCountFeature</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"aligned_cell_nohost"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"filtered_nohost"</span>,</span>
-<span>  outFormat<span class="op">=</span><span class="st">"tirp.gz"</span></span>
+<span>  gffFile <span class="op">=</span> <span class="va">stargff</span>,</span>
+<span>  attrGeneName <span class="op">=</span> <span class="st">"gene_name"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="co">####################</span></span>
-<span><span class="co">### Count sketch workflow</span></span>
+<span><span class="co">### Load into Seurat; See, e.g., the Seurat PBMC tutorial for more details.</span></span>
+<span><span class="co">### The only difference is in how the count matrix is loaded</span></span>
 <span><span class="co">####################</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/BascetRunCountsketch.html">BascetRunCountsketch</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  sketchSize<span class="op">=</span><span class="fl">16384</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"filtered_nohost"</span></span>
-<span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">cnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadBascetCountMatrix.html">ReadBascetCountMatrix</a></span><span class="op">(</span><span class="va">bascetRoot</span>, <span class="st">"featurecount"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">####################</span></span>
-<span><span class="co">### kraken workflow</span></span>
-<span><span class="co">####################</span></span>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">cnt</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">kraken_db</span> <span class="op">&lt;-</span> <span class="st">"/somewhere/kraken/standard-8"</span></span>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">adata</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span></span>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">adata</span>, features <span class="op">=</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">adata</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">### Run Kraken2 on each cell</span></span>
-<span><span class="fu"><a href="../reference/BascetRunKraken.html">BascetRunKraken</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"filtered_nohost"</span>,</span>
-<span>  useKrakenDB <span class="op">=</span> <span class="va">kraken_db</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">FindNeighbors</a></span><span class="op">(</span><span class="va">adata</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">adata</span>, resolution <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
 <span></span>
-<span></span>
-<span><span class="co">####################</span></span>
-<span><span class="co">### De novo Assembly</span></span>
-<span><span class="co">####################</span></span>
-<span></span>
-<span><span class="co">### Assemble all genomes</span></span>
-<span><span class="fu"><a href="../reference/BascetMapCellSKESA.html">BascetMapCellSKESA</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"filtered_nohost"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="co">####################</span></span>
-<span><span class="co">### Analyze contigs</span></span>
-<span><span class="co">####################</span></span>
-<span></span>
-<span><span class="co">### FastQC</span></span>
-<span><span class="fu"><a href="../reference/BascetMapCellFASTQC.html">BascetMapCellFASTQC</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"filtered_nohost"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">adata</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
   </main>
 </div>
 
