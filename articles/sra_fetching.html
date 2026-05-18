@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Working with Bascet-FASTQ • Zorn</title>
+<title>Working with isolates and fetching data from SRA • Zorn</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Working with Bascet-FASTQ">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Working with isolates and fetching data from SRA">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -81,98 +81,91 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Working with Bascet-FASTQ</h1>
+      <h1>Working with isolates and fetching data from SRA</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/bascet_fastq.Rmd" class="external-link"><code>vignettes/bascet_fastq.Rmd</code></a></small>
-      <div class="d-none name"><code>bascet_fastq.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/henriksson-lab/zorn/blob/main/vignettes/sra_fetching.Rmd" class="external-link"><code>vignettes/sra_fetching.Rmd</code></a></small>
+      <div class="d-none name"><code>sra_fetching.Rmd</code></div>
     </div>
 
     
     
-<p>Advanced users may wish to process the reads using custom software.
-As such software typically ingests FASTQ-files, we provide Bascet-FASTQ.
-These files are regular <a href="fileformats.html">(pairwise FASTQ-files
-with a naming scheme)</a>.</p>
-<p>There are a few things you can do with these: * Special trimming (but
-Bascet already performs rudimentary trimming) * Use alternative aligners
-(the output BAM files retains read names and can thus be ingested by
-Bascet again) * Extract special sequences for separate analysis
-(perturb-seq sgRNAs; CITE-seq; etc) * Deposit the FASTQ into archives
-(but read separate section!)</p>
-<p>We assume that you have set up for Instance and Runner for the
-following commands to work.</p>
 <div class="section level2">
-<h2 id="raw-fastq-depositing">Raw FASTQ depositing<a class="anchor" aria-label="anchor" href="#raw-fastq-depositing"></a>
+<h2 id="when-to-use-this">When to use this<a class="anchor" aria-label="anchor" href="#when-to-use-this"></a>
 </h2>
-<p>Bascet-FASTQ is possibly suitable for depositing raw data. The data
-will take less space as trimming and barcode identification has already
-been performed. The sorting also improves compression ratio. The
-presorting further reduces work for reproducing the analysis.</p>
-<blockquote>
-<p>⚠️ FASTQ-files submitted to SRA will have the names of reads removed
-in their “light” format (i.e., which cell the read belongs to). It will
-still be possible to get the fully raw files using the cold storage
-retrieval option, but users may have to pay for this, and download takes
-longer times.</p>
-</blockquote>
-<blockquote>
-<p>We are working toward a solution, but users are currently better off
-submitting raw data to Zenodo or other general depository. In such a
-case, you might as well submit the native TIRP files, but we currently
-do not make any recommendation.</p>
-</blockquote>
+<p>Zorn/Bascet can also work with isolates, treating each isolate as a
+“cell”, giving access to all clustering commands etc. This can be handy
+if you have a larger number of genomes as you won’t drown you file
+system with FASTA files which reduces performance.</p>
+<p>This workflow is in its infancy and currently works best with raw
+reads. You can likely download assembled genomes as well but some steps
+need rehashing to ensure that you don’t run into problems.</p>
 </div>
 <div class="section level2">
-<h2 id="conversion-to-bascet-fastq">Conversion to Bascet-FASTQ<a class="anchor" aria-label="anchor" href="#conversion-to-bascet-fastq"></a>
+<h2 id="input-via-sra">Input via SRA<a class="anchor" aria-label="anchor" href="#input-via-sra"></a>
 </h2>
-<p>The following command converts any Bascet file containing reads to
-Bascet-FASTQ:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Get reads in FASTQ format</span></span>
-<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,</span>
-<span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
-<span>  outFormat<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<p>Zorn/Bascet is able to download FASTQ files from SRA, packing the
+data directly into TIRP files (i.e., as if you had run single-cell and
+just debarcoded the data). The SRA workflow also downloads metadata per
+file that you can later use to rename the cells. Initially, cells are
+named by the run, i.e., SRRxxxx.</p>
 </div>
 <div class="section level2">
-<h2 id="trimming-with-fastp">Trimming with FASTP<a class="anchor" aria-label="anchor" href="#trimming-with-fastp"></a>
+<h2 id="requirements-for-sra-tools">Requirements for SRA-tools<a class="anchor" aria-label="anchor" href="#requirements-for-sra-tools"></a>
 </h2>
-<p><a href="https://github.com/OpenGene/fastp" class="external-link">(FASTP)</a> is a fast
-trimmer. We however don’t recommend it for de novo assembly as it seems
-to leave too many adapters (<em>this is why we already perform our own
-trimming during Debarcode</em>). In either case, FASTP can be run
-directly through Zorn. If you wish to use other software, you can apply
-it in any other way to the FASTQ files.</p>
+<p>Zorn uses the <code>rentrez</code> R package to query NCBI. Bascet
+uses SRA Toolkit for the actual downloads, so <code>prefetch</code> and
+<code>fasterq-dump</code> must be available on the machine that runs the
+import.</p>
+<p>Install SRA Toolkit before running <code>BascetImportSra()</code> or
+<code>bascet import-sra</code>. <code>BascetImportSra()</code> checks
+that both executables can be found before submitting the Bascet
+jobs.</p>
+<p>Download and install SRA Toolkit from NCBI: <a href="https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit" class="external-link">https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit</a>.
+After installation, check that the tools are on <code>PATH</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">which</span> prefetch</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">which</span> fasterq-dump</span></code></pre></div>
+<p>If the tools are not on <code>PATH</code>, you can pass their full
+paths:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">### Get reads in fastq format</span></span>
-<span><span class="fu"><a href="../reference/BascetRunFASTP.html">BascetRunFASTP</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  numLocalThreads<span class="op">=</span><span class="fl">10</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
-<span>  outputName<span class="op">=</span><span class="st">"fastp"</span></span>
+<code class="sourceCode R"><span><span class="fu">BascetImportSra</span><span class="op">(</span></span>
+<span>  bascetRoot <span class="op">=</span> <span class="st">"/path/to/bascet_root"</span>,</span>
+<span>  prefetch <span class="op">=</span> <span class="st">"/path/to/prefetch"</span>,</span>
+<span>  fasterqDump <span class="op">=</span> <span class="st">"/path/to/fasterq-dump"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="conversion-from-bascet-fastq-to-tirp">Conversion from Bascet-FASTQ to TIRP<a class="anchor" aria-label="anchor" href="#conversion-from-bascet-fastq-to-tirp"></a>
+<h2 id="example-download-of-sra-runs">Example download of SRA runs<a class="anchor" aria-label="anchor" href="#example-download-of-sra-runs"></a>
 </h2>
-<p>We recommend keeping reads in TIRP files as this is what commands are
-optimized for; and TIRP offers direct extraction of reads from a cell,
-via indexing, unlike FASTQ. The following command performs the
-conversion</p>
+<p>The scMetaG study by Zheng et al. 2022 deposted each individual cell
+as a single file. This makes the files hard to download manually (the
+SRA run selector struggles to even open if you send all the files to
+it!). But Zorn/Bascet can take the ID of their deposition, PRJNA803937,
+and first fetches the list of runs:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Convert FASTQ to TIRP</span></span>
-<span><span class="fu"><a href="../reference/BascetMapTransform.html">BascetMapTransform</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"fastp"</span>,</span>
-<span>  <span class="st">"new_filtered"</span>,</span>
-<span>  outFormat<span class="op">=</span><span class="st">"tirp.gz"</span></span>
+<code class="sourceCode R"><span><span class="co">#Get a list of SRRs and metadata</span></span>
+<span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu">BascetResolveSra</span><span class="op">(</span></span>
+<span>  bioproject <span class="op">=</span> <span class="st">"PRJNA803937"</span>,</span>
+<span>  terms <span class="op">=</span> <span class="st">"SAG_"</span>  <span class="co">#only SAGs; adjust for your needs</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Write shards of SRRs to be fetched</span></span>
+<span><span class="fu">BascetPrepareSraFetchLists</span><span class="op">(</span></span>
+<span>  <span class="va">tab</span>,</span>
+<span>  bascetRoot <span class="op">=</span> <span class="va">bascetRoot</span></span>
+<span>  <span class="co">#Default is 1000 runs per TIRP</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>You now have a TIRP file again, equivalent to the first shardified
-output. &gt; ⚠️ Don’t forget to specify inputName=“new_filtered” to
-later commands, as the default &gt; is to use “filtered”</p>
+<p>This creates “sralist”-files holding a list of SRAs to download into
+each TIRP. It also makes a runinfo.csv-file, holding metadata per run.
+The latter you can use to add metadata at a later stage (optional).</p>
+<p>Then import all shards into TIRP files:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">BascetImportSra</span><span class="op">(</span></span>
+<span>  bascetRoot <span class="op">=</span> <span class="va">bascetRoot</span>,</span>
+<span>  threads <span class="op">=</span> <span class="fl">16</span></span>
+<span>  <span class="co">#runsAhead = 10   #optional to set. currently each thread will download a separate SRA-run, but you can lower this if the runs are large</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>From here, you can proceed as if had just debarcoded reads!</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

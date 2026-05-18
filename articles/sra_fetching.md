@@ -1,0 +1,91 @@
+# Working with isolates and fetching data from SRA
+
+## When to use this
+
+Zorn/Bascet can also work with isolates, treating each isolate as a
+“cell”, giving access to all clustering commands etc. This can be handy
+if you have a larger number of genomes as you won’t drown you file
+system with FASTA files which reduces performance.
+
+This workflow is in its infancy and currently works best with raw reads.
+You can likely download assembled genomes as well but some steps need
+rehashing to ensure that you don’t run into problems.
+
+## Input via SRA
+
+Zorn/Bascet is able to download FASTQ files from SRA, packing the data
+directly into TIRP files (i.e., as if you had run single-cell and just
+debarcoded the data). The SRA workflow also downloads metadata per file
+that you can later use to rename the cells. Initially, cells are named
+by the run, i.e., SRRxxxx.
+
+## Requirements for SRA-tools
+
+Zorn uses the `rentrez` R package to query NCBI. Bascet uses SRA Toolkit
+for the actual downloads, so `prefetch` and `fasterq-dump` must be
+available on the machine that runs the import.
+
+Install SRA Toolkit before running `BascetImportSra()` or
+`bascet import-sra`. `BascetImportSra()` checks that both executables
+can be found before submitting the Bascet jobs.
+
+Download and install SRA Toolkit from NCBI:
+<https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit>.
+After installation, check that the tools are on `PATH`:
+
+``` bash
+which prefetch
+which fasterq-dump
+```
+
+If the tools are not on `PATH`, you can pass their full paths:
+
+``` r
+
+BascetImportSra(
+  bascetRoot = "/path/to/bascet_root",
+  prefetch = "/path/to/prefetch",
+  fasterqDump = "/path/to/fasterq-dump"
+)
+```
+
+## Example download of SRA runs
+
+The scMetaG study by Zheng et al. 2022 deposted each individual cell as
+a single file. This makes the files hard to download manually (the SRA
+run selector struggles to even open if you send all the files to it!).
+But Zorn/Bascet can take the ID of their deposition, PRJNA803937, and
+first fetches the list of runs:
+
+``` r
+
+#Get a list of SRRs and metadata
+tab <- BascetResolveSra(
+  bioproject = "PRJNA803937",
+  terms = "SAG_"  #only SAGs; adjust for your needs
+)
+
+#Write shards of SRRs to be fetched
+BascetPrepareSraFetchLists(
+  tab,
+  bascetRoot = bascetRoot
+  #Default is 1000 runs per TIRP
+)
+```
+
+This creates “sralist”-files holding a list of SRAs to download into
+each TIRP. It also makes a runinfo.csv-file, holding metadata per run.
+The latter you can use to add metadata at a later stage (optional).
+
+Then import all shards into TIRP files:
+
+``` r
+
+BascetImportSra(
+  bascetRoot = bascetRoot,
+  threads = 16
+  #runsAhead = 10   #optional to set. currently each thread will download a separate SRA-run, but you can lower this if the runs are large
+)
+```
+
+From here, you can proceed as if had just debarcoded reads!

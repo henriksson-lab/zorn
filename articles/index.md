@@ -44,5 +44,7 @@
   SLURM](https://henriksson-lab.github.io/zorn/articles/slurm.md):
 - [SNP
   analysis](https://henriksson-lab.github.io/zorn/articles/snp_analysis.md):
+- [Working with isolates and fetching data from
+  SRA](https://henriksson-lab.github.io/zorn/articles/sra_fetching.md):
 - [TCR/BCR
   analysis](https://henriksson-lab.github.io/zorn/articles/tcr_analysis.md):
