@@ -25,9 +25,12 @@ these are in common for all workflows:
   control](https://henriksson-lab.github.io/zorn/articles/read_quality_control.md) -
   Quality control of reads
 
-Available for early testing is also: -
-[Isolate/SRA-workflow](https://henriksson-lab.github.io/zorn/articles/sra_fetching.md) -
-Load isolate data for processing
+Available for early testing is also:
+
+- [Isolate/SRA-workflow](https://henriksson-lab.github.io/zorn/articles/sra_fetching.md) -
+  Load raw read isolate data for processing
+- [Isolate/NCBI-workflow](https://henriksson-lab.github.io/zorn/articles/ncbi_genomes.md) -
+  Load isolate assembled genome data for processing
 
 The next step to get an overview is likely:
 

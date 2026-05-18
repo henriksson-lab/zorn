@@ -22,6 +22,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/articles/kmer.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/kraken.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/map_scripts.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/articles/ncbi_genomes.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/read_quality_control.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/slurm.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/articles/snp_analysis.html</loc></url>
@@ -51,6 +52,9 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountMatrixToAssay.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDebarcode.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDownloadNcbiGenomeMetadata.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDownloadNcbiGenomes.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDownloadSraRuns.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBWAMEM2.html</loc></url>
@@ -71,9 +75,13 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESA.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetPrepareNcbiGenomeFetchLists.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetPrepareSraFetchLists.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadFile.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadMinhashHistogram.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadNcbiGenomeMetadata.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetResolveSra.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunCountsketch.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunFASTP.html</loc></url>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.31</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.33</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +23,6 @@
     <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/read_quality_control.html">Read-based quality control</a></li>
-    <li><a class="dropdown-item" href="../articles/sra_fetching.html">Isolate analysis and SRA</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/kraken.html">KRAKEN-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
@@ -69,7 +68,15 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">CountSketchUMAP</span><span class="op">(</span><span class="va">adata</span>, reduction <span class="op">=</span> <span class="st">"kmersketch"</span>, metric <span class="op">=</span> <span class="st">"cosine"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">CountSketchUMAP</span><span class="op">(</span></span>
+<span>  <span class="va">adata</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"kmersketch"</span>,</span>
+<span>  outReduction <span class="op">=</span> <span class="st">"kmersketch_umap"</span>,</span>
+<span>  metric <span class="op">=</span> <span class="st">"cosine"</span>,</span>
+<span>  n_neighbors <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  doFast <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">42</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -82,6 +89,26 @@
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
 <dd><p>Name of the reduction to use</p></dd>
+
+
+<dt id="arg-outreduction">outReduction<a class="anchor" aria-label="anchor" href="#arg-outreduction"></a></dt>
+<dd><p>Name of the output UMAP reduction</p></dd>
+
+
+<dt id="arg-metric">metric<a class="anchor" aria-label="anchor" href="#arg-metric"></a></dt>
+<dd><p>Distance metric passed to <code><a href="https://jlmelville.github.io/uwot/reference/umap.html" class="external-link">uwot::umap</a></code></p></dd>
+
+
+<dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
+<dd><p>Number of nearest neighbors passed to <code><a href="https://jlmelville.github.io/uwot/reference/umap.html" class="external-link">uwot::umap</a></code></p></dd>
+
+
+<dt id="arg-dofast">doFast<a class="anchor" aria-label="anchor" href="#arg-dofast"></a></dt>
+<dd><p>Use multi-threaded stochastic gradient updates</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>Random seed passed to <code><a href="https://jlmelville.github.io/uwot/reference/umap.html" class="external-link">uwot::umap</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">

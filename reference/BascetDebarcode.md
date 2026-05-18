@@ -10,7 +10,7 @@ BascetDebarcode(
   rawmeta,
   maxShardSize = "200g",
   outputName = "debarcoded",
-  chemistry = c("atrandi-wgs", "atrandi-wgslr", "atrandi-rnaseq", "parse-bio"),
+  chemistry = c("atrandi-wgs", "atrandi-wgslr", "atrandi-rnaseq", "parse-bio", "tenx"),
   subchemistry = NULL,
   barcodeTolerance = NULL,
   numThreads = NULL,

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.31</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.33</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +23,6 @@
     <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/read_quality_control.html">Read-based quality control</a></li>
-    <li><a class="dropdown-item" href="../articles/sra_fetching.html">Isolate analysis and SRA</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/kraken.html">KRAKEN-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
@@ -227,6 +226,27 @@
 
         <dt>
 
+          <code><a href="BascetDownloadNcbiGenomeMetadata.html">BascetDownloadNcbiGenomeMetadata()</a></code>
+
+        </dt>
+        <dd>Download and cache an NCBI genome assembly summary</dd>
+
+        <dt>
+
+          <code><a href="BascetDownloadNcbiGenomes.html">BascetDownloadNcbiGenomes()</a></code>
+
+        </dt>
+        <dd>Download sharded NCBI genome inputs into Bascet files</dd>
+
+        <dt>
+
+          <code><a href="BascetDownloadSraRuns.html">BascetDownloadSraRuns()</a></code>
+
+        </dt>
+        <dd>Download sharded SRA run lists into Bascet TIRP files</dd>
+
+        <dt>
+
           <code><a href="BascetDumpContigs.html">BascetDumpContigs()</a></code>
 
         </dt>
@@ -367,6 +387,20 @@
 
         <dt>
 
+          <code><a href="BascetPrepareNcbiGenomeFetchLists.html">BascetPrepareNcbiGenomeFetchLists()</a></code>
+
+        </dt>
+        <dd>Write sharded NCBI genome download inputs</dd>
+
+        <dt>
+
+          <code><a href="BascetPrepareSraFetchLists.html">BascetPrepareSraFetchLists()</a></code>
+
+        </dt>
+        <dd>Write sharded SRA accession lists for later import</dd>
+
+        <dt>
+
           <code><a href="BascetQueryFq.html">BascetQueryFq()</a></code>
 
         </dt>
@@ -385,6 +419,20 @@
 
         </dt>
         <dd>Read histogram of KMERs, the output of BascetMakeMinhashHistogram</dd>
+
+        <dt>
+
+          <code><a href="BascetReadNcbiGenomeMetadata.html">BascetReadNcbiGenomeMetadata()</a></code>
+
+        </dt>
+        <dd>Read cached NCBI genome assembly metadata</dd>
+
+        <dt>
+
+          <code><a href="BascetResolveSra.html">BascetResolveSra()</a></code>
+
+        </dt>
+        <dd>Resolve SRA inputs to a canonical run table</dd>
 
         <dt>
 

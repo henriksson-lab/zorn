@@ -41,16 +41,18 @@ can process using Seurat.
 
 ## Postprocessing with Signac/Seurat
 
-The output format is one binary HDF5 file for each shard, roughly in the
-[Anndata file
-format](https://anndata.readthedocs.io/en/stable/fileformat-prose.html).
-To load these, use the following command that loads the files and
-concatenates them into a single matrix. It can then be loaded into
-Seurat:
+The output format is one binary HDF5 file for each shard, following the
+[AnnData on-disk
+layout](https://anndata.readthedocs.io/en/stable/fileformat-prose.html)
+for the main sparse count matrix. Cells are stored as observations,
+taxonomy IDs as variables, and per-cell unclassified read counts are
+available in `mat@obs$unclassified_reads`. To load these, use the
+following command that loads the files and concatenates them into a
+single matrix. It can then be loaded into Seurat:
 
 ``` r
 
-mat <- ReadBascetCountMatrix(bascetRoot,"kraken", verbose=FALSE)
+mat <- ReadBascetCountMatrix(bascetRoot,"kraken_mat", verbose=FALSE)
 
 adata <- CreateSeuratObject(mat, project = "proj", min.cells = 0, min.features = 0)
 ```

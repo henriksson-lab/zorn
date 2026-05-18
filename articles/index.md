@@ -38,6 +38,8 @@
 - [KRAKEN2](https://henriksson-lab.github.io/zorn/articles/kraken.md):
 - [Map
   scripts](https://henriksson-lab.github.io/zorn/articles/map_scripts.md):
+- [Downloading NCBI reference
+  genomes](https://henriksson-lab.github.io/zorn/articles/ncbi_genomes.md):
 - [Read-based quality
   control](https://henriksson-lab.github.io/zorn/articles/read_quality_control.md):
 - [Using

@@ -60,6 +60,12 @@
   : Convert a BascetCountMatrix to a Seurat Assay
 - [`BascetDebarcode()`](https://henriksson-lab.github.io/zorn/reference/BascetDebarcode.md)
   : Extract barcodes and trim input raw FASTQ
+- [`BascetDownloadNcbiGenomeMetadata()`](https://henriksson-lab.github.io/zorn/reference/BascetDownloadNcbiGenomeMetadata.md)
+  : Download and cache an NCBI genome assembly summary
+- [`BascetDownloadNcbiGenomes()`](https://henriksson-lab.github.io/zorn/reference/BascetDownloadNcbiGenomes.md)
+  : Download sharded NCBI genome inputs into Bascet files
+- [`BascetDownloadSraRuns()`](https://henriksson-lab.github.io/zorn/reference/BascetDownloadSraRuns.md)
+  : Download sharded SRA run lists into Bascet TIRP files
 - [`BascetDumpContigs()`](https://henriksson-lab.github.io/zorn/reference/BascetDumpContigs.md)
   : Store all contigs in an output directory, as cell_id.fa
 - [`BascetFilterAlignment()`](https://henriksson-lab.github.io/zorn/reference/BascetFilterAlignment.md)
@@ -107,12 +113,20 @@
   : Run integrated SKESA on reads from each cell.
 - [`BascetMapTransform()`](https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.md)
   : Transform data
+- [`BascetPrepareNcbiGenomeFetchLists()`](https://henriksson-lab.github.io/zorn/reference/BascetPrepareNcbiGenomeFetchLists.md)
+  : Write sharded NCBI genome download inputs
+- [`BascetPrepareSraFetchLists()`](https://henriksson-lab.github.io/zorn/reference/BascetPrepareSraFetchLists.md)
+  : Write sharded SRA accession lists for later import
 - [`BascetQueryFq()`](https://henriksson-lab.github.io/zorn/reference/BascetQueryFq.md)
   : Build count table from FASTQ reads and a list of selected kmers
 - [`BascetReadFile()`](https://henriksson-lab.github.io/zorn/reference/BascetReadFile.md)
   : Read one file from a Bascet
 - [`BascetReadMinhashHistogram()`](https://henriksson-lab.github.io/zorn/reference/BascetReadMinhashHistogram.md)
   : Read histogram of KMERs, the output of BascetMakeMinhashHistogram
+- [`BascetReadNcbiGenomeMetadata()`](https://henriksson-lab.github.io/zorn/reference/BascetReadNcbiGenomeMetadata.md)
+  : Read cached NCBI genome assembly metadata
+- [`BascetResolveSra()`](https://henriksson-lab.github.io/zorn/reference/BascetResolveSra.md)
+  : Resolve SRA inputs to a canonical run table
 - [`BascetRunCellSNP()`](https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.md)
   : Align from FASTQ, generate sorted and indexed BAM file
 - [`BascetRunCountsketch()`](https://henriksson-lab.github.io/zorn/reference/BascetRunCountsketch.md)

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.31</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.33</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,14 +31,13 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/install.html">Install</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/get_started.html">Get started</a></li>
-<li class="active nav-item dropdown">
+<li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><h6 class="dropdown-header" data-toc-skip>Introductory Vignettes</h6></li>
     <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/read_quality_control.html">Read-based quality control</a></li>
-    <li><a class="dropdown-item" href="../articles/sra_fetching.html">Isolate analysis and SRA</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/kraken.html">KRAKEN-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
@@ -116,11 +115,11 @@ named by the run, i.e., SRRxxxx.</p>
 <p>Zorn uses the <code>rentrez</code> R package to query NCBI. Bascet
 uses SRA Toolkit for the actual downloads, so <code>prefetch</code> and
 <code>fasterq-dump</code> must be available on the machine that runs the
-import.</p>
-<p>Install SRA Toolkit before running <code>BascetImportSra()</code> or
-<code>bascet import-sra</code>. <code>BascetImportSra()</code> checks
-that both executables can be found before submitting the Bascet
-jobs.</p>
+download.</p>
+<p>Install SRA Toolkit before running
+<code><a href="../reference/BascetDownloadSraRuns.html">BascetDownloadSraRuns()</a></code> or <code>bascet import-sra</code>.
+<code><a href="../reference/BascetDownloadSraRuns.html">BascetDownloadSraRuns()</a></code> checks that both executables can be
+found before submitting the Bascet jobs.</p>
 <p>Download and install SRA Toolkit from NCBI: <a href="https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit" class="external-link">https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit</a>.
 After installation, check that the tools are on <code>PATH</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">which</span> prefetch</span>
@@ -128,14 +127,14 @@ After installation, check that the tools are on <code>PATH</code>:</p>
 <p>If the tools are not on <code>PATH</code>, you can pass their full
 paths:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BascetImportSra</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetDownloadSraRuns.html">BascetDownloadSraRuns</a></span><span class="op">(</span></span>
 <span>  bascetRoot <span class="op">=</span> <span class="st">"/path/to/bascet_root"</span>,</span>
 <span>  prefetch <span class="op">=</span> <span class="st">"/path/to/prefetch"</span>,</span>
 <span>  fasterqDump <span class="op">=</span> <span class="st">"/path/to/fasterq-dump"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example-download-of-sra-runs">Example download of SRA runs<a class="anchor" aria-label="anchor" href="#example-download-of-sra-runs"></a>
+<h2 id="downloading-sra-runs">Downloading SRA runs<a class="anchor" aria-label="anchor" href="#downloading-sra-runs"></a>
 </h2>
 <p>The scMetaG study by Zheng et al. 2022 deposted each individual cell
 as a single file. This makes the files hard to download manually (the
@@ -144,13 +143,13 @@ it!). But Zorn/Bascet can take the ID of their deposition, PRJNA803937,
 and first fetches the list of runs:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Get a list of SRRs and metadata</span></span>
-<span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu">BascetResolveSra</span><span class="op">(</span></span>
+<span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetResolveSra.html">BascetResolveSra</a></span><span class="op">(</span></span>
 <span>  bioproject <span class="op">=</span> <span class="st">"PRJNA803937"</span>,</span>
 <span>  terms <span class="op">=</span> <span class="st">"SAG_"</span>  <span class="co">#only SAGs; adjust for your needs</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Write shards of SRRs to be fetched</span></span>
-<span><span class="fu">BascetPrepareSraFetchLists</span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/BascetPrepareSraFetchLists.html">BascetPrepareSraFetchLists</a></span><span class="op">(</span></span>
 <span>  <span class="va">tab</span>,</span>
 <span>  bascetRoot <span class="op">=</span> <span class="va">bascetRoot</span></span>
 <span>  <span class="co">#Default is 1000 runs per TIRP</span></span>
@@ -158,9 +157,10 @@ and first fetches the list of runs:</p>
 <p>This creates “sralist”-files holding a list of SRAs to download into
 each TIRP. It also makes a runinfo.csv-file, holding metadata per run.
 The latter you can use to add metadata at a later stage (optional).</p>
-<p>Then import all shards into TIRP files:</p>
+<p>Then download all shards into TIRP files:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BascetImportSra</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co">#Download the SRA runs</span></span>
+<span><span class="fu"><a href="../reference/BascetDownloadSraRuns.html">BascetDownloadSraRuns</a></span><span class="op">(</span></span>
 <span>  bascetRoot <span class="op">=</span> <span class="va">bascetRoot</span>,</span>
 <span>  threads <span class="op">=</span> <span class="fl">16</span></span>
 <span>  <span class="co">#runsAhead = 10   #optional to set. currently each thread will download a separate SRA-run, but you can lower this if the runs are large</span></span>

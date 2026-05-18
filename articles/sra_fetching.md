@@ -23,11 +23,14 @@ by the run, i.e., SRRxxxx.
 
 Zorn uses the `rentrez` R package to query NCBI. Bascet uses SRA Toolkit
 for the actual downloads, so `prefetch` and `fasterq-dump` must be
-available on the machine that runs the import.
+available on the machine that runs the download.
 
-Install SRA Toolkit before running `BascetImportSra()` or
-`bascet import-sra`. `BascetImportSra()` checks that both executables
-can be found before submitting the Bascet jobs.
+Install SRA Toolkit before running
+[`BascetDownloadSraRuns()`](https://henriksson-lab.github.io/zorn/reference/BascetDownloadSraRuns.md)
+or `bascet import-sra`.
+[`BascetDownloadSraRuns()`](https://henriksson-lab.github.io/zorn/reference/BascetDownloadSraRuns.md)
+checks that both executables can be found before submitting the Bascet
+jobs.
 
 Download and install SRA Toolkit from NCBI:
 <https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit>.
@@ -42,14 +45,14 @@ If the tools are not on `PATH`, you can pass their full paths:
 
 ``` r
 
-BascetImportSra(
+BascetDownloadSraRuns(
   bascetRoot = "/path/to/bascet_root",
   prefetch = "/path/to/prefetch",
   fasterqDump = "/path/to/fasterq-dump"
 )
 ```
 
-## Example download of SRA runs
+## Downloading SRA runs
 
 The scMetaG study by Zheng et al. 2022 deposted each individual cell as
 a single file. This makes the files hard to download manually (the SRA
@@ -77,11 +80,12 @@ This creates “sralist”-files holding a list of SRAs to download into
 each TIRP. It also makes a runinfo.csv-file, holding metadata per run.
 The latter you can use to add metadata at a later stage (optional).
 
-Then import all shards into TIRP files:
+Then download all shards into TIRP files:
 
 ``` r
 
-BascetImportSra(
+#Download the SRA runs
+BascetDownloadSraRuns(
   bascetRoot = bascetRoot,
   threads = 16
   #runsAhead = 10   #optional to set. currently each thread will download a separate SRA-run, but you can lower this if the runs are large

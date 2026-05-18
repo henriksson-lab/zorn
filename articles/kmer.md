@@ -95,12 +95,13 @@ BascetQueryFq(
 )
 ```
 
-The output format is one binary HDF5 file for each shard, roughly in the
-[Anndata file
-format](https://anndata.readthedocs.io/en/stable/fileformat-prose.html).
-To load these, use the following command that loads the files and
-concatenates them into a single matrix. It can then be loaded into
-Seurat:
+The output format is one binary HDF5 file for each shard, following the
+[AnnData on-disk
+layout](https://anndata.readthedocs.io/en/stable/fileformat-prose.html)
+for the main sparse count matrix. Cells are stored as observations and
+selected k-mers as variables. To load these, use the following command
+that loads the files and concatenates them into a single matrix. It can
+then be loaded into Seurat:
 
 ``` r
 

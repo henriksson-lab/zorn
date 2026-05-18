@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.31</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.33</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,6 @@
     <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/read_quality_control.html">Read-based quality control</a></li>
-    <li><a class="dropdown-item" href="../articles/sra_fetching.html">Isolate analysis and SRA</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/kraken.html">KRAKEN-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
@@ -141,8 +140,9 @@ this:</p>
 <span><span class="va">cnt_myref</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadBascetCountMatrix.html">ReadBascetCountMatrix</a></span><span class="op">(</span><span class="va">bascetRoot</span>,<span class="st">"cnt_myref"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Compute fraction aligned</span></span>
-<span><span class="va">cnt_myref</span><span class="op">$</span><span class="va">obs</span><span class="op">$</span><span class="va">tot_reads</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html" class="external-link">as.double</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">$</span><span class="va">obs</span><span class="op">$</span><span class="va">`_unmapped`</span> <span class="op">+</span> <span class="va">cnt_myref</span><span class="op">$</span><span class="va">X</span><span class="op">)</span></span>
-<span><span class="va">cnt_myref</span><span class="op">$</span><span class="va">obs</span><span class="op">$</span><span class="va">frac_mapped</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html" class="external-link">as.double</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">$</span><span class="va">X</span><span class="op">/</span><span class="va">cnt_myref</span><span class="op">$</span><span class="va">obs</span><span class="op">$</span><span class="va">tot_reads</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">mapped_reads</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">@</span><span class="va">X</span><span class="op">)</span></span>
+<span><span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">$</span><span class="va">tot_reads</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html" class="external-link">as.double</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">$</span><span class="va">unclassified_reads</span> <span class="op">+</span> <span class="va">mapped_reads</span><span class="op">)</span></span>
+<span><span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">$</span><span class="va">frac_mapped</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html" class="external-link">as.double</a></span><span class="op">(</span><span class="va">mapped_reads</span> <span class="op">/</span> <span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">$</span><span class="va">tot_reads</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="subsetting-cells">Subsetting cells<a class="anchor" aria-label="anchor" href="#subsetting-cells"></a>

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.31</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.33</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,6 @@
     <li><a class="dropdown-item" href="../articles/slurm.html">Using SLURM</a></li>
     <li><a class="dropdown-item" href="../articles/debarcoding.html">Debarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/read_quality_control.html">Read-based quality control</a></li>
-    <li><a class="dropdown-item" href="../articles/sra_fetching.html">Isolate analysis and SRA</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/kraken.html">KRAKEN-based workflow</a></li>
     <li><a class="dropdown-item" href="../articles/alignment.html">Alignment-based workflow</a></li>
@@ -200,11 +199,13 @@ files:</p>
 <span><span class="fu"><a href="../reference/BascetCountChrom.html">BascetCountChrom</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The output format is one binary HDF5 file for each shard, roughly in
-the <a href="https://anndata.readthedocs.io/en/stable/fileformat-prose.html" class="external-link">Anndata
-file format</a>. To load these, use the following command that loads the
-files and concatenates them into a single matrix. It can then be loaded
-into Seurat:</p>
+<p>The output format is one binary HDF5 file for each shard, following
+the <a href="https://anndata.readthedocs.io/en/stable/fileformat-prose.html" class="external-link">AnnData
+on-disk layout</a> for the main sparse count matrix. Cells are stored as
+observations, features as variables, and per-cell unmapped read counts
+are available in <code>cnt@obs$unclassified_reads</code>. To load these,
+use the following command that loads the files and concatenates them
+into a single matrix. It can then be loaded into Seurat:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span></span>

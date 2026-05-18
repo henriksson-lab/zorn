@@ -55,8 +55,9 @@ The heavy work is now over. You can load the count matrix like this:
 cnt_myref <- ReadBascetCountMatrix(bascetRoot,"cnt_myref")
 
 # Compute fraction aligned
-cnt_myref$obs$tot_reads <- as.double(cnt_myref$obs$`_unmapped` + cnt_myref$X)
-cnt_myref$obs$frac_mapped <- as.double(cnt_myref$X/cnt_myref$obs$tot_reads)
+mapped_reads <- Matrix::rowSums(cnt_myref@X)
+cnt_myref@obs$tot_reads <- as.double(cnt_myref@obs$unclassified_reads + mapped_reads)
+cnt_myref@obs$frac_mapped <- as.double(mapped_reads / cnt_myref@obs$tot_reads)
 ```
 
 ## Subsetting cells
