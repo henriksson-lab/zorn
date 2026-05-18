@@ -205,6 +205,64 @@ setMethod("[", signature(x="BascetCountMatrix"), function(x, i, j, ..., drop=FAL
 
 
 ### Internal helper function
+PrepareBascetRhdf5Read <- function() {
+  if(identical(Sys.getenv("HDF5_USE_FILE_LOCKING"), "")) {
+    Sys.setenv(HDF5_USE_FILE_LOCKING="FALSE")
+  }
+}
+
+
+### Internal helper function
+ReadBascetH5Shape <- function(fname, h5_index) {
+  has_shape_dataset <- any(h5_index$group == "/X" & h5_index$name == "shape")
+  if(has_shape_dataset) {
+    # Legacy Bascet layout. Remove once pre-AnnData-style count matrices are unsupported.
+    shape <- rhdf5::h5read(fname, "/X/shape")
+    shape <- as.integer(shape)
+    if(length(shape)==2 && all(!is.na(shape)) && all(shape >= 0)) {
+      return(shape)
+    }
+  }
+
+  attrs <- tryCatch(
+    rhdf5::h5readAttributes(fname, "/X"),
+    error = function(e) NULL
+  )
+  if(!is.null(attrs$shape)) {
+    shape <- as.integer(attrs$shape)
+    if(length(shape)==2 && all(!is.na(shape)) && all(shape >= 0)) {
+      return(shape)
+    }
+  }
+
+  stop("Count matrix shape could not be read from X/shape dataset or X shape attribute")
+}
+
+
+### Internal helper function
+ReadBascetObs <- function(fname, h5_index) {
+  obs_names <- h5_index$name[h5_index$group == "/obs" & h5_index$otype == "H5I_DATASET"]
+  obs_values <- lapply(obs_names, function(name) rhdf5::h5read(fname, paste0("/obs/", name)))
+  names(obs_values) <- obs_names
+  df_obs <- as.data.frame(obs_values, optional=TRUE)
+  rownames(df_obs) <- NULL
+
+  # Older Bascet files store per-cell unclassified read counts as `_unmapped`.
+  # Accept clearer aliases as well, but keep `_unmapped` for existing Zorn code.
+  unclassified_aliases <- c("_unmapped", "unclassified_reads", "unmapped")
+  unclassified_col <- intersect(unclassified_aliases, colnames(df_obs))[1]
+  if(!is.na(unclassified_col) && !("_unmapped" %in% colnames(df_obs))) {
+    df_obs$`_unmapped` <- df_obs[[unclassified_col]]
+  }
+  if("_unmapped" %in% colnames(df_obs) && !("unclassified_reads" %in% colnames(df_obs))) {
+    df_obs$unclassified_reads <- df_obs$`_unmapped`
+  }
+
+  df_obs
+}
+
+
+### Internal helper function
 ReadBascetCountMatrix_one <- function(
     fname,
     verbose=FALSE
@@ -212,17 +270,18 @@ ReadBascetCountMatrix_one <- function(
   #check arguments
   stopifnot(file.exists(fname))
   stopifnot(is.logical(verbose))
+  PrepareBascetRhdf5Read()
   
   #fname <- "/husky/henriksson/atrandi//v4_wgs_novaseq1/chromcount.1.h5"
   #fname <- "/home/mahogny/test/cnt_feature.hdf5"
   #fname <- "/husky/henriksson/atrandi//v4_wgs_novaseq1/kmer_counts.1.h5"
   
-  h5f <- rhdf5::H5Fopen(fname)
+  h5_index <- rhdf5::h5ls(fname)
 
-  indices <- h5f$X$indices + 1L
-  indptr <-  h5f$X$indptr
-  dat <-     h5f$X$data
-  shape <-   h5f$X$shape
+  indices <- rhdf5::h5read(fname, "/X/indices") + 1L
+  indptr <-  rhdf5::h5read(fname, "/X/indptr")
+  dat <-     rhdf5::h5read(fname, "/X/data")
+  shape <-   ReadBascetH5Shape(fname, h5_index)
 
   mat <- Matrix::sparseMatrix(
     j=indices,
@@ -231,14 +290,11 @@ ReadBascetCountMatrix_one <- function(
     dims=shape
   )
 
-  rownames(mat) <- h5f$obs$`_index`  #names of cells
-  colnames(mat) <- h5f$var$`_index`  #feature names
+  rownames(mat) <- rhdf5::h5read(fname, "/obs/_index")  #names of cells
+  colnames(mat) <- rhdf5::h5read(fname, "/var/_index")  #feature names
 
   ### Read obs matrix
-  df_obs <- as.data.frame(h5f$obs)
-  colnames(df_obs) <- names(h5f$obs)
-  rownames(df_obs) <- NULL
-  rhdf5::H5Fclose(h5f)
+  df_obs <- ReadBascetObs(fname, h5_index)
   
   NewBascetCountMatrix(
     X=mat,

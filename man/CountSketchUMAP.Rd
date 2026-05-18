@@ -4,12 +4,30 @@
 \alias{CountSketchUMAP}
 \title{Run UMAP on a count sketch reduction}
 \usage{
-CountSketchUMAP(adata, reduction = "kmersketch", metric = "cosine", ...)
+CountSketchUMAP(
+  adata,
+  reduction = "kmersketch",
+  outReduction = "kmersketch_umap",
+  metric = "cosine",
+  n_neighbors = 30,
+  doFast = FALSE,
+  seed = 42
+)
 }
 \arguments{
 \item{adata}{A Seurat object with a count sketch reduction}
 
 \item{reduction}{Name of the reduction to use}
+
+\item{outReduction}{Name of the output UMAP reduction}
+
+\item{metric}{Distance metric passed to \code{uwot::umap}}
+
+\item{n_neighbors}{Number of nearest neighbors passed to \code{uwot::umap}}
+
+\item{doFast}{Use multi-threaded stochastic gradient updates}
+
+\item{seed}{Random seed passed to \code{uwot::umap}}
 }
 \value{
 Seurat object with UMAP computed
