@@ -1,8 +1,13 @@
 Package: Zorn
-Version: 0.5.31
+Version: 0.5.32
 Type: Package
 Title: An all-purpose solution for processing of single-cell microbial data
 Maintainer: Johan Henriksson <johan.henriksson@umu.se>
+Author: Julian Dicken [aut],
+  Hadrien Gourlé [aut],
+  Laura Carroll [aut],
+  Johan Henriksson [aut, cre],
+  HenLab, CompMicroLab, and Collaborators [fnd]
 Description: Zorn wraps the Bascet system, enabling processing of single-cell microbial data
 Authors@R: c(
   person(given = "Julian", family = "Dicken", email = "julian@dicken.de", role = c("aut"), comment = c(ORCID = "https://orcid.org/0009-0009-8614-7321")),
@@ -40,7 +45,9 @@ Imports:
     sparseMatrixStats (>= 1.10.0),
     benchmarkme,
     rhdf5,
-    Rsamtools
+    Rsamtools,
+    uwot,
+    RcppHNSW
 Suggests: 
     arrow,
     rmarkdown
@@ -56,6 +63,7 @@ Collate:
   'zorn.R'
   'bascet_file.R'
   'sra_import.R'
+  'ncbi_genomes.R'
   'debarcoding.R'
   'shell.R'
   'zorn_aggr.R'

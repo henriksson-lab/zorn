@@ -199,7 +199,7 @@ BascetPrepareSraFetchLists <- function(
 }
 
 ###############################################
-#' Import sharded SRA run lists into Bascet TIRP files
+#' Download sharded SRA run lists into Bascet TIRP files
 #'
 #' Runs `bascet import-sra` once per `.sralist` shard. The Bascet command calls
 #' SRA Toolkit and writes indexed TIRP output directly.
@@ -223,7 +223,7 @@ BascetPrepareSraFetchLists <- function(
 #'
 #' @return A zorn job object.
 #' @export
-BascetImportSra <- function(
+BascetDownloadSraRuns <- function(
     bascetRoot,
     inputName = "tofetch",
     outputName = "filtered",

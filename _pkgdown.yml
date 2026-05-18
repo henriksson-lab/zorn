@@ -19,8 +19,6 @@ navbar:
           href: articles/debarcoding.html
         - text: "Read-based quality control"
           href: articles/read_quality_control.html
-        - text: "Isolate analysis and SRA"
-          href: articles/sra_fetching.html
         - text: -------
         - text: "KRAKEN-based workflow"
           href: articles/kraken.html
@@ -70,4 +68,3 @@ navbar:
     - icon: fa-github
       href: https://github.com/henriksson-lab/zorn
       aria-label: GitHub repository
-

@@ -23,7 +23,9 @@ Depending on your use case, you will need different tutorials. However, these ar
 -   [Read-based quality control](read_quality_control.html) - Quality control of reads
 
 Available for early testing is also:
--   [Isolate/SRA-workflow](sra_fetching.html) - Load isolate data for processing
+
+-   [Isolate/SRA-workflow](sra_fetching.html) - Load raw read isolate data for processing
+-   [Isolate/NCBI-workflow](ncbi_genomes.html) - Load isolate assembled genome data for processing
 
 The next step to get an overview is likely:
 

@@ -224,12 +224,36 @@ CreateSeuratObjectWithReduction <- function(
 #'
 #' @param adata A Seurat object with a count sketch reduction
 #' @param reduction Name of the reduction to use
+#' @param outReduction Name of the output UMAP reduction
+#' @param metric Distance metric passed to `uwot::umap`
+#' @param n_neighbors Number of nearest neighbors passed to `uwot::umap`
+#' @param doFast Use multi-threaded stochastic gradient updates
+#' @param seed Random seed passed to `uwot::umap`
 #'
 #' @return Seurat object with UMAP computed
 #' @export
-CountSketchUMAP <- function(adata, reduction="kmersketch", metric="cosine", ...) {
-  dims <- 1:ncol(adata@reductions[[reduction]]@cell.embeddings)
-  RunUMAP(adata, dims=dims, reduction=reduction, metric=metric, ...)
+CountSketchUMAP <- function(adata, reduction="kmersketch", outReduction="kmersketch_umap", metric="cosine", n_neighbors = 30, doFast=FALSE, seed = 42) {
+  n_sgd_threads <- 0
+  if(doFast) {
+    print("Fast UMAP mode. Note that this means the UMAP will be different between runs (non-deterministic SGD updates)")
+    n_sgd_threads <- parallel::detectCores()
+  }
+  
+  emb <- adata@reductions[[reduction]]@cell.embeddings
+  um  <- uwot::umap(
+    emb, 
+    metric = metric,
+    n_neighbors = n_neighbors,
+    nn_method = "hnsw",
+    n_threads = parallel::detectCores(),
+    n_sgd_threads = n_sgd_threads,
+    seed = seed
+  )
+  colnames(um) <- c("CS_1", "CS_2")
+  adata[[outReduction]] <- CreateDimReducObject(
+    embeddings = um, key = "CS_", assay = DefaultAssay(adata)
+  )  
+  adata
 }
 
 

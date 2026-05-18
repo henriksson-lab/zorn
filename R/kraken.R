@@ -1,4 +1,23 @@
 
+zornTaxonomizrSqlFile <- function() {
+  cacheDir <- file.path(defaultZornCacheDir(), "taxonomy")
+  dir.create(cacheDir, recursive = TRUE, showWarnings = FALSE)
+  file.path(cacheDir, "nameNode.sqlite")
+}
+
+prepareZornTaxonomizrDatabase <- function() {
+  taxonomyDb <- zornTaxonomizrSqlFile()
+  if(!file.exists(taxonomyDb)) {
+    taxonomizr::prepareDatabase(
+      sqlFile = taxonomyDb,
+      tmpDir = dirname(taxonomyDb),
+      getAccessions = FALSE
+    )
+  }
+  taxonomyDb
+}
+
+
 ###############################################
 #' Run KRAKEN2 for each cell.
 #' Then produce a count matrix of taxonomy IDs from the output
@@ -121,11 +140,12 @@ KrakenFindConsensusTaxonomy <- function(
   df$taxid <- col_taxid[df$taxid_index]
   
   #Not all taxid's will map. so we need to look them up first, then discard some of them
-  taxonomizr::prepareDatabase(getAccessions=FALSE)
+  taxonomyDb <- prepareZornTaxonomizrDatabase()
   
   for_taxid <- unique(df$taxid)
   df_taxid <- data.frame(taxonomizr::getTaxonomy(
     for_taxid,
+    sqlFile = taxonomyDb,
     desiredTaxa = c(
       "phylum", "class", "order", "family", "genus","species")
   ))
@@ -241,9 +261,10 @@ KrakenKneePlot <- function(
   use_row <- as.integer(stringr::str_remove_all(adata$taxid, "taxid-"))   ##really needed??
   stopifnot(!any(is.na(use_row)))
   
-  taxonomizr::prepareDatabase(getAccessions=FALSE)
+  taxonomyDb <- prepareZornTaxonomizrDatabase()
   taxid_class_per_cell <- as.data.frame(taxonomizr::getTaxonomy(
     use_row,
+    sqlFile = taxonomyDb,
     desiredTaxa = c("phylum", "class", "order", "family", "genus","species")
   ))
   taxid_class_per_cell$taxid_index <- use_row #rownames(taxid_class_per_cell)
@@ -325,8 +346,5 @@ KrakenKneePlot <- function(
     #guides(color=guide_legend(title=stringr::str_to_title(groupby))) +
     theme_bw()
 }
-
-
-
 
 

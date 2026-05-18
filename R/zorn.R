@@ -288,6 +288,14 @@ normalizeBascetRoot <- function(bascetRoot) {
 }
 
 ###############################################
+#' Default Zorn cache directory
+#' @return Platform-specific cache directory for Zorn
+#' @noRd
+defaultZornCacheDir <- function() {
+  tools::R_user_dir("Zorn", "cache")
+}
+
+###############################################
 #' Add a Bascet root to paths that are not already absolute
 #' @param bascetRoot Existing Bascet root directory
 #' @param paths Paths relative to the Bascet root, or already absolute paths
@@ -777,5 +785,4 @@ BascetRunFASTP <- function(
     new_no_job()
   }
 }
-
 
