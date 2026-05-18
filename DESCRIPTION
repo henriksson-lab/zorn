@@ -1,5 +1,5 @@
 Package: Zorn
-Version: 0.5.30
+Version: 0.5.31
 Type: Package
 Title: An all-purpose solution for processing of single-cell microbial data
 Maintainer: Johan Henriksson <johan.henriksson@umu.se>
@@ -36,6 +36,7 @@ Imports:
     data.table,
     naturalsort,
     RCurl,
+    rentrez,
     sparseMatrixStats (>= 1.10.0),
     benchmarkme,
     rhdf5,
@@ -54,6 +55,7 @@ Collate:
   'countmatrix.R'
   'zorn.R'
   'bascet_file.R'
+  'sra_import.R'
   'debarcoding.R'
   'shell.R'
   'zorn_aggr.R'
