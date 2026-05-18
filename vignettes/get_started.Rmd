@@ -22,6 +22,9 @@ Depending on your use case, you will need different tutorials. However, these ar
 -   [Debarcoding tutorial](debarcoding.html) - Ingesting raw FASTQ, trimming, and preparing for later steps
 -   [Read-based quality control](read_quality_control.html) - Quality control of reads
 
+Available for early testing is also:
+-   [Isolate/SRA-workflow](sra_fetching.html) - Load isolate data for processing
+
 The next step to get an overview is likely:
 
 -   [KRAKEN-based workflow](kraken.html) - if you don't know what your sample contains, and want to compare to known species
