@@ -52,7 +52,10 @@ The next step to get an overview is likely:
 
 Then there are several options on how to continue with deeper analysis:
 
-- [De novo
+- [Doublet
+  removal](https://henriksson-lab.github.io/zorn/articles/doublet_removal.md) -
+  to flag and remove cells that are mixtures of two cells
+- [*De novo*
   assembly](https://henriksson-lab.github.io/zorn/articles/assembly.md)
 - [Genome
   annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) -
