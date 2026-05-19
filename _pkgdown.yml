@@ -29,6 +29,8 @@ navbar:
         - text: "Count sketch KMER-based workflow"
           href: articles/countsketch.html
         - text: -------
+        - text: "Doublet removal"
+          href: articles/doublet_removal.html
         - text: "De novo assembly"
           href: articles/assembly.html
         - text: "Genome annotation"
