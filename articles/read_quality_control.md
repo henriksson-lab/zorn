@@ -63,7 +63,7 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
 
-BascetMapCellFASTQ(
+BascetMapCellFASTQC(
   bascetRoot,
   inputName = "filtered"  #or other source of reads
 )

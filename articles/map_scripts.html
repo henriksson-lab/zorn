@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.33</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.34</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,219 +109,116 @@ files</li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="running-first-class-rust-map-functions">Running first-class Rust MAP functions<a class="anchor" aria-label="anchor" href="#running-first-class-rust-map-functions"></a>
+<h2 id="calling-a-map-function-one-example">Calling a MAP function — one example<a class="anchor" aria-label="anchor" href="#calling-a-map-function-one-example"></a>
 </h2>
-<p>These wrappers call native Bascet subcommands directly, so they are
-the fastest way to process all cells. Zorn currently provides:</p>
-<ul>
-<li>
-<code>BascetMapCellSKESA</code> — <em>de novo</em> assembly with
-SKESA, producing contigs from filtered reads</li>
-<li>
-<code>BascetMapCellFASTQC</code> — read-level quality control with
-FastQC</li>
-<li>
-<code>BascetMapCellGECCO</code> — biosynthetic gene cluster
-prediction on assembled contigs</li>
-</ul>
-<div class="section level3">
-<h3 id="gecco-biosynthetic-gene-clusters-for-assembled-genomes">GECCO — biosynthetic gene clusters (for assembled genomes)<a class="anchor" aria-label="anchor" href="#gecco-biosynthetic-gene-clusters-for-assembled-genomes"></a>
-</h3>
-<p><a href="https://gecco.embl.de/" class="external-link">GECCO</a> scans assembled contigs
-for biosynthetic gene clusters (BGCs).</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellGECCO.html">BascetMapCellGECCO</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"contigs"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"gecco"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Aggregate the per-cell cluster tables into a single list of
-data.frames:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gecco_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetAggregateGECCO.html">BascetAggregateGECCO</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"gecco"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="skesa-assembly-runs-on-reads-as-input">SKESA — assembly (runs on reads as input)<a class="anchor" aria-label="anchor" href="#skesa-assembly-runs-on-reads-as-input"></a>
-</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellSKESA.html">BascetMapCellSKESA</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"contigs"</span>,</span>
-<span>  kmer       <span class="op">=</span> <span class="fl">21</span>,</span>
-<span>  minContig  <span class="op">=</span> <span class="fl">50</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="fastqc-qc-of-reads-runs-on-reads-as-input">FastQC — QC of reads (runs on reads as input)<a class="anchor" aria-label="anchor" href="#fastqc-qc-of-reads-runs-on-reads-as-input"></a>
-</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellFASTQC.html">BascetMapCellFASTQC</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"fastqc"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">fastqc_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetAggregateFASTQC.html">BascetAggregateFASTQC</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"fastqc"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="running-a-shell-script-based-map-function">Running a shell-script based MAP function<a class="anchor" aria-label="anchor" href="#running-a-shell-script-based-map-function"></a>
-</h2>
-<p>Shell-script wrappers are the easiest way to run external
-bioinformatics tools without writing your own MAP function. Zorn
-includes wrappers for the most common single-cell microbial
-workflows:</p>
-<table class="table">
-<colgroup>
-<col width="30%">
-<col width="32%">
-<col width="17%">
-<col width="18%">
-</colgroup>
-<thead><tr class="header">
-<th>Wrapper</th>
-<th>Tool</th>
-<th>Typical input</th>
-<th>Typical output</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code>BascetMapCellQUAST</code></td>
-<td>QUAST assembly QC</td>
-<td><code>contigs</code></td>
-<td><code>quast</code></td>
-</tr>
-<tr class="even">
-<td><code>BascetMapCellAbricate</code></td>
-<td>Abricate AMR / virulence</td>
-<td><code>contigs</code></td>
-<td><code>abricate</code></td>
-</tr>
-<tr class="odd">
-<td><code>BascetMapCellBakta</code></td>
-<td>Bakta genome annotation</td>
-<td><code>contigs</code></td>
-<td><code>bakta</code></td>
-</tr>
-<tr class="even">
-<td><code>BascetMapCellAriba</code></td>
-<td>Ariba AMR from reads</td>
-<td><code>filtered</code></td>
-<td><code>ariba</code></td>
-</tr>
-<tr class="odd">
-<td><code>BascetMapCellAMRfinder</code></td>
-<td>NCBI AMRfinder</td>
-<td><code>contigs</code></td>
-<td><code>AMRfinder</code></td>
-</tr>
-</tbody>
-</table>
-<p>Each of these is a thin wrapper around <code>BascetMapCell</code>
-that knows the right script name and arguments.</p>
-<div class="section level3">
-<h3 id="quast-assembly-quality">QUAST — assembly quality<a class="anchor" aria-label="anchor" href="#quast-assembly-quality"></a>
-</h3>
+<p>All MAP wrappers follow the same pattern: they take an input shard,
+run a per-cell tool on it, and produce an output shard. Here is QUAST as
+a representative example:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellQUAST.html">BascetMapCellQUAST</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName  <span class="op">=</span> <span class="st">"contigs"</span>,</span>
 <span>  outputName <span class="op">=</span> <span class="st">"quast"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>If you prefer the raw form, this is equivalent to:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>This is a thin wrapper around <code>BascetMapCell</code> that knows
+the right script name. The raw form is equivalent:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCell.html">BascetMapCell</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  withfunction <span class="op">=</span> <span class="st">"_quast"</span>,</span>
 <span>  inputName    <span class="op">=</span> <span class="st">"contigs"</span>,</span>
 <span>  outputName   <span class="op">=</span> <span class="st">"quast"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="abricate-amr-virulence-screening">Abricate — AMR / virulence screening<a class="anchor" aria-label="anchor" href="#abricate-amr-virulence-screening"></a>
-</h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellAbricate.html">BascetMapCellAbricate</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"contigs"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"abricate"</span>,</span>
-<span>  db         <span class="op">=</span> <span class="st">"ncbi"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">abricate_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetAggregateAbricate.html">BascetAggregateAbricate</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"abricate"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="bakta-genome-annotation">Bakta — genome annotation<a class="anchor" aria-label="anchor" href="#bakta-genome-annotation"></a>
-</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/DownloadDatabaseBakta.html">DownloadDatabaseBakta</a></span><span class="op">(</span><span class="st">"/path/to/bakta_db"</span>, dbtype <span class="op">=</span> <span class="st">"light"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/BascetMapCellBakta.html">BascetMapCellBakta</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"contigs"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"bakta"</span>,</span>
-<span>  db         <span class="op">=</span> <span class="st">"/path/to/bakta_db"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="ariba-amr-identification-from-reads">Ariba — AMR identification from reads<a class="anchor" aria-label="anchor" href="#ariba-amr-identification-from-reads"></a>
-</h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellAriba.html">BascetMapCellAriba</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"ariba"</span>,</span>
-<span>  db         <span class="op">=</span> <span class="st">"/path/to/ariba_db/out.prepareref"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">ariba_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetAggregateAriba.html">BascetAggregateAriba</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"ariba"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="amrfinder">AMRfinder<a class="anchor" aria-label="anchor" href="#amrfinder"></a>
-</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/DownloadDatabaseAMRfinder.html">DownloadDatabaseAMRfinder</a></span><span class="op">(</span><span class="st">"/path/to/amrfinder_db"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/BascetMapCellAMRfinder.html">BascetMapCellAMRfinder</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"contigs"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"AMRfinder"</span>,</span>
-<span>  db         <span class="op">=</span> <span class="st">"/path/to/amrfinder_db"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">amr_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetAggregateAMRfinder.html">BascetAggregateAMRfinder</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"AMRfinder"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
+<p>For the full QUAST workflow (including aggregation), see <a href="genome_annotation.html">genome annotation</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="aggregating-map-results">Aggregating MAP results<a class="anchor" aria-label="anchor" href="#aggregating-map-results"></a>
+<h2 id="available-map-wrappers">Available MAP wrappers<a class="anchor" aria-label="anchor" href="#available-map-wrappers"></a>
 </h2>
-<p>Once you have run your map function, you most likely want to load the
-results into R. We call this procedure “aggregate”. In case of QUAST,
-this procedure loads all quality metrics into an R data.frame
-object:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">quast_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MapListAsDataFrame.html">MapListAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="../reference/BascetAggregateMap.html">BascetAggregateMap</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"quast"</span>,</span>
-<span>  <span class="va">aggr.quast</span></span>
-<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Each wrapper is documented in detail in the vignette listed in the
+last column. That vignette covers any required databases, the matching
+<code>BascetAggregate*()</code> step, and downstream usage.</p>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="25%">
+<col width="30%">
+<col width="14%">
+<col width="15%">
+<col width="14%">
+</colgroup>
+<thead><tr class="header">
+<th>Wrapper</th>
+<th>Tool</th>
+<th>Typical input</th>
+<th>Typical output</th>
+<th>Documented in</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>BascetMapCellSKESA</code></td>
+<td>SKESA <em>de novo</em> assembly</td>
+<td><code>filtered</code></td>
+<td><code>contigs</code></td>
+<td><a href="assembly.html">assembly</a></td>
+</tr>
+<tr class="even">
+<td><code>BascetMapCellFASTQC</code></td>
+<td>FastQC read QC</td>
+<td><code>filtered</code></td>
+<td><code>fastqc</code></td>
+<td><a href="read_quality_control.html">read quality control</a></td>
+</tr>
+<tr class="odd">
+<td><code>BascetMapCellQUAST</code></td>
+<td>QUAST assembly QC</td>
+<td><code>contigs</code></td>
+<td><code>quast</code></td>
+<td><a href="genome_annotation.html">genome annotation</a></td>
+</tr>
+<tr class="even">
+<td><code>BascetMapCellAbricate</code></td>
+<td>Abricate AMR / virulence</td>
+<td><code>contigs</code></td>
+<td><code>abricate</code></td>
+<td><a href="genome_annotation.html">genome annotation</a></td>
+</tr>
+<tr class="odd">
+<td><code>BascetMapCellBakta</code></td>
+<td>Bakta genome annotation</td>
+<td><code>contigs</code></td>
+<td><code>bakta</code></td>
+<td><a href="genome_annotation.html">genome annotation</a></td>
+</tr>
+<tr class="even">
+<td><code>BascetMapCellAriba</code></td>
+<td>Ariba AMR from reads</td>
+<td><code>filtered</code></td>
+<td><code>ariba</code></td>
+<td><a href="genome_annotation.html">genome annotation</a></td>
+</tr>
+<tr class="odd">
+<td><code>BascetMapCellAMRfinder</code></td>
+<td>NCBI AMRfinder</td>
+<td><code>contigs</code></td>
+<td><code>AMRfinder</code></td>
+<td><a href="genome_annotation.html">genome annotation</a></td>
+</tr>
+<tr class="even">
+<td><code>BascetMapCellGECCO</code></td>
+<td>GECCO biosynthetic clusters</td>
+<td><code>contigs</code></td>
+<td><code>gecco</code></td>
+<td><a href="genome_annotation.html">genome annotation</a></td>
+</tr>
+<tr class="odd">
+<td><code>BascetComputeMinhash</code></td>
+<td>k-mer minhash sketches</td>
+<td><code>filtered</code></td>
+<td><code>minhash</code></td>
+<td><a href="kmer.html">k-mer analysis</a></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="arguments-to-map-functions">Arguments to MAP functions<a class="anchor" aria-label="anchor" href="#arguments-to-map-functions"></a>
@@ -330,11 +227,29 @@ object:</p>
 to a database file). This is done by setting the args argument. Below
 will set two environment variables such that the contents can be picked
 up the script:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">BascetMapCell</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  ...</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">args</span>(<span class="at">DB=</span><span class="st">"some/path"</span>,<span class="at">OTHERARG=</span><span class="st">"hi"</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  ...</span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">BascetMapCell</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  ...</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">args</span>(<span class="at">DB=</span><span class="st">"some/path"</span>,<span class="at">OTHERARG=</span><span class="st">"hi"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  ...</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="aggregating-map-results">Aggregating MAP results<a class="anchor" aria-label="anchor" href="#aggregating-map-results"></a>
+</h2>
+<p>Once you have run your map function, you most likely want to load the
+results into R. We call this procedure “aggregate”. Most wrappers have a
+matching <code>BascetAggregate*()</code> function — see the per-tool
+vignette for the exact call.</p>
+<p>There is also a catch-all aggregate function that requires a bit of a
+special way of calling. The example below takes “out.txt”, generated by
+each tool, and stores the raw file content in a list. This is not pretty
+but it may help you in debugging and development:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">raw_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MapListAsDataFrame.html">MapListAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="../reference/BascetAggregateMap.html">BascetAggregateMap</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  inputName<span class="op">=</span><span class="st">".."</span>,</span>
+<span>  <span class="fu">aggr.raw</span><span class="op">(</span><span class="st">"out.txt"</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="custom-map-functions---introduction">Custom MAP functions - introduction<a class="anchor" aria-label="anchor" href="#custom-map-functions---introduction"></a>
@@ -345,7 +260,7 @@ which takes contigs as input * <a href="https://github.com/henriksson-lab/bascet
 which takes FASTQ as input</p>
 <p>Once you have written your script, you invoke it with a direct
 path:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCell.html">BascetMapCell</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  withfunction <span class="op">=</span> <span class="st">"/path/to/your/script.sh"</span>,</span>
@@ -356,16 +271,6 @@ path:</p>
 function will take the output from your tool, parse it, and put in a
 sensible R object. Have a look at <a href="https://github.com/henriksson-lab/zorn/blob/main/R/aggr_functions.R" class="external-link">example
 and existing aggregate functions</a> for inspiration.</p>
-<p>There is also a catch-all aggregate function that requires a bit of a
-special way of calling. The example below takes “out.txt”, generated by
-each tool, and stores the raw file content in a list. This is not pretty
-but it may help you in debugging and development:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">quast_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MapListAsDataFrame.html">MapListAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="../reference/BascetAggregateMap.html">BascetAggregateMap</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">".."</span>,</span>
-<span>  <span class="fu">aggr.raw</span><span class="op">(</span><span class="st">"out.txt"</span><span class="op">)</span></span>
-<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="custom-map-functions---details">Custom MAP functions - details<a class="anchor" aria-label="anchor" href="#custom-map-functions---details"></a>

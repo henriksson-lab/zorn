@@ -1,16 +1,30 @@
 # Genome annotation tools
 
-## QUAST
+This vignette covers the per-cell genome annotation wrappers. All of
+them are built on the MAP framework — see [Map
+scripts](https://henriksson-lab.github.io/zorn/articles/map_scripts.md)
+for the underlying mechanism and how to write your own.
 
-First run QUAST on all the cells: [(SLURM-compatible
+## QUAST — assembly quality
+
+QUAST computes standard assembly QC metrics from contigs (N50, number
+and length of contigs, GC content, mis-assemblies, etc.). It is the most
+common way to compare the quality of different assemblies and is the
+de-facto standard for reporting assembly statistics.
+
+- Website: <https://github.com/ablab/quast>
+- Cite: Gurevich A, Saveliev V, Vyahhi N, Tesler G. *QUAST: quality
+  assessment tool for genome assemblies.* Bioinformatics.
+  2013;29(8):1072–1075.
+
+[(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
 
-BascetMapCell(
+BascetMapCellQUAST(
   bascetRoot,
-  withfunction = "_quast",
-  inputName = "skesa",  #or other source of contigs
+  inputName  = "contigs",  #or other source of contigs
   outputName = "quast"
 )
 ```
@@ -27,10 +41,22 @@ quast_aggr <- BascetCacheComputation(bascetRoot,"cache_quast",MapListAsDataFrame
 )))
 ```
 
-## Abricate
+## Abricate — AMR / virulence screening
 
-First run Abricate on all the cells. The NCBI database is used by
-default. See ListDatabaseAbricate() for a list of other databases
+Abricate performs mass screening of contigs against several curated
+databases of antimicrobial resistance and virulence genes (e.g. NCBI,
+CARD, ResFinder, VFDB, PlasmidFinder). It only reports acquired
+resistance genes, not point mutations, and is widely used because it is
+fast and easy to interpret.
+
+- Website: <https://github.com/tseemann/abricate>
+- Cite: Seemann T. *Abricate*. GitHub
+  <https://github.com/tseemann/abricate> (please also cite the
+  underlying database you used)
+
+The NCBI database is used by default. See
+[`ListDatabaseAbricate()`](https://henriksson-lab.github.io/zorn/reference/ListDatabaseAbricate.md)
+for a list of other databases.
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
@@ -39,44 +65,53 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 BascetMapCellAbricate(
   bascetRoot,
-  inputName = "skesa"  #or other source of contigs
+  inputName  = "contigs",  #or other source of contigs
+  outputName = "abricate",
+  db         = "ncbi"
+)
+
+abricate_mat <- BascetAggregateAbricate(
+  bascetRoot,
+  inputName = "abricate"
 )
 ```
 
-Then aggregate the results for visualization. This example caches the
-result to speed up reloading; this is optional
+## Bakta — genome annotation
 
-``` r
+Bakta is a fast, standardized annotation tool for bacterial genomes and
+plasmids. It identifies coding sequences, ncRNAs, tRNAs, CRISPR arrays,
+and more, and assigns functional descriptions through alignment-free
+sequence identification. It is a good choice when you want a complete
+genome annotation comparable across cells.
 
-quast_aggr <- BascetCacheComputation(bascetRoot,"cache_abricate",MapListAsDataFrame(BascetAggregateMap(
-  bascetRoot,
-  "abricate",
-  aggr.abricate
-)))
-```
-
-## Bakta
+- Website: <https://github.com/oschwengers/bakta>
+- Cite: Schwengers O, Jelonek L, Dieckmann MA, Beyvers S, Blom J,
+  Goesmann A. *Bakta: rapid and standardized annotation of bacterial
+  genomes via alignment-free sequence identification.* Microbial
+  Genomics. 2021;7(11):000685.
 
 First download a database:
 
 ``` r
 
 DownloadDatabaseBakta(
-  dbdir="~/bakta",  #create directory before running command
-  dbtype="light"
+  dbdir  = "~/bakta",  #create directory before running command
+  dbtype = "light"
 )
 ```
 
-You can run then run Bakta on all cells: [(SLURM-compatible
+You can then run Bakta on all cells:
+
+[(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 
 ``` r
 
-### ....
 BascetMapCellBakta(
   bascetRoot,
-  db = "~/bakta",
-  inputName = "skesa",  #or other source of contigs
+  inputName  = "contigs",  #or other source of contigs
+  outputName = "bakta",
+  db         = "~/bakta"
 )
 ```
 
@@ -85,9 +120,117 @@ result to speed up reloading; this is optional
 
 ``` r
 
-quast_aggr <- BascetCacheComputation(bascetRoot,"cache_bakta",MapListAsDataFrame(BascetAggregateMap(
+bakta_aggr <- BascetCacheComputation(bascetRoot,"cache_bakta",MapListAsDataFrame(BascetAggregateMap(
   bascetRoot,
   "bakta",
   aggr.bakta
 )))
+```
+
+## Ariba — AMR identification from reads
+
+Ariba detects antimicrobial resistance genes (and other gene panels)
+directly from sequencing reads, without first assembling. It builds
+local assemblies around reference genes and reports SNPs and indels
+relative to the reference, which makes it useful when assembly quality
+is too low to trust contig-based screening.
+
+- Website: <https://github.com/sanger-pathogens/ariba>
+- Cite: Hunt M, Mather AE, Sánchez-Busó L, Page AJ, Parkhill J, Keane
+  JA, Harris SR. *ARIBA: rapid antimicrobial resistance genotyping
+  directly from sequencing reads.* Microbial Genomics.
+  2017;3(10):e000131.
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+
+BascetMapCellAriba(
+  bascetRoot,
+  inputName  = "filtered",
+  outputName = "ariba",
+  db         = "/path/to/ariba_db/out.prepareref"
+)
+
+ariba_mat <- BascetAggregateAriba(
+  bascetRoot,
+  inputName = "ariba"
+)
+```
+
+## AMRfinder — NCBI AMRfinderPlus
+
+AMRfinderPlus screens contigs (or proteins) against the NCBI Reference
+Gene Catalog to identify acquired AMR genes, point mutations conferring
+resistance, and selected virulence and stress-response genes. It is
+maintained by NCBI and is the source for many downstream AMR databases.
+
+- Website: <https://github.com/ncbi/amr>
+- Cite: Feldgarden M, Brover V, Gonzalez-Escalona N, Frye JG, Haendiges
+  J, Haft DH, Hoffmann M, Pettengill JB, Prasad AB, Tillman GE, Tyson
+  GH, Klimke W. *AMRFinderPlus and the Reference Gene Catalog facilitate
+  examination of the genomic links among antimicrobial resistance,
+  stress response, and virulence.* Scientific Reports. 2021;11(1):12728.
+
+First download the database:
+
+``` r
+
+DownloadDatabaseAMRfinder("/path/to/amrfinder_db")
+```
+
+Then run on all cells:
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+
+BascetMapCellAMRfinder(
+  bascetRoot,
+  inputName  = "contigs",
+  outputName = "AMRfinder",
+  db         = "/path/to/amrfinder_db"
+)
+
+amr_df <- BascetAggregateAMRfinder(
+  bascetRoot,
+  inputName = "AMRfinder"
+)
+```
+
+## GECCO — biosynthetic gene clusters
+
+GECCO predicts biosynthetic gene clusters (BGCs) in assembled contigs
+using a conditional random field over Pfam domain compositions. It is
+much faster than antiSMASH and is well suited to scanning thousands of
+single-cell assemblies for natural-product potential.
+
+- Website: <https://gecco.embl.de/>
+- Cite: Carroll LM, Larralde M, Fleck JS, Ponnudurai R, Milanese A,
+  Cappio Barazzone E, Zeller G. *Accurate de novo identification of
+  biosynthetic gene clusters with GECCO.* bioRxiv. 2021.
+  <doi:10.1101/2021.05.03.442509>
+
+[(SLURM-compatible
+step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+
+BascetMapCellGECCO(
+  bascetRoot,
+  inputName  = "contigs",
+  outputName = "gecco"
+)
+```
+
+Aggregate the per-cell cluster tables into a single list of data.frames:
+
+``` r
+
+gecco_aggr <- BascetAggregateGECCO(
+  bascetRoot,
+  inputName = "gecco"
+)
 ```

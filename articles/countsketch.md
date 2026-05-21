@@ -73,7 +73,8 @@ You can now load all of this data into R as a Seurat object:
 ``` r
 
 adata <- BascetLoadCountSketchMatrix(
-  bascetRoot
+  bascetRoot,
+  inputName = "countsketch_mat"
 )
 ```
 

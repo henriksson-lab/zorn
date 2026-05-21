@@ -16,88 +16,11 @@ Bascet currently hosts two type of MAP functions:
 - MAP functions calling software through shell scripts. This is not as
   fast but avoids the creation of thousands (or millions) of small files
 
-## Running first-class Rust MAP functions
+## Calling a MAP function — one example
 
-These wrappers call native Bascet subcommands directly, so they are the
-fastest way to process all cells. Zorn currently provides:
-
-- `BascetMapCellSKESA` — *de novo* assembly with SKESA, producing
-  contigs from filtered reads
-- `BascetMapCellFASTQC` — read-level quality control with FastQC
-- `BascetMapCellGECCO` — biosynthetic gene cluster prediction on
-  assembled contigs
-
-### GECCO — biosynthetic gene clusters (for assembled genomes)
-
-[GECCO](https://gecco.embl.de/) scans assembled contigs for biosynthetic
-gene clusters (BGCs).
-
-``` r
-
-BascetMapCellGECCO(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "gecco"
-)
-```
-
-Aggregate the per-cell cluster tables into a single list of data.frames:
-
-``` r
-
-gecco_aggr <- BascetAggregateGECCO(
-  bascetRoot,
-  inputName = "gecco"
-)
-```
-
-### SKESA — assembly (runs on reads as input)
-
-``` r
-
-BascetMapCellSKESA(
-  bascetRoot,
-  inputName  = "filtered",
-  outputName = "contigs",
-  kmer       = 21,
-  minContig  = 50
-)
-```
-
-### FastQC — QC of reads (runs on reads as input)
-
-``` r
-
-BascetMapCellFASTQC(
-  bascetRoot,
-  inputName  = "filtered",
-  outputName = "fastqc"
-)
-
-fastqc_aggr <- BascetAggregateFASTQC(
-  bascetRoot,
-  inputName = "fastqc"
-)
-```
-
-## Running a shell-script based MAP function
-
-Shell-script wrappers are the easiest way to run external bioinformatics
-tools without writing your own MAP function. Zorn includes wrappers for
-the most common single-cell microbial workflows:
-
-| Wrapper | Tool | Typical input | Typical output |
-|----|----|----|----|
-| `BascetMapCellQUAST` | QUAST assembly QC | `contigs` | `quast` |
-| `BascetMapCellAbricate` | Abricate AMR / virulence | `contigs` | `abricate` |
-| `BascetMapCellBakta` | Bakta genome annotation | `contigs` | `bakta` |
-| `BascetMapCellAriba` | Ariba AMR from reads | `filtered` | `ariba` |
-| `BascetMapCellAMRfinder` | NCBI AMRfinder | `contigs` | `AMRfinder` |
-
-Each of these is a thin wrapper around `BascetMapCell` that knows the
-right script name and arguments.
-
-### QUAST — assembly quality
+All MAP wrappers follow the same pattern: they take an input shard, run
+a per-cell tool on it, and produce an output shard. Here is QUAST as a
+representative example:
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
@@ -111,7 +34,8 @@ BascetMapCellQUAST(
 )
 ```
 
-If you prefer the raw form, this is equivalent to:
+This is a thin wrapper around `BascetMapCell` that knows the right
+script name. The raw form is equivalent:
 
 ``` r
 
@@ -123,87 +47,26 @@ BascetMapCell(
 )
 ```
 
-### Abricate — AMR / virulence screening
+For the full QUAST workflow (including aggregation), see [genome
+annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md).
 
-``` r
+## Available MAP wrappers
 
-BascetMapCellAbricate(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "abricate",
-  db         = "ncbi"
-)
+Each wrapper is documented in detail in the vignette listed in the last
+column. That vignette covers any required databases, the matching
+`BascetAggregate*()` step, and downstream usage.
 
-abricate_mat <- BascetAggregateAbricate(
-  bascetRoot,
-  inputName = "abricate"
-)
-```
-
-### Bakta — genome annotation
-
-``` r
-
-DownloadDatabaseBakta("/path/to/bakta_db", dbtype = "light")
-
-BascetMapCellBakta(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "bakta",
-  db         = "/path/to/bakta_db"
-)
-```
-
-### Ariba — AMR identification from reads
-
-``` r
-
-BascetMapCellAriba(
-  bascetRoot,
-  inputName  = "filtered",
-  outputName = "ariba",
-  db         = "/path/to/ariba_db/out.prepareref"
-)
-
-ariba_mat <- BascetAggregateAriba(
-  bascetRoot,
-  inputName = "ariba"
-)
-```
-
-### AMRfinder
-
-``` r
-
-DownloadDatabaseAMRfinder("/path/to/amrfinder_db")
-
-BascetMapCellAMRfinder(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "AMRfinder",
-  db         = "/path/to/amrfinder_db"
-)
-
-amr_df <- BascetAggregateAMRfinder(
-  bascetRoot,
-  inputName = "AMRfinder"
-)
-```
-
-## Aggregating MAP results
-
-Once you have run your map function, you most likely want to load the
-results into R. We call this procedure “aggregate”. In case of QUAST,
-this procedure loads all quality metrics into an R data.frame object:
-
-``` r
-
-quast_aggr <- MapListAsDataFrame(BascetAggregateMap(
-  bascetRoot,
-  inputName="quast",
-  aggr.quast
-))
-```
+| Wrapper | Tool | Typical input | Typical output | Documented in |
+|----|----|----|----|----|
+| `BascetMapCellSKESA` | SKESA *de novo* assembly | `filtered` | `contigs` | [assembly](https://henriksson-lab.github.io/zorn/articles/assembly.md) |
+| `BascetMapCellFASTQC` | FastQC read QC | `filtered` | `fastqc` | [read quality control](https://henriksson-lab.github.io/zorn/articles/read_quality_control.md) |
+| `BascetMapCellQUAST` | QUAST assembly QC | `contigs` | `quast` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
+| `BascetMapCellAbricate` | Abricate AMR / virulence | `contigs` | `abricate` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
+| `BascetMapCellBakta` | Bakta genome annotation | `contigs` | `bakta` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
+| `BascetMapCellAriba` | Ariba AMR from reads | `filtered` | `ariba` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
+| `BascetMapCellAMRfinder` | NCBI AMRfinder | `contigs` | `AMRfinder` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
+| `BascetMapCellGECCO` | GECCO biosynthetic clusters | `contigs` | `gecco` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
+| `BascetComputeMinhash` | k-mer minhash sketches | `filtered` | `minhash` | [k-mer analysis](https://henriksson-lab.github.io/zorn/articles/kmer.md) |
 
 ## Arguments to MAP functions
 
@@ -218,6 +81,27 @@ BascetMapCell(
   args(DB="some/path",OTHERARG="hi")
   ...
 )
+```
+
+## Aggregating MAP results
+
+Once you have run your map function, you most likely want to load the
+results into R. We call this procedure “aggregate”. Most wrappers have a
+matching `BascetAggregate*()` function — see the per-tool vignette for
+the exact call.
+
+There is also a catch-all aggregate function that requires a bit of a
+special way of calling. The example below takes “out.txt”, generated by
+each tool, and stores the raw file content in a list. This is not pretty
+but it may help you in debugging and development:
+
+``` r
+
+raw_aggr <- MapListAsDataFrame(BascetAggregateMap(
+  bascetRoot,
+  inputName="..",
+  aggr.raw("out.txt")
+))
 ```
 
 ## Custom MAP functions - introduction
@@ -246,20 +130,6 @@ function will take the output from your tool, parse it, and put in a
 sensible R object. Have a look at [example and existing aggregate
 functions](https://github.com/henriksson-lab/zorn/blob/main/R/aggr_functions.R)
 for inspiration.
-
-There is also a catch-all aggregate function that requires a bit of a
-special way of calling. The example below takes “out.txt”, generated by
-each tool, and stores the raw file content in a list. This is not pretty
-but it may help you in debugging and development:
-
-``` r
-
-quast_aggr <- MapListAsDataFrame(BascetAggregateMap(
-  bascetRoot,
-  inputName="..",
-  aggr.raw("out.txt")
-))
-```
 
 ## Custom MAP functions - details
 

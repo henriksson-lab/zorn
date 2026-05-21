@@ -16,8 +16,8 @@ BascetLoadCountSketchMatrix(bascetRoot, inputName = "countsketch_mat.feather")
 
 - inputName:
 
-  Name of countsketch matrix file. Feather and legacy CSV files are
-  supported.
+  Name of countsketch matrix file. The `.feather` extension may be
+  omitted.
 
 ## Value
 

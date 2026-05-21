@@ -82,10 +82,11 @@ BascetDumpContigs(
 
 ## Further analysis of assembled contigs
 
-To assess assemblies, have a look at our [Map
-scripts](https://henriksson-lab.github.io/zorn/articles/map_scripts.md)
-vignette, which shows how to run per-cell tools (e.g. QUAST for assembly
-QC).
+To assess assemblies and annotate the contigs (QUAST, Bakta, Abricate,
+AMRfinder, GECCO, etc.), see the [genome
+annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md)
+vignette. For an overview of the underlying MAP framework, see [Map
+scripts](https://henriksson-lab.github.io/zorn/articles/map_scripts.md).
 
 ## Coassembly
 
