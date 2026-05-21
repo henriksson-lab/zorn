@@ -9,8 +9,8 @@ BascetLoadCountSketchMatrix(bascetRoot, inputName = "countsketch_mat.feather")
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{inputName}{Name of countsketch matrix file. Feather and legacy CSV
-files are supported.}
+\item{inputName}{Name of countsketch matrix file. The \code{.feather} extension
+may be omitted.}
 }
 \value{
 A Seurat object holding the sketch as a reduction

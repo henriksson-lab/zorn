@@ -77,8 +77,10 @@ BascetDumpContigs(
 
 # Further analysis of assembled contigs
 
-To assess assemblies, have a look at our [Map scripts](map_scripts.html) vignette, which shows how to run per-cell tools
-(e.g. QUAST for assembly QC).
+To assess assemblies and annotate the contigs (QUAST, Bakta, Abricate,
+AMRfinder, GECCO, etc.), see the [genome annotation](genome_annotation.html)
+vignette. For an overview of the underlying MAP framework, see
+[Map scripts](map_scripts.html).
 
 
 

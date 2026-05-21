@@ -21,84 +21,12 @@ Bascet currently hosts two type of MAP functions:
 * MAP functions written in Rust for highest performance. If the original software is not Rust, we perform [static analysis-mediated LLM translation](https://github.com/henriksson-lab/rustification) to make it compatible
 * MAP functions calling software through shell scripts. This is not as fast but avoids the creation of thousands (or millions) of small files
 
-# Running first-class Rust MAP functions
 
-These wrappers call native Bascet subcommands directly, so they are the fastest
-way to process all cells. Zorn currently provides:
+# Calling a MAP function — one example
 
-* `BascetMapCellSKESA` — *de novo* assembly with SKESA, producing contigs from filtered reads
-* `BascetMapCellFASTQC` — read-level quality control with FastQC
-* `BascetMapCellGECCO` — biosynthetic gene cluster prediction on assembled contigs
-
-## GECCO — biosynthetic gene clusters (for assembled genomes)
-
-[GECCO](https://gecco.embl.de/) scans assembled contigs for biosynthetic gene clusters (BGCs).
-
-```{r, eval=F, echo=T}
-BascetMapCellGECCO(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "gecco"
-)
-```
-
-Aggregate the per-cell cluster tables into a single list of data.frames:
-
-```{r, eval=F, echo=T}
-gecco_aggr <- BascetAggregateGECCO(
-  bascetRoot,
-  inputName = "gecco"
-)
-```
-
-## SKESA — assembly (runs on reads as input)
-
-```{r, eval=F, echo=T}
-BascetMapCellSKESA(
-  bascetRoot,
-  inputName  = "filtered",
-  outputName = "contigs",
-  kmer       = 21,
-  minContig  = 50
-)
-```
-
-## FastQC — QC of reads (runs on reads as input)
-
-```{r, eval=F, echo=T}
-BascetMapCellFASTQC(
-  bascetRoot,
-  inputName  = "filtered",
-  outputName = "fastqc"
-)
-
-fastqc_aggr <- BascetAggregateFASTQC(
-  bascetRoot,
-  inputName = "fastqc"
-)
-```
-
-
-
-
-# Running a shell-script based MAP function
-
-Shell-script wrappers are the easiest way to run external bioinformatics tools
-without writing your own MAP function. Zorn includes wrappers for the most
-common single-cell microbial workflows:
-
-| Wrapper                  | Tool                       | Typical input | Typical output |
-|--------------------------|----------------------------|---------------|----------------|
-| `BascetMapCellQUAST`     | QUAST assembly QC          | `contigs`     | `quast`        |
-| `BascetMapCellAbricate`  | Abricate AMR / virulence   | `contigs`     | `abricate`     |
-| `BascetMapCellBakta`     | Bakta genome annotation    | `contigs`     | `bakta`        |
-| `BascetMapCellAriba`     | Ariba AMR from reads       | `filtered`    | `ariba`        |
-| `BascetMapCellAMRfinder` | NCBI AMRfinder             | `contigs`     | `AMRfinder`    |
-
-Each of these is a thin wrapper around `BascetMapCell` that knows the right
-script name and arguments.
-
-## QUAST — assembly quality
+All MAP wrappers follow the same pattern: they take an input shard, run a
+per-cell tool on it, and produce an output shard. Here is QUAST as a
+representative example:
 
 [(SLURM-compatible step)](slurm.html)
 
@@ -110,7 +38,8 @@ BascetMapCellQUAST(
 )
 ```
 
-If you prefer the raw form, this is equivalent to:
+This is a thin wrapper around `BascetMapCell` that knows the right script name.
+The raw form is equivalent:
 
 ```{r, eval=F, echo=T}
 BascetMapCell(
@@ -121,82 +50,27 @@ BascetMapCell(
 )
 ```
 
-## Abricate — AMR / virulence screening
+For the full QUAST workflow (including aggregation), see
+[genome annotation](genome_annotation.html).
 
-```{r, eval=F, echo=T}
-BascetMapCellAbricate(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "abricate",
-  db         = "ncbi"
-)
 
-abricate_mat <- BascetAggregateAbricate(
-  bascetRoot,
-  inputName = "abricate"
-)
-```
+# Available MAP wrappers
 
-## Bakta — genome annotation
+Each wrapper is documented in detail in the vignette listed in the last
+column. That vignette covers any required databases, the matching
+`BascetAggregate*()` step, and downstream usage.
 
-```{r, eval=F, echo=T}
-DownloadDatabaseBakta("/path/to/bakta_db", dbtype = "light")
-
-BascetMapCellBakta(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "bakta",
-  db         = "/path/to/bakta_db"
-)
-```
-
-## Ariba — AMR identification from reads
-
-```{r, eval=F, echo=T}
-BascetMapCellAriba(
-  bascetRoot,
-  inputName  = "filtered",
-  outputName = "ariba",
-  db         = "/path/to/ariba_db/out.prepareref"
-)
-
-ariba_mat <- BascetAggregateAriba(
-  bascetRoot,
-  inputName = "ariba"
-)
-```
-
-## AMRfinder
-
-```{r, eval=F, echo=T}
-DownloadDatabaseAMRfinder("/path/to/amrfinder_db")
-
-BascetMapCellAMRfinder(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "AMRfinder",
-  db         = "/path/to/amrfinder_db"
-)
-
-amr_df <- BascetAggregateAMRfinder(
-  bascetRoot,
-  inputName = "AMRfinder"
-)
-```
-
-# Aggregating MAP results
-
-Once you have run your map function, you most likely want to load the results
-into R. We call this procedure "aggregate". In case of QUAST, this procedure
-loads all quality metrics into an R data.frame object:
-
-```{r, eval=F, echo=T}
-quast_aggr <- MapListAsDataFrame(BascetAggregateMap(
-  bascetRoot,
-  inputName="quast",
-  aggr.quast
-))
-```
+| Wrapper                  | Tool                          | Typical input | Typical output | Documented in |
+|--------------------------|-------------------------------|---------------|----------------|---------------|
+| `BascetMapCellSKESA`     | SKESA *de novo* assembly      | `filtered`    | `contigs`      | [assembly](assembly.html) |
+| `BascetMapCellFASTQC`    | FastQC read QC                | `filtered`    | `fastqc`       | [read quality control](read_quality_control.html) |
+| `BascetMapCellQUAST`     | QUAST assembly QC             | `contigs`     | `quast`        | [genome annotation](genome_annotation.html) |
+| `BascetMapCellAbricate`  | Abricate AMR / virulence      | `contigs`     | `abricate`     | [genome annotation](genome_annotation.html) |
+| `BascetMapCellBakta`     | Bakta genome annotation       | `contigs`     | `bakta`        | [genome annotation](genome_annotation.html) |
+| `BascetMapCellAriba`     | Ariba AMR from reads          | `filtered`    | `ariba`        | [genome annotation](genome_annotation.html) |
+| `BascetMapCellAMRfinder` | NCBI AMRfinder                | `contigs`     | `AMRfinder`    | [genome annotation](genome_annotation.html) |
+| `BascetMapCellGECCO`     | GECCO biosynthetic clusters   | `contigs`     | `gecco`        | [genome annotation](genome_annotation.html) |
+| `BascetComputeMinhash`   | k-mer minhash sketches        | `filtered`    | `minhash`      | [k-mer analysis](kmer.html) |
 
 
 # Arguments to MAP functions
@@ -211,6 +85,26 @@ BascetMapCell(
   args(DB="some/path",OTHERARG="hi")
   ...
 )
+```
+
+
+# Aggregating MAP results
+
+Once you have run your map function, you most likely want to load the results
+into R. We call this procedure "aggregate". Most wrappers have a matching
+`BascetAggregate*()` function — see the per-tool vignette for the exact call.
+
+There is also a catch-all aggregate function that requires a bit of a special
+way of calling. The example below takes "out.txt", generated by each tool, and
+stores the raw file content in a list. This is not pretty but it may help you
+in debugging and development:
+
+```{r, eval=F, echo=T}
+raw_aggr <- MapListAsDataFrame(BascetAggregateMap(
+  bascetRoot,
+  inputName="..",
+  aggr.raw("out.txt")
+))
 ```
 
 
@@ -237,19 +131,6 @@ will take the output from your tool, parse it, and put in a sensible R object.
 Have a look at
 [example and existing aggregate functions](https://github.com/henriksson-lab/zorn/blob/main/R/aggr_functions.R)
 for inspiration.
-
-
-There is also a catch-all aggregate function that requires a bit of a special
-way of calling. The example below takes "out.txt", generated by each tool, and
-stores the raw file content in a list. This is not pretty but it may help you
-in debugging and development:
-```{r, eval=F, echo=T}
-quast_aggr <- MapListAsDataFrame(BascetAggregateMap(
-  bascetRoot,
-  inputName="..",
-  aggr.raw("out.txt")
-))
-```
 
 
 # Custom MAP functions - details
@@ -312,4 +193,3 @@ does not support multithreading
 ```
 This is called once only, to check that the script has the needed software
 dependencies. In such case, it returns "MAPCELL-CHECK"
-

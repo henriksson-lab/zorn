@@ -114,8 +114,8 @@ BascetRunCountsketch <- function(
 #' Load count sketch matrix as Seurat object
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of countsketch matrix file. Feather and legacy CSV
-#'   files are supported.
+#' @param inputName Name of countsketch matrix file. The `.feather` extension
+#'   may be omitted.
 #' 
 #' @return A Seurat object holding the sketch as a reduction
 #' @export
@@ -123,7 +123,7 @@ BascetLoadCountSketchMatrix <- function(
     bascetRoot,
     inputName="countsketch_mat.feather"
 ) {
-  fname <- file.path(bascetRoot, inputName)
+  fname <- resolveCountSketchMatrixFile(bascetRoot, inputName)
   sketch <- ReadCountSketchMatrixFile(fname)
 
   cellid <- sketch$cellid
@@ -136,6 +136,22 @@ BascetLoadCountSketchMatrix <- function(
   adata$celldepth <- celldepth
   
   adata
+}
+
+resolveCountSketchMatrixFile <- function(bascetRoot, inputName) {
+  fname <- file.path(bascetRoot, inputName)
+  if(file.exists(fname)) {
+    return(fname)
+  }
+
+  if(tools::file_ext(inputName) == "") {
+    feather_fname <- paste0(fname, ".feather")
+    if(file.exists(feather_fname)) {
+      return(feather_fname)
+    }
+  }
+
+  fname
 }
 
 ReadCountSketchMatrixFile <- function(fname) {
