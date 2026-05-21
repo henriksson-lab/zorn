@@ -13,9 +13,9 @@ common way to compare the quality of different assemblies and is the
 de-facto standard for reporting assembly statistics.
 
 - Website: <https://github.com/ablab/quast>
-- Cite: Gurevich A, Saveliev V, Vyahhi N, Tesler G. *QUAST: quality
-  assessment tool for genome assemblies.* Bioinformatics.
-  2013;29(8):1072–1075.
+- If you use this tool, please cite: Gurevich A, Saveliev V, Vyahhi N,
+  Tesler G. *QUAST: quality assessment tool for genome assemblies.*
+  Bioinformatics. 2013;29(8):1072–1075.
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
@@ -50,7 +50,7 @@ resistance genes, not point mutations, and is widely used because it is
 fast and easy to interpret.
 
 - Website: <https://github.com/tseemann/abricate>
-- Cite: Seemann T. *Abricate*. GitHub
+- If you use this tool, please cite: Seemann T. *Abricate*. GitHub
   <https://github.com/tseemann/abricate> (please also cite the
   underlying database you used)
 
@@ -85,10 +85,10 @@ sequence identification. It is a good choice when you want a complete
 genome annotation comparable across cells.
 
 - Website: <https://github.com/oschwengers/bakta>
-- Cite: Schwengers O, Jelonek L, Dieckmann MA, Beyvers S, Blom J,
-  Goesmann A. *Bakta: rapid and standardized annotation of bacterial
-  genomes via alignment-free sequence identification.* Microbial
-  Genomics. 2021;7(11):000685.
+- If you use this tool, please cite: Schwengers O, Jelonek L, Dieckmann
+  MA, Beyvers S, Blom J, Goesmann A. *Bakta: rapid and standardized
+  annotation of bacterial genomes via alignment-free sequence
+  identification.* Microbial Genomics. 2021;7(11):000685.
 
 First download a database:
 
@@ -136,10 +136,10 @@ relative to the reference, which makes it useful when assembly quality
 is too low to trust contig-based screening.
 
 - Website: <https://github.com/sanger-pathogens/ariba>
-- Cite: Hunt M, Mather AE, Sánchez-Busó L, Page AJ, Parkhill J, Keane
-  JA, Harris SR. *ARIBA: rapid antimicrobial resistance genotyping
-  directly from sequencing reads.* Microbial Genomics.
-  2017;3(10):e000131.
+- If you use this tool, please cite: Hunt M, Mather AE, Sánchez-Busó L,
+  Page AJ, Parkhill J, Keane JA, Harris SR. *ARIBA: rapid antimicrobial
+  resistance genotyping directly from sequencing reads.* Microbial
+  Genomics. 2017;3(10):e000131.
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
@@ -167,11 +167,12 @@ resistance, and selected virulence and stress-response genes. It is
 maintained by NCBI and is the source for many downstream AMR databases.
 
 - Website: <https://github.com/ncbi/amr>
-- Cite: Feldgarden M, Brover V, Gonzalez-Escalona N, Frye JG, Haendiges
-  J, Haft DH, Hoffmann M, Pettengill JB, Prasad AB, Tillman GE, Tyson
-  GH, Klimke W. *AMRFinderPlus and the Reference Gene Catalog facilitate
-  examination of the genomic links among antimicrobial resistance,
-  stress response, and virulence.* Scientific Reports. 2021;11(1):12728.
+- If you use this tool, please cite: Feldgarden M, Brover V,
+  Gonzalez-Escalona N, Frye JG, Haendiges J, Haft DH, Hoffmann M,
+  Pettengill JB, Prasad AB, Tillman GE, Tyson GH, Klimke W.
+  *AMRFinderPlus and the Reference Gene Catalog facilitate examination
+  of the genomic links among antimicrobial resistance, stress response,
+  and virulence.* Scientific Reports. 2021;11(1):12728.
 
 First download the database:
 
@@ -208,10 +209,10 @@ much faster than antiSMASH and is well suited to scanning thousands of
 single-cell assemblies for natural-product potential.
 
 - Website: <https://gecco.embl.de/>
-- Cite: Carroll LM, Larralde M, Fleck JS, Ponnudurai R, Milanese A,
-  Cappio Barazzone E, Zeller G. *Accurate de novo identification of
-  biosynthetic gene clusters with GECCO.* bioRxiv. 2021.
-  <doi:10.1101/2021.05.03.442509>
+- If you use this tool, please cite: Carroll LM, Larralde M, Fleck JS,
+  Ponnudurai R, Milanese A, Cappio Barazzone E, Zeller G. *Accurate de
+  novo identification of biosynthetic gene clusters with GECCO.*
+  bioRxiv. 2021. <doi:10.1101/2021.05.03.442509>
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
