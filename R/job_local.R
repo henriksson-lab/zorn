@@ -79,9 +79,12 @@ LocalRunner <- function(
       print("Warning: unable to detect amount of ram; it is better if you specify it. Setting a default of 64g")
       mem <- "64g"
     } else {
-      bram_gb <- round(as.double(bram)/1000000000)
+      #get_ram() returns physical RAM in bytes. Convert using the binary base (1024^3)
+      #so the resulting "Ng" label, which is parsed back as GiB (see parse_size_string),
+      #never exceeds the physical RAM. floor() leaves a little headroom rather than
+      #rounding up and pushing the allocation into swap.
+      bram_gb <- floor(as.double(bram)/1073741824)
       mem <- paste0(bram_gb,"g")
-      print(paste("==== mem ",mem))
     }
   } else {
     #Check that memory can be parsed and is some bare minimum
