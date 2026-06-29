@@ -437,7 +437,7 @@ setMethod(
   definition = function(job) {
     sacct_ret <- slurm_system2(
       "sacct",
-      c("-j", job@pid, "--parsable2", "--noheader", "-o", "JobIDRaw,State")
+      c("-j", job@pid, "--parsable2", "--noheader", "-o", "JobID,State")
     )
     sacct_info <- slurm_parse_status_lines(sacct_ret, separator = "|")
 
