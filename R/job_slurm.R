@@ -33,6 +33,139 @@ setClass("SlurmJob", slots=list(
 ) 
 
 
+slurm_normalize_state <- function(state) {
+  state <- stringr::str_trim(state)
+  state <- stringr::str_split_fixed(state, "[[:space:]]+", 2)[,1]
+
+  state[stringr::str_starts(state, "CANC")] <- "CANCELLED"
+  state[stringr::str_starts(state, "COMPLET")] <- "COMPLETED"
+  state[stringr::str_starts(state, "CONFIGUR")] <- "CONFIGURING"
+  state[stringr::str_starts(state, "FAIL")] <- "FAILED"
+  state[stringr::str_starts(state, "OUT_OF_ME")] <- "OUT_OF_MEM"
+  state[stringr::str_starts(state, "PEND")] <- "PENDING"
+  state[stringr::str_starts(state, "RUN")] <- "RUNNING"
+  state[stringr::str_starts(state, "TIMEOUT")] <- "TIMEOUT"
+
+  state
+}
+
+
+slurm_expand_array_indices <- function(num) {
+  num <- stringr::str_remove_all(num, "\\[|\\]")
+  num <- stringr::str_remove(num, "%.*$")
+  parts <- stringr::str_split(num, ",", simplify = FALSE)[[1]]
+  indices <- character()
+
+  for(part in parts) {
+    part <- stringr::str_trim(part)
+    if(grepl("^[0-9]+$", part)) {
+      indices <- c(indices, part)
+    } else if(grepl("^[0-9]+-[0-9]+$", part)) {
+      bounds <- as.integer(stringr::str_split_fixed(part, "-", 2))
+      indices <- c(indices, as.character(seq.int(bounds[1], bounds[2])))
+    }
+  }
+
+  indices
+}
+
+
+slurm_parse_status_lines <- function(lines, separator = "|") {
+  lines <- lines[nzchar(stringr::str_trim(lines))]
+  if(length(lines)==0) {
+    return(data.frame(proc=character(), status=character(), num=character()))
+  }
+
+  records <- list()
+  for(line in lines) {
+    fields <- stringr::str_split_fixed(stringr::str_trim(line), stringr::fixed(separator), 2)
+    if(ncol(fields)<2 || fields[1,2]=="") {
+      next
+    }
+
+    jobid <- fields[1,1]
+    status <- slurm_normalize_state(fields[1,2])
+
+    # Drop SLURM job steps. The array task state is represented by the
+    # corresponding parent entry, while .batch/.extern rows can duplicate it.
+    jobid <- stringr::str_remove(jobid, "\\..*$")
+    jobid <- stringr::str_remove(jobid, "\\+$")
+
+    parts <- stringr::str_split_fixed(jobid, "_", 2)
+    proc <- parts[1,1]
+    num <- parts[1,2]
+
+    if(num=="") {
+      records[[length(records)+1]] <- data.frame(
+        proc=proc,
+        status=status,
+        num=NA_character_
+      )
+    } else if(grepl("^\\[", num)) {
+      for(index in slurm_expand_array_indices(num)) {
+        records[[length(records)+1]] <- data.frame(
+          proc=proc,
+          status=status,
+          num=index
+        )
+      }
+    } else if(grepl("^[0-9]+$", num)) {
+      records[[length(records)+1]] <- data.frame(
+        proc=proc,
+        status=status,
+        num=num
+      )
+    }
+  }
+
+  if(length(records)==0) {
+    data.frame(proc=character(), status=character(), num=character())
+  } else {
+    do.call(rbind, records)
+  }
+}
+
+
+slurm_parse_sacct_table <- function(lines) {
+  lines <- lines[nzchar(stringr::str_trim(lines))]
+  if(length(lines)<=2) {
+    return(data.frame(proc=character(), status=character(), num=character()))
+  }
+
+  lines <- lines[-c(1:2)]
+  records <- list()
+  for(line in lines) {
+    fields <- stringr::str_split_fixed(stringr::str_trim(line), "[[:space:]]+", 2)
+    if(fields[1,1]=="" || fields[1,2]=="") {
+      next
+    }
+
+    parsed <- slurm_parse_status_lines(
+      paste0(fields[1,1], "|", fields[1,2]),
+      separator = "|"
+    )
+    if(nrow(parsed)>0) {
+      records[[length(records)+1]] <- parsed
+    }
+  }
+
+  if(length(records)==0) {
+    data.frame(proc=character(), status=character(), num=character())
+  } else {
+    do.call(rbind, records)
+  }
+}
+
+
+slurm_system2 <- function(command, args) {
+  tryCatch(
+    system2(command, args = args, stdout = TRUE, stderr = TRUE),
+    warning = function(w) character(),
+    error = function(e) character()
+  )
+}
+
+
 ######################################################
 #this causes errors in devtools::document() ; why?
 #Caused by error in `current@target`:
@@ -302,25 +435,35 @@ setMethod(
   f = "JobStatus",
   signature ="SlurmJob",
   definition = function(job) {
-    
-    ret <- system(paste("sacct -j",job@pid, "-o jobid,state"), intern = TRUE)
-    ret <- ret[-c(1:2)]  #This are the lines " jobid state " and "-----"
-    
-    #split columns
-    info <- as.data.frame(stringr::str_split_fixed(stringr::str_trim(ret),"[ ]+",2))
-    colnames(info) <- c("proc","status")
-    
-    #split jobid[..] and jobid_.. into two columns
-    divproc <- stringr::str_split_fixed(info$proc,"[_\\.]",2)
-    info$proc <- divproc[,1]
-    info$num <- divproc[,2]
-    
-    #Correct cropped labels
-    info$status[stringr::str_starts(info$status,"CANC")] <- "CANCELLED"
-    info$status[stringr::str_starts(info$status,"RUN")] <- "RUNNING"
-    info$status[stringr::str_starts(info$status,"FAIL")] <- "FAILED"
-    info$status[stringr::str_starts(info$status,"OUT_OF_ME")] <- "OUT_OF_MEM"
-    
+    sacct_ret <- slurm_system2(
+      "sacct",
+      c("-j", job@pid, "--parsable2", "--noheader", "-o", "JobIDRaw,State")
+    )
+    sacct_info <- slurm_parse_status_lines(sacct_ret, separator = "|")
+
+    if(nrow(sacct_info)==0) {
+      sacct_ret <- slurm_system2(
+        "sacct",
+        c("-j", job@pid, "-o", "jobid,state")
+      )
+      sacct_info <- slurm_parse_sacct_table(sacct_ret)
+    }
+
+    # sacct can lag for just-submitted jobs or be unavailable on some clusters.
+    # squeue sees pending/running tasks, including compact array ranges.
+    squeue_ret <- slurm_system2(
+      "squeue",
+      c("-j", job@pid, "-h", "-o", "%i|%T")
+    )
+    squeue_info <- slurm_parse_status_lines(squeue_ret, separator = "|")
+
+    info <- rbind(squeue_info, sacct_info)
+    if(nrow(info)==0) {
+      return(info)
+    }
+
+    info <- info[!is.na(info$num),,drop=FALSE]
+    info$status <- slurm_normalize_state(info$status)
     info
   }
 )
@@ -361,6 +504,11 @@ setMethod(
       
       #For each expected job in the array, figure out it's status
       current_state <- rep("PENDING",job@arraysize) ## keep outside??
+      num_running <- 0
+      num_failed <- 0
+      num_outofmem <- 0
+      num_cancelled <- 0
+      num_timeout <- 0
       
       if(nrow(info)==0) {
         #If we are extremely unlucky, this can suddenly happen overnight while waiting for jobs to be done
@@ -408,6 +556,7 @@ setMethod(
         num_failed <- floor(sum(current_state=="FAILED"))
         num_outofmem <- floor(sum(current_state=="OUT_OF_MEM"))
         num_cancelled <- floor(sum(current_state=="CANCELLED"))
+        num_timeout <- floor(sum(current_state=="TIMEOUT"))
 
         #TODO: could also paste separate entries
 
@@ -419,7 +568,8 @@ setMethod(
           "Running: ",num_running,"   ",
           "Failed: ", num_failed,"   ",
           "Cancelled: ", num_cancelled,"   ",
-          "Out-of-mem: ", num_outofmem
+          "Out-of-mem: ", num_outofmem,"   ",
+          "Timeout: ", num_timeout
         )
 
         #print(cur_summary)
