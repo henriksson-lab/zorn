@@ -11,6 +11,7 @@ BascetCountChrom(
   outputName = "chromcount",
   minMatching = 0,
   removeDuplicates = TRUE,
+  removeMultimapper = TRUE,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -39,6 +40,10 @@ BascetCountChrom(
 - removeDuplicates:
 
   Deduplicate reads
+
+- removeMultimapper:
+
+  Remove reads for a cell if they map to multiple places
 
 - overwrite:
 
