@@ -14,7 +14,7 @@ BascetAlignToReference(
   outputNameBAMcell = NULL,
   outputNameBAMpos = NULL,
   overwrite = FALSE,
-  aligner = c(NULL, "BWAMEM2", "bowtie2", "STAR"),
+  aligner = c(NULL, "BWAMEM2", "STAR", "minimap2"),
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -39,7 +39,7 @@ for the unsorted/cell BAM and \verb{<outputName>_pos} for the position-sorted BA
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
-\item{aligner}{Which aligner to use: "BWAMEM2", "bowtie2", or "STAR"}
+\item{aligner}{Which aligner to use: "BWAMEM2", "STAR", or "minimap2"}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

@@ -776,7 +776,7 @@ BascetCountChrom <- function(
             "countchrom",
             JobArg("--min-matching", minMatching),
             if(removeDuplicates) JobArg("--remove-duplicates"),
-            if(!removeMultimapper) JobArg("--remove-multimapper", "false"),
+            if(removeMultimapper) JobArg("--remove-multimapper"),
             JobArg("-t", JobEnv("BASCET_TEMPDIR")),
             JobArg("-i", JobVar("files_in")),
             JobArg("-o", JobVar("files_out"))
