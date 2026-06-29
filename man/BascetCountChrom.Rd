@@ -10,6 +10,7 @@ BascetCountChrom(
   outputName = "chromcount",
   minMatching = 0,
   removeDuplicates = TRUE,
+  removeMultimapper = TRUE,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -25,6 +26,8 @@ BascetCountChrom(
 \item{minMatching}{Disregard reads having fewer than specified matches, based on CIGAR string}
 
 \item{removeDuplicates}{Deduplicate reads}
+
+\item{removeMultimapper}{Remove reads for a cell if they map to multiple places}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

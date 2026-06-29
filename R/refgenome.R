@@ -523,7 +523,7 @@ BascetFilterAlignment <- function(
 #' @param outputNameBAMcell Name of cell-sorted BAMs. If NULL, derived from `outputName`.
 #' @param outputNameBAMpos Name of pos-sorted BAMs. If NULL, derived from `outputName`.
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
-#' @param aligner Which aligner to use: "BWAMEM2", "bowtie2", or "STAR"
+#' @param aligner Which aligner to use: "BWAMEM2", "STAR", or "minimap2"
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
@@ -538,7 +538,7 @@ BascetAlignToReference <- function(
     outputNameBAMcell=NULL,
     outputNameBAMpos=NULL,
     overwrite=FALSE,
-    aligner=c(NULL, "BWAMEM2", "bowtie2", "STAR"),
+    aligner=c(NULL, "BWAMEM2", "STAR", "minimap2"),
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
@@ -584,10 +584,9 @@ BascetAlignToReference <- function(
     if(!file.exists(useReference)){
       stop("BWAMEM2 reference file does not exist")
     }
-  } else if (aligner=="bowtie2") {
-    #TODO: option of providing extra flag, "--very-sensitive-local" (should be default)
+  } else if (aligner=="minimap2") {
     if(!file.exists(useReference)){
-      stop("bowtie2 reference file does not exist")
+      stop("minimap2 reference file does not exist")
     }
   } else if(aligner=="STAR") {
     #stop("not yet implemented")
@@ -720,6 +719,7 @@ BascetBam2Fragments <- function(
 #' @param outputName Name of output shard
 #' @param minMatching Disregard reads having fewer than specified matches, based on CIGAR string
 #' @param removeDuplicates Deduplicate reads
+#' @param removeMultimapper Remove reads for a cell if they map to multiple places
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -732,6 +732,7 @@ BascetCountChrom <- function(
     outputName="chromcount", 
     minMatching=0,
     removeDuplicates=TRUE,
+    removeMultimapper=TRUE,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
@@ -743,6 +744,7 @@ BascetCountChrom <- function(
   stopifnot(is.valid.shardname(outputName))
   stopifnot(is.numeric(minMatching))
   stopifnot(is.logical(removeDuplicates))
+  stopifnot(is.logical(removeMultimapper))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -774,6 +776,7 @@ BascetCountChrom <- function(
             "countchrom",
             JobArg("--min-matching", minMatching),
             if(removeDuplicates) JobArg("--remove-duplicates"),
+            if(!removeMultimapper) JobArg("--remove-multimapper", "false"),
             JobArg("-t", JobEnv("BASCET_TEMPDIR")),
             JobArg("-i", JobVar("files_in")),
             JobArg("-o", JobVar("files_out"))
