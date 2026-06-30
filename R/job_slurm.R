@@ -50,6 +50,51 @@ slurm_normalize_state <- function(state) {
 }
 
 
+slurm_terminal_states <- function() {
+  c("COMPLETED", "FAILED", "OUT_OF_MEM", "CANCELLED", "TIMEOUT")
+}
+
+
+slurm_failure_states <- function() {
+  setdiff(slurm_terminal_states(), "COMPLETED")
+}
+
+
+slurm_has_terminal_array_status <- function(info, arraysize) {
+  if(nrow(info)==0) {
+    return(FALSE)
+  }
+  if(arraysize <= 0) {
+    return(FALSE)
+  }
+
+  whole_array_failed <- any(
+    !is.na(info$num) &
+      info$num=="[0]" &
+      info$status %in% slurm_failure_states()
+  )
+  if(whole_array_failed) {
+    return(TRUE)
+  }
+
+  info <- info[!is.na(info$num),,drop=FALSE]
+  info <- info[grepl("^[0-9]+$", info$num),,drop=FALSE]
+  if(nrow(info)==0) {
+    return(FALSE)
+  }
+
+  slurm_index <- as.integer(info$num)
+  info <- info[slurm_index >= 0 & slurm_index < arraysize,,drop=FALSE]
+  if(nrow(info)==0) {
+    return(FALSE)
+  }
+
+  expected <- as.character(seq.int(0, arraysize - 1))
+  terminal <- unique(info$num[info$status %in% slurm_terminal_states()])
+  all(expected %in% terminal)
+}
+
+
 slurm_expand_array_indices <- function(num) {
   num <- stringr::str_remove_all(num, "\\[|\\]")
   num <- stringr::str_remove(num, "%.*$")
@@ -449,6 +494,10 @@ setMethod(
       sacct_info <- slurm_parse_sacct_table(sacct_ret)
     }
 
+    if(slurm_has_terminal_array_status(sacct_info, job@arraysize)) {
+      return(sacct_info)
+    }
+
     # sacct can lag for just-submitted jobs or be unavailable on some clusters.
     # squeue sees pending/running tasks, including compact array ranges.
     squeue_ret <- slurm_system2(
@@ -508,6 +557,7 @@ setMethod(
       num_outofmem <- 0
       num_cancelled <- 0
       num_timeout <- 0
+      num_terminal <- 0
       
       if(nrow(info)==0) {
         #If we are extremely unlucky, this can suddenly happen overnight while waiting for jobs to be done
@@ -519,8 +569,8 @@ setMethod(
           this_num <- info$num[i]
           if(this_num=="[0]") {
             #This is the entry for the batch array as a whole
-            if(info$status[i]=="CANCELLED") {
-              current_state[1:job@arraysize] <- "CANCELLED"
+            if(info$status[i] %in% slurm_failure_states()) {
+              current_state[1:job@arraysize] <- info$status[i]
             }
           } else {
             
@@ -546,6 +596,7 @@ setMethod(
         num_outofmem <- floor(sum(current_state=="OUT_OF_MEM"))
         num_cancelled <- floor(sum(current_state=="CANCELLED"))
         num_timeout <- floor(sum(current_state=="TIMEOUT"))
+        num_terminal <- floor(sum(current_state %in% slurm_terminal_states()))
 
         cur_summary <- paste0(
           job@pid," ",
@@ -561,11 +612,23 @@ setMethod(
 
       }
       
-      cli::cli_progress_update(set = min(num_completed, num_total))
+      cli::cli_progress_update(set = min(num_terminal, num_total))
       if(num_completed==num_total) {
         cli::cli_progress_done()
         cat("\nDone\n")
         break
+      } else if(num_terminal==num_total) {
+        cli::cli_progress_done()
+        stop(
+          paste0(
+            "SLURM job ", job@pid, " (", job@jobname, ") finished with failed tasks: ",
+            "Failed: ", num_failed, ", ",
+            "Cancelled: ", num_cancelled, ", ",
+            "Out-of-mem: ", num_outofmem, ", ",
+            "Timeout: ", num_timeout
+          ),
+          call. = FALSE
+        )
       } else {
         Sys.sleep(1)
       }
