@@ -395,7 +395,7 @@ BascetCacheComputation <- function(
 #' * merging shards
 #' * dividing shards
 #' 
-#' 
+#' Note that if you transform from aligned BAM, only the primary records are retained
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param inputName Name of input shard
