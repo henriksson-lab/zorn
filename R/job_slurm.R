@@ -487,9 +487,8 @@ setMethod(
       format = "{cli::pb_bar} {cli::pb_percent} | {cur_summary}"
     )
     cli::cli_progress_update(set = 0)
-    #print(pb)
-    #Because SLURM info is emptied overnight, we need to keep old info,
-    #or it will get lost
+
+    #Because SLURM info is emptied overnight, we need to keep old info, or it will get lost
     last_info <- NULL
     num_completed <- 0
     num_total <- job@arraysize
@@ -512,19 +511,12 @@ setMethod(
       
       if(nrow(info)==0) {
         #If we are extremely unlucky, this can suddenly happen overnight while waiting for jobs to be done
-
-        #todo should likely keep status outside loop TODO
-        
-        #print("Waiting to start")  
         cur_summary <- "Waiting for SLURM job to start"
-        #cli::cli_progress_update(id=pb, set = 0)
-        #Sys.sleep(5)
       } else {
         
         #Parse each line of info
         for(i in 1:nrow(info)) {
           this_num <- info$num[i]
-#          print(info)
           if(this_num=="[0]") {
             #This is the entry for the batch array as a whole
             if(info$status[i]=="CANCELLED") {
@@ -547,9 +539,6 @@ setMethod(
           }
         }        
         
-        
-        #print(info$status)
-
         #Count number of jobs of each type
         num_running <- floor(sum(current_state=="RUNNING"))
         num_completed <- floor(sum(current_state=="COMPLETED"))
@@ -557,8 +546,6 @@ setMethod(
         num_outofmem <- floor(sum(current_state=="OUT_OF_MEM"))
         num_cancelled <- floor(sum(current_state=="CANCELLED"))
         num_timeout <- floor(sum(current_state=="TIMEOUT"))
-
-        #TODO: could also paste separate entries
 
         cur_summary <- paste0(
           job@pid," ",
@@ -572,15 +559,8 @@ setMethod(
           "Timeout: ", num_timeout
         )
 
-        #print(cur_summary)
-
-#print("num_completed")
-#print(num_completed)  ## too many!!
-#print(job@arraysize)
-#print(info)
       }
       
-#      cli::cli_progress_update(set = 20)
       cli::cli_progress_update(set = min(num_completed, num_total))
       if(num_completed==num_total) {
         cli::cli_progress_done()
@@ -590,8 +570,6 @@ setMethod(
         Sys.sleep(1)
       }
     }
-    #cli::cli_progress_done()
-    
   }
 )
 
