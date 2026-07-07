@@ -12,6 +12,8 @@ BascetMapTransform(
   numMerge = 1,
   outFormat = "tirp.gz",
   includeCells = NULL,
+  numThreads = NULL,
+  totalMem = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -31,6 +33,10 @@ BascetMapTransform(
 \item{outFormat}{Extension for the output files}
 
 \item{includeCells}{List of cells to include, or NULL if to include all}
+
+\item{numThreads}{Number of threads to use. Default is the maximum, taken from runner settings}
+
+\item{totalMem}{Total memory to allocate}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

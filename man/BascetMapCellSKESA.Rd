@@ -16,15 +16,17 @@ BascetMapCellSKESA(
   kmer = 21,
   maxKmer = 0,
   steps = 11,
-  minCount = 1,
+  minCount = NULL,
   maxKmerCount = 10,
   vectorPercent = 0.05,
   insertSize = 0,
-  fraction = 0.01,
+  fraction = 0.1,
   maxSnpLen = 150,
   minContig = 50,
   allowSnps = FALSE,
   forceSingleEnds = FALSE,
+  singlePassCounter = FALSE,
+  maxReadsPerCell = 0,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -53,7 +55,7 @@ BascetMapCellSKESA(
 
 \item{steps}{Number of assembly iterations from minimal to maximal k-mer length}
 
-\item{minCount}{Minimal count for k-mers retained}
+\item{minCount}{Minimal count for k-mers retained. NULL (default) lets skesa auto-estimate it from coverage, raising it for high-coverage cells}
 
 \item{maxKmerCount}{Maximum k-mer count for fork tie-breaking}
 
@@ -70,6 +72,10 @@ BascetMapCellSKESA(
 \item{allowSnps}{Allow additional step for SNP discovery}
 
 \item{forceSingleEnds}{Do not use paired-end information}
+
+\item{singlePassCounter}{Use the legacy single-pass k-mer counter. Faster for small cells but can exceed the memory budget for high-coverage cells, so it is off by default}
+
+\item{maxReadsPerCell}{Maximum read pairs per cell fed to assembly. 0 (default) disables the cap. When a cell exceeds this, only the first N read pairs encountered in the file are used (no random subsampling). Bounds memory for pathological high-read cells}
 
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 

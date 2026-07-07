@@ -2,38 +2,45 @@
 % Please edit documentation in R/count_kmer.R
 \name{BascetComputeMinhash}
 \alias{BascetComputeMinhash}
-\title{Compute minhashes for each cell.
-This is a thin wrapper around BascetMapCell}
+\title{Compute minhashes for each cell.}
 \usage{
 BascetComputeMinhash(
   bascetRoot,
   inputName = "filtered",
   outputName = "minhash",
-  maxReads = 1e+05,
   kmerSize = 31,
-  ...
+  numMinhash = 1000,
+  numThreads = NULL,
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{inputName}{Name of input shard}
+\item{inputName}{Name of input shard (a TIRP file)}
 
 \item{outputName}{Name of output shard}
 
-\item{maxReads}{The maximum number of reads per cell to sample}
+\item{kmerSize}{The KMER size for the hashing (1..32)}
 
-\item{kmerSize}{The KMER size for the hashing}
+\item{numMinhash}{Number of minhashes (features) kept per cell}
 
-\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
+\item{numThreads}{Number of minhash worker threads. Default is the runner CPU count}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing if files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
 }
 \description{
-Compute minhashes for each cell.
-This is a thin wrapper around BascetMapCell
-}
-\seealso{
-\code{\link{BascetMapCell}}
+Runs the native, streaming \code{bascet minhash-fq} command directly on each
+TIRP shard (one array job task per shard). Unlike the old \code{BascetMapCell}
+based path, this never materialises a whole cell's reads in memory, so it is
+safe for wildly uneven (e.g. MDA) cells.
 }
