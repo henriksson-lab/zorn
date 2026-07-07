@@ -294,6 +294,7 @@ BascetAggregateQUAST <- function(
 #' @param kmerSize K-mer size for FastQC k-mer content
 #' @param minLength Minimum sequence length to include
 #' @param dupLength Length to truncate sequences for duplication detection
+#' @param maxReadsPerCell Maximum read pairs per cell fed to FastQC. Defaults to 5e6 to bound memory for pathological high-read cells; NULL disables the cap. When a cell exceeds this, only the first N read pairs encountered in the file are used (no random subsampling)
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -311,6 +312,7 @@ BascetMapCellFASTQC <- function(
     kmerSize=7,
     minLength=0,
     dupLength=50,
+    maxReadsPerCell=5e6,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
@@ -333,6 +335,9 @@ BascetMapCellFASTQC <- function(
   stopifnot(is.positive.integer(kmerSize))
   stopifnot(is.integer.like(minLength), minLength >= 0)
   stopifnot(is.positive.integer(dupLength))
+  if(!is.null(maxReadsPerCell)) {
+    stopifnot(is.integer.like(maxReadsPerCell), maxReadsPerCell >= 0)
+  }
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -368,7 +373,8 @@ BascetMapCellFASTQC <- function(
             if(expgroup) JobArg("--expgroup"),
             JobArg("--kmer-size", kmerSize),
             JobArg("--min-length", minLength),
-            JobArg("--dup-length", dupLength)
+            JobArg("--dup-length", dupLength),
+            if(!is.null(maxReadsPerCell)) JobArg("--max-reads-per-cell", maxReadsPerCell)
           ))
         )
       ),
