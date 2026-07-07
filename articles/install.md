@@ -4,10 +4,12 @@
 
 We see two types of users and requirements: - **Users who do heavy
 preprocessing** Our tools are designed to maximally benefit from a beefy
-computer, ideally an HPC cluster. But a 16GB RAM laptop is technically
-enough. - **Users who do postprocessing in R** Any computer should be
-enough, but most single-cell users will likely want to have 32 or 64GB
-installed to be able to run Seurat on large modern datasets. Bascet
+computer, ideally an HPC cluster. A 16GB RAM laptop is technically
+enough, but if you will assemble large genomes,
+e.g. [SKESA](https://github.com/ncbi/SKESA) will dictate your memory
+requirements. - **Users who do postprocessing in R** Any computer should
+be enough, but most single-cell users will likely want to have 32 or
+64GB installed to be able to run Seurat on large modern datasets. Bascet
 integrates with Seurat.
 
 We strive to support Linux, OSX and Windows.

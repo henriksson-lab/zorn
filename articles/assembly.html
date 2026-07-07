@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.38</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.39</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,11 +113,17 @@ the handling of smaller microbial genomes.</p>
 <span><span class="fu"><a href="../reference/BascetMapCellSKESA.html">BascetMapCellSKESA</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"contigs"</span></span>
+<span>  outputName <span class="op">=</span> <span class="st">"contigs"</span>,</span>
+<span>  maxReadsPerCell <span class="op">=</span> <span class="fl">1000000</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>This produce contigs for each cell, all grouped together in
 “contigs”. Note that both Skesa and Spades only assembles cells for
-which there are sufficient number of reads.</p>
+which there are sufficient number of reads. In this example we also
+limit the number of reads (optional: maxReadsPerCell), as the maximum
+memory requirement is set by SKESA rather than Bascet. Warnings will be
+emitted in the log file for cells that exceed this limit. Note that if
+the cap is triggered, only the first reads for that cell will be used,
+rather than a random subset.</p>
 </div>
 <div class="section level2">
 <h2 id="investigating-assemblies">Investigating assemblies<a class="anchor" aria-label="anchor" href="#investigating-assemblies"></a>

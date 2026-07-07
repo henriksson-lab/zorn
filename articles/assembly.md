@@ -28,13 +28,19 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 BascetMapCellSKESA(
   bascetRoot,
   inputName = "filtered",
-  outputName = "contigs"
+  outputName = "contigs",
+  maxReadsPerCell = 1000000
 )
 ```
 
 This produce contigs for each cell, all grouped together in “contigs”.
 Note that both Skesa and Spades only assembles cells for which there are
-sufficient number of reads.
+sufficient number of reads. In this example we also limit the number of
+reads (optional: maxReadsPerCell), as the maximum memory requirement is
+set by SKESA rather than Bascet. Warnings will be emitted in the log
+file for cells that exceed this limit. Note that if the cap is
+triggered, only the first reads for that cell will be used, rather than
+a random subset.
 
 ## Investigating assemblies
 
