@@ -50,3 +50,6 @@ This command enables
 \item dividing shards
 }
 }
+\details{
+Note that if you transform from aligned BAM, only the primary records are retained
+}

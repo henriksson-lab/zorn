@@ -1101,43 +1101,28 @@ BascetAggregateAriba <- function(
 
 
 
-###############################################
-#' Run AMRfinder on contigs of all cells.
-#' This is a thin wrapper around BascetMapCell
-#'
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of input shard
-#' @param outputName Name of output shard
-#' @param db Path to database
-#' @param args Additional arguments passed to Bascet (list)
-#' @param overwrite Whether to overwrite existing output (logical)
-#' @param runner A runner object (e.g. LocalRunner, SlurmRunner)
-#' @param bascetInstance A Bascet instance
-#'
-#' @return A job to be executed, or being executed, depending on runner settings
-#' @seealso \code{\link{BascetMapCell}}
-#' @export
-BascetMapCellAMRfinder <- function(
-    bascetRoot,
-    inputName="contigs",
-    outputName="AMRfinder",
-    db,
-    args=list(),
-    overwrite=FALSE,
-    runner=GetDefaultBascetRunner(),
-    bascetInstance=GetDefaultBascetInstance()
-){
-  BascetMapCell(
-    bascetRoot=bascetRoot,
-    withfunction="_amrfinder",
-    inputName=inputName,
-    outputName=outputName,
-    args = c(list(DATABASE_DIR=db), args),
-    overwrite=overwrite,
-    runner=runner,
-    bascetInstance=bascetInstance
-  )
-}
+# BascetMapCellAMRfinder is disabled because the AMRfinder mapper does not work.
+# BascetMapCellAMRfinder <- function(
+#     bascetRoot,
+#     inputName="contigs",
+#     outputName="AMRfinder",
+#     db,
+#     args=list(),
+#     overwrite=FALSE,
+#     runner=GetDefaultBascetRunner(),
+#     bascetInstance=GetDefaultBascetInstance()
+# ){
+#   BascetMapCell(
+#     bascetRoot=bascetRoot,
+#     withfunction="_amrfinder",
+#     inputName=inputName,
+#     outputName=outputName,
+#     args = c(list(DATABASE_DIR=db), args),
+#     overwrite=overwrite,
+#     runner=runner,
+#     bascetInstance=bascetInstance
+#   )
+# }
 
 
 

@@ -68,7 +68,6 @@ column. That vignette covers any required databases, the matching
 | `BascetMapCellAbricate`  | Abricate AMR / virulence      | `contigs`     | `abricate`     | [genome annotation](genome_annotation.html) |
 | `BascetMapCellBakta`     | Bakta genome annotation       | `contigs`     | `bakta`        | [genome annotation](genome_annotation.html) |
 | `BascetMapCellAriba`     | Ariba AMR from reads          | `filtered`    | `ariba`        | [genome annotation](genome_annotation.html) |
-| `BascetMapCellAMRfinder` | NCBI AMRfinder                | `contigs`     | `AMRfinder`    | [genome annotation](genome_annotation.html) |
 | `BascetMapCellGECCO`     | GECCO biosynthetic clusters   | `contigs`     | `gecco`        | [genome annotation](genome_annotation.html) |
 | `BascetComputeMinhash`   | k-mer minhash sketches        | `filtered`    | `minhash`      | [k-mer analysis](kmer.html) |
 
