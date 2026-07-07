@@ -370,7 +370,13 @@ renderJobValueBash <- function(x, task_id = "$TASK_ID", quote_literal = TRUE) {
     return(paste0("$(cat ", path, " | paste --serial -d, - -)"))
   }
 
-  val <- as.character(x)
+  # Avoid scientific notation for numerics (e.g. as.character(1e6) == "1e+06"),
+  # which CLI integer parsers reject. digits=15 preserves full double precision.
+  val <- if(is.numeric(x)) {
+    format(x, scientific = FALSE, trim = TRUE, digits = 15)
+  } else {
+    as.character(x)
+  }
   if(quote_literal) {
     shQuote(val)
   } else {

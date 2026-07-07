@@ -18,7 +18,7 @@
 #' @param kmer Minimal k-mer length for assembly
 #' @param maxKmer Maximal k-mer length for assembly. 0 means auto
 #' @param steps Number of assembly iterations from minimal to maximal k-mer length
-#' @param minCount Minimal count for k-mers retained
+#' @param minCount Minimal count for k-mers retained. NULL (default) lets skesa auto-estimate it from coverage, raising it for high-coverage cells
 #' @param maxKmerCount Maximum k-mer count for fork tie-breaking
 #' @param vectorPercent Percentage of reads containing 19-mer for adapter detection. 1.0 disables
 #' @param insertSize Expected insert size for paired reads. 0 means auto
@@ -27,6 +27,8 @@
 #' @param minContig Minimal contig length reported in output
 #' @param allowSnps Allow additional step for SNP discovery
 #' @param forceSingleEnds Do not use paired-end information
+#' @param singlePassCounter Use the legacy single-pass k-mer counter. Faster for small cells but can exceed the memory budget for high-coverage cells, so it is off by default
+#' @param maxReadsPerCell Maximum read pairs per cell fed to assembly. 0 (default) disables the cap. When a cell exceeds this, only the first N read pairs encountered in the file are used (no random subsampling). Bounds memory for pathological high-read cells
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -45,15 +47,17 @@ BascetMapCellSKESA <- function(
     kmer=21,
     maxKmer=0,
     steps=11,
-    minCount=1,
+    minCount=NULL,
     maxKmerCount=10,
     vectorPercent=0.05,
     insertSize=0,
-    fraction=0.01,
+    fraction=0.1,
     maxSnpLen=150,
     minContig=50,
     allowSnps=FALSE,
     forceSingleEnds=FALSE,
+    singlePassCounter=FALSE,
+    maxReadsPerCell=0,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
@@ -93,8 +97,10 @@ BascetMapCellSKESA <- function(
   stopifnot(is.numeric(fraction), fraction > 0)
   stopifnot(is.positive.integer(maxSnpLen))
   stopifnot(is.positive.integer(minContig))
+  stopifnot(is.integer.like(maxReadsPerCell), maxReadsPerCell >= 0)
   stopifnot(is.logical(allowSnps))
   stopifnot(is.logical(forceSingleEnds))
+  stopifnot(is.logical(singlePassCounter))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -141,9 +147,10 @@ BascetMapCellSKESA <- function(
             JobArg("--fraction", fraction),
             JobArg("--max-snp-len", maxSnpLen),
             JobArg("--min-contig", minContig),
+            if(maxReadsPerCell > 0) JobArg("--max-reads-per-cell", maxReadsPerCell),
             if(allowSnps) JobArg("--allow-snps"),
             if(forceSingleEnds) JobArg("--force-single-ends"),
-            JobArg("--single-pass-counter")
+            if(singlePassCounter) JobArg("--single-pass-counter")
           ))
         )
       ),

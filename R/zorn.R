@@ -404,6 +404,8 @@ BascetCacheComputation <- function(
 #' @param numMerge Must be >=1; if more than 1, merge this number of input shards into one
 #' @param outFormat Extension for the output files
 #' @param includeCells List of cells to include, or NULL if to include all
+#' @param numThreads Number of threads to use. Default is the maximum, taken from runner settings
+#' @param totalMem Total memory to allocate
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
@@ -418,10 +420,17 @@ BascetMapTransform <- function(
     numMerge=1,
     outFormat="tirp.gz", ### not really!
     includeCells=NULL,
+    numThreads=NULL,
+    totalMem=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(), 
     bascetInstance=GetDefaultBascetInstance()
 ){
+  #Set number of threads if not given
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
+  }
+
   #Check input arguments 
   stopifnot(dir.exists(bascetRoot))
   bascetRoot <- normalizeBascetRoot(bascetRoot)
@@ -433,9 +442,13 @@ BascetMapTransform <- function(
     stop("Either divide or merge must be set to 1")
   }
   stopifnot(is.valid.listcells(includeCells))
+  stopifnot(is.valid.threadcount(numThreads))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
+
+  #Check memory sizes
+  totalMem <- checkTotalMemArg(totalMem, runner, bascetInstance)
   
   stopifnot(is.character(outFormat), length(outFormat) == 1)
   stopifnot(!is.na(outFormat), nzchar(outFormat))
@@ -475,6 +488,8 @@ BascetMapTransform <- function(
           JobBascetCommand(bascetInstance, list(
             "transform",
             if(produce_cell_list) JobArg("--cells", JobVar("CELLFILE")),
+            JobArg("--threads", numThreads, sep = " "),
+            JobMaybeArg("--memory", totalMem, format_size_bascet),
             JobArg("-i", JobVar("files_in")),
             JobArg("-o", JobVar("files_out"))
           ))
@@ -785,4 +800,3 @@ BascetRunFASTP <- function(
     new_no_job()
   }
 }
-

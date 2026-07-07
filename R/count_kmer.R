@@ -7,40 +7,92 @@
 
 ###############################################
 #' Compute minhashes for each cell.
-#' This is a thin wrapper around BascetMapCell
+#'
+#' Runs the native, streaming \code{bascet minhash-fq} command directly on each
+#' TIRP shard (one array job task per shard). Unlike the old \code{BascetMapCell}
+#' based path, this never materialises a whole cell's reads in memory, so it is
+#' safe for wildly uneven (e.g. MDA) cells.
 #'
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of input shard
+#' @param inputName Name of input shard (a TIRP file)
 #' @param outputName Name of output shard
-#' @param maxReads The maximum number of reads per cell to sample
-#' @param kmerSize The KMER size for the hashing
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#' @param kmerSize The KMER size for the hashing (1..32)
+#' @param numMinhash Number of minhashes (features) kept per cell
+#' @param numThreads Number of minhash worker threads. Default is the runner CPU count
+#' @param overwrite Force overwriting of existing files. The default is to do nothing if files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
-#' @seealso \code{\link{BascetMapCell}}
 #' @export
 BascetComputeMinhash <- function(
     bascetRoot,
     inputName="filtered",
     outputName="minhash",
-    maxReads=100000,
     kmerSize=31,
-    ...
+    numMinhash=1000,
+    numThreads=NULL,
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
 ){
-  stopifnot(is.integer.like(kmerSize))
-  stopifnot(is.integer.like(maxReads))
+  #check arguments
+  stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.integer.like(kmerSize), kmerSize >= 1, kmerSize <= 32)
+  stopifnot(is.positive.integer(numMinhash))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
 
-  BascetMapCell(
-    bascetRoot=bascetRoot,
-    withfunction="_minhash_fq",
-    inputName=inputName,
-    outputName=outputName,
-    args = list(
-      KMER_SIZE=format(kmerSize, scientific=FALSE),
-      MAX_READS=format(maxReads, scientific=FALSE)
-    ),
-    ...
-  )
+  #Set number of worker threads if not given
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
+  }
+  if(numThreads < 1) {
+    numThreads <- 1
+  }
+  stopifnot(is.valid.threadcount(numThreads))
+
+  #Figure out input and output file names
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+
+  if(num_shards==0){
+    stop("No input files")
+  }
+
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "zip", num_shards)
+
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
+    RunJob(
+      runner = runner,
+      jobname = "Zminhash",
+      bascetInstance = bascetInstance,
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "minhash-fq",
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out")),
+            JobArg("-@", numThreads),
+            JobArg("--kmer", kmerSize),
+            JobArg("--num-minhash", numMinhash)
+          ))
+        )
+      ),
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 
