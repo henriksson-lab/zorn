@@ -92,6 +92,8 @@ dividing shards
 <span>  numMerge <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  outFormat <span class="op">=</span> <span class="st">"tirp.gz"</span>,</span>
 <span>  includeCells <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  numThreads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  totalMem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -130,6 +132,14 @@ dividing shards
 <dd><p>List of cells to include, or NULL if to include all</p></dd>
 
 
+<dt id="arg-numthreads">numThreads<a class="anchor" aria-label="anchor" href="#arg-numthreads"></a></dt>
+<dd><p>Number of threads to use. Default is the maximum, taken from runner settings</p></dd>
+
+
+<dt id="arg-totalmem">totalMem<a class="anchor" aria-label="anchor" href="#arg-totalmem"></a></dt>
+<dd><p>Total memory to allocate</p></dd>
+
+
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
 <dd><p>Force overwriting of existing files. The default is to do nothing files exist</p></dd>
 
@@ -145,6 +155,10 @@ dividing shards
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A job to be executed, or being executed, depending on runner settings</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Note that if you transform from aligned BAM, only the primary records are retained</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

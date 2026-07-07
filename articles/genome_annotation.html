@@ -225,42 +225,6 @@ Microbial Genomics. 2017;3(10):e000131.</li>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="amrfinder-ncbi-amrfinderplus">AMRfinder — NCBI AMRfinderPlus<a class="anchor" aria-label="anchor" href="#amrfinder-ncbi-amrfinderplus"></a>
-</h2>
-<p>AMRfinderPlus screens contigs (or proteins) against the NCBI
-Reference Gene Catalog to identify acquired AMR genes, point mutations
-conferring resistance, and selected virulence and stress-response genes.
-It is maintained by NCBI and is the source for many downstream AMR
-databases.</p>
-<ul>
-<li>Website: <a href="https://github.com/ncbi/amr" class="external-link uri">https://github.com/ncbi/amr</a>
-</li>
-<li>If you use this tool, please cite: Feldgarden M, Brover V,
-Gonzalez-Escalona N, Frye JG, Haendiges J, Haft DH, Hoffmann M,
-Pettengill JB, Prasad AB, Tillman GE, Tyson GH, Klimke W.
-<em>AMRFinderPlus and the Reference Gene Catalog facilitate examination
-of the genomic links among antimicrobial resistance, stress response,
-and virulence.</em> Scientific Reports. 2021;11(1):12728.</li>
-</ul>
-<p>First download the database:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/DownloadDatabaseAMRfinder.html">DownloadDatabaseAMRfinder</a></span><span class="op">(</span><span class="st">"/path/to/amrfinder_db"</span><span class="op">)</span></span></code></pre></div>
-<p>Then run on all cells:</p>
-<p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellAMRfinder.html">BascetMapCellAMRfinder</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"contigs"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"AMRfinder"</span>,</span>
-<span>  db         <span class="op">=</span> <span class="st">"/path/to/amrfinder_db"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">amr_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetAggregateAMRfinder.html">BascetAggregateAMRfinder</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName <span class="op">=</span> <span class="st">"AMRfinder"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="gecco-biosynthetic-gene-clusters">GECCO — biosynthetic gene clusters<a class="anchor" aria-label="anchor" href="#gecco-biosynthetic-gene-clusters"></a>
 </h2>
 <p>GECCO predicts biosynthetic gene clusters (BGCs) in assembled contigs
@@ -277,7 +241,7 @@ bioRxiv. 2021. <a href="doi:10.1101/2021.05.03.442509" class="uri">doi:10.1101/2
 </li>
 </ul>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellGECCO.html">BascetMapCellGECCO</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName  <span class="op">=</span> <span class="st">"contigs"</span>,</span>
@@ -285,7 +249,7 @@ bioRxiv. 2021. <a href="doi:10.1101/2021.05.03.442509" class="uri">doi:10.1101/2
 <span><span class="op">)</span></span></code></pre></div>
 <p>Aggregate the per-cell cluster tables into a single list of
 data.frames:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gecco_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetAggregateGECCO.html">BascetAggregateGECCO</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName <span class="op">=</span> <span class="st">"gecco"</span></span>

@@ -159,48 +159,6 @@ ariba_mat <- BascetAggregateAriba(
 )
 ```
 
-## AMRfinder — NCBI AMRfinderPlus
-
-AMRfinderPlus screens contigs (or proteins) against the NCBI Reference
-Gene Catalog to identify acquired AMR genes, point mutations conferring
-resistance, and selected virulence and stress-response genes. It is
-maintained by NCBI and is the source for many downstream AMR databases.
-
-- Website: <https://github.com/ncbi/amr>
-- If you use this tool, please cite: Feldgarden M, Brover V,
-  Gonzalez-Escalona N, Frye JG, Haendiges J, Haft DH, Hoffmann M,
-  Pettengill JB, Prasad AB, Tillman GE, Tyson GH, Klimke W.
-  *AMRFinderPlus and the Reference Gene Catalog facilitate examination
-  of the genomic links among antimicrobial resistance, stress response,
-  and virulence.* Scientific Reports. 2021;11(1):12728.
-
-First download the database:
-
-``` r
-
-DownloadDatabaseAMRfinder("/path/to/amrfinder_db")
-```
-
-Then run on all cells:
-
-[(SLURM-compatible
-step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
-
-``` r
-
-BascetMapCellAMRfinder(
-  bascetRoot,
-  inputName  = "contigs",
-  outputName = "AMRfinder",
-  db         = "/path/to/amrfinder_db"
-)
-
-amr_df <- BascetAggregateAMRfinder(
-  bascetRoot,
-  inputName = "AMRfinder"
-)
-```
-
 ## GECCO — biosynthetic gene clusters
 
 GECCO predicts biosynthetic gene clusters (BGCs) in assembled contigs

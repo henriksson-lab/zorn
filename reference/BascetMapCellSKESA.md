@@ -17,15 +17,17 @@ BascetMapCellSKESA(
   kmer = 21,
   maxKmer = 0,
   steps = 11,
-  minCount = 1,
+  minCount = NULL,
   maxKmerCount = 10,
   vectorPercent = 0.05,
   insertSize = 0,
-  fraction = 0.01,
+  fraction = 0.1,
   maxSnpLen = 150,
   minContig = 50,
   allowSnps = FALSE,
   forceSingleEnds = FALSE,
+  singlePassCounter = FALSE,
+  maxReadsPerCell = 0,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -81,7 +83,8 @@ BascetMapCellSKESA(
 
 - minCount:
 
-  Minimal count for k-mers retained
+  Minimal count for k-mers retained. NULL (default) lets skesa
+  auto-estimate it from coverage, raising it for high-coverage cells
 
 - maxKmerCount:
 
@@ -115,6 +118,19 @@ BascetMapCellSKESA(
 - forceSingleEnds:
 
   Do not use paired-end information
+
+- singlePassCounter:
+
+  Use the legacy single-pass k-mer counter. Faster for small cells but
+  can exceed the memory budget for high-coverage cells, so it is off by
+  default
+
+- maxReadsPerCell:
+
+  Maximum read pairs per cell fed to assembly. 0 (default) disables the
+  cap. When a cell exceeds this, only the first N read pairs encountered
+  in the file are used (no random subsampling). Bounds memory for
+  pathological high-read cells
 
 - overwrite:
 

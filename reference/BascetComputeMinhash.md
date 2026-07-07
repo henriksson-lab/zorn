@@ -1,7 +1,9 @@
-# Compute minhashes for each cell. This is a thin wrapper around BascetMapCell
+# Compute minhashes for each cell.
 
-Compute minhashes for each cell. This is a thin wrapper around
-BascetMapCell
+Runs the native, streaming `bascet minhash-fq` command directly on each
+TIRP shard (one array job task per shard). Unlike the old
+`BascetMapCell` based path, this never materialises a whole cell's reads
+in memory, so it is safe for wildly uneven (e.g. MDA) cells.
 
 ## Usage
 
@@ -10,9 +12,12 @@ BascetComputeMinhash(
   bascetRoot,
   inputName = "filtered",
   outputName = "minhash",
-  maxReads = 1e+05,
   kmerSize = 31,
-  ...
+  numMinhash = 1000,
+  numThreads = NULL,
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 ```
 
@@ -24,29 +29,38 @@ BascetComputeMinhash(
 
 - inputName:
 
-  Name of input shard
+  Name of input shard (a TIRP file)
 
 - outputName:
 
   Name of output shard
 
-- maxReads:
-
-  The maximum number of reads per cell to sample
-
 - kmerSize:
 
-  The KMER size for the hashing
+  The KMER size for the hashing (1..32)
 
-- ...:
+- numMinhash:
 
-  Additional arguments passed to
-  [`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)
+  Number of minhashes (features) kept per cell
+
+- numThreads:
+
+  Number of minhash worker threads. Default is the runner CPU count
+
+- overwrite:
+
+  Force overwriting of existing files. The default is to do nothing if
+  files exist
+
+- runner:
+
+  The job manager, specifying how the command will be run (e.g. locally,
+  or via SLURM)
+
+- bascetInstance:
+
+  A Bascet instance
 
 ## Value
 
 A job to be executed, or being executed, depending on runner settings
-
-## See also
-
-[`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)

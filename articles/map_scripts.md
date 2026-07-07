@@ -64,7 +64,6 @@ column. That vignette covers any required databases, the matching
 | `BascetMapCellAbricate` | Abricate AMR / virulence | `contigs` | `abricate` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
 | `BascetMapCellBakta` | Bakta genome annotation | `contigs` | `bakta` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
 | `BascetMapCellAriba` | Ariba AMR from reads | `filtered` | `ariba` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
-| `BascetMapCellAMRfinder` | NCBI AMRfinder | `contigs` | `AMRfinder` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
 | `BascetMapCellGECCO` | GECCO biosynthetic clusters | `contigs` | `gecco` | [genome annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md) |
 | `BascetComputeMinhash` | k-mer minhash sketches | `filtered` | `minhash` | [k-mer analysis](https://henriksson-lab.github.io/zorn/articles/kmer.md) |
 

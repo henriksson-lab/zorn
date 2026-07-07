@@ -50,8 +50,7 @@
 - [`BascetCellNames()`](https://henriksson-lab.github.io/zorn/reference/BascetCellNames.md)
   : Get list of cells in a Bascet
 - [`BascetComputeMinhash()`](https://henriksson-lab.github.io/zorn/reference/BascetComputeMinhash.md)
-  : Compute minhashes for each cell. This is a thin wrapper around
-  BascetMapCell
+  : Compute minhashes for each cell.
 - [`BascetCountChrom()`](https://henriksson-lab.github.io/zorn/reference/BascetCountChrom.md)
   : From aligned BAM file, compute counts per chromosome
 - [`BascetCountFeature()`](https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.md)
@@ -90,9 +89,6 @@
   : Gather all minhashes into a single histogram file
 - [`BascetMapCell()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)
   : Call a MAP function for all cells
-- [`BascetMapCellAMRfinder()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellAMRfinder.md)
-  : Run AMRfinder on contigs of all cells. This is a thin wrapper around
-  BascetMapCell
 - [`BascetMapCellAbricate()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellAbricate.md)
   : Run Abricate on contigs of all cells. This is a thin wrapper around
   BascetMapCell

@@ -81,15 +81,17 @@
 <span>  kmer <span class="op">=</span> <span class="fl">21</span>,</span>
 <span>  maxKmer <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  steps <span class="op">=</span> <span class="fl">11</span>,</span>
-<span>  minCount <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  minCount <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  maxKmerCount <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  vectorPercent <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  insertSize <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  fraction <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>  fraction <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  maxSnpLen <span class="op">=</span> <span class="fl">150</span>,</span>
 <span>  minContig <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  allowSnps <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  forceSingleEnds <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  singlePassCounter <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  maxReadsPerCell <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -145,7 +147,7 @@
 
 
 <dt id="arg-mincount">minCount<a class="anchor" aria-label="anchor" href="#arg-mincount"></a></dt>
-<dd><p>Minimal count for k-mers retained</p></dd>
+<dd><p>Minimal count for k-mers retained. NULL (default) lets skesa auto-estimate it from coverage, raising it for high-coverage cells</p></dd>
 
 
 <dt id="arg-maxkmercount">maxKmerCount<a class="anchor" aria-label="anchor" href="#arg-maxkmercount"></a></dt>
@@ -178,6 +180,14 @@
 
 <dt id="arg-forcesingleends">forceSingleEnds<a class="anchor" aria-label="anchor" href="#arg-forcesingleends"></a></dt>
 <dd><p>Do not use paired-end information</p></dd>
+
+
+<dt id="arg-singlepasscounter">singlePassCounter<a class="anchor" aria-label="anchor" href="#arg-singlepasscounter"></a></dt>
+<dd><p>Use the legacy single-pass k-mer counter. Faster for small cells but can exceed the memory budget for high-coverage cells, so it is off by default</p></dd>
+
+
+<dt id="arg-maxreadspercell">maxReadsPerCell<a class="anchor" aria-label="anchor" href="#arg-maxreadspercell"></a></dt>
+<dd><p>Maximum read pairs per cell fed to assembly. 0 (default) disables the cap. When a cell exceeds this, only the first N read pairs encountered in the file are used (no random subsampling). Bounds memory for pathological high-read cells</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>

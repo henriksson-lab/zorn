@@ -17,6 +17,7 @@ BascetMapCellFASTQC(
   kmerSize = 7,
   minLength = 0,
   dupLength = 50,
+  maxReadsPerCell = 5e+06,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -64,6 +65,13 @@ BascetMapCellFASTQC(
 - dupLength:
 
   Length to truncate sequences for duplication detection
+
+- maxReadsPerCell:
+
+  Maximum read pairs per cell fed to FastQC. Defaults to 5e6 to bound
+  memory for pathological high-read cells; NULL disables the cap. When a
+  cell exceeds this, only the first N read pairs encountered in the file
+  are used (no random subsampling)
 
 - overwrite:
 

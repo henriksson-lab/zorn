@@ -83,6 +83,7 @@ system.</p>
 <span>  kmerSize <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  minLength <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  dupLength <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  maxReadsPerCell <span class="op">=</span> <span class="fl">5e+06</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -131,6 +132,10 @@ system.</p>
 
 <dt id="arg-duplength">dupLength<a class="anchor" aria-label="anchor" href="#arg-duplength"></a></dt>
 <dd><p>Length to truncate sequences for duplication detection</p></dd>
+
+
+<dt id="arg-maxreadspercell">maxReadsPerCell<a class="anchor" aria-label="anchor" href="#arg-maxreadspercell"></a></dt>
+<dd><p>Maximum read pairs per cell fed to FastQC. Defaults to 5e6 to bound memory for pathological high-read cells; NULL disables the cap. When a cell exceeds this, only the first N read pairs encountered in the file are used (no random subsampling)</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>

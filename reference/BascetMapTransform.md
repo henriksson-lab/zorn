@@ -21,6 +21,8 @@ BascetMapTransform(
   numMerge = 1,
   outFormat = "tirp.gz",
   includeCells = NULL,
+  numThreads = NULL,
+  totalMem = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
@@ -59,6 +61,15 @@ BascetMapTransform(
 
   List of cells to include, or NULL if to include all
 
+- numThreads:
+
+  Number of threads to use. Default is the maximum, taken from runner
+  settings
+
+- totalMem:
+
+  Total memory to allocate
+
 - overwrite:
 
   Force overwriting of existing files. The default is to do nothing
@@ -76,3 +87,8 @@ BascetMapTransform(
 ## Value
 
 A job to be executed, or being executed, depending on runner settings
+
+## Details
+
+Note that if you transform from aligned BAM, only the primary records
+are retained
