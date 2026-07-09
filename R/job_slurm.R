@@ -4,6 +4,22 @@
 ################################################################################
 
 
+#' SLURM runner
+#'
+#' Runner backend that submits Bascet jobs to a SLURM scheduler.
+#'
+#' @slot settings Reserved settings string.
+#' @slot ncpu Number of CPU cores requested.
+#' @slot partition SLURM partition.
+#' @slot account SLURM account.
+#' @slot time SLURM time limit.
+#' @slot prepend Command prefix.
+#' @slot mem Memory limit string.
+#' @slot direct Whether to wait for completion before returning.
+#' @slot verbose Whether to print additional debug output.
+#' @slot deleteScript Whether generated scripts are deleted after submission.
+#' @slot benchmark Whether benchmark logging is enabled.
+#' @slot logTime Whether task runtime logging is enabled.
 #' @export
 setClass("SlurmRunner", slots=list(
   settings="character", 
@@ -23,6 +39,14 @@ setClass("SlurmRunner", slots=list(
 
 
 
+#' SLURM job
+#'
+#' Job object for a submitted SLURM array job.
+#'
+#' @slot pid SLURM job identifier.
+#' @slot cmd Submitted command.
+#' @slot jobname Job name.
+#' @slot arraysize Number of array tasks.
 #' @export
 setClass("SlurmJob", slots=list(
   pid="character", 
@@ -332,6 +356,7 @@ SlurmRunner <- function(
 
 
 
+#' @describeIn RunJob SLURM runner method.
 #' @export
 setMethod(
   f = "RunJob",
@@ -475,6 +500,7 @@ setMethod(
 
 
 
+#' @describeIn JobStatus SLURM job method.
 #' @export
 setMethod(
   f = "JobStatus",
@@ -522,6 +548,7 @@ setMethod(
 
 
 #Has possibility of ctrl+c; just keeps polling, possibly with a status indicator from log. or keep plotting log file
+#' @describeIn WaitForJob SLURM job method.
 #' @export
 setMethod(
   f = "WaitForJob",
@@ -643,6 +670,7 @@ setMethod(
 
 
 
+#' @describeIn CancelJob SLURM job method.
 #' @export
 setMethod(
   f = "CancelJob",
@@ -658,6 +686,7 @@ setMethod(
 
 
 
+#' @describeIn JobLog SLURM job method.
 #' @export
 setMethod(
   f = "JobLog",

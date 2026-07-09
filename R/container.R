@@ -3,6 +3,16 @@
 ################################################################################
 
 ###############################################
+#' Bascet instance settings
+#'
+#' Runtime settings for the underlying Bascet installation.
+#'
+#' @slot bin Name or path of the Bascet binary.
+#' @slot tempdir Directory for temporary files.
+#' @slot prependCmd Command prefix, for example for container execution.
+#' @slot containerMem Memory reserved for container overhead.
+#' @slot logLevel Log level passed to Bascet.
+#' @slot logToFile Whether Bascet logs are written to files.
 #' @export
 setClass("BascetInstance", slots=list(
   bin="character",
@@ -27,6 +37,7 @@ setClass("BascetInstance", slots=list(
 #' @param prependCmd Something to prepend to the command, to e.g. support container systems
 #' @param containerMem Amount of memory used by the container itself
 #' @param logLevel ...
+#' @param logToFile Whether Bascet logs are written to files
 #' 
 #' @return A Bascet instance
 #' @export
@@ -115,7 +126,7 @@ GetBascetTempDir <- function(
 ###############################################
 #' Get a Bascet binary from the target from a locally built Bascet repository
 #' 
-#' @param storeAt Directory to store the container in. Default is current directory but it is likely better to provide a single systems level directory #################### TODO
+#' @param devdir Path to a local Bascet source checkout
 #' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
 #' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
 #' @param targetType What target type to load

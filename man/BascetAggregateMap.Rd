@@ -26,6 +26,8 @@ BascetAggregateMap(
 \item{showProgress}{Show progress bar}
 
 \item{verbose}{Show debug output}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 Aggregated data

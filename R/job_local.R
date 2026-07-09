@@ -6,6 +6,14 @@
 
 
 ###############################################
+#' Local runner
+#'
+#' Runner backend that executes Bascet jobs locally.
+#'
+#' @slot ncpu Number of CPU cores to use.
+#' @slot mem Memory limit string.
+#' @slot direct Whether jobs are run synchronously.
+#' @slot showScript Whether to show generated scripts for debugging.
 #' @export
 setClass("LocalRunner", slots=list(
   ncpu="character",
@@ -17,6 +25,14 @@ setClass("LocalRunner", slots=list(
 
 
 ###############################################
+#' Local job
+#'
+#' Job object for a locally launched process.
+#'
+#' @slot cmd Command string.
+#' @slot proc Process handle.
+#' @slot logfile Path to the job log file.
+#' @slot arraysize Number of array tasks.
 #' @export
 setClass("LocalJob", slots=list(
   cmd="character",
@@ -112,6 +128,7 @@ LocalRunner <- function(
 
 
 ###############################################
+#' @describeIn RunJob Local runner method.
 #' @export
 setMethod(
   f = "RunJob",
@@ -164,6 +181,7 @@ setMethod(
 
 
 ###############################################
+#' @describeIn CancelJob Local job method.
 #' @export
 setMethod(
   f = "CancelJob",
@@ -179,6 +197,7 @@ setMethod(
 
 
 ###############################################
+#' @describeIn JobStatus Local job method.
 #' @export
 setMethod(
   f = "JobStatus",
@@ -194,6 +213,7 @@ setMethod(
 
 
 ###############################################
+#' @describeIn JobLog Local job method.
 #' @export
 setMethod(
   f = "JobLog",

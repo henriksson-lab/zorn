@@ -6,6 +6,17 @@
 
 
 ###############################################
+#' Run a job
+#'
+#' Submit a job script with a runner backend.
+#'
+#' @param runner Runner object used to execute the job.
+#' @param jobname Name for the submitted job.
+#' @param bascetInstance Bascet instance that provides runtime settings.
+#' @param cmd JobScript object to execute.
+#' @param arraysize Number of array tasks.
+#'
+#' @return A job object, or a no-op job for synchronous/no-runner backends.
 #' @export
 setGeneric(
   name = "RunJob",
@@ -13,6 +24,11 @@ setGeneric(
 )
 
 ###############################################
+#' Wait for a job to finish
+#'
+#' @param job A job object.
+#'
+#' @return Invisibly returns when the job has completed.
 #' @export
 setGeneric(
   name = "WaitForJob",
@@ -20,6 +36,11 @@ setGeneric(
 )
 
 ###############################################
+#' Cancel a job
+#'
+#' @param job A job object.
+#'
+#' @return Backend-specific cancellation result, usually invisible.
 #' @export
 setGeneric(
   name = "CancelJob",
@@ -27,6 +48,11 @@ setGeneric(
 )
 
 ###############################################
+#' Get job status
+#'
+#' @param job A job object.
+#'
+#' @return A data frame or backend-specific status object.
 #' @export
 setGeneric(
   name = "JobStatus",
@@ -34,6 +60,11 @@ setGeneric(
 )
 
 ###############################################
+#' Get job log
+#'
+#' @param job A job object.
+#'
+#' @return Backend-specific log content, usually invisible if no log is available.
 #' @export
 setGeneric(
   name = "JobLog",
@@ -49,6 +80,11 @@ setGeneric(
 
 
 ###############################################
+#' No-op runner
+#'
+#' Runner backend used for dry runs and debugging.
+#'
+#' @slot showScript Logical flag indicating whether scripts should be shown.
 #' @export
 setClass("NoRunner", slots=list(
   showScript="logical"
@@ -58,6 +94,7 @@ setClass("NoRunner", slots=list(
 
 
 ###############################################
+#' @describeIn RunJob No-op runner method.
 #' @export
 setMethod(
   f = "RunJob",
@@ -93,6 +130,12 @@ NoRunner <- function(
 ################################################################################
 
 ###############################################
+#' No-op job
+#'
+#' Placeholder job used when no asynchronous process exists.
+#'
+#' @param object A NoJob object.
+#' @slot evil Placeholder character slot to keep the S4 class concrete.
 #' @export
 setClass("NoJob", slots=list(
   evil="character"
@@ -114,6 +157,7 @@ new_no_job <- function() {
 
 ###############################################
 #Has possibility of ctrl+c; just keeps polling, possibly with a status indicator from log. or keep plotting log file
+#' @describeIn WaitForJob No-op job method.
 #' @export
 setMethod(
   f = "WaitForJob",
@@ -124,6 +168,7 @@ setMethod(
 )
 
 ###############################################
+#' @describeIn CancelJob No-op job method.
 #' @export
 setMethod(
   f = "CancelJob",
@@ -134,6 +179,7 @@ setMethod(
 )
 
 ###############################################
+#' @describeIn JobStatus No-op job method.
 #' @export
 setMethod(
   f = "JobStatus",
@@ -146,6 +192,7 @@ setMethod(
 
 
 ###############################################
+#' @describeIn NoJob Print a compact representation of a no-op job.
 #' @export
 setMethod(
   f = "show", 
@@ -183,6 +230,4 @@ GetDefaultBascetRunner <- function() {
   
   bascetRunner.default
 }
-
-
 

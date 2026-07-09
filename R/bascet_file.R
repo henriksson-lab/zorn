@@ -35,6 +35,7 @@ is.bascet.file <- function(f) {
 #' 
 #' @param bascetRoot The root folder where all Bascets are stored
 #' @param bascetName Name of the bascet
+#' @param verbose Print additional information
 #' @param bascetInstance A Bascet instance
 #' 
 #' @return Vector of cell names as strings

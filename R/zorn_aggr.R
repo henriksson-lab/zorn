@@ -217,6 +217,7 @@ CountDataFrameToSparseMatrix <- function(
 #' @param includeCells Cells to aggregate
 #' @param showProgress Show progress bar
 #' @param verbose Show debug output
+#' @param bascetInstance A Bascet instance
 #' 
 #' @return Aggregated data
 #' @export

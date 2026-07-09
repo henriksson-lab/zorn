@@ -24,6 +24,8 @@ BascetInstance(
 \item{containerMem}{Amount of memory used by the container itself}
 
 \item{logLevel}{...}
+
+\item{logToFile}{Whether Bascet logs are written to files}
 }
 \value{
 A Bascet instance

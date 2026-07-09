@@ -16,6 +16,8 @@ BascetCellNames(
 
 \item{bascetName}{Name of the bascet}
 
+\item{verbose}{Print additional information}
+
 \item{bascetInstance}{A Bascet instance}
 }
 \value{

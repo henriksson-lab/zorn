@@ -3,6 +3,15 @@
 
 
 ###############################################
+#' Bascet count matrix
+#'
+#' Sparse count matrix container used by Zorn. Rows are observations/cells and
+#' columns are features.
+#'
+#' @param object A BascetCountMatrix object.
+#' @param ... Additional arguments passed to S4 methods.
+#' @slot X Sparse count matrix.
+#' @slot obs Data frame with observation metadata, one row per matrix row.
 #' @export
 setClass("BascetCountMatrix", slots=list(
   X="ANY", #sparse matrix
@@ -22,6 +31,31 @@ is.BascetCountMatrix <- function(x) {
 
 
 ###############################################
+#' Convert Bascet count storage to a Seurat-compatible counts matrix
+#'
+#' @noRd
+BascetCountMatrixSeuratCounts <- function(mat) {
+  counts <- Matrix::t(mat@X)
+  counts <- methods::as(counts, "CsparseMatrix")
+
+  if(is.null(rownames(counts))) {
+    stop("Bascet count matrix has no feature names")
+  }
+  if(is.null(colnames(counts))) {
+    stop("Bascet count matrix has no cell names")
+  }
+  if(anyNA(rownames(counts)) || anyDuplicated(rownames(counts))) {
+    stop("Bascet count matrix feature names must be unique and non-missing")
+  }
+  if(anyNA(colnames(counts)) || anyDuplicated(colnames(counts))) {
+    stop("Bascet count matrix cell names must be unique and non-missing")
+  }
+
+  counts
+}
+
+
+###############################################
 #' Convert a BascetCountMatrix to a Seurat Assay
 #'
 #' @param mat A BascetCountMatrix object
@@ -30,7 +64,7 @@ is.BascetCountMatrix <- function(x) {
 #' @export
 BascetCountMatrixToAssay <- function(mat) {
   stopifnot(is.BascetCountMatrix(mat))
-  CreateAssayObject(counts = Matrix::t(mat@X))
+  SeuratObject::CreateAssayObject(counts = BascetCountMatrixSeuratCounts(mat))
 }
 
 
@@ -48,7 +82,7 @@ CreateSeuratObject.BascetCountMatrix <- function(counts, ...) {
   rownames(meta.data) <- rownames(counts@X)
 
   SeuratObject::CreateSeuratObject(
-    counts = Matrix::t(counts@X),
+    counts = BascetCountMatrixSeuratCounts(counts),
     meta.data = meta.data,
     ...
   )
@@ -78,6 +112,8 @@ NewBascetCountMatrix <- function(
 
 ###############################################
 # What to print to display a count matrix
+#' @describeIn BascetCountMatrix Print a compact summary of a Bascet count matrix.
+#' @export
 setMethod("show", "BascetCountMatrix", function(object) {
   cat(is(object)[[1]], "\n",
       "  Mat dim: ", nrow(object@X)," x ", ncol(object@X), "\n",
@@ -186,9 +222,12 @@ setMethod("colSums", signature(x="BascetCountMatrix"), function(x) {
 #' @param x A BascetCountMatrix object
 #' @param i Row (cell) indices: numeric, logical, or character vector
 #' @param j Column (feature) indices: numeric, logical, or character vector
+#' @param ... Additional arguments ignored by this method
 #' @param drop Ignored (kept for S4 signature compatibility)
 #'
 #' @return A BascetCountMatrix
+#' @describeIn BascetCountMatrix Subset rows and/or columns.
+#' @aliases [,BascetCountMatrix-method
 #' @export
 setMethod("[", signature(x="BascetCountMatrix"), function(x, i, j, ..., drop=FALSE) {
   if(!missing(i) && !missing(j)) {
@@ -378,6 +417,36 @@ PrependBascetCountMatrixName <- function(
 }
 
 
+###############################################
+#' Aggregate duplicate feature columns in a count matrix
+#'
+#' @noRd
+AggregateDuplicateBascetFeatures <- function(mat) {
+  feature_names <- colnames(mat)
+  if(is.null(feature_names)) {
+    stop("Bascet count matrix has no feature names")
+  }
+  if(anyNA(feature_names)) {
+    stop("Bascet count matrix has missing feature names")
+  }
+  if(anyDuplicated(feature_names) == 0) {
+    return(mat)
+  }
+
+  unique_features <- unique(feature_names)
+  mat_summary <- Matrix::summary(mat)
+  mat <- Matrix::sparseMatrix(
+    i=mat_summary$i,
+    j=match(feature_names[mat_summary$j], unique_features),
+    x=mat_summary$x,
+    dims=c(nrow(mat), length(unique_features)),
+    dimnames=list(rownames(mat), unique_features)
+  )
+
+  methods::as(mat, "CsparseMatrix")
+}
+
+
 
 ###############################################
 #' Merge a list of count matrices as produced by Bascet
@@ -414,6 +483,7 @@ MergeBascetCountMatrix <- function(
   
   list_mat <- lapply(listInput, function(x) x@X)
   list_obs <- lapply(listInput, function(x) x@obs)
+  list_mat <- lapply(list_mat, AggregateDuplicateBascetFeatures)
 
   #Fast path for the common case: shards from one run usually have exactly the
   #same feature vector. This avoids remapping and rebuilding from triplets.
@@ -428,6 +498,10 @@ MergeBascetCountMatrix <- function(
       print("Merging by direct sparse row bind")
     }
     allmat <- do.call(rbind, unname(list_mat))
+    all_colnames <- sort(colnames(allmat))
+    if(!identical(colnames(allmat), all_colnames)) {
+      allmat <- allmat[, all_colnames, drop=FALSE]
+    }
   } else {
     #Show a progress bar
     pbar <- progress::progress_bar$new(total = numFiles)
