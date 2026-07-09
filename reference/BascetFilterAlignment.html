@@ -9,7 +9,7 @@ If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); o
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.42</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.44</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,6 +78,8 @@ If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); o
 <span>  <span class="va">inputName</span>,</span>
 <span>  <span class="va">outputName</span>,</span>
 <span>  keepMapped <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  minMatching <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minMatchingPercent <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  totalMem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -107,6 +109,14 @@ If the BAM-file has paired reads then BOTH reads need to be mapped (flag 0x2); o
 
 <dt id="arg-keepmapped">keepMapped<a class="anchor" aria-label="anchor" href="#arg-keepmapped"></a></dt>
 <dd><p>Keep the mapped reads (TRUE) or unmapped (FALSE)</p></dd>
+
+
+<dt id="arg-minmatching">minMatching<a class="anchor" aria-label="anchor" href="#arg-minmatching"></a></dt>
+<dd><p>Minimum CIGAR M-bases for a BAM-mapped read to be considered aligned. NULL uses Bascet's default.</p></dd>
+
+
+<dt id="arg-minmatchingpercent">minMatchingPercent<a class="anchor" aria-label="anchor" href="#arg-minmatchingpercent"></a></dt>
+<dd><p>Minimum percent of read bases covered by CIGAR M operations for a BAM-mapped read to be considered aligned. NULL uses Bascet's default.</p></dd>
 
 
 <dt id="arg-totalmem">totalMem<a class="anchor" aria-label="anchor" href="#arg-totalmem"></a></dt>

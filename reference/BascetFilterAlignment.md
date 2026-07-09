@@ -13,6 +13,8 @@ BascetFilterAlignment(
   inputName,
   outputName,
   keepMapped = FALSE,
+  minMatching = NULL,
+  minMatchingPercent = NULL,
   totalMem = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
@@ -42,6 +44,16 @@ BascetFilterAlignment(
 - keepMapped:
 
   Keep the mapped reads (TRUE) or unmapped (FALSE)
+
+- minMatching:
+
+  Minimum CIGAR M-bases for a BAM-mapped read to be considered aligned.
+  NULL uses Bascet's default.
+
+- minMatchingPercent:
+
+  Minimum percent of read bases covered by CIGAR M operations for a
+  BAM-mapped read to be considered aligned. NULL uses Bascet's default.
 
 - totalMem:
 
