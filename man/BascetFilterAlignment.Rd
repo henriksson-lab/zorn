@@ -10,6 +10,8 @@ BascetFilterAlignment(
   inputName,
   outputName,
   keepMapped = FALSE,
+  minMatching = NULL,
+  minMatchingPercent = NULL,
   totalMem = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
@@ -26,6 +28,10 @@ BascetFilterAlignment(
 \item{outputName}{Name of output shards (BAM-file format)}
 
 \item{keepMapped}{Keep the mapped reads (TRUE) or unmapped (FALSE)}
+
+\item{minMatching}{Minimum CIGAR M-bases for a BAM-mapped read to be considered aligned. NULL uses Bascet's default.}
+
+\item{minMatchingPercent}{Minimum percent of read bases covered by CIGAR M operations for a BAM-mapped read to be considered aligned. NULL uses Bascet's default.}
 
 \item{totalMem}{Total memory to allocate}
 

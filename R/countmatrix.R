@@ -102,6 +102,15 @@ NewBascetCountMatrix <- function(
     obs
 ){
   stopifnot(nrow(obs)==nrow(X))
+  if(!is.null(rownames(X))) {
+    if("_index" %in% colnames(obs) &&
+       !identical(as.character(obs[["_index"]]), as.character(rownames(X)))) {
+      stop("Bascet count matrix obs _index is out of sync with matrix row names")
+    }
+    rownames(obs) <- rownames(X)
+  } else {
+    rownames(obs) <- NULL
+  }
   new(
     "BascetCountMatrix", 
     X=X,
@@ -329,8 +338,8 @@ ReadBascetCountMatrix_one <- function(
     dims=shape
   )
 
-  rownames(mat) <- rhdf5::h5read(fname, "/obs/_index")  #names of cells
-  colnames(mat) <- rhdf5::h5read(fname, "/var/_index")  #feature names
+  rownames(mat) <- as.character(rhdf5::h5read(fname, "/obs/_index"))  #names of cells
+  colnames(mat) <- as.character(rhdf5::h5read(fname, "/var/_index"))  #feature names
 
   ### Read obs matrix
   df_obs <- ReadBascetObs(fname, h5_index)
@@ -422,7 +431,7 @@ PrependBascetCountMatrixName <- function(
 #'
 #' @noRd
 AggregateDuplicateBascetFeatures <- function(mat) {
-  feature_names <- colnames(mat)
+  feature_names <- as.character(colnames(mat))
   if(is.null(feature_names)) {
     stop("Bascet count matrix has no feature names")
   }
@@ -433,14 +442,14 @@ AggregateDuplicateBascetFeatures <- function(mat) {
     return(mat)
   }
 
-  unique_features <- unique(feature_names)
+  unique_features <- as.character(unique(feature_names))
   mat_summary <- Matrix::summary(mat)
   mat <- Matrix::sparseMatrix(
     i=mat_summary$i,
     j=match(feature_names[mat_summary$j], unique_features),
     x=mat_summary$x,
     dims=c(nrow(mat), length(unique_features)),
-    dimnames=list(rownames(mat), unique_features)
+    dimnames=list(as.character(rownames(mat)), unique_features)
   )
 
   methods::as(mat, "CsparseMatrix")
@@ -484,6 +493,11 @@ MergeBascetCountMatrix <- function(
   list_mat <- lapply(listInput, function(x) x@X)
   list_obs <- lapply(listInput, function(x) x@obs)
   list_mat <- lapply(list_mat, AggregateDuplicateBascetFeatures)
+  list_mat <- lapply(list_mat, function(mat) {
+    rownames(mat) <- as.character(rownames(mat))
+    colnames(mat) <- as.character(colnames(mat))
+    mat
+  })
 
   #Fast path for the common case: shards from one run usually have exactly the
   #same feature vector. This avoids remapping and rebuilding from triplets.
@@ -498,7 +512,7 @@ MergeBascetCountMatrix <- function(
       print("Merging by direct sparse row bind")
     }
     allmat <- do.call(rbind, unname(list_mat))
-    all_colnames <- sort(colnames(allmat))
+    all_colnames <- as.character(sort(colnames(allmat)))
     if(!identical(colnames(allmat), all_colnames)) {
       allmat <- allmat[, all_colnames, drop=FALSE]
     }
@@ -508,7 +522,7 @@ MergeBascetCountMatrix <- function(
     pbar$tick(0)
 
     #Find union of features
-    all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
+    all_colnames <- as.character(sort(unique(unlist(lapply(list_mat, colnames), use.names=FALSE))))
     if(verbose){
       print(all_colnames)
     }
@@ -549,7 +563,7 @@ MergeBascetCountMatrix <- function(
       all_p[[f]] <- mat@p[-1L] + nnz_offset
       all_j[[f]] <- remapped_j
       all_x[[f]] <- mat@x
-      all_rownames[[f]] <- rownames(mat)
+      all_rownames[[f]] <- as.character(rownames(mat))
       nnz_offset <- nnz_offset + length(mat@x)
       total_rows <- total_rows + nrow(mat)
       pbar$tick()
@@ -561,7 +575,7 @@ MergeBascetCountMatrix <- function(
       j=as.integer(unlist(all_j, use.names=FALSE)),
       x=as.numeric(unlist(all_x, use.names=FALSE)),
       Dim=as.integer(c(total_rows, num_col)),
-      Dimnames=list(unlist(all_rownames, use.names=FALSE), all_colnames)
+      Dimnames=list(as.character(unlist(all_rownames, use.names=FALSE)), all_colnames)
     )
     allmat <- methods::as(allmat, "CsparseMatrix")
   }
