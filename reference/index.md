@@ -55,6 +55,9 @@
   : From aligned BAM file, compute counts per chromosome
 - [`BascetCountFeature()`](https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.md)
   : From aligned BAM file, compute counts per feature
+- [`show(`*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/BascetCountMatrix-class.md)
+  [`` `[`( ``*`<BascetCountMatrix>`*`,`*`<ANY>`*`,`*`<ANY>`*`,`*`<ANY>`*`)`](https://henriksson-lab.github.io/zorn/reference/BascetCountMatrix-class.md)
+  : Bascet count matrix
 - [`BascetCountMatrixToAssay()`](https://henriksson-lab.github.io/zorn/reference/BascetCountMatrixToAssay.md)
   : Convert a BascetCountMatrix to a Seurat Assay
 - [`BascetDebarcode()`](https://henriksson-lab.github.io/zorn/reference/BascetDebarcode.md)
@@ -79,6 +82,8 @@
   : Index a genome using STAR such that it can be used for alignment.
   Note that Bascet STAR (star-rs) automatically detects if GTF and FASTA
   are gzipped
+- [`BascetInstance-class`](https://henriksson-lab.github.io/zorn/reference/BascetInstance-class.md)
+  : Bascet instance settings
 - [`BascetInstance()`](https://henriksson-lab.github.io/zorn/reference/BascetInstance.md)
   : Create a new bascet instance. For advanced users only
 - [`BascetListFilesForCell()`](https://henriksson-lab.github.io/zorn/reference/BascetListFilesForCell.md)
@@ -137,6 +142,8 @@
   numbers of shards.
 - [`BascetToFastq()`](https://henriksson-lab.github.io/zorn/reference/BascetToFastq.md)
   : Convert data to Bascet-FASTQ
+- [`CancelJob()`](https://henriksson-lab.github.io/zorn/reference/CancelJob.md)
+  : Cancel a job
 - [`ChooseInformativeKMERs()`](https://henriksson-lab.github.io/zorn/reference/ChooseInformativeKMERs.md)
   : Pick random KMERs from KMC3 database. The choice is among KMERs
   within a frequency range
@@ -191,6 +198,10 @@
 - [`GetFASTQCpassfailStats()`](https://henriksson-lab.github.io/zorn/reference/GetFASTQCpassfailStats.md)
   : From aggregated FASTQC data, get overall pass-fail statistics for
   overlay on UMAP etc
+- [`JobLog()`](https://henriksson-lab.github.io/zorn/reference/JobLog.md)
+  : Get job log
+- [`JobStatus()`](https://henriksson-lab.github.io/zorn/reference/JobStatus.md)
+  : Get job status
 - [`KneeplotPerSpecies()`](https://henriksson-lab.github.io/zorn/reference/KneeplotPerSpecies.md)
   : Produce a kneeplot
 - [`KrakenFindConsensusTaxonomy()`](https://henriksson-lab.github.io/zorn/reference/KrakenFindConsensusTaxonomy.md)
@@ -202,6 +213,10 @@
   : Using a KRAKEN2 count matrix, produce a "kneeplot" of species
 - [`ListDatabaseAbricate()`](https://henriksson-lab.github.io/zorn/reference/ListDatabaseAbricate.md)
   : List installed databases available for Abricate
+- [`LocalJob-class`](https://henriksson-lab.github.io/zorn/reference/LocalJob-class.md)
+  : Local job
+- [`LocalRunner-class`](https://henriksson-lab.github.io/zorn/reference/LocalRunner-class.md)
+  : Local runner
 - [`LocalRunner()`](https://henriksson-lab.github.io/zorn/reference/LocalRunner.md)
   : Create new local runner instance
 - [`MapCellMultiListAsDataFrame()`](https://henriksson-lab.github.io/zorn/reference/MapCellMultiListAsDataFrame.md)
@@ -212,6 +227,10 @@
   as.data.frame.
 - [`MergeBascetCountMatrix()`](https://henriksson-lab.github.io/zorn/reference/MergeBascetCountMatrix.md)
   : Merge a list of count matrices as produced by Bascet
+- [`show(`*`<NoJob>`*`)`](https://henriksson-lab.github.io/zorn/reference/NoJob-class.md)
+  : No-op job
+- [`NoRunner-class`](https://henriksson-lab.github.io/zorn/reference/NoRunner-class.md)
+  : No-op runner
 - [`NoRunner()`](https://henriksson-lab.github.io/zorn/reference/NoRunner.md)
   : Create new no-runner instance, used for debugging
 - [`OpenBascet()`](https://henriksson-lab.github.io/zorn/reference/OpenBascet.md)
@@ -234,14 +253,22 @@
 - [`ReadHistogram()`](https://henriksson-lab.github.io/zorn/reference/ReadHistogram.md)
   : Read the count histogram associated with a Bascet. Not all Bascets
   have one, but it is typically produced after debarcoding
+- [`RunJob()`](https://henriksson-lab.github.io/zorn/reference/RunJob.md)
+  : Run a job
 - [`ShowFASTQCforCell()`](https://henriksson-lab.github.io/zorn/reference/ShowFASTQCforCell.md)
   : Show the FASTQC HTML report for a cell, in the available web browser
+- [`SlurmJob-class`](https://henriksson-lab.github.io/zorn/reference/SlurmJob-class.md)
+  : SLURM job
+- [`SlurmRunner-class`](https://henriksson-lab.github.io/zorn/reference/SlurmRunner-class.md)
+  : SLURM runner
 - [`SlurmRunner()`](https://henriksson-lab.github.io/zorn/reference/SlurmRunner.md)
   : Create a runner that submits jobs to SLURM
 - [`TabixGetFragmentsSeqs()`](https://henriksson-lab.github.io/zorn/reference/TabixGetFragmentsSeqs.md)
   : Using Tabix, get list of sequences in a fragment file
 - [`TestBascetInstance()`](https://henriksson-lab.github.io/zorn/reference/TestBascetInstance.md)
   : Check if a Bascet instance works
+- [`WaitForJob()`](https://henriksson-lab.github.io/zorn/reference/WaitForJob.md)
+  : Wait for a job to finish
 - [`aggr.abricate()`](https://henriksson-lab.github.io/zorn/reference/aggr.abricate.md)
   : Callback function for aggregating ABRicate data for each cell. To be
   called from BascetAggregateMap
@@ -301,5 +328,3 @@
   : Row names of a BascetCountMatrix (cell names)
 - [`` `rownames<-`( ``*`<BascetCountMatrix>`*`)`](https://henriksson-lab.github.io/zorn/reference/rownames-set-BascetCountMatrix-method.md)
   : Set row names of a BascetCountMatrix (cell names)
-- [`` `[`( ``*`<BascetCountMatrix>`*`,`*`<ANY>`*`,`*`<ANY>`*`,`*`<ANY>`*`)`](https://henriksson-lab.github.io/zorn/reference/sub-BascetCountMatrix-ANY-ANY-ANY-method.md)
-  : Subset a BascetCountMatrix

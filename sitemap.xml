@@ -51,6 +51,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetComputeMinhash.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountChrom.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountFeature.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountMatrix-class.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetCountMatrixToAssay.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDebarcode.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetDownloadNcbiGenomeMetadata.html</loc></url>
@@ -62,6 +63,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeBowtie2.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeMinimap2.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetIndexGenomeSTAR.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetInstance-class.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetInstance.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetListFilesForCell.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetLoadCountSketchMatrix.html</loc></url>
@@ -88,6 +90,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunKraken.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetShardify.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetToFastq.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/CancelJob.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ChooseInformativeKMERs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ChromToSpeciesCount.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/CloseBascet.html</loc></url>
@@ -110,15 +113,21 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCassembledDF.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCbasicStats.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/GetFASTQCpassfailStats.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/JobLog.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/JobStatus.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KneeplotPerSpecies.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KrakenFindConsensusTaxonomy.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KrakenKneePlot.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/KrakenSpeciesDistribution.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ListDatabaseAbricate.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/LocalJob-class.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/LocalRunner-class.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/LocalRunner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/MapCellMultiListAsDataFrame.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/MapListAsDataFrame.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/MergeBascetCountMatrix.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/NoJob-class.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/NoRunner-class.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/NoRunner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/OpenBascet.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/PlotFASTQCadapterContent.html</loc></url>
@@ -128,10 +137,14 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadBascetCountMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadCellSNPmatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ReadHistogram.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/RunJob.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/ShowFASTQCforCell.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/SlurmJob-class.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/SlurmRunner-class.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/SlurmRunner.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/TabixGetFragmentsSeqs.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/TestBascetInstance.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/WaitForJob.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.abricate.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.amrfinder.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/aggr.ariba.html</loc></url>
@@ -156,6 +169,5 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/rowSums-BascetCountMatrix-method.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/rownames-BascetCountMatrix-method.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/rownames-set-BascetCountMatrix-method.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/sub-BascetCountMatrix-ANY-ANY-ANY-method.html</loc></url>
 </urlset>
 

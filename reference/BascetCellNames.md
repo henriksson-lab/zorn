@@ -23,6 +23,10 @@ BascetCellNames(
 
   Name of the bascet
 
+- verbose:
+
+  Print additional information
+
 - bascetInstance:
 
   A Bascet instance

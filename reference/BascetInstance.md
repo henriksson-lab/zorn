@@ -37,6 +37,10 @@ BascetInstance(
 
   ...
 
+- logToFile:
+
+  Whether Bascet logs are written to files
+
 ## Value
 
 A Bascet instance

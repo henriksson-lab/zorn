@@ -42,6 +42,10 @@ BascetAggregateMap(
 
   Show debug output
 
+- bascetInstance:
+
+  A Bascet instance
+
 ## Value
 
 Aggregated data

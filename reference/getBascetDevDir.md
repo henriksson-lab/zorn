@@ -17,6 +17,10 @@ getBascetDevDir(
 
 ## Arguments
 
+- devdir:
+
+  Path to a local Bascet source checkout
+
 - tempdir:
 
   Default is to create a directory for temporary files in the current
@@ -33,12 +37,6 @@ getBascetDevDir(
 - containerMem:
 
   Amount of memory used by the container itself
-
-- storeAt:
-
-  Directory to store the container in. Default is current directory but
-  it is likely better to provide a single systems level directory
-  \#################### TODO
 
 ## Value
 
