@@ -414,53 +414,86 @@ MergeBascetCountMatrix <- function(
   
   list_mat <- lapply(listInput, function(x) x@X)
   list_obs <- lapply(listInput, function(x) x@obs)
-  
-  #Show a progress bar  
-  pbar <- progress::progress_bar$new(total = numFiles)
-  pbar$tick(0)
-  
-  #Find union of features
-  all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
-  if(verbose){
-    print(all_colnames)
-  }
-  num_col <- length(all_colnames)
-  col_map <- setNames(seq_along(all_colnames), all_colnames)
-  if(verbose){
-    print(col_map)
-  }
 
-  #Collect all triplets with remapped column indices
-  all_i <- vector("list", length(list_mat))
-  all_j <- vector("list", length(list_mat))
-  all_x <- vector("list", length(list_mat))
-  all_rownames <- vector("list", length(list_mat))
-  row_offset <- 0L
-  total_rows <- 0L
-  for(f in seq_along(list_mat)){
-    mat <- list_mat[[f]]
-    triplet <- Matrix::summary(mat)
-    all_i[[f]] <- triplet$i + row_offset
-    col_remap <- col_map[colnames(mat)]
-    all_j[[f]] <- col_remap[triplet$j]
-    all_x[[f]] <- triplet$x
-    all_rownames[[f]] <- rownames(mat)
-    row_offset <- row_offset + nrow(mat)
-    total_rows <- total_rows + nrow(mat)
-    pbar$tick()
-  }
+  #Fast path for the common case: shards from one run usually have exactly the
+  #same feature vector. This avoids remapping and rebuilding from triplets.
+  same_colnames <- all(vapply(
+    list_mat,
+    function(mat) identical(colnames(mat), colnames(list_mat[[1]])),
+    logical(1)
+  ))
 
-  #Build merged sparse matrix from triplets
-  allmat <- Matrix::sparseMatrix(
-    i=unlist(all_i),
-    j=unlist(all_j),
-    x=unlist(all_x),
-    dims=c(total_rows, num_col),
-    dimnames=list(unlist(all_rownames), all_colnames)
-  )
+  if(same_colnames) {
+    if(verbose) {
+      print("Merging by direct sparse row bind")
+    }
+    allmat <- do.call(rbind, unname(list_mat))
+  } else {
+    #Show a progress bar
+    pbar <- progress::progress_bar$new(total = numFiles)
+    pbar$tick(0)
+
+    #Find union of features
+    all_colnames <- sort(unique(unlist(lapply(list_mat, colnames))))
+    if(verbose){
+      print(all_colnames)
+    }
+    num_col <- length(all_colnames)
+    col_map <- setNames(seq_along(all_colnames), all_colnames)
+    if(verbose){
+      print(col_map)
+    }
+
+    #General path: concatenate compressed sparse row slots directly. This avoids
+    #Matrix::summary(), explicit row triplets, and a second sparse rebuild.
+    list_mat <- lapply(list_mat, MatrixExtra::as.csr.matrix)
+    all_p <- vector("list", length(list_mat))
+    all_j <- vector("list", length(list_mat))
+    all_x <- vector("list", length(list_mat))
+    all_rownames <- vector("list", length(list_mat))
+    nnz_offset <- 0L
+    total_rows <- 0L
+
+    for(f in seq_along(list_mat)){
+      mat <- list_mat[[f]]
+      col_remap <- col_map[colnames(mat)]
+      remapped_j <- as.integer(unname(col_remap[mat@j + 1L]) - 1L)
+      if(is.unsorted(unname(col_remap), strictly=TRUE)) {
+        for(row_i in seq_len(nrow(mat))) {
+          row_start <- mat@p[row_i] + 1L
+          row_end <- mat@p[row_i + 1L]
+          if(row_end > row_start) {
+            row_ind <- row_start:row_end
+            if(is.unsorted(remapped_j[row_ind], strictly=TRUE)) {
+              row_order <- order(remapped_j[row_ind])
+              remapped_j[row_ind] <- remapped_j[row_ind][row_order]
+              mat@x[row_ind] <- mat@x[row_ind][row_order]
+            }
+          }
+        }
+      }
+      all_p[[f]] <- mat@p[-1L] + nnz_offset
+      all_j[[f]] <- remapped_j
+      all_x[[f]] <- mat@x
+      all_rownames[[f]] <- rownames(mat)
+      nnz_offset <- nnz_offset + length(mat@x)
+      total_rows <- total_rows + nrow(mat)
+      pbar$tick()
+    }
+
+    allmat <- new(
+      "dgRMatrix",
+      p=as.integer(c(0L, unlist(all_p, use.names=FALSE))),
+      j=as.integer(unlist(all_j, use.names=FALSE)),
+      x=as.numeric(unlist(all_x, use.names=FALSE)),
+      Dim=as.integer(c(total_rows, num_col)),
+      Dimnames=list(unlist(all_rownames, use.names=FALSE), all_colnames)
+    )
+    allmat <- methods::as(allmat, "CsparseMatrix")
+  }
   
   #Concat obs
-  allobs <- do.call(rbind, list_obs)
+  allobs <- as.data.frame(data.table::rbindlist(list_obs, use.names=TRUE, fill=TRUE))
   rownames(allobs) <- NULL
   
   NewBascetCountMatrix(
