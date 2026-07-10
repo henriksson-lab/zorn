@@ -9,7 +9,6 @@ BascetQueryFq(
   inputName = "filtered",
   outputName = "kmer_counts",
   useKMERs,
-  maxReads = 1e+06,
   numThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
@@ -24,8 +23,6 @@ BascetQueryFq(
 \item{outputName}{Name of output shard}
 
 \item{useKMERs}{List of KMERs to query}
-
-\item{maxReads}{The maximum number of reads per cell to sample}
 
 \item{numThreads}{Number of threads to use per job. Default is the number from the runner}
 

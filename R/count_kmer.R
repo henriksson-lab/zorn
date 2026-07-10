@@ -190,7 +190,6 @@ BascetMakeMinhashHistogram <- function(
 #' @param inputName Name of input shard
 #' @param outputName Name of output shard
 #' @param useKMERs List of KMERs to query
-#' @param maxReads The maximum number of reads per cell to sample
 #' @param numThreads Number of threads to use per job. Default is the number from the runner
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
@@ -203,7 +202,6 @@ BascetQueryFq <- function( #666
     inputName="filtered",
     outputName="kmer_counts", 
     useKMERs,
-    maxReads=1000000, 
     numThreads=NULL,
     overwrite=FALSE,
     runner=GetDefaultBascetRunner(),
@@ -215,7 +213,6 @@ BascetQueryFq <- function( #666
   stopifnot(is.valid.shardname(inputName))
   stopifnot(is.valid.shardname(outputName))
   #useKMERs TODO
-  stopifnot(is.positive.integer(maxReads))
   stopifnot(is.logical(overwrite))
   stopifnot(is.runner(runner))
   stopifnot(is.bascet.instance(bascetInstance))
@@ -263,7 +260,6 @@ BascetQueryFq <- function( #666
             "detect-kmer-fq",
             JobArg("-t", JobEnv("BASCET_TEMPDIR")),
             JobArg("--threads", numThreads),
-            JobArg("-m", format(maxReads, scientific=FALSE)),
             JobArg("-f", JobEnv("KMERFILE")),
             JobArg("-i", JobVar("files_in")),
             JobArg("-o", JobVar("files_out"))
