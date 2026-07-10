@@ -10,7 +10,6 @@ BascetQueryFq(
   inputName = "filtered",
   outputName = "kmer_counts",
   useKMERs,
-  maxReads = 1e+06,
   numThreads = NULL,
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
@@ -35,10 +34,6 @@ BascetQueryFq(
 - useKMERs:
 
   List of KMERs to query
-
-- maxReads:
-
-  The maximum number of reads per cell to sample
 
 - numThreads:
 
