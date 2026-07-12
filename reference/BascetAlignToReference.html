@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.45</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.46</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,6 +80,7 @@
 <span>  outputNameBAMpos <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  aligner <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="st">"BWAMEM2"</span>, <span class="st">"STAR"</span>, <span class="st">"minimap2"</span><span class="op">)</span>,</span>
+<span>  bwamem2BatchPairs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  runner <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetRunner.html">GetDefaultBascetRunner</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="fu"><a href="GetDefaultBascetInstance.html">GetDefaultBascetInstance</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -128,6 +129,13 @@ for the unsorted/cell BAM and <code>&lt;outputName&gt;_pos</code> for the positi
 
 <dt id="arg-aligner">aligner<a class="anchor" aria-label="anchor" href="#arg-aligner"></a></dt>
 <dd><p>Which aligner to use: "BWAMEM2", "STAR", or "minimap2"</p></dd>
+
+
+<dt id="arg-bwamem-batchpairs">bwamem2BatchPairs<a class="anchor" aria-label="anchor" href="#arg-bwamem-batchpairs"></a></dt>
+<dd><p>For aligner "BWAMEM2" only: max read pairs per alignment batch.
+Bounds per-batch peak memory (bwa-mem2 materialises a whole batch's alignment scratch + SAM
+before returning). If NULL (default), bascet uses its built-in default (100000). Lower it on
+memory-constrained nodes, raise it for throughput.</p></dd>
 
 
 <dt id="arg-runner">runner<a class="anchor" aria-label="anchor" href="#arg-runner"></a></dt>

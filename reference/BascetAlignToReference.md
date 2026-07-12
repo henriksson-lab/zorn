@@ -16,6 +16,7 @@ BascetAlignToReference(
   outputNameBAMpos = NULL,
   overwrite = FALSE,
   aligner = c(NULL, "BWAMEM2", "STAR", "minimap2"),
+  bwamem2BatchPairs = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -65,6 +66,14 @@ BascetAlignToReference(
 - aligner:
 
   Which aligner to use: "BWAMEM2", "STAR", or "minimap2"
+
+- bwamem2BatchPairs:
+
+  For aligner "BWAMEM2" only: max read pairs per alignment batch. Bounds
+  per-batch peak memory (bwa-mem2 materialises a whole batch's alignment
+  scratch + SAM before returning). If NULL (default), bascet uses its
+  built-in default (100000). Lower it on memory-constrained nodes, raise
+  it for throughput.
 
 - runner:
 

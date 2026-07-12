@@ -13,7 +13,7 @@ BascetRunKraken(
   totalMem = NULL,
   inputName = "filtered",
   outputRawName = "kraken_raw",
-  outputName = "kraken_mat",
+  outputName = "kraken_counts",
   overwrite = FALSE,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
