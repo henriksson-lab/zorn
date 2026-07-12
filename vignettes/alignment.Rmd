@@ -61,11 +61,14 @@ BascetIndexGenomeSTAR(
 )
 ```
 
+*Note that alignment can require a large amount of RAM.* Furthermore, the amount of RAM typically scales with the number
+of threads you use. Please see manuals for each respectively aligner to get a better idea about how much RAM you need.
+
 
 
 # Alignment
 
-You can now proceed with alignment using BWA. By default, this command outputs both unsorted and sorted BAM-files.
+You can now proceed with alignment using BWAMEM2. By default, this command outputs both unsorted and sorted BAM-files.
 
 * The sorted BAM-files are required for counting of reads in genomic regions, i.e., WGS species counting and RNA-seq
 * The unsorted BAM-files are required for filtering of host reads
