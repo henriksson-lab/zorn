@@ -532,12 +532,16 @@ BascetFilterAlignment <- function(
 #' @param outputNameBAMpos Name of pos-sorted BAMs. If NULL, derived from `outputName`.
 #' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
 #' @param aligner Which aligner to use: "BWAMEM2", "STAR", or "minimap2"
+#' @param bwamem2BatchPairs For aligner "BWAMEM2" only: max read pairs per alignment batch.
+#'   Bounds per-batch peak memory (bwa-mem2 materialises a whole batch's alignment scratch + SAM
+#'   before returning). If NULL (default), bascet uses its built-in default (100000). Lower it on
+#'   memory-constrained nodes, raise it for throughput.
 #' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
 #' @param bascetInstance A Bascet instance
 #'
 #' @export
 BascetAlignToReference <- function(
-    bascetRoot, 
+    bascetRoot,
     useReference,
     numThreads=NULL,
     totalMem=NULL,
@@ -547,7 +551,8 @@ BascetAlignToReference <- function(
     outputNameBAMpos=NULL,
     overwrite=FALSE,
     aligner=c(NULL, "BWAMEM2", "STAR", "minimap2"),
-    runner=GetDefaultBascetRunner(), 
+    bwamem2BatchPairs=NULL,
+    runner=GetDefaultBascetRunner(),
     bascetInstance=GetDefaultBascetInstance()
 ){
   #Set number of threads if not given
@@ -632,7 +637,8 @@ BascetAlignToReference <- function(
             JobArg("--genome", useReference),
             JobMaybeArg("--memory", totalMem, format_size_bascet),
             JobMaybeArg("--threads", numThreads),
-            JobArg("--aligner", aligner)
+            JobArg("--aligner", aligner),
+            JobMaybeArg("--bwamem2-batch-pairs", bwamem2BatchPairs)
           ))
         )
       ),

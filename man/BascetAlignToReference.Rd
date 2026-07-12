@@ -15,6 +15,7 @@ BascetAlignToReference(
   outputNameBAMpos = NULL,
   overwrite = FALSE,
   aligner = c(NULL, "BWAMEM2", "STAR", "minimap2"),
+  bwamem2BatchPairs = NULL,
   runner = GetDefaultBascetRunner(),
   bascetInstance = GetDefaultBascetInstance()
 )
@@ -40,6 +41,11 @@ for the unsorted/cell BAM and \verb{<outputName>_pos} for the position-sorted BA
 \item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
 
 \item{aligner}{Which aligner to use: "BWAMEM2", "STAR", or "minimap2"}
+
+\item{bwamem2BatchPairs}{For aligner "BWAMEM2" only: max read pairs per alignment batch.
+Bounds per-batch peak memory (bwa-mem2 materialises a whole batch's alignment scratch + SAM
+before returning). If NULL (default), bascet uses its built-in default (100000). Lower it on
+memory-constrained nodes, raise it for throughput.}
 
 \item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
 

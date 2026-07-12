@@ -7,7 +7,7 @@
 BascetCountChrom(
   bascetRoot,
   inputName = "aligned_pos",
-  outputName = "chromcount",
+  outputName = "chrom_counts",
   minMatching = 0,
   removeDuplicates = TRUE,
   removeMultimapper = TRUE,
