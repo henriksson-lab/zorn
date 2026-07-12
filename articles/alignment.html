@@ -140,11 +140,15 @@ need a splice-aware aligner)</p>
 <span>  fastaFile<span class="op">=</span><span class="st">"/your_reference/genome.fa"</span>,</span>
 <span>  gtfFile<span class="op">=</span><span class="st">"/your_reference/genome.gtf"</span>  <span class="co">#note that GTF-file is needed here to inform STAR about splice junctions</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p><em>Note that alignment can require a large amount of RAM.</em>
+Furthermore, the amount of RAM typically scales with the number of
+threads you use. Please see manuals for each respectively aligner to get
+a better idea about how much RAM you need.</p>
 </div>
 <div class="section level2">
 <h2 id="alignment">Alignment<a class="anchor" aria-label="anchor" href="#alignment"></a>
 </h2>
-<p>You can now proceed with alignment using BWA. By default, this
+<p>You can now proceed with alignment using BWAMEM2. By default, this
 command outputs both unsorted and sorted BAM-files.</p>
 <ul>
 <li>The sorted BAM-files are required for counting of reads in genomic
