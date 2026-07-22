@@ -5,7 +5,7 @@ Produce a kneeplot
 ## Usage
 
 ``` r
-KneeplotPerSpecies(adata, maxSpecies = NULL)
+KneeplotPerSpecies(adata, maxSpecies = NULL, showTotal = FALSE)
 ```
 
 ## Arguments
@@ -19,6 +19,11 @@ KneeplotPerSpecies(adata, maxSpecies = NULL)
 
   Maximum number of species to show. The most abundant species will be
   shown first
+
+- showTotal:
+
+  Include a separate kneeplot line for the total count across all
+  species
 
 ## Value
 
