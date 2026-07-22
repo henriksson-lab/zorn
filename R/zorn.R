@@ -601,20 +601,25 @@ BascetToFastq <- function(
 #' 
 #' @param adata A Seurat object with the DefaultAssay having counts per species (or similar)
 #' @param maxSpecies Maximum number of species to show. The most abundant species will be shown first
+#' @param showTotal Include a separate kneeplot line for the total count across all species
 #' 
 #' @return A ggplot object
 #' @export
 KneeplotPerSpecies <- function(
     adata, 
-    maxSpecies=NULL
+    maxSpecies=NULL,
+    showTotal=FALSE
 ) {
   #check arguments
   stopifnot(inherits(adata, "Seurat"))
   stopifnot(is.null(maxSpecies) || is.positive.integer(maxSpecies))
+  stopifnot(is.logical(showTotal), length(showTotal) == 1, !is.na(showTotal))
 
   strain_cnt <- adata@assays[[DefaultAssay(adata)]]$counts
   stopifnot(!is.null(strain_cnt))
   stopifnot(nrow(strain_cnt) > 0, ncol(strain_cnt) > 0)
+
+  total_cnt <- Matrix::colSums(strain_cnt)
   
   if(!is.null(maxSpecies)){
     strain_cnt <- strain_cnt[order(rowSums(strain_cnt), decreasing = TRUE),]
@@ -630,6 +635,15 @@ KneeplotPerSpecies <- function(
     onedf <- onedf[order(onedf$cnt, decreasing = TRUE),]
     onedf$index <- 1:nrow(onedf)
     allknee[[paste("s",i)]] <- onedf
+  }
+  if(showTotal){
+    totaldf <- data.frame(
+      strain = "TOTAL",
+      cnt = total_cnt
+    )
+    totaldf <- totaldf[order(totaldf$cnt, decreasing = TRUE),]
+    totaldf$index <- 1:nrow(totaldf)
+    allknee[["TOTAL"]] <- totaldf
   }
   allknee <- do.call(rbind, allknee)
   
