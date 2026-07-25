@@ -48,6 +48,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : A bascet, along with all the shards
 - [`BascetAddMetaData()`](https://henriksson-lab.github.io/zorn/reference/BascetAddMetaData.md)
   : Add metadata to a Seurat object, handling cell mismatches
+- [`BascetAddObsFromH5()`](https://henriksson-lab.github.io/zorn/reference/BascetAddObsFromH5.md)
+  : Append Bascet HDF5/AnnData obs metadata to a Seurat object
 - [`BascetAggregateAMRfinder()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateAMRfinder.md)
   : Aggregate data from AMRfinder This is a thin wrapper around
   BascetAggregateMap
@@ -65,9 +67,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   BascetAggregateMap
 - [`BascetAggregateMap()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateMap.md)
   : Aggregate data from previous Map call
-- [`BascetAggregateQUAST()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateQUAST.md)
-  : Aggregate data from QUAST This is a thin wrapper around
-  BascetAggregateMap
 - [`BascetAlignToReference()`](https://henriksson-lab.github.io/zorn/reference/BascetAlignToReference.md)
   : Align from FASTQ, generate sorted and indexed BAM file
 - [`BascetAlignmentToBigwig()`](https://henriksson-lab.github.io/zorn/reference/BascetAlignmentToBigwig.md)
@@ -141,8 +140,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
 - [`BascetMapCellGECCO()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellGECCO.md)
   : Run GECCO on contigs of all cells.
 - [`BascetMapCellQUAST()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellQUAST.md)
-  : Run QUAST on reads of all cells. This is a thin wrapper around
-  BascetMapCell
+  : Run integrated QUAST-like assembly statistics on contigs from each
+  cell.
 - [`BascetMapCellSKESA()`](https://henriksson-lab.github.io/zorn/reference/BascetMapCellSKESA.md)
   : Run integrated SKESA on reads from each cell.
 - [`BascetMapTransform()`](https://henriksson-lab.github.io/zorn/reference/BascetMapTransform.md)
@@ -159,6 +158,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Read histogram of KMERs, the output of BascetMakeMinhashHistogram
 - [`BascetReadNcbiGenomeMetadata()`](https://henriksson-lab.github.io/zorn/reference/BascetReadNcbiGenomeMetadata.md)
   : Read cached NCBI genome assembly metadata
+- [`BascetReadObs()`](https://henriksson-lab.github.io/zorn/reference/BascetReadObs.md)
+  : Read observation metadata from a Bascet HDF5/AnnData file
 - [`BascetResolveSra()`](https://henriksson-lab.github.io/zorn/reference/BascetResolveSra.md)
   : Resolve SRA inputs to a canonical run table
 - [`BascetRunCellSNP()`](https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.md)

@@ -1,16 +1,21 @@
-# Run QUAST on reads of all cells. This is a thin wrapper around BascetMapCell
+# Run integrated QUAST-like assembly statistics on contigs from each cell.
 
-Run QUAST on reads of all cells. This is a thin wrapper around
-BascetMapCell
+Run integrated QUAST-like assembly statistics on contigs from each cell.
 
 ## Usage
 
 ``` r
 BascetMapCellQUAST(
   bascetRoot,
-  inputName = "filtered",
+  inputName = "contigs",
   outputName = "quast",
-  ...
+  numThreads = NULL,
+  numQuastWorkers = NULL,
+  minContig = 0,
+  contigName = "contigs.fa",
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 ```
 
@@ -22,21 +27,43 @@ BascetMapCellQUAST(
 
 - inputName:
 
-  Name of input shard
+  Name of input contig zip shard
 
 - outputName:
 
-  Name of output shard
+  Name of output HDF5 shard
 
-- ...:
+- numThreads:
 
-  Additional arguments passed to
-  [`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)
+  Total thread budget. Defaults to the runner CPU count
+
+- numQuastWorkers:
+
+  Number of cells to process concurrently. If NULL, use up to 8 workers
+  from numThreads
+
+- minContig:
+
+  Minimum contig length included in primary QUAST metrics
+
+- contigName:
+
+  Cell-local contig file name
+
+- overwrite:
+
+  Force overwriting of existing files. The default is to do nothing
+  files exist
+
+- runner:
+
+  The job manager, specifying how the command will be run (e.g. locally,
+  or via SLURM)
+
+- bascetInstance:
+
+  A Bascet instance
 
 ## Value
 
 A job to be executed, or being executed, depending on runner settings
-
-## See also
-
-[`BascetMapCell`](https://henriksson-lab.github.io/zorn/reference/BascetMapCell.md)

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.47</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.48</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,6 +108,13 @@
 
         <dt>
 
+          <code><a href="BascetAddObsFromH5.html">BascetAddObsFromH5()</a></code>
+
+        </dt>
+        <dd>Append Bascet HDF5/AnnData obs metadata to a Seurat object</dd>
+
+        <dt>
+
           <code><a href="BascetAggregateAMRfinder.html">BascetAggregateAMRfinder()</a></code>
 
         </dt>
@@ -147,13 +154,6 @@
 
         </dt>
         <dd>Aggregate data from previous Map call</dd>
-
-        <dt>
-
-          <code><a href="BascetAggregateQUAST.html">BascetAggregateQUAST()</a></code>
-
-        </dt>
-        <dd>Aggregate data from QUAST This is a thin wrapper around BascetAggregateMap</dd>
 
         <dt>
 
@@ -377,7 +377,7 @@
           <code><a href="BascetMapCellQUAST.html">BascetMapCellQUAST()</a></code>
 
         </dt>
-        <dd>Run QUAST on reads of all cells. This is a thin wrapper around BascetMapCell</dd>
+        <dd>Run integrated QUAST-like assembly statistics on contigs from each cell.</dd>
 
         <dt>
 
@@ -434,6 +434,13 @@
 
         </dt>
         <dd>Read cached NCBI genome assembly metadata</dd>
+
+        <dt>
+
+          <code><a href="BascetReadObs.html">BascetReadObs()</a></code>
+
+        </dt>
+        <dd>Read observation metadata from a Bascet HDF5/AnnData file</dd>
 
         <dt>
 
