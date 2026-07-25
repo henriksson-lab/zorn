@@ -7,7 +7,14 @@ Missing cells get NA values.
 ## Usage
 
 ``` r
-BascetAddMetaData(adata, metadata, columns = NULL, subsetCommon = FALSE)
+BascetAddMetaData(
+  adata,
+  metadata,
+  columns = NULL,
+  subsetCommon = FALSE,
+  excludeColumns = c("_index", "cell_index", "taxid_index", "cnt"),
+  prefix = NULL
+)
 ```
 
 ## Arguments
@@ -22,12 +29,20 @@ BascetAddMetaData(adata, metadata, columns = NULL, subsetCommon = FALSE)
 
 - columns:
 
-  Columns to add. Default: all except cell_index, taxid_index, cnt
+  Columns to add. Default: all except excludeColumns
 
 - subsetCommon:
 
   If TRUE, subset the Seurat object to only cells present in both adata
   and metadata
+
+- excludeColumns:
+
+  Columns excluded when columns is NULL
+
+- prefix:
+
+  Optional prefix added to column names before appending
 
 ## Value
 

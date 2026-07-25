@@ -48,8 +48,6 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : A bascet, along with all the shards
 - [`BascetAddMetaData()`](https://henriksson-lab.github.io/zorn/reference/BascetAddMetaData.md)
   : Add metadata to a Seurat object, handling cell mismatches
-- [`BascetAddObsFromH5()`](https://henriksson-lab.github.io/zorn/reference/BascetAddObsFromH5.md)
-  : Append Bascet HDF5/AnnData obs metadata to a Seurat object
 - [`BascetAggregateAMRfinder()`](https://henriksson-lab.github.io/zorn/reference/BascetAggregateAMRfinder.md)
   : Aggregate data from AMRfinder This is a thin wrapper around
   BascetAggregateMap
@@ -158,8 +156,8 @@ software [Bascet](https://github.com/henriksson-lab/bascet/).
   : Read histogram of KMERs, the output of BascetMakeMinhashHistogram
 - [`BascetReadNcbiGenomeMetadata()`](https://henriksson-lab.github.io/zorn/reference/BascetReadNcbiGenomeMetadata.md)
   : Read cached NCBI genome assembly metadata
-- [`BascetReadObs()`](https://henriksson-lab.github.io/zorn/reference/BascetReadObs.md)
-  : Read observation metadata from a Bascet HDF5/AnnData file
+- [`BascetReadObsFromH5()`](https://henriksson-lab.github.io/zorn/reference/BascetReadObsFromH5.md)
+  : Read observation metadata from Bascet HDF5/AnnData files
 - [`BascetResolveSra()`](https://henriksson-lab.github.io/zorn/reference/BascetResolveSra.md)
   : Resolve SRA inputs to a canonical run table
 - [`BascetRunCellSNP()`](https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.md)

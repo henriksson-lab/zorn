@@ -36,7 +36,6 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BarnyardPlotMatrix.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/Bascet-class.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAddMetaData.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAddObsFromH5.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateAMRfinder.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateAbricate.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetAggregateAriba.html</loc></url>
@@ -83,7 +82,7 @@
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadFile.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadMinhashHistogram.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadNcbiGenomeMetadata.html</loc></url>
-<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadObs.html</loc></url>
+<url><loc>https://henriksson-lab.github.io/zorn/reference/BascetReadObsFromH5.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetResolveSra.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunCellSNP.html</loc></url>
 <url><loc>https://henriksson-lab.github.io/zorn/reference/BascetRunCountsketch.html</loc></url>

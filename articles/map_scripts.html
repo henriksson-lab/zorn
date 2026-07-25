@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.48</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.49</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,7 +98,7 @@ operates on your cells. This can be either the raw reads, the contigs,
 or any other data that you produce. Because these operations can be
 computationally intense, all of this happens through the MAP
 framework.</p>
-<p>Bascet currently hosts two type of MAP functions:</p>
+<p>Bascet currently hosts two types of MAP functions:</p>
 <ul>
 <li>MAP functions written in Rust for highest performance. If the
 original software is not Rust, we perform <a href="https://github.com/henriksson-lab/rustification" class="external-link">static
@@ -112,32 +112,25 @@ files</li>
 <h2 id="calling-a-map-function-one-example">Calling a MAP function — one example<a class="anchor" aria-label="anchor" href="#calling-a-map-function-one-example"></a>
 </h2>
 <p>All MAP wrappers follow the same pattern: they take an input shard,
-run a per-cell tool on it, and produce an output shard. Here is QUAST as
-a representative example:</p>
+run a per-cell tool on it, and produce an output shard. Here is the
+built-in SPAdes map script as a representative example:</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCellQUAST.html">BascetMapCellQUAST</a></span><span class="op">(</span></span>
-<span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName  <span class="op">=</span> <span class="st">"contigs"</span>,</span>
-<span>  outputName <span class="op">=</span> <span class="st">"quast"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>This is a thin wrapper around <code>BascetMapCell</code> that knows
-the right script name. The raw form is equivalent:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCell.html">BascetMapCell</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  withfunction <span class="op">=</span> <span class="st">"_quast"</span>,</span>
-<span>  inputName    <span class="op">=</span> <span class="st">"contigs"</span>,</span>
-<span>  outputName   <span class="op">=</span> <span class="st">"quast"</span></span>
+<span>  withfunction <span class="op">=</span> <span class="st">"_spades"</span>,</span>
+<span>  inputName <span class="op">=</span> <span class="st">"filtered"</span>,</span>
+<span>  outputName <span class="op">=</span> <span class="st">"spades"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>For the full QUAST workflow (including aggregation), see <a href="genome_annotation.html">genome annotation</a>.</p>
+<p>This writes <code>spades.&lt;shard&gt;.zip</code> files containing
+the per-cell SPAdes output.</p>
 </div>
 <div class="section level2">
 <h2 id="available-map-wrappers">Available MAP wrappers<a class="anchor" aria-label="anchor" href="#available-map-wrappers"></a>
 </h2>
 <p>Each wrapper is documented in detail in the vignette listed in the
 last column. That vignette covers any required databases, the matching
-<code>BascetAggregate*()</code> step, and downstream usage.</p>
+result loading step, and downstream usage.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="25%">
@@ -220,24 +213,27 @@ last column. That vignette covers any required databases, the matching
 to a database file). This is done by setting the args argument. Below
 will set two environment variables such that the contents can be picked
 up the script:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">BascetMapCell</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  ...</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">args</span>(<span class="at">DB=</span><span class="st">"some/path"</span>,<span class="at">OTHERARG=</span><span class="st">"hi"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  ...</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">BascetMapCell</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  ...</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">args</span>(<span class="at">DB=</span><span class="st">"some/path"</span>,<span class="at">OTHERARG=</span><span class="st">"hi"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  ...</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="aggregating-map-results">Aggregating MAP results<a class="anchor" aria-label="anchor" href="#aggregating-map-results"></a>
 </h2>
 <p>Once you have run your map function, you most likely want to load the
-results into R. We call this procedure “aggregate”. Most wrappers have a
-matching <code>BascetAggregate*()</code> function — see the per-tool
-vignette for the exact call.</p>
+results into R. Older script-based wrappers usually have a matching
+<code>BascetAggregate*()</code> function. Newer HDF5-producing wrappers
+can be loaded from their <code>obs</code> table with
+<code><a href="../reference/BascetReadObsFromH5.html">BascetReadObsFromH5()</a></code> and appended to a Seurat object with
+<code><a href="../reference/BascetAddMetaData.html">BascetAddMetaData()</a></code>; see the per-tool vignette for the
+exact call.</p>
 <p>There is also a catch-all aggregate function that requires a bit of a
 special way of calling. The example below takes “out.txt”, generated by
 each tool, and stores the raw file content in a list. This is not pretty
 but it may help you in debugging and development:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">raw_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MapListAsDataFrame.html">MapListAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="../reference/BascetAggregateMap.html">BascetAggregateMap</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName<span class="op">=</span><span class="st">".."</span>,</span>
@@ -247,13 +243,15 @@ but it may help you in debugging and development:</p>
 <div class="section level2">
 <h2 id="custom-map-functions---introduction">Custom MAP functions - introduction<a class="anchor" aria-label="anchor" href="#custom-map-functions---introduction"></a>
 </h2>
-<p>It is easy to add new functions! Easiest way is to simply copy and
-modify the code for an existing script. You can start from either * <a href="https://github.com/henriksson-lab/bascet/blob/main/src/mapcell_scripts/quast.sh" class="external-link">QUAST</a>,
-which takes contigs as input * <a href="https://github.com/henriksson-lab/bascet/blob/main/src/mapcell_scripts/skesa.sh" class="external-link">SKESA</a>,
-which takes FASTQ as input</p>
+<p>It is easy to add new functions! The easiest way is to copy and
+modify the code for an existing shell-script wrapper. You can start from
+a script such as:</p>
+<ul>
+<li>SKESA, which takes FASTQ as input</li>
+</ul>
 <p>Once you have written your script, you invoke it with a direct
 path:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetMapCell.html">BascetMapCell</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  withfunction <span class="op">=</span> <span class="st">"/path/to/your/script.sh"</span>,</span>

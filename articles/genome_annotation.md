@@ -7,10 +7,10 @@ for the underlying mechanism and how to write your own.
 
 ## QUAST — assembly quality
 
-QUAST computes standard assembly QC metrics from contigs (N50, number
-and length of contigs, GC content, mis-assemblies, etc.). It is the most
-common way to compare the quality of different assemblies and is the
-de-facto standard for reporting assembly statistics.
+The Bascet QUAST command computes standard per-cell assembly QC metrics
+from contigs, including contig counts, total length, GC content,
+N50/L50, NG50/LG50, and auN. It writes these metrics to the `obs` table
+of a Bascet HDF5 file.
 
 - Website: <https://github.com/ablab/quast>
 - If you use this tool, please cite: Gurevich A, Saveliev V, Vyahhi N,
@@ -25,20 +25,28 @@ step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
 BascetMapCellQUAST(
   bascetRoot,
   inputName  = "contigs",  #or other source of contigs
-  outputName = "quast"
+  outputName = "quast",
+  minContig  = 0
 )
 ```
 
-Then aggregate the results for visualization. This example caches the
-result to speed up reloading; this is optional
+Then load the `obs` tables for visualization:
 
 ``` r
 
-quast_aggr <- BascetCacheComputation(bascetRoot,"cache_quast",MapListAsDataFrame(BascetAggregateMap(
-  bascetRoot,
-  "quast",
-  aggr.quast
-)))
+quast_obs <- BascetReadObsFromH5(bascetRoot, "quast")
+```
+
+If you already have a Seurat object, append the metrics as metadata.
+Cells missing from the HDF5 files receive `NA`; existing metadata
+columns with the same names are replaced.
+
+``` r
+
+adata <- BascetAddMetaData(
+  adata,
+  quast_obs
+)
 ```
 
 ## Abricate — AMR / virulence screening
