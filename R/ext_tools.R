@@ -169,30 +169,89 @@ BascetMapCellSKESA <- function(
 
 
 ###############################################
-#' Run QUAST on reads of all cells.
-#' This is a thin wrapper around BascetMapCell
+#' Run integrated QUAST-like assembly statistics on contigs from each cell.
 #'
 #' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of input shard
-#' @param outputName Name of output shard
-#' @param ... Additional arguments passed to \code{\link{BascetMapCell}}
+#' @param inputName Name of input contig zip shard
+#' @param outputName Name of output HDF5 shard
+#' @param numThreads Total thread budget. Defaults to the runner CPU count
+#' @param numQuastWorkers Number of cells to process concurrently. If NULL, use up to 8 workers from numThreads
+#' @param minContig Minimum contig length included in primary QUAST metrics
+#' @param contigName Cell-local contig file name
+#' @param overwrite Force overwriting of existing files. The default is to do nothing files exist
+#' @param runner The job manager, specifying how the command will be run (e.g. locally, or via SLURM)
+#' @param bascetInstance A Bascet instance
 #'
 #' @return A job to be executed, or being executed, depending on runner settings
-#' @seealso \code{\link{BascetMapCell}}
 #' @export
 BascetMapCellQUAST <- function(
     bascetRoot,
-    inputName="filtered",
+    inputName="contigs",
     outputName="quast",
-    ...
+    numThreads=NULL,
+    numQuastWorkers=NULL,
+    minContig=0,
+    contigName="contigs.fa",
+    overwrite=FALSE,
+    runner=GetDefaultBascetRunner(),
+    bascetInstance=GetDefaultBascetInstance()
 ){
-  BascetMapCell(
-    bascetRoot=bascetRoot,
-    withfunction="_quast",
-    inputName=inputName,
-    outputName=outputName,
-    ...
-  )
+  if(is.null(numThreads)) {
+    numThreads <- as.integer(runner@ncpu)
+  }
+  if(is.null(numQuastWorkers)) {
+    numQuastWorkers <- min(numThreads, 8L)
+  }
+
+  stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.valid.shardname(outputName))
+  stopifnot(is.valid.threadcount(numThreads))
+  stopifnot(is.valid.threadcount(numQuastWorkers))
+  stopifnot(is.integer.like(minContig), minContig >= 0)
+  stopifnot(is.character(contigName), length(contigName)==1, nzchar(contigName))
+  stopifnot(!stringr::str_detect(contigName, "[/\\\\]"))
+  stopifnot(is.logical(overwrite))
+  stopifnot(is.runner(runner))
+  stopifnot(is.bascet.instance(bascetInstance))
+
+  inputFiles <- file.path(bascetRoot, detectShardsForFile(bascetRoot, inputName))
+  num_shards <- length(inputFiles)
+
+  if(num_shards==0){
+    stop("No input files")
+  }
+
+  outputFiles <- makeOutputShardNames(bascetRoot, outputName, "h5", num_shards)
+
+  if(bascetCheckOverwriteOutput(outputFiles, overwrite)) {
+    RunJob(
+      runner = runner,
+      jobname = "Zquast",
+      bascetInstance = bascetInstance,
+      cmd = JobScript(
+        vars = list(
+          files_in = inputFiles,
+          files_out = outputFiles
+        ),
+        steps = list(
+          if(!overwrite) JobSkipIfFileExists(JobVar("files_out")),
+          JobBascetCommand(bascetInstance, list(
+            "quast",
+            JobArg("-i", JobVar("files_in")),
+            JobArg("-o", JobVar("files_out")),
+            JobArg("--quast-workers", numQuastWorkers),
+            JobArg("--min-contig", minContig),
+            JobArg("--contig-name", contigName)
+          ))
+        )
+      ),
+      arraysize = num_shards
+    )
+  } else {
+    new_no_job()
+  }
 }
 
 ###############################################
@@ -238,38 +297,6 @@ aggr.quast <- function(
     data.frame()
   }
 }
-
-
-
-###############################################
-#' Aggregate data from QUAST
-#' This is a thin wrapper around BascetAggregateMap
-#'
-#' @param bascetRoot The root folder where all Bascets are stored
-#' @param inputName Name of input shard
-#' @param includeCells Character vector of cell names to include, or NULL for all cells
-#' @param ... Additional arguments passed to \code{\link{BascetAggregateMap}}
-#'
-#' @return Aggregated data
-#' @seealso \code{\link{BascetAggregateMap}}
-#' @export
-BascetAggregateQUAST <- function(
-    bascetRoot,
-    inputName="quast",
-    includeCells=NULL,
-    ...
-){
-  BascetAggregateMap(
-    bascetRoot,
-    inputName,
-    aggr.quast,
-    includeCells=includeCells,
-    ...
-  )
-}
-
-
-
 
 
 

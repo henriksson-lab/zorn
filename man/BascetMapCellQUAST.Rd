@@ -2,32 +2,45 @@
 % Please edit documentation in R/ext_tools.R
 \name{BascetMapCellQUAST}
 \alias{BascetMapCellQUAST}
-\title{Run QUAST on reads of all cells.
-This is a thin wrapper around BascetMapCell}
+\title{Run integrated QUAST-like assembly statistics on contigs from each cell.}
 \usage{
 BascetMapCellQUAST(
   bascetRoot,
-  inputName = "filtered",
+  inputName = "contigs",
   outputName = "quast",
-  ...
+  numThreads = NULL,
+  numQuastWorkers = NULL,
+  minContig = 0,
+  contigName = "contigs.fa",
+  overwrite = FALSE,
+  runner = GetDefaultBascetRunner(),
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
 \item{bascetRoot}{The root folder where all Bascets are stored}
 
-\item{inputName}{Name of input shard}
+\item{inputName}{Name of input contig zip shard}
 
-\item{outputName}{Name of output shard}
+\item{outputName}{Name of output HDF5 shard}
 
-\item{...}{Additional arguments passed to \code{\link{BascetMapCell}}}
+\item{numThreads}{Total thread budget. Defaults to the runner CPU count}
+
+\item{numQuastWorkers}{Number of cells to process concurrently. If NULL, use up to 8 workers from numThreads}
+
+\item{minContig}{Minimum contig length included in primary QUAST metrics}
+
+\item{contigName}{Cell-local contig file name}
+
+\item{overwrite}{Force overwriting of existing files. The default is to do nothing files exist}
+
+\item{runner}{The job manager, specifying how the command will be run (e.g. locally, or via SLURM)}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 A job to be executed, or being executed, depending on runner settings
 }
 \description{
-Run QUAST on reads of all cells.
-This is a thin wrapper around BascetMapCell
-}
-\seealso{
-\code{\link{BascetMapCell}}
+Run integrated QUAST-like assembly statistics on contigs from each cell.
 }

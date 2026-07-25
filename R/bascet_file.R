@@ -553,7 +553,8 @@ detectShardsForFile <- function(
 
   all_feature_counts <- 
     stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","hd5", "$")) | #todo remove
-    stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","h5", "$"))  # better name?
+    stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","h5", "$")) | # better name?
+    stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","h5ad", "$"))
 
   
   allfq <- stringr::str_detect(allfiles, paste0("^", inputName,"\\.[0123456789]+\\.","fq\\.gz", "$"))

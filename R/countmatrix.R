@@ -310,6 +310,77 @@ ReadBascetObs <- function(fname, h5_index) {
 }
 
 
+###############################################
+#' Read observation metadata from a Bascet HDF5/AnnData file
+#'
+#' @param fname Path to a Bascet HDF5/AnnData file
+#'
+#' @return A data.frame with rownames set to cell names
+#' @export
+BascetReadObs <- function(fname) {
+  stopifnot(file.exists(fname))
+  PrepareBascetRhdf5Read()
+  h5_index <- rhdf5::h5ls(fname)
+  obs <- ReadBascetObs(fname, h5_index)
+  if(!("_index" %in% colnames(obs))) {
+    stop("HDF5 file does not contain /obs/_index")
+  }
+  rownames(obs) <- as.character(obs$`_index`)
+  obs
+}
+
+
+###############################################
+#' Append Bascet HDF5/AnnData obs metadata to a Seurat object
+#'
+#' Cells present in the Seurat object but missing from the HDF5 obs table receive
+#' NA values. Cells present only in the HDF5 obs table are dropped. Existing
+#' metadata columns with the same names are replaced.
+#'
+#' @param adata A Seurat object
+#' @param fname Path to a Bascet HDF5/AnnData file
+#' @param columns Obs columns to add. Default: all columns except _index
+#' @param prefix Optional prefix added to column names before appending
+#' @param subsetCommon If TRUE, subset the Seurat object to only cells present in both adata and obs
+#'
+#' @return The Seurat object with added metadata columns
+#' @export
+BascetAddObsFromH5 <- function(
+    adata,
+    fname,
+    columns=NULL,
+    prefix=NULL,
+    subsetCommon=FALSE
+) {
+  stopifnot(inherits(adata, "Seurat"))
+  stopifnot(file.exists(fname))
+  stopifnot(is.null(columns) || is.character(columns))
+  stopifnot(is.null(prefix) || (is.character(prefix) && length(prefix)==1))
+  stopifnot(is.logical(subsetCommon))
+
+  obs <- BascetReadObs(fname)
+  if(is.null(columns)) {
+    columns <- setdiff(colnames(obs), "_index")
+  }
+  missing_columns <- setdiff(columns, colnames(obs))
+  if(length(missing_columns) > 0) {
+    stop(paste0("Missing obs columns: ", paste(missing_columns, collapse=", ")))
+  }
+
+  metadata <- obs[, columns, drop=FALSE]
+  if(!is.null(prefix)) {
+    colnames(metadata) <- paste0(prefix, colnames(metadata))
+  }
+
+  BascetAddMetaData(
+    adata=adata,
+    metadata=metadata,
+    columns=colnames(metadata),
+    subsetCommon=subsetCommon
+  )
+}
+
+
 ### Internal helper function
 ReadBascetCountMatrix_one <- function(
     fname,
