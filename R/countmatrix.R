@@ -311,13 +311,45 @@ ReadBascetObs <- function(fname, h5_index) {
 
 
 ###############################################
-#' Read observation metadata from a Bascet HDF5/AnnData file
+#' Read observation metadata from Bascet HDF5/AnnData files
 #'
-#' @param fname Path to a Bascet HDF5/AnnData file
+#' @param bascetRoot The root folder where all Bascets are stored
+#' @param inputName Name of input HDF5 shard
+#' @param verbose Print additional information, primarily to help troubleshooting
 #'
 #' @return A data.frame with rownames set to cell names
 #' @export
-BascetReadObs <- function(fname) {
+BascetReadObsFromH5 <- function(
+    bascetRoot,
+    inputName,
+    verbose=FALSE
+) {
+  stopifnot(dir.exists(bascetRoot))
+  bascetRoot <- normalizeBascetRoot(bascetRoot)
+  stopifnot(is.valid.shardname(inputName))
+  stopifnot(is.logical(verbose))
+
+  input_shards <- detectShardsForFile(bascetRoot, inputName)
+  num_shards <- length(input_shards)
+  if(num_shards==0){
+    stop("No input files")
+  }
+  inputFiles <- file.path(bascetRoot, input_shards)
+
+  if(verbose) {
+    print(paste0("Loading ", length(inputFiles), " HDF5 obs shard(s)"))
+  }
+
+  obs <- do.call(rbind, lapply(inputFiles, BascetReadObsFromH5_one))
+  if(any(duplicated(rownames(obs)))) {
+    stop("Duplicate cells found across HDF5 obs tables")
+  }
+  obs
+}
+
+
+### Internal helper function
+BascetReadObsFromH5_one <- function(fname) {
   stopifnot(file.exists(fname))
   PrepareBascetRhdf5Read()
   h5_index <- rhdf5::h5ls(fname)
@@ -327,57 +359,6 @@ BascetReadObs <- function(fname) {
   }
   rownames(obs) <- as.character(obs$`_index`)
   obs
-}
-
-
-###############################################
-#' Append Bascet HDF5/AnnData obs metadata to a Seurat object
-#'
-#' Cells present in the Seurat object but missing from the HDF5 obs table receive
-#' NA values. Cells present only in the HDF5 obs table are dropped. Existing
-#' metadata columns with the same names are replaced.
-#'
-#' @param adata A Seurat object
-#' @param fname Path to a Bascet HDF5/AnnData file
-#' @param columns Obs columns to add. Default: all columns except _index
-#' @param prefix Optional prefix added to column names before appending
-#' @param subsetCommon If TRUE, subset the Seurat object to only cells present in both adata and obs
-#'
-#' @return The Seurat object with added metadata columns
-#' @export
-BascetAddObsFromH5 <- function(
-    adata,
-    fname,
-    columns=NULL,
-    prefix=NULL,
-    subsetCommon=FALSE
-) {
-  stopifnot(inherits(adata, "Seurat"))
-  stopifnot(file.exists(fname))
-  stopifnot(is.null(columns) || is.character(columns))
-  stopifnot(is.null(prefix) || (is.character(prefix) && length(prefix)==1))
-  stopifnot(is.logical(subsetCommon))
-
-  obs <- BascetReadObs(fname)
-  if(is.null(columns)) {
-    columns <- setdiff(colnames(obs), "_index")
-  }
-  missing_columns <- setdiff(columns, colnames(obs))
-  if(length(missing_columns) > 0) {
-    stop(paste0("Missing obs columns: ", paste(missing_columns, collapse=", ")))
-  }
-
-  metadata <- obs[, columns, drop=FALSE]
-  if(!is.null(prefix)) {
-    colnames(metadata) <- paste0(prefix, colnames(metadata))
-  }
-
-  BascetAddMetaData(
-    adata=adata,
-    metadata=metadata,
-    columns=colnames(metadata),
-    subsetCommon=subsetCommon
-  )
 }
 
 
@@ -671,14 +652,34 @@ MergeBascetCountMatrix <- function(
 #'
 #' @param adata A Seurat object
 #' @param metadata A data.frame with rownames matching cell names
-#' @param columns Columns to add. Default: all except cell_index, taxid_index, cnt
+#' @param columns Columns to add. Default: all except excludeColumns
 #' @param subsetCommon If TRUE, subset the Seurat object to only cells present in both adata and metadata
+#' @param excludeColumns Columns excluded when columns is NULL
+#' @param prefix Optional prefix added to column names before appending
 #'
 #' @return The Seurat object with added metadata columns
 #' @export
-BascetAddMetaData <- function(adata, metadata, columns=NULL, subsetCommon=FALSE) {
+BascetAddMetaData <- function(
+    adata,
+    metadata,
+    columns=NULL,
+    subsetCommon=FALSE,
+    excludeColumns=c("_index","cell_index","taxid_index","cnt"),
+    prefix=NULL
+) {
+  stopifnot(inherits(adata, "Seurat"))
+  stopifnot(is.data.frame(metadata))
+  stopifnot(is.null(columns) || is.character(columns))
+  stopifnot(is.character(excludeColumns))
+  stopifnot(is.null(prefix) || (is.character(prefix) && length(prefix)==1))
+  stopifnot(is.logical(subsetCommon))
+
   if(is.null(columns)) {
-    columns <- setdiff(colnames(metadata), c("cell_index","taxid_index","cnt"))
+    columns <- setdiff(colnames(metadata), excludeColumns)
+  }
+  missing_columns <- setdiff(columns, colnames(metadata))
+  if(length(missing_columns) > 0) {
+    stop(paste0("Missing metadata columns: ", paste(missing_columns, collapse=", ")))
   }
 
   cells_in_adata <- colnames(adata)
@@ -707,6 +708,10 @@ BascetAddMetaData <- function(adata, metadata, columns=NULL, subsetCommon=FALSE)
   }
 
   sub <- metadata[cells_in_adata, columns, drop=FALSE]
+  if(!is.null(prefix)) {
+    colnames(sub) <- paste0(prefix, colnames(sub))
+    columns <- colnames(sub)
+  }
 
   existing_cols <- intersect(columns, colnames(adata@meta.data))
   if(length(existing_cols) > 0) {

@@ -4,16 +4,27 @@
 \alias{BascetAddMetaData}
 \title{Add metadata to a Seurat object, handling cell mismatches}
 \usage{
-BascetAddMetaData(adata, metadata, columns = NULL, subsetCommon = FALSE)
+BascetAddMetaData(
+  adata,
+  metadata,
+  columns = NULL,
+  subsetCommon = FALSE,
+  excludeColumns = c("_index", "cell_index", "taxid_index", "cnt"),
+  prefix = NULL
+)
 }
 \arguments{
 \item{adata}{A Seurat object}
 
 \item{metadata}{A data.frame with rownames matching cell names}
 
-\item{columns}{Columns to add. Default: all except cell_index, taxid_index, cnt}
+\item{columns}{Columns to add. Default: all except excludeColumns}
 
 \item{subsetCommon}{If TRUE, subset the Seurat object to only cells present in both adata and metadata}
+
+\item{excludeColumns}{Columns excluded when columns is NULL}
+
+\item{prefix}{Optional prefix added to column names before appending}
 }
 \value{
 The Seurat object with added metadata columns
