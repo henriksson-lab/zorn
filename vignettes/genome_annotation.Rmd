@@ -21,6 +21,7 @@ and auN. It writes these metrics to the `obs` table of a Bascet HDF5 file.
 
 * Website: <https://github.com/ablab/quast>
 * If you use this tool, please cite: Gurevich A, Saveliev V, Vyahhi N, Tesler G. *QUAST: quality assessment tool for genome assemblies.* Bioinformatics. 2013;29(8):1072–1075.
+* Note - we currently only provide a *partial translation of this tool* for the metrics we provide. A full implementation will follow in the future
 
 [(SLURM-compatible step)](slurm.html)
 ```{r, eval=F, echo=T}
@@ -60,6 +61,7 @@ to interpret.
 
 * Website: <https://github.com/tseemann/abricate>
 * If you use this tool, please cite: Seemann T. *Abricate*. GitHub https://github.com/tseemann/abricate (please also cite the underlying database you used)
+* Abricate must already be installed on the system where the job runs and available on `PATH`.
 
 The NCBI database is used by default. See `ListDatabaseAbricate()` for a
 list of other databases.
@@ -90,6 +92,7 @@ genome annotation comparable across cells.
 
 * Website: <https://github.com/oschwengers/bakta>
 * If you use this tool, please cite: Schwengers O, Jelonek L, Dieckmann MA, Beyvers S, Blom J, Goesmann A. *Bakta: rapid and standardized annotation of bacterial genomes via alignment-free sequence identification.* Microbial Genomics. 2021;7(11):000685.
+* Bakta must already be installed on the system where the job runs and available on `PATH`.
 
 First download a database:
 
@@ -133,6 +136,7 @@ trust contig-based screening.
 
 * Website: <https://github.com/sanger-pathogens/ariba>
 * If you use this tool, please cite: Hunt M, Mather AE, Sánchez-Busó L, Page AJ, Parkhill J, Keane JA, Harris SR. *ARIBA: rapid antimicrobial resistance genotyping directly from sequencing reads.* Microbial Genomics. 2017;3(10):e000131.
+* Ariba must already be installed on the system where the job runs and available on `PATH`.
 
 [(SLURM-compatible step)](slurm.html)
 ```{r, eval=F, echo=T}
