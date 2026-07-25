@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Zorn</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.49</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.50</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,6 +106,9 @@ N50/L50, NG50/LG50, and auN. It writes these metrics to the
 <li>If you use this tool, please cite: Gurevich A, Saveliev V, Vyahhi N,
 Tesler G. <em>QUAST: quality assessment tool for genome assemblies.</em>
 Bioinformatics. 2013;29(8):1072–1075.</li>
+<li>Note - we currently only provide a <em>partial translation of this
+tool</em> for the metrics we provide. A full implementation will follow
+in the future</li>
 </ul>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -141,6 +144,8 @@ fast and easy to interpret.</p>
 <li>If you use this tool, please cite: Seemann T. <em>Abricate</em>.
 GitHub <a href="https://github.com/tseemann/abricate" class="external-link uri">https://github.com/tseemann/abricate</a> (please also cite
 the underlying database you used)</li>
+<li>Abricate must already be installed on the system where the job runs
+and available on <code>PATH</code>.</li>
 </ul>
 <p>The NCBI database is used by default. See
 <code><a href="../reference/ListDatabaseAbricate.html">ListDatabaseAbricate()</a></code> for a list of other databases.</p>
@@ -173,6 +178,8 @@ want a complete genome annotation comparable across cells.</p>
 Dieckmann MA, Beyvers S, Blom J, Goesmann A. <em>Bakta: rapid and
 standardized annotation of bacterial genomes via alignment-free sequence
 identification.</em> Microbial Genomics. 2021;7(11):000685.</li>
+<li>Bakta must already be installed on the system where the job runs and
+available on <code>PATH</code>.</li>
 </ul>
 <p>First download a database:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -213,6 +220,8 @@ is too low to trust contig-based screening.</p>
 L, Page AJ, Parkhill J, Keane JA, Harris SR. <em>ARIBA: rapid
 antimicrobial resistance genotyping directly from sequencing reads.</em>
 Microbial Genomics. 2017;3(10):e000131.</li>
+<li>Ariba must already be installed on the system where the job runs and
+available on <code>PATH</code>.</li>
 </ul>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">

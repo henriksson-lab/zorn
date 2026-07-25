@@ -16,6 +16,9 @@ of a Bascet HDF5 file.
 - If you use this tool, please cite: Gurevich A, Saveliev V, Vyahhi N,
   Tesler G. *QUAST: quality assessment tool for genome assemblies.*
   Bioinformatics. 2013;29(8):1072–1075.
+- Note - we currently only provide a *partial translation of this tool*
+  for the metrics we provide. A full implementation will follow in the
+  future
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
@@ -61,6 +64,8 @@ fast and easy to interpret.
 - If you use this tool, please cite: Seemann T. *Abricate*. GitHub
   <https://github.com/tseemann/abricate> (please also cite the
   underlying database you used)
+- Abricate must already be installed on the system where the job runs
+  and available on `PATH`.
 
 The NCBI database is used by default. See
 [`ListDatabaseAbricate()`](https://henriksson-lab.github.io/zorn/reference/ListDatabaseAbricate.md)
@@ -97,6 +102,8 @@ genome annotation comparable across cells.
   MA, Beyvers S, Blom J, Goesmann A. *Bakta: rapid and standardized
   annotation of bacterial genomes via alignment-free sequence
   identification.* Microbial Genomics. 2021;7(11):000685.
+- Bakta must already be installed on the system where the job runs and
+  available on `PATH`.
 
 First download a database:
 
@@ -148,6 +155,8 @@ is too low to trust contig-based screening.
   Page AJ, Parkhill J, Keane JA, Harris SR. *ARIBA: rapid antimicrobial
   resistance genotyping directly from sequencing reads.* Microbial
   Genomics. 2017;3(10):e000131.
+- Ariba must already be installed on the system where the job runs and
+  available on `PATH`.
 
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
