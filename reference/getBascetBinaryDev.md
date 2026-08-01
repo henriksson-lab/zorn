@@ -1,19 +1,18 @@
-# Get a Bascet binary for the current platform from GitHub releases It will be cached in the provided directory to avoid downloading it each the time the function is called
+# Get a Bascet binary for the current platform from the development server It will be cached in the provided directory to avoid downloading it each the time the function is called
 
-Get a Bascet binary for the current platform from GitHub releases It
-will be cached in the provided directory to avoid downloading it each
+Get a Bascet binary for the current platform from the development server
+It will be cached in the provided directory to avoid downloading it each
 the time the function is called
 
 ## Usage
 
 ``` r
-getBascetBinary(
+getBascetBinaryDev(
   storeAt = NULL,
   tempdir = NULL,
   logLevel = "info",
   forceInstall = FALSE,
-  containerMem = "2GB",
-  repo = "henriksson-lab/bascet"
+  containerMem = "2GB"
 )
 ```
 
@@ -40,10 +39,6 @@ getBascetBinary(
 - containerMem:
 
   Amount of memory used by the container itself
-
-- repo:
-
-  GitHub repository in OWNER/REPO form
 
 ## Value
 

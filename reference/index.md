@@ -309,9 +309,13 @@
 - [`formatPlainNumber()`](https://henriksson-lab.github.io/zorn/reference/formatPlainNumber.md)
   : Parse a string with a size, such as 1g, 1m, 1k, or just 123 (bytes)
 - [`getBascetBinary()`](https://henriksson-lab.github.io/zorn/reference/getBascetBinary.md)
-  : Get a Bascet binary for the current platform It will be cached in
-  the provided directory to avoid downloading it each the time the
-  function is called
+  : Get a Bascet binary for the current platform from GitHub releases It
+  will be cached in the provided directory to avoid downloading it each
+  the time the function is called
+- [`getBascetBinaryDev()`](https://henriksson-lab.github.io/zorn/reference/getBascetBinaryDev.md)
+  : Get a Bascet binary for the current platform from the development
+  server It will be cached in the provided directory to avoid
+  downloading it each the time the function is called
 - [`getBascetDevDir()`](https://henriksson-lab.github.io/zorn/reference/getBascetDevDir.md)
   : Get a Bascet binary from the target from a locally built Bascet
   repository

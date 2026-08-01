@@ -18,8 +18,7 @@ We strive to support Linux, OSX and Windows.
 > BMI instruction set. Any computer past 2015 should have it. You will
 > need to [compile Bascet
 > yourself](https://henriksson-lab.github.io/zorn/articles/for_developers.md)
-> if your CPU does not support the BMI instruction set (uncommon for
-> machines past 2015)
+> if your CPU does not support the BMI instruction set
 
 ## Step 1: Install upstream package
 
