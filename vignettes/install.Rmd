@@ -16,7 +16,7 @@ We see two types of users and requirements:
 We strive to support Linux, OSX and Windows.
 
 > ⚠️ Bascet is compiled with the assumption that your CPU supports the BMI instruction set. Any computer past 2015 should have it. You will need to [compile Bascet yourself](for_developers.html) if your CPU does not
-> support the BMI instruction set (uncommon for machines past 2015)
+> support the BMI instruction set
 
 ## Step 1: Install upstream package
 

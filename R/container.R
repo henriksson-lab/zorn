@@ -201,7 +201,7 @@ defaultBascetBinDir <- function() {
 
 
 ###############################################
-#' Get a Bascet binary for the current platform
+#' Get a Bascet binary for the current platform from the development server
 #' It will be cached in the provided directory to avoid downloading it each the time the function is called
 #'
 #' @param storeAt Directory to store the binary in. If NULL, uses \code{\link{defaultBascetBinDir}}
@@ -212,7 +212,7 @@ defaultBascetBinDir <- function() {
 #'
 #' @return A Bascet instance
 #' @export
-getBascetBinary <- function(
+getBascetBinaryDev <- function(
     storeAt=NULL,
     tempdir=NULL,
     logLevel="info",
@@ -286,6 +286,122 @@ getBascetBinary <- function(
 
   BascetInstance(
     bin=bin_path(file_bascet_bin),
+    tempdir=tempdir,
+    prependCmd="",
+    containerMem=containerMem,
+    logLevel=logLevel
+  )
+}
+
+
+###############################################
+#' Get a Bascet binary for the current platform from GitHub releases
+#' It will be cached in the provided directory to avoid downloading it each the time the function is called
+#'
+#' @param storeAt Directory to store the binary in. If NULL, uses \code{\link{defaultBascetBinDir}}
+#' @param tempdir Default is to create a directory for temporary files in the current directory. Place it on a fast disk if possible
+#' @param logLevel Log level for the Bascet instance (e.g. "info", "debug", "warn")
+#' @param forceInstall Force download of the Bascet binary even if a cached binary exists
+#' @param containerMem Amount of memory used by the container itself
+#' @param repo GitHub repository in OWNER/REPO form
+#'
+#' @return A Bascet instance
+#' @export
+getBascetBinary <- function(
+    storeAt=NULL,
+    tempdir=NULL,
+    logLevel="info",
+    forceInstall=FALSE,
+    containerMem="2GB",
+    repo="henriksson-lab/bascet"
+){
+  #Check arguments
+  if(is.null(storeAt)) {
+    storeAt <- defaultBascetBinDir()
+  }
+  stopifnot(dir.exists(storeAt))
+  stopifnot(is.logical(forceInstall), length(forceInstall) == 1, !is.na(forceInstall))
+  stopifnot(is.valid.memsize(containerMem))
+  stopifnot(is.character(repo), length(repo) == 1, !is.na(repo), nzchar(repo))
+
+  if(is.null(tempdir)){
+    tempdir <- "./temp"
+    dir.create(tempdir, showWarnings = FALSE)
+  } else {
+    stopifnot(dir.exists(tempdir))
+  }
+  tempdir <- normalizeExistingDir(tempdir)
+
+  sysname <- tolower(Sys.info()[["sysname"]])
+  machine <- tolower(Sys.info()[["machine"]])
+  file_local_bascet <- file.path(storeAt, if(sysname == "windows") "bascet.exe" else "bascet")
+  bin_path <- function(path) {
+    normalizePath(path, mustWork=TRUE)
+  }
+
+  if(!forceInstall && file.exists(file_local_bascet) && !dir.exists(file_local_bascet)) {
+    print(paste("Found existing Bascet binary:", file_local_bascet))
+    if(sysname != "windows") {
+      Sys.chmod(file_local_bascet, mode="0755")
+    }
+    return(BascetInstance(
+      bin=bin_path(file_local_bascet),
+      tempdir=tempdir,
+      prependCmd="",
+      containerMem=containerMem,
+      logLevel=logLevel
+    ))
+  }
+
+  if(sysname == "linux") {
+    bascet_archive <- "bascet-linux-x86_64.tar.gz"
+  } else if(sysname == "darwin" && machine %in% c("arm64", "aarch64")) {
+    bascet_archive <- "bascet-macos-aarch64.tar.gz"
+  } else if(sysname == "darwin") {
+    bascet_archive <- "bascet-macos-x86_64.tar.gz"
+  } else if(sysname == "windows") {
+    bascet_archive <- "bascet-windows-x86_64.zip"
+  } else {
+    stop(sprintf("Unsupported operating system for Bascet binary: %s", sysname))
+  }
+
+  release_url <- sprintf("https://github.com/%s/releases/latest/download", repo)
+  file_archive <- file.path(storeAt, bascet_archive)
+  url_archive <- paste(release_url, bascet_archive, sep="/")
+  url_checksums <- paste(release_url, "checksums.txt", sep="/")
+
+  if(forceInstall || !file.exists(file_archive)) {
+    if(forceInstall) {
+      print("Force installing Bascet binary; downloading")
+    } else {
+      print("No Bascet binary present; downloading")
+    }
+    safeDownloadSHA256(url_archive, file_archive, url_checksums)
+  } else {
+    print(paste("Found existing Bascet archive:", file_archive))
+  }
+
+  extract_dir <- file.path(storeAt, tools::file_path_sans_ext(tools::file_path_sans_ext(bascet_archive)))
+  if(dir.exists(extract_dir)) {
+    unlink(extract_dir, recursive=TRUE)
+  }
+
+  if(grepl("\\.zip$", bascet_archive)) {
+    utils::unzip(file_archive, exdir=storeAt)
+  } else {
+    utils::untar(file_archive, exdir=storeAt)
+  }
+
+  extracted_bascet <- file.path(extract_dir, if(sysname == "windows") "bascet.exe" else "bascet")
+  stopifnot(file.exists(extracted_bascet) && !dir.exists(extracted_bascet))
+  file.copy(extracted_bascet, file_local_bascet, overwrite=TRUE)
+
+  if(sysname != "windows") {
+    Sys.chmod(file_local_bascet, mode="0755")
+  }
+
+  BascetInstance(
+    bin=bin_path(file_local_bascet),
     tempdir=tempdir,
     prependCmd="",
     containerMem=containerMem,
@@ -374,6 +490,61 @@ safeDownloadMD5 <- function(
       file.remove(file)
     }
     stop("MD5 does not match the downloaded file")
+  }
+}
+
+
+###############################################
+#' Download a file and check SHA-256 against a GitHub release checksums.txt file.
+#'
+#' @param url URL to the file to download
+#' @param file Name of the file to download content to
+#' @param checksumsUrl URL to checksums.txt
+#'
+#' @return Nothing; panics if the download fails
+#' @noRd
+safeDownloadSHA256 <- function(
+    url,
+    file,
+    checksumsUrl
+){
+  file_checksums <- paste0(file, ".checksums.txt")
+
+  f <- RCurl::CFILE(file_checksums, mode="wb")
+  a <- RCurl::curlPerform(url = checksumsUrl, writedata = f@ref, noprogress=FALSE)
+  RCurl::close(f)
+
+  checksum_lines <- readLines(file_checksums)
+
+  if(file.exists(file_checksums)){
+    file.remove(file_checksums)
+  }
+
+  filename <- basename(file)
+  checksum_line <- checksum_lines[grepl(paste0("[[:space:]]", filename, "$"), checksum_lines)]
+  if(length(checksum_line) != 1) {
+    print(checksum_lines)
+    stop(sprintf("Could not find exactly one SHA-256 checksum for %s", filename))
+  }
+
+  prev_sha256 <- stringr::str_split_fixed(checksum_line, "[[:space:]]+", 2)[1]
+  print(paste("Got previous SHA-256 value to compare against:", prev_sha256))
+
+  f <- RCurl::CFILE(file, mode="wb")
+  a <- RCurl::curlPerform(url = url, writedata = f@ref, noprogress=FALSE)
+  RCurl::close(f)
+
+  print("Computing SHA-256 for downloaded file")
+  new_sha256 <- unname(tools::sha256sum(file))
+  print(paste("SHA-256 is:", new_sha256))
+
+  if(new_sha256==prev_sha256) {
+    print("SHA-256 matches")
+  } else {
+    if(file.exists(file)){
+      file.remove(file)
+    }
+    stop("SHA-256 does not match the downloaded file")
   }
 }
 
