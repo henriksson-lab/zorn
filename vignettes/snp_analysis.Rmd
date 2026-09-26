@@ -33,11 +33,19 @@ is done by calling the integrated CellSNP-lite. **The input data must be positio
 
 [(SLURM-compatible step)](slurm.html)
 ```{r, eval=F, echo=T}
+# Count aligned and unaligned reads per cell for the QC steps below
+BascetCountChrom(
+  bascetRoot,
+  inputName = "aligned_pos",
+  outputName = "cnt_myref"
+)
+
+# Call SNPs from the position-sorted alignments
 BascetRunCellSNP(
   bascetRoot,
-  inputName="myref_aligned",
-  numLocalThreads=5,
-  runner=SlurmRunner(bascet_runner.default, ncpu="5")
+  inputName = "aligned_pos",
+  outputName = "cellsnp",
+  numThreads = 5
 )
 ```
 
@@ -67,8 +75,8 @@ First produce a kneeplot of how much cells deviate SNP-wise:
 ```{r, eval=F, echo=T}
 ### Knee plot of alignment
 df <- data.frame(
-  frac_mapped = sort(cnt_myref$obs$frac_mapped, decreasing = TRUE),
-  index = 1:nrow(cnt_myref$obs)
+  frac_mapped = sort(cnt_myref@obs$frac_mapped, decreasing = TRUE),
+  index = seq_len(nrow(cnt_myref@obs))
 )
 ggplot(df, aes(index, frac_mapped)) +
   geom_line() +
@@ -79,7 +87,7 @@ ggplot(df, aes(index, frac_mapped)) +
 You can then subset as follows:
 
 ```{r, eval=F, echo=T}
-cnt_myref <- cnt_myref[cnt_myref$obs$frac_mapped>0.8,]
+cnt_myref <- cnt_myref[cnt_myref@obs$frac_mapped > 0.8, ]
 ```
 
 
@@ -90,18 +98,24 @@ You can produce UMAPs and clusters based on the SNP matrix. Load the CellSNP-lit
 ```{r, eval=F, echo=T}
 snp_ad <- ReadCellSNPmatrix(
   bascetRoot,
-  "cellsnp"
+  "cellsnp",
+  listCells = rownames(cnt_myref@obs)
 )
 ```
 
 Create a Seurat object from the counts:
 
 ```{r, eval=F, echo=T}
-adata <- CreateSeuratObject(counts = t(snp_ad), project = "adata3k", min.cells = 3, min.features = 0)
+adata <- CreateSeuratObject(
+  counts = t(snp_ad),
+  project = "adata3k",
+  min.cells = 3,
+  min.features = 0
+)
 
 #transfer count metadata (optional)
-adata$frac_mapped <-  cnt_mutans$obs[colnames(adata),]$frac_mapped
-adata$tot_reads <-  cnt_mutans$obs[colnames(adata),]$tot_reads
+adata$frac_mapped <- cnt_myref@obs[colnames(adata), "frac_mapped"]
+adata$tot_reads <- cnt_myref@obs[colnames(adata), "tot_reads"]
 ```
 
 Do the usual transformations and clustering (another option is to normalize by sequencing depth of cell, not SNP count; or run ATAC-seq-like normalization. Best practices are yet to be established):
@@ -109,7 +123,6 @@ Do the usual transformations and clustering (another option is to normalize by s
 ```{r, eval=F, echo=T}
 ### Normalize data, PCA etc
 adata <- NormalizeData(adata, normalization.method = "LogNormalize", scale.factor = 10000)
-adata <- NormalizeData(adata)
 adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
 all.genes <- rownames(adata)
 adata <- ScaleData(adata, features = all.genes)
@@ -121,7 +134,8 @@ adata <- FindClusters(adata, resolution = 0.5)
 
 adata <- RunUMAP(adata, dims = 1:10)
 
-adata$snp_count <- rowSums(adata@assays$RNA@layers$counts)
+snp_counts <- GetAssayData(adata, assay = "RNA", layer = "counts")
+adata$snp_count <- Matrix::colSums(snp_counts)
 ```
 
 Do some quick plots to check for clusters:

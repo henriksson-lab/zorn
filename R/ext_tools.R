@@ -560,6 +560,7 @@ internal_parse_fastqc_data <- function(lines){
 #' @param readnum 1 or 2, for R1 and R2
 #' @param useBrowser Use operating system browser to open file
 #' @param verbose Show debug output
+#' @param bascetInstance A Bascet instance
 #' 
 #' @return Nothing
 #' @export
@@ -569,7 +570,8 @@ ShowFASTQCforCell <- function(
     cellID, 
     readnum=c(1,2),
     useBrowser=FALSE,
-    verbose=FALSE
+    verbose=FALSE,
+    bascetInstance=GetDefaultBascetInstance()
 ){
   #check arguments
   stopifnot(dir.exists(bascetRoot))
@@ -579,12 +581,17 @@ ShowFASTQCforCell <- function(
   readnum <- match.arg(readnum)
   stopifnot(is.logical(useBrowser))
   stopifnot(is.logical(verbose))
+  stopifnot(is.bascet.instance(bascetInstance))
 
   #Open the bascet file, get the HTML report
   if(verbose){
     print("Creating extract streamer session")
   }
-  bascetFile <- OpenBascet(bascetRoot, inputName)
+  bascetFile <- OpenBascet(
+    bascetRoot,
+    inputName,
+    bascetInstance = bascetInstance
+  )
   if(verbose){
     print("Extract streamer session ok")
   }
@@ -605,7 +612,7 @@ ShowFASTQCforCell <- function(
   } else {
     utils::browseURL(htmlFile)
   }
-  Invisible()
+  invisible()
 }
 
 
@@ -913,6 +920,32 @@ BascetAggregateAbricate <- function(
 ################################################################################
 ################ Bakta #########################################################
 ################################################################################
+
+
+###############################################
+#' Callback function for aggregating Bakta annotations for each cell
+#' To be called from BascetAggregateMap
+#'
+#' @param bascetFile An opened Bascet file
+#' @param cellID Cell ID
+#' @param bascetInstance A Bascet instance
+#'
+#' @return Bakta annotations for one cell
+#' @export
+aggr.bakta <- function(bascetFile, cellID, bascetInstance){
+  tmp <- BascetReadFile(
+    bascetFile,
+    cellID,
+    "bakta_out/contigs.tsv",
+    as="text",
+    bascetInstance=bascetInstance
+  )
+  dat <- read.delim(text=tmp)
+  if(nrow(dat)>0){
+    dat$cellID <- cellID
+  }
+  dat
+}
 
 
 ###############################################

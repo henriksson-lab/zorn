@@ -116,7 +116,6 @@ adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
 adata <- ScaleData(adata, features = rownames(adata))
 adata <- RunPCA(adata, features = VariableFeatures(object = adata))
 adata <- RunUMAP(adata, dims = 1:20, reduction.name = "kraken_umap")
-}
 ```
 
 You can now plot a UMAP with your cells! Here colored by genus, but you can also try other levels of annotation:
@@ -127,5 +126,4 @@ DimPlot(object = adata, label = TRUE, group.by = "genus", reduction = "kraken_um
   xlab("KRAKEN1") + 
   ylab("KRAKEN2")
 ```
-
 

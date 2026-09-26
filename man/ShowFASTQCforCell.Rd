@@ -10,7 +10,8 @@ ShowFASTQCforCell(
   cellID,
   readnum = c(1, 2),
   useBrowser = FALSE,
-  verbose = FALSE
+  verbose = FALSE,
+  bascetInstance = GetDefaultBascetInstance()
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ ShowFASTQCforCell(
 \item{useBrowser}{Use operating system browser to open file}
 
 \item{verbose}{Show debug output}
+
+\item{bascetInstance}{A Bascet instance}
 }
 \value{
 Nothing

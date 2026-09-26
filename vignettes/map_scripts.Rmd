@@ -68,9 +68,14 @@ such that the contents can be picked up the script:
 
 ```{r, eval=F, echo=T}
 BascetMapCell(
-  ...
-  args(DB="some/path",OTHERARG="hi")
-  ...
+  bascetRoot,
+  withfunction = "/path/to/your/script.sh",
+  inputName = "filtered",
+  outputName = "my_tool",
+  args = list(
+    DB = "some/path",
+    OTHERARG = "hi"
+  )
 )
 ```
 
@@ -89,11 +94,13 @@ stores the raw file content in a list. This is not pretty but it may help you
 in debugging and development:
 
 ```{r, eval=F, echo=T}
-raw_aggr <- MapListAsDataFrame(BascetAggregateMap(
-  bascetRoot,
-  inputName="..",
-  aggr.raw("out.txt")
-))
+raw_aggr <- MapListAsDataFrame(
+  BascetAggregateMap(
+    bascetRoot,
+    inputName = "my_tool",
+    aggrFunction = aggr.rawtext("out.txt")
+  )
+)
 ```
 
 
