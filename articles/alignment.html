@@ -229,9 +229,23 @@ You can then apply the cutoff as follows:</p>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="va">adata</span><span class="op">[</span>,<span class="va">keep_cells</span><span class="op">]</span>                  <span class="co">#Reduce to sensible number</span></span></code></pre></div>
 <p>If you have a list of which chromosomes belong together, then you can
 furthermore sum them up to get species-level counts. mapSeq2strain
-should contain two columns: (todo) (TODO filter after instead)</p>
+should contain two columns as you see in this example:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">adata</span><span class="op">[[</span><span class="st">"species_cnt"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ChromToSpeciesCount.html">ChromToSpeciesCount</a></span><span class="op">(</span><span class="va">adata</span>, <span class="va">mapSeq2strain</span><span class="op">)</span>  </span>
+<code class="sourceCode R"><span><span class="va">mapSeq2strain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"CP086328.1"</span>,</span>
+<span>    <span class="st">"CP086329.1"</span>,</span>
+<span>    <span class="st">"NC-009040.1"</span>,</span>
+<span>    <span class="st">"NC-009049.1"</span><span class="op">)</span>,</span>
+<span>  strain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Bacillus pacificus"</span>,</span>
+<span>    <span class="st">"Bacillus pacificus"</span>,</span>
+<span>    <span class="st">"Cereibacter sphaeroides"</span>,</span>
+<span>    <span class="st">"Cereibacter sphaeroides"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">adata</span><span class="op">[[</span><span class="st">"species_cnt"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ChromToSpeciesCount.html">ChromToSpeciesCount</a></span><span class="op">(</span><span class="va">adata</span>, <span class="va">mapSeq2strain</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Optional: Figure out which species has most reads in which cell</span></span>
 <span><span class="va">cnt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span><span class="va">adata</span>, assay <span class="op">=</span> <span class="st">"species_cnt"</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>

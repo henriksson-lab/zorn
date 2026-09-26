@@ -171,11 +171,11 @@ Abricate, AMRfinder, GECCO, etc.), see the <a href="genome_annotation.html">geno
 overview of the underlying MAP framework, see <a href="map_scripts.html">Map scripts</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="coassembly">Coassembly<a class="anchor" aria-label="anchor" href="#coassembly"></a>
+<h2 id="co-assembly">Co-assembly<a class="anchor" aria-label="anchor" href="#co-assembly"></a>
 </h2>
 <p>If you have cells with highly similar genomes, you might be able to
-generate “coassemblies” - consensus assemblies using reads from multiple
-similar cells.</p>
+generate “co-assemblies” - consensus assemblies using reads from
+multiple similar cells.</p>
 <p>To do this, simply extract the debarcoded reads from the cells of
 interest. There are many ways of picking them, where one method is to
 use the clustering function in Seurat. But you can use any method you
@@ -196,12 +196,10 @@ how to best pick cells for coassembly!</p>
 <span>  bascetInstance <span class="op">=</span> <span class="va">bascetInstance</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>And finally, run <a href="https://github.com/ncbi/SKESA" class="external-link">SKESA</a> or
-your favourite software to assemble the contigs: (in BASH)</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Run SKESA</span></span>
-<span></span>
-<span></span>
-<span><span class="co">########################################################### TODO: run skesa</span></span></code></pre></div>
+your favourite software to assemble the reads (in Bash):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">skesa</span> <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">--reads</span> pooled_R1.fastq.gz,pooled_R2.fastq.gz <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">--contigs_out</span> coassembly.fa</span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

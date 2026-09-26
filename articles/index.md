@@ -33,8 +33,6 @@
 - [Getting Started with
   Zorn](https://henriksson-lab.github.io/zorn/articles/get_started.md):
 - [Installation](https://henriksson-lab.github.io/zorn/articles/install.md):
-- [Isolate
-  analysis](https://henriksson-lab.github.io/zorn/articles/isolates.md):
 - [Informative KMER-based
   workflow](https://henriksson-lab.github.io/zorn/articles/kmer.md):
 - [KRAKEN2](https://henriksson-lab.github.io/zorn/articles/kraken.md):
@@ -50,5 +48,3 @@
   analysis](https://henriksson-lab.github.io/zorn/articles/snp_analysis.md):
 - [Working with isolates and fetching data from
   SRA](https://henriksson-lab.github.io/zorn/articles/sra_fetching.md):
-- [TCR/BCR
-  analysis](https://henriksson-lab.github.io/zorn/articles/tcr_analysis.md):

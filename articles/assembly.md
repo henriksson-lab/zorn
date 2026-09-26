@@ -94,11 +94,11 @@ annotation](https://henriksson-lab.github.io/zorn/articles/genome_annotation.md)
 vignette. For an overview of the underlying MAP framework, see [Map
 scripts](https://henriksson-lab.github.io/zorn/articles/map_scripts.md).
 
-## Coassembly
+## Co-assembly
 
 If you have cells with highly similar genomes, you might be able to
-generate “coassemblies” - consensus assemblies using reads from multiple
-similar cells.
+generate “co-assemblies” - consensus assemblies using reads from
+multiple similar cells.
 
 To do this, simply extract the debarcoded reads from the cells of
 interest. There are many ways of picking them, where one method is to
@@ -130,12 +130,10 @@ BascetDumpContigs(
 ```
 
 And finally, run [SKESA](https://github.com/ncbi/SKESA) or your
-favourite software to assemble the contigs: (in BASH)
+favourite software to assemble the reads (in Bash):
 
-``` r
-
-#Run SKESA
-
-
-########################################################### TODO: run skesa
+``` bash
+skesa \
+  --reads pooled_R1.fastq.gz,pooled_R2.fastq.gz \
+  --contigs_out coassembly.fa
 ```
