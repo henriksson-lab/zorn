@@ -159,9 +159,25 @@ adata <- adata[,keep_cells]                  #Reduce to sensible number
 ```
 
 If you have a list of which chromosomes belong together, then you can furthermore
-sum them up to get species-level counts. mapSeq2strain should contain two columns: (todo) (TODO filter after instead)
+sum them up to get species-level counts. mapSeq2strain should contain two columns
+as you see in this example:
 ```{r, eval=F, echo=T}
-adata[["species_cnt"]] <- ChromToSpeciesCount(adata, mapSeq2strain)  
+
+mapSeq2strain <- data.frame(
+  id = c(
+    "CP086328.1",
+    "CP086329.1",
+    "NC-009040.1",
+    "NC-009049.1"),
+  strain = c(
+    "Bacillus pacificus",
+    "Bacillus pacificus",
+    "Cereibacter sphaeroides",
+    "Cereibacter sphaeroides"
+  )
+)
+
+adata[["species_cnt"]] <- ChromToSpeciesCount(adata, mapSeq2strain)
 
 #Optional: Figure out which species has most reads in which cell
 cnt <- GetAssayData(adata, assay = "species_cnt", layer = "counts")
