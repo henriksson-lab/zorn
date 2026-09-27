@@ -97,14 +97,14 @@ scripts](https://henriksson-lab.github.io/zorn/articles/map_scripts.md).
 ## Co-assembly
 
 If you have cells with highly similar genomes, you might be able to
-generate “co-assemblies” - consensus assemblies using reads from
-multiple similar cells.
+generate “co-assemblies” by combining contigs from multiple similar
+cells.
 
-To do this, simply extract the debarcoded reads from the cells of
-interest. There are many ways of picking them, where one method is to
-use the clustering function in Seurat. But you can use any method you
-wish to come up with a list of cell names. To learn more about
-clustering, [see this Seurat tutorial
+To do this, extract the assembled contigs from the cells of interest.
+There are many ways of picking them, where one method is to use the
+clustering function in Seurat. But you can use any method you wish to
+come up with a list of cell names. To learn more about clustering, [see
+this Seurat tutorial
 first](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html). Note
 that it is an open research problem how to best pick cells for
 coassembly!
@@ -112,11 +112,12 @@ coassembly!
 After clustering, you can get the names of cells in cluster “0”:
 
 ``` r
+
 ### Get cell names
-listCells <- rownames(adata[adata$cluster_id="0",])
+listCells <- rownames(adata[adata$cluster_id == "0", ])
 ```
 
-Next extract a FASTQ with reads:
+Next, extract one FASTA file of contigs per selected cell:
 
 ``` r
 
@@ -129,11 +130,14 @@ BascetDumpContigs(
 )
 ```
 
-And finally, run [SKESA](https://github.com/ncbi/SKESA) or your
-favourite software to assemble the reads (in Bash):
+Finally, concatenate the FASTA files and pass the combined sequences to
+[SKESA](https://github.com/ncbi/SKESA) or your preferred assembler (in
+Bash):
 
 ``` bash
+cat contigs_out/*.fa > pooled_contigs.fa
+
 skesa \
-  --reads pooled_R1.fastq.gz,pooled_R2.fastq.gz \
+  --reads pooled_contigs.fa \
   --contigs_out coassembly.fa
 ```

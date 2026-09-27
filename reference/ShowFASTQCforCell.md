@@ -11,7 +11,8 @@ ShowFASTQCforCell(
   cellID,
   readnum = c(1, 2),
   useBrowser = FALSE,
-  verbose = FALSE
+  verbose = FALSE,
+  bascetInstance = GetDefaultBascetInstance()
 )
 ```
 
@@ -40,6 +41,10 @@ ShowFASTQCforCell(
 - verbose:
 
   Show debug output
+
+- bascetInstance:
+
+  A Bascet instance
 
 ## Value
 

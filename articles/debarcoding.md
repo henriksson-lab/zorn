@@ -169,6 +169,22 @@ How you proceed depends on your use case. If you are doing single-cell
 metagenomics of a sample of unknown composition then we recommend the
 KRAKEN2 workflow next.
 
-Advanced users may wish to get FASTQ files as input for other tools.
+Advanced users may wish to export the shardified reads as paired FASTQ
+files for use with external tools.
+
 [(SLURM-compatible
 step)](https://henriksson-lab.github.io/zorn/articles/slurm.md)
+
+``` r
+
+BascetMapTransform(
+  bascetRoot,
+  inputName = "filtered",
+  outputName = "asfq",
+  outFormat = "R1.fq.gz"
+)
+```
+
+See [Working with
+Bascet-FASTQ](https://henriksson-lab.github.io/zorn/articles/bascet_fastq.md)
+for details on the output format, trimming, and conversion back to TIRP.

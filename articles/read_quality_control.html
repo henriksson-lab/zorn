@@ -127,7 +127,7 @@ relevant (e.g., to check quality of adapter trimming, etc):</p>
 <span>  <span class="va">bascetRoot</span>,</span>
 <span>  inputName<span class="op">=</span><span class="st">"filtered"</span>,</span>
 <span>  outputName<span class="op">=</span><span class="st">"asfq"</span>,</span>
-<span>  out_format<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
+<span>  outFormat<span class="op">=</span><span class="st">"R1.fq.gz"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -148,9 +148,10 @@ FASTQ HTML report in the follow manner (opening in the RShiny plot pane,
 or separate browser):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ShowFASTQCforCell.html">ShowFASTQCforCell</a></span><span class="op">(</span></span>
-<span>    <span class="va">bascetFile</span>,</span>
-<span>    cellID<span class="op">=</span><span class="st">"xyz"</span>, <span class="co">#name of your cell </span></span>
-<span>    readnum<span class="op">=</span><span class="st">"1"</span>, <span class="co">#for R1</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  inputName <span class="op">=</span> <span class="st">"fastqc"</span>,</span>
+<span>  cellID <span class="op">=</span> <span class="st">"xyz"</span>, <span class="co">#name of your cell</span></span>
+<span>  readnum <span class="op">=</span> <span class="st">"1"</span>   <span class="co">#for R1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>You can also compare cells by aggregating the data. Note that FASTQC
 creates rather complex statistics that need further extraction for
@@ -160,10 +161,11 @@ simple plotting</p>
 <span>  <span class="va">bascetRoot</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>One relevant statistic is the adapter content across the read:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>PlotFASTQCadapterContent <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    aggr_fastqc,</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">readnum=</span><span class="st">"1"</span> <span class="co">#for R1</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">adapter_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PlotFASTQCadapterContent.html">PlotFASTQCadapterContent</a></span><span class="op">(</span></span>
+<span>  <span class="va">aggr_fastqc</span>,</span>
+<span>  readnum <span class="op">=</span> <span class="st">"1"</span> <span class="co">#for R1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>You can also retrieve a table of pass/fail statistics:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fastqc_passfail</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetFASTQCpassfailStats.html">GetFASTQCpassfailStats</a></span><span class="op">(</span></span>
@@ -174,14 +176,14 @@ simple plotting</p>
 provide a general interface to each table that FASTQC generates:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mystats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetFASTQCassembledDF.html">GetFASTQCassembledDF</a></span><span class="op">(</span></span>
-<span>    <span class="va">aggr_fastqc</span>, </span>
-<span>    section<span class="op">=</span><span class="st">"see below"</span>, </span>
-<span>    readnum<span class="op">=</span><span class="st">"1"</span></span>
+<span>  <span class="va">aggr_fastqc</span>,</span>
+<span>  section <span class="op">=</span> <span class="st">"Adapter Content"</span>,</span>
+<span>  readnum <span class="op">=</span> <span class="st">"1"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Possible values of section are:</p>
 <ul>
 <li>“Basic Statistics”</li>
-<li>“Per base sequence quality” d</li>
+<li>“Per base sequence quality”</li>
 <li>“Per sequence quality scores”</li>
 <li>“Per base sequence content”</li>
 <li>“Per sequence GC content”</li>

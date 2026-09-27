@@ -124,11 +124,19 @@ and obtain SNPs. This is done by calling the integrated CellSNP-lite.
 <strong>The input data must be position sorted reads</strong>.</p>
 <p><a href="slurm.html">(SLURM-compatible step)</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetRunCellSNP.html">BascetRunCellSNP</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Count aligned and unaligned reads per cell for the QC steps below</span></span>
+<span><span class="fu"><a href="../reference/BascetCountChrom.html">BascetCountChrom</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  inputName<span class="op">=</span><span class="st">"myref_aligned"</span>,</span>
-<span>  numLocalThreads<span class="op">=</span><span class="fl">5</span>,</span>
-<span>  runner<span class="op">=</span><span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span><span class="va">bascet_runner.default</span>, ncpu<span class="op">=</span><span class="st">"5"</span><span class="op">)</span></span>
+<span>  inputName <span class="op">=</span> <span class="st">"aligned_pos"</span>,</span>
+<span>  outputName <span class="op">=</span> <span class="st">"cnt_myref"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Call SNPs from the position-sorted alignments</span></span>
+<span><span class="fu"><a href="../reference/BascetRunCellSNP.html">BascetRunCellSNP</a></span><span class="op">(</span></span>
+<span>  <span class="va">bascetRoot</span>,</span>
+<span>  inputName <span class="op">=</span> <span class="st">"aligned_pos"</span>,</span>
+<span>  outputName <span class="op">=</span> <span class="st">"cellsnp"</span>,</span>
+<span>  numThreads <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -155,8 +163,8 @@ following procedure.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Knee plot of alignment</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  frac_mapped <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">$</span><span class="va">obs</span><span class="op">$</span><span class="va">frac_mapped</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  index <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">$</span><span class="va">obs</span><span class="op">)</span></span>
+<span>  frac_mapped <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">$</span><span class="va">frac_mapped</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span><span class="va">df</span>, <span class="fu">aes</span><span class="op">(</span><span class="va">index</span>, <span class="va">frac_mapped</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -164,7 +172,7 @@ following procedure.</p>
 <span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>You can then subset as follows:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cnt_myref</span> <span class="op">&lt;-</span> <span class="va">cnt_myref</span><span class="op">[</span><span class="va">cnt_myref</span><span class="op">$</span><span class="va">obs</span><span class="op">$</span><span class="va">frac_mapped</span><span class="op">&gt;</span><span class="fl">0.8</span>,<span class="op">]</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cnt_myref</span> <span class="op">&lt;-</span> <span class="va">cnt_myref</span><span class="op">[</span><span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">$</span><span class="va">frac_mapped</span> <span class="op">&gt;</span> <span class="fl">0.8</span>, <span class="op">]</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="clustering-by-snps">Clustering by SNPs<a class="anchor" aria-label="anchor" href="#clustering-by-snps"></a>
@@ -174,15 +182,21 @@ CellSNP-lite counts as follows:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">snp_ad</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadCellSNPmatrix.html">ReadCellSNPmatrix</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"cellsnp"</span></span>
+<span>  <span class="st">"cellsnp"</span>,</span>
+<span>  listCells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Create a Seurat object from the counts:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">snp_ad</span><span class="op">)</span>, project <span class="op">=</span> <span class="st">"adata3k"</span>, min.cells <span class="op">=</span> <span class="fl">3</span>, min.features <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span></span>
+<span>  counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">snp_ad</span><span class="op">)</span>,</span>
+<span>  project <span class="op">=</span> <span class="st">"adata3k"</span>,</span>
+<span>  min.cells <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  min.features <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#transfer count metadata (optional)</span></span>
-<span><span class="va">adata</span><span class="op">$</span><span class="va">frac_mapped</span> <span class="op">&lt;-</span>  <span class="va">cnt_mutans</span><span class="op">$</span><span class="va">obs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span>,<span class="op">]</span><span class="op">$</span><span class="va">frac_mapped</span></span>
-<span><span class="va">adata</span><span class="op">$</span><span class="va">tot_reads</span> <span class="op">&lt;-</span>  <span class="va">cnt_mutans</span><span class="op">$</span><span class="va">obs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span>,<span class="op">]</span><span class="op">$</span><span class="va">tot_reads</span></span></code></pre></div>
+<span><span class="va">adata</span><span class="op">$</span><span class="va">frac_mapped</span> <span class="op">&lt;-</span> <span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span>, <span class="st">"frac_mapped"</span><span class="op">]</span></span>
+<span><span class="va">adata</span><span class="op">$</span><span class="va">tot_reads</span> <span class="op">&lt;-</span> <span class="va">cnt_myref</span><span class="op">@</span><span class="va">obs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span>, <span class="st">"tot_reads"</span><span class="op">]</span></span></code></pre></div>
 <p>Do the usual transformations and clustering (another option is to
 normalize by sequencing depth of cell, not SNP count; or run
 ATAC-seq-like normalization. Best practices are yet to be
@@ -190,7 +204,6 @@ established):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Normalize data, PCA etc</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">adata</span>, normalization.method <span class="op">=</span> <span class="st">"LogNormalize"</span>, scale.factor <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
-<span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">adata</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span>, nfeatures <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
 <span><span class="va">all.genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">)</span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span><span class="va">adata</span>, features <span class="op">=</span> <span class="va">all.genes</span><span class="op">)</span></span>
@@ -202,7 +215,8 @@ established):</p>
 <span></span>
 <span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">adata</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">adata</span><span class="op">$</span><span class="va">snp_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">adata</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">layers</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">snp_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span><span class="va">adata</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
+<span><span class="va">adata</span><span class="op">$</span><span class="va">snp_count</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">snp_counts</span><span class="op">)</span></span></code></pre></div>
 <p>Do some quick plots to check for clusters:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span><span class="va">adata</span>, reduction <span class="op">=</span> <span class="st">"umap"</span><span class="op">)</span></span>

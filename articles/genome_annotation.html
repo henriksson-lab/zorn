@@ -196,14 +196,20 @@ available on <code>PATH</code>.</li>
 <span>  outputName <span class="op">=</span> <span class="st">"bakta"</span>,</span>
 <span>  db         <span class="op">=</span> <span class="st">"~/bakta"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Then aggregate the results for visualization. This example caches the
-result to speed up reloading; this is optional</p>
+<p>Then aggregate the annotation table from each cell. The
+<code>cellID</code> column records which assembly each annotation came
+from. This example caches the result to speed up reloading; caching is
+optional.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bakta_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetCacheComputation.html">BascetCacheComputation</a></span><span class="op">(</span><span class="va">bascetRoot</span>,<span class="st">"cache_bakta"</span>,<span class="fu"><a href="../reference/MapListAsDataFrame.html">MapListAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="../reference/BascetAggregateMap.html">BascetAggregateMap</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">bakta_aggr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BascetCacheComputation.html">BascetCacheComputation</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>,</span>
-<span>  <span class="st">"bakta"</span>,</span>
-<span>  <span class="va">aggr.bakta</span></span>
-<span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="st">"cache_bakta"</span>,</span>
+<span>  <span class="fu"><a href="../reference/MapListAsDataFrame.html">MapListAsDataFrame</a></span><span class="op">(</span><span class="fu"><a href="../reference/BascetAggregateMap.html">BascetAggregateMap</a></span><span class="op">(</span></span>
+<span>    <span class="va">bascetRoot</span>,</span>
+<span>    <span class="st">"bakta"</span>,</span>
+<span>    <span class="va">aggr.bakta</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="ariba-amr-identification-from-reads">Ariba — AMR identification from reads<a class="anchor" aria-label="anchor" href="#ariba-amr-identification-from-reads"></a>

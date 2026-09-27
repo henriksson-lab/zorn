@@ -277,6 +277,8 @@
 - [`aggr.ariba()`](https://henriksson-lab.github.io/zorn/reference/aggr.ariba.md)
   : Callback function for aggregating ARIBA data for each cell. To be
   called from BascetAggregateMap
+- [`aggr.bakta()`](https://henriksson-lab.github.io/zorn/reference/aggr.bakta.md)
+  : Callback function for aggregating Bakta annotations for each cell
 - [`aggr.fastqc()`](https://henriksson-lab.github.io/zorn/reference/aggr.fastqc.md)
   : Callback function for aggregating FASTQC data for each cell. To be
   called from BascetAggregateMap

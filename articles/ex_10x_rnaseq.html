@@ -95,13 +95,21 @@ RNA-seq data aligned against a human reference. See other pages for what
 each step means - this example is mainly aimed to let you copy-paste
 something that will work right away</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetBinary.html">getBascetBinary</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="kw">if</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/henriksson-lab/zorn" class="external-link">Zorn</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bascetRoot</span> <span class="op">&lt;-</span> <span class="st">"/path/to/an_empty_working_directory"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">bascetRoot</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bascetInstance.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetBinary.html">getBascetBinary</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">runWithSlurm</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="va">runWithSlurm</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co">#Running locally</span></span>
 <span>  <span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LocalRunner.html">LocalRunner</a></span><span class="op">(</span>mem<span class="op">=</span><span class="st">"50g"</span><span class="op">)</span></span>
+<span>  <span class="va">numOutputShards</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="co">#Running on a server with SLURM</span></span>
 <span>  <span class="va">bascetRunner.default</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SlurmRunner.html">SlurmRunner</a></span><span class="op">(</span>account<span class="op">=</span><span class="st">"hpc2n2026-186"</span>, ncpu<span class="op">=</span><span class="st">"10"</span>, mem<span class="op">=</span><span class="st">"35g"</span>, time<span class="op">=</span><span class="st">"0-14:00:00"</span><span class="op">)</span></span>
+<span>  <span class="va">numOutputShards</span> <span class="op">&lt;-</span> <span class="fl">40</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span></span>
@@ -130,7 +138,7 @@ something that will work right away</p>
 <span><span class="co">### If running local, can also just do 1 shard</span></span>
 <span><span class="fu"><a href="../reference/BascetShardify.html">BascetShardify</a></span><span class="op">(</span></span>
 <span>  <span class="va">debstat</span>,</span>
-<span>  numOutputShards <span class="op">=</span> <span class="fl">40</span></span>
+<span>  numOutputShards <span class="op">=</span> <span class="va">numOutputShards</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
@@ -138,9 +146,12 @@ something that will work right away</p>
 <span><span class="co">### Alignment workflow (STAR, splice-aware)</span></span>
 <span><span class="co">###</span></span>
 <span></span>
-<span><span class="kw">if</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="va">useCellRangerReference</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="va">useCellRangerReference</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co">#Use the Cell Ranger human reference</span></span>
-<span>  <span class="va">starref</span> <span class="op">&lt;-</span> <span class="st">"/path/to/refdata-gex-GRCh38-2020-A/star"</span></span>
+<span>  <span class="va">referenceDir</span> <span class="op">&lt;-</span> <span class="st">"/path/to/refdata-gex-GRCh38-2020-A"</span></span>
+<span>  <span class="va">starref</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">referenceDir</span>, <span class="st">"star"</span><span class="op">)</span></span>
+<span>  <span class="va">stargff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">referenceDir</span>, <span class="st">"genes"</span>, <span class="st">"genes.gtf"</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="co">#build your own STAR index via BascetIndexGenomeSTAR</span></span>
 <span>  <span class="va">starref</span> <span class="op">&lt;-</span> <span class="st">"/path/to/star"</span></span>

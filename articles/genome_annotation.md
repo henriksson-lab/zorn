@@ -130,16 +130,21 @@ BascetMapCellBakta(
 )
 ```
 
-Then aggregate the results for visualization. This example caches the
-result to speed up reloading; this is optional
+Then aggregate the annotation table from each cell. The `cellID` column
+records which assembly each annotation came from. This example caches
+the result to speed up reloading; caching is optional.
 
 ``` r
 
-bakta_aggr <- BascetCacheComputation(bascetRoot,"cache_bakta",MapListAsDataFrame(BascetAggregateMap(
+bakta_aggr <- BascetCacheComputation(
   bascetRoot,
-  "bakta",
-  aggr.bakta
-)))
+  "cache_bakta",
+  MapListAsDataFrame(BascetAggregateMap(
+    bascetRoot,
+    "bakta",
+    aggr.bakta
+  ))
+)
 ```
 
 ## Ariba — AMR identification from reads

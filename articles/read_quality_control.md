@@ -47,7 +47,7 @@ BascetMapTransform(
   bascetRoot,
   inputName="filtered",
   outputName="asfq",
-  out_format="R1.fq.gz"
+  outFormat="R1.fq.gz"
 )
 ```
 
@@ -76,9 +76,10 @@ or separate browser):
 ``` r
 
 ShowFASTQCforCell(
-    bascetFile,
-    cellID="xyz", #name of your cell 
-    readnum="1", #for R1
+  bascetRoot,
+  inputName = "fastqc",
+  cellID = "xyz", #name of your cell
+  readnum = "1"   #for R1
 )
 ```
 
@@ -96,9 +97,10 @@ aggr_fastqc <- BascetAggregateFASTQC(
 One relevant statistic is the adapter content across the read:
 
 ``` r
-PlotFASTQCadapterContent <- function(
-    aggr_fastqc,
-    readnum="1" #for R1
+
+adapter_plot <- PlotFASTQCadapterContent(
+  aggr_fastqc,
+  readnum = "1" #for R1
 )
 ```
 
@@ -118,16 +120,16 @@ provide a general interface to each table that FASTQC generates:
 ``` r
 
 mystats <- GetFASTQCassembledDF(
-    aggr_fastqc, 
-    section="see below", 
-    readnum="1"
+  aggr_fastqc,
+  section = "Adapter Content",
+  readnum = "1"
 )
 ```
 
 Possible values of section are:
 
 - “Basic Statistics”
-- “Per base sequence quality” d
+- “Per base sequence quality”
 - “Per sequence quality scores”
 - “Per base sequence content”
 - “Per sequence GC content”

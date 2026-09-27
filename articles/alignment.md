@@ -105,7 +105,7 @@ BascetFilterAlignment(
   bascetRoot,
   inputName="aligned_cell",
   outputName="aligned_cell_nohost",
-  keepMapped=TRUE
+  keepMapped=FALSE
 )
 ```
 
@@ -159,7 +159,7 @@ It can then be loaded into Seurat:
 
 library(Seurat)
 
-cnt <- ReadBascetCountMatrix(bascetRoot,"chromcount", verbose=FALSE)
+cnt <- ReadBascetCountMatrix(bascetRoot, "chrom_counts", verbose=FALSE)
 
 adata <- CreateSeuratObject(
   cnt,
@@ -280,8 +280,8 @@ BascetCountFeature(
 
 The ID and name of genes are extracted from the GFF attributes column.
 Not all files have both name and ID; the ID will be used as name if
-nothing specified. By default, the rows having “gene” as the feature
-description will
+nothing specified. By default, only rows having `gene` as the feature
+description are counted.
 
 After the features (genes) have been counted, you can load them into
 Seurat:
@@ -337,6 +337,33 @@ BascetBam2Fragments(
 )
 ```
 
+The command creates one `fragments.<shard>.tsv.gz` file per input shard.
+For example, load the first shard and count reads overlapping regions of
+interest:
+
+``` r
+
+library(Signac)
+
+fragmentFile <- file.path(bascetRoot, "fragments.1.tsv.gz")
+chromAssay <- FragmentsToSignac(fragmentFile)
+adata <- CreateSeuratObject(counts = chromAssay, assay = "chromatin")
+
+regions <- GenomicRanges::GRanges(
+  seqnames = c("chr1", "chr1"),
+  ranges = IRanges::IRanges(
+    start = c(100000, 200000),
+    end = c(101000, 201000)
+  ),
+  Name = c("region_1", "region_2")
+)
+
+adata[["region_counts"]] <- CountGrangeFeatures(adata, regions)
+```
+
+Repeat this for the other fragment shards, if present, or combine the
+resulting Seurat objects before downstream analysis.
+
 ## Optional: TIRP to FASTQ
 
 If you want to feed the FASTQ data into another tool (or aligner), you
@@ -353,6 +380,6 @@ BascetMapTransform(
   bascetRoot,
   inputName="filtered",
   outputName="asfq",
-  out_format="R1.fq.gz"
+  outFormat="R1.fq.gz"
 )
 ```

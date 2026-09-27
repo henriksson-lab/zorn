@@ -7,13 +7,21 @@ something that will work right away
 
 ``` r
 
+library(Zorn)
+
+bascetRoot <- "/path/to/an_empty_working_directory"
+dir.create(bascetRoot, recursive = TRUE, showWarnings = FALSE)
+
 bascetInstance.default <- getBascetBinary()
-if(TRUE) {
+runWithSlurm <- FALSE
+if(!runWithSlurm) {
   #Running locally
   bascetRunner.default <- LocalRunner(mem="50g")
+  numOutputShards <- 1
 } else {
   #Running on a server with SLURM
   bascetRunner.default <- SlurmRunner(account="hpc2n2026-186", ncpu="10", mem="35g", time="0-14:00:00")
+  numOutputShards <- 40
 }
 
 
@@ -42,7 +50,7 @@ DebarcodedKneePlot(debstat, filename = "kneeplot.pdf")
 ### If running local, can also just do 1 shard
 BascetShardify(
   debstat,
-  numOutputShards = 40
+  numOutputShards = numOutputShards
 )
 
 
@@ -50,9 +58,12 @@ BascetShardify(
 ### Alignment workflow (STAR, splice-aware)
 ###
 
-if(TRUE) {
+useCellRangerReference <- TRUE
+if(useCellRangerReference) {
   #Use the Cell Ranger human reference
-  starref <- "/path/to/refdata-gex-GRCh38-2020-A/star"
+  referenceDir <- "/path/to/refdata-gex-GRCh38-2020-A"
+  starref <- file.path(referenceDir, "star")
+  stargff <- file.path(referenceDir, "genes", "genes.gtf")
 } else {
   #build your own STAR index via BascetIndexGenomeSTAR
   starref <- "/path/to/star"

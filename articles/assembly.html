@@ -174,19 +174,19 @@ overview of the underlying MAP framework, see <a href="map_scripts.html">Map scr
 <h2 id="co-assembly">Co-assembly<a class="anchor" aria-label="anchor" href="#co-assembly"></a>
 </h2>
 <p>If you have cells with highly similar genomes, you might be able to
-generate “co-assemblies” - consensus assemblies using reads from
-multiple similar cells.</p>
-<p>To do this, simply extract the debarcoded reads from the cells of
-interest. There are many ways of picking them, where one method is to
-use the clustering function in Seurat. But you can use any method you
-wish to come up with a list of cell names. To learn more about
-clustering, <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial.html" class="external-link">see
+generate “co-assemblies” by combining contigs from multiple similar
+cells.</p>
+<p>To do this, extract the assembled contigs from the cells of interest.
+There are many ways of picking them, where one method is to use the
+clustering function in Seurat. But you can use any method you wish to
+come up with a list of cell names. To learn more about clustering, <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial.html" class="external-link">see
 this Seurat tutorial first</a>. Note that it is an open research problem
 how to best pick cells for coassembly!</p>
 <p>After clustering, you can get the names of cells in cluster “0”:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">### Get cell names</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>listCells <span class="ot">&lt;-</span> <span class="fu">rownames</span>(adata[adata<span class="sc">$</span><span class="at">cluster_id=</span><span class="st">"0"</span>,])</span></code></pre></div>
-<p>Next extract a FASTQ with reads:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Get cell names</span></span>
+<span><span class="va">listCells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">adata</span><span class="op">[</span><span class="va">adata</span><span class="op">$</span><span class="va">cluster_id</span> <span class="op">==</span> <span class="st">"0"</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p>Next, extract one FASTA file of contigs per selected cell:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/BascetDumpContigs.html">BascetDumpContigs</a></span><span class="op">(</span></span>
 <span>  bascetRoot     <span class="op">=</span> <span class="va">bascetRoot</span>,</span>
@@ -195,11 +195,14 @@ how to best pick cells for coassembly!</p>
 <span>  outputDir      <span class="op">=</span> <span class="va">outputDir</span>,</span>
 <span>  bascetInstance <span class="op">=</span> <span class="va">bascetInstance</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>And finally, run <a href="https://github.com/ncbi/SKESA" class="external-link">SKESA</a> or
-your favourite software to assemble the reads (in Bash):</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">skesa</span> <span class="dt">\</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">--reads</span> pooled_R1.fastq.gz,pooled_R2.fastq.gz <span class="dt">\</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">--contigs_out</span> coassembly.fa</span></code></pre></div>
+<p>Finally, concatenate the FASTA files and pass the combined sequences
+to <a href="https://github.com/ncbi/SKESA" class="external-link">SKESA</a> or your preferred
+assembler (in Bash):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">cat</span> contigs_out/<span class="pp">*</span>.fa <span class="op">&gt;</span> pooled_contigs.fa</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="ex">skesa</span> <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">--reads</span> pooled_contigs.fa <span class="dt">\</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">--contigs_out</span> coassembly.fa</span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

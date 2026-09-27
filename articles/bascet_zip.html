@@ -99,15 +99,14 @@ of files which definitely will not make your systems administrator
 happy.</p>
 <p>That said, in case of emergency, or if you just want a single file,
 this is the approach to take.</p>
-<p>First load an instance, and ensure that it works:</p>
+<p>First obtain an instance using the current precompiled Bascet binary,
+and ensure that it works. An existing cached binary will be reused:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bascetInstance</span> <span class="op">&lt;-</span> <span class="fu">getBascetSingularityImage</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bascetInstance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBascetBinary.html">getBascetBinary</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/TestBascetInstance.html">TestBascetInstance</a></span><span class="op">(</span><span class="va">bascetInstance</span><span class="op">)</span></span></code></pre></div>
-<p>You can now open a file (here named “skesa”). Internally, this
-creates an instance of Bascet running in a separate thread, which R can
-send commands to. This design is necessary to avoid the startup cost of
-Docker and Singularity, such that you pay the cost only once; but
-reading many files is very fast.</p>
+<p>You can now open a file (here named “skesa”). Internally, this starts
+a persistent Bascet process to which R sends commands. Reusing this
+handle makes repeated file operations efficient.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">skesa_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/OpenBascet.html">OpenBascet</a></span><span class="op">(</span></span>
 <span>  <span class="va">bascetRoot</span>, </span>

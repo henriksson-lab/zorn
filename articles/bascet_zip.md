@@ -11,19 +11,18 @@ happy.
 That said, in case of emergency, or if you just want a single file, this
 is the approach to take.
 
-First load an instance, and ensure that it works:
+First obtain an instance using the current precompiled Bascet binary,
+and ensure that it works. An existing cached binary will be reused:
 
 ``` r
 
-bascetInstance <- getBascetSingularityImage(...)
+bascetInstance <- getBascetBinary()
 TestBascetInstance(bascetInstance)
 ```
 
-You can now open a file (here named “skesa”). Internally, this creates
-an instance of Bascet running in a separate thread, which R can send
-commands to. This design is necessary to avoid the startup cost of
-Docker and Singularity, such that you pay the cost only once; but
-reading many files is very fast.
+You can now open a file (here named “skesa”). Internally, this starts a
+persistent Bascet process to which R sends commands. Reusing this handle
+makes repeated file operations efficient.
 
 ``` r
 

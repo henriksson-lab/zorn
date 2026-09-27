@@ -63,10 +63,16 @@ set two environment variables such that the contents can be picked up
 the script:
 
 ``` r
+
 BascetMapCell(
-  ...
-  args(DB="some/path",OTHERARG="hi")
-  ...
+  bascetRoot,
+  withfunction = "/path/to/your/script.sh",
+  inputName = "filtered",
+  outputName = "my_tool",
+  args = list(
+    DB = "some/path",
+    OTHERARG = "hi"
+  )
 )
 ```
 
@@ -88,11 +94,13 @@ but it may help you in debugging and development:
 
 ``` r
 
-raw_aggr <- MapListAsDataFrame(BascetAggregateMap(
-  bascetRoot,
-  inputName="..",
-  aggr.raw("out.txt")
-))
+raw_aggr <- MapListAsDataFrame(
+  BascetAggregateMap(
+    bascetRoot,
+    inputName = "my_tool",
+    aggrFunction = aggr.rawtext("out.txt")
+  )
+)
 ```
 
 ## Custom MAP functions - introduction

@@ -3,8 +3,9 @@
 ## When to use this
 
 Zorn/Bascet can download public NCBI assemblies and pack them directly
-into Bascet-ZIP shards. Each assembly is treated as one cell, and each
-cell contains one file
+into Bascet-ZIP shards. Each assembly is treated as one cell, identified
+by its NCBI assembly accession, and contains the downloaded assembly
+FASTA as `contigs.fa`.
 
 ## Download the metadata directory
 

@@ -82,6 +82,17 @@ BascetMapTransform(
 
 
 ####################
+### Perform QC of filtered reads
+####################
+
+### FastQC
+BascetMapCellFASTQC(
+  bascetRoot,
+  inputName = "filtered_nohost"
+)
+
+
+####################
 ### Count sketch workflow
 ####################
 
@@ -112,17 +123,6 @@ BascetRunKraken(
 
 ### Assemble all genomes
 BascetMapCellSKESA(
-  bascetRoot,
-  inputName = "filtered_nohost"
-)
-
-
-####################
-### Analyze contigs
-####################
-
-### FastQC
-BascetMapCellFASTQC(
   bascetRoot,
   inputName = "filtered_nohost"
 )

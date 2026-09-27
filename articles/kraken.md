@@ -118,13 +118,13 @@ adata <- RunUMAP(object = adata, reduction = 'lsi', dims = 1:30, reduction.name 
 RNA-seq style analysis
 
 ``` r
+
 #RNA-seq style analysis
 adata <- NormalizeData(adata)
 adata <- FindVariableFeatures(adata, selection.method = "vst", nfeatures = 2000)
 adata <- ScaleData(adata, features = rownames(adata))
 adata <- RunPCA(adata, features = VariableFeatures(object = adata))
 adata <- RunUMAP(adata, dims = 1:20, reduction.name = "kraken_umap")
-}
 ```
 
 You can now plot a UMAP with your cells! Here colored by genus, but you
